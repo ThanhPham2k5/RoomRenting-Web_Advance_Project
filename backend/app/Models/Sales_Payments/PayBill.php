@@ -14,7 +14,4 @@ class PayBill extends Model
         return $this->belongsTo(PayRule::class);
     }
 
-    public function saleDetails(){
-        return $this->hasMany(SaleDetail::class);
-    }
 }

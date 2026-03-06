@@ -13,8 +13,4 @@ class RechargeBill extends Model
     public function rechargeRule(){
         return $this->belongsTo(RechargeRule::class);
     }
-
-    public function saleDetails(){
-        return $this->hasMany(SaleDetail::class);
-    }
 }

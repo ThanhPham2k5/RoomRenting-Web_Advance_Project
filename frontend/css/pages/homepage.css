@@ -1,0 +1,157 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+}
+
+.header-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px 0px 10px 10px;
+  text-decoration: none;
+  color: #000;
+}
+
+.header-logo-img {
+  width: 64px;
+  height: 64px;
+}
+
+.header-logo-text {
+  font-family: "Header_2";
+}
+
+.header-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px 10px 10px 0px;
+}
+
+.header-button {
+  width: 120px;
+  height: 40px;
+  border: none;
+  border-radius: 999px;
+  font-family: "Body";
+  cursor: pointer;
+}
+
+.button-sign-up {
+  color: #fff;
+  background-color: var(--orange);
+  margin-right: 15px;
+}
+
+.button-sign-up:hover {
+  /* background-color: var(--orange-hover); */
+  opacity: 0.8;
+}
+
+.button-log-in {
+  color: #000;
+  background-color: #fff;
+  border: 1px solid var(--black);
+}
+
+.button-log-in:hover {
+  background-color: var(--white-stroke);
+}
+
+.hero {
+  margin-top: 84px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hero-content {
+  width: 100%;
+  margin-left: 50px;
+}
+
+.line {
+  height: 4px;
+  border-radius: 999px;
+  background-color: var(--orange);
+  margin: 24px 0;
+  width: 470px;
+}
+
+.title-sub {
+  color: var(--gray);
+}
+
+.content-search {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 10px;
+  margin-top: 30px;
+  border-radius: 12px;
+  border: 1px solid var(--black);
+  padding: 10px;
+}
+
+.search-tool {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.search-ico {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.search-bar {
+  width: 416px;
+  height: 48px;
+  border-radius: 12px;
+  color: #000;
+  font-family: "Body";
+  border: none;
+  outline: none;
+  margin-left: 8px;
+}
+
+.search-seperate {
+  height: 48px;
+  width: 4px;
+  border-radius: 999px;
+  background-color: var(--gray);
+}
+
+.other-tools {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.filter-tool {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border: 1px solid var(--gray);
+  border-radius: 12px;
+  padding: 12px 20px;
+}
+
+.filter-ico {
+  width: 16px;
+  height: 16px;
+  margin-right: 16px;
+}
+
+.filter-text {
+  font-family: "Body";
+}

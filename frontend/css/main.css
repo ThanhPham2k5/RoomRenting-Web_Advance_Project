@@ -1,0 +1,60 @@
+:root {
+  --blue: #2563eb;
+  --orange: #f97316;
+  --orange-hover: #ffa824;
+  --white-stroke: #f3f4f6;
+  --black: #1f2937;
+  --green: #10b981;
+  --gray: #626687;
+  --white: #f5f7fa;
+  --red: #fd5454;
+  --yellow: #fcbe2d;
+}
+
+@font-face {
+  font-family: "Header_1";
+  src: url("../assets/font/Roboto/static/Roboto-SemiBold.ttf");
+}
+
+@font-face {
+  font-family: "Header_2";
+  font-size: 3.2rem;
+  line-height: 4rem;
+  src: url("../assets/font/Roboto/static/Roboto-SemiBold.ttf");
+}
+
+@font-face {
+  font-family: "Header_3";
+  src: url("../assets/font/Roboto/static/Roboto-SemiBold.ttf");
+}
+
+@font-face {
+  font-family: "Body";
+  src: url("../assets/font/Roboto/static/Roboto-Medium.ttf");
+}
+
+h1 {
+  font-size: 2.5rem;
+  line-height: 3rem;
+  font-family: "Header_1", monospace;
+}
+
+h2 {
+  font-size: 2rem;
+  line-height: 2.5rem;
+  font-family: "Header_2", monospace;
+}
+
+h3 {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-family: "Header_3", monospace;
+}
+
+body {
+  box-sizing: border-box;
+  margin: 0 auto;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-family: "Body", monospace;
+}

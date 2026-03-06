@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('employees', function (Blueprint $table) {
             $table->id();
-            $table->enum('role', ['admin', 'employee', 'postManager', 'billManager', 'userManager']);
+            $table->enum('role', ['user', 'admin', 'postManager', 'billManager', 'userManager']);
             $table->dateTime('date_of_birth');
             $table->string('gender');
             $table->string('house_number');
@@ -22,6 +22,8 @@ return new class extends Migration
             $table->string('phone_number');
             $table->string('name');
             $table->string('pid');
+
+            $table->foreignId('account_id')->constrained()->cascadeOnDelete();
 
             $table->timestamps();
         });

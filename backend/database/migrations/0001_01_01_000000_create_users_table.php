@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->enum('role', ['student', 'worker', 'other']);
+            $table->enum('role', ['user', 'admin', 'postManager', 'billManager', 'userManager']);
             $table->dateTime('date_of_birth');
             $table->string('gender');
             $table->string('house_number');
@@ -25,6 +25,8 @@ return new class extends Migration
             $table->string('name');
             $table->integer('points');
             $table->string('pid');
+
+            $table->foreignId('account_id')->constrained()->cascadeOnDelete();
     
             
             $table->timestamps();

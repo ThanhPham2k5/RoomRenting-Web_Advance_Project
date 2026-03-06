@@ -9,4 +9,8 @@ class PostImage extends Model
 {
     /** @use HasFactory<\Database\Factories\PostImageFactory> */
     use HasFactory;
+
+    public function post(){
+        return $this->belongsTo(Post::class);
+    }
 }

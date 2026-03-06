@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Sale;
+use App\Models\Notification;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreSaleRequest;
-use App\Http\Requests\UpdateSaleRequest;
+use App\Http\Requests\StoreNotificationRequest;
+use App\Http\Requests\UpdateNotificationRequest;
 
-class SaleController extends Controller
+class NotificationController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -28,7 +28,7 @@ class SaleController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreSaleRequest $request)
+    public function store(StoreNotificationRequest $request)
     {
         //
     }
@@ -36,7 +36,7 @@ class SaleController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Sale $sale)
+    public function show(Notification $notification)
     {
         //
     }
@@ -44,7 +44,7 @@ class SaleController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Sale $sale)
+    public function edit(Notification $notification)
     {
         //
     }
@@ -52,7 +52,7 @@ class SaleController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateSaleRequest $request, Sale $sale)
+    public function update(UpdateNotificationRequest $request, Notification $notification)
     {
         //
     }
@@ -60,7 +60,7 @@ class SaleController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Sale $sale)
+    public function destroy(Notification $notification)
     {
         //
     }

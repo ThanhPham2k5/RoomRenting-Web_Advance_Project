@@ -10,7 +10,11 @@ class Employee extends Model
     /** @use HasFactory<\Database\Factories\EmployeeFactory> */
     use HasFactory;
 
-    public function Account(){
-        return $this->hasOne(Account::class);
+    public function account(){
+        return $this->belongsTo(Account::class);
+    }
+
+    public function notifications(){
+        return $this->hasMany(Notification::class);
     }
 }

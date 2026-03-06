@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('post_images', function (Blueprint $table) {
             $table->id();
+            $table->binary('image_post');
+
+            $table->foreignId('post_id');
+
             $table->timestamps();
         });
     }

@@ -13,12 +13,9 @@ return new class extends Migration
     {
         Schema::create('accounts', function (Blueprint $table) {
             $table->id();
-            $table->string('username');
+            $table->string('username')->unique();
             $table->string('password');
             $table->enum('status', ['active','deleted']);
-            $table->dateTime('date');
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('employee_id')->constrained()->cascadeOnDelete();
 
             $table->timestamps();
         });

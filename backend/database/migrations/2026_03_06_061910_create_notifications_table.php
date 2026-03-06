@@ -11,15 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('favorites', function (Blueprint $table) {
+        Schema::create('notifications', function (Blueprint $table) {
             $table->id();
-
-            $table->foreignId('post_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('account_id')->constrained()->cascadeOnDelete();
-
             $table->timestamps();
-
-            $table->unique(['account_id', 'post_id']);
         });
     }
 
@@ -28,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('favorites');
+        Schema::dropIfExists('notifications');
     }
 };

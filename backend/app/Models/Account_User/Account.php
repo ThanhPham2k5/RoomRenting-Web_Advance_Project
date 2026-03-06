@@ -11,10 +11,23 @@ class Account extends Model
     use HasFactory;
 
     public function user(){
-        return $this->belongsTo(User::class);
+        return $this->hasOne(User::class);
     }
 
     public function employee(){
-        return $this->belongsTo(Employee::class);
+        return $this->hasOne(Employee::class);
     }
+
+
+    public function comments(){
+        return $this->hasMany(Comment::class);
+    }
+
+    public function posts(){
+        return $this->hasMany(Post::class);
+    }
+
+    public function favoritePosts(){
+        return $this->belongsToMany(Post::class, 'favorite');
+    } 
 }

@@ -9,4 +9,8 @@ class RechargeRule extends Model
 {
     /** @use HasFactory<\Database\Factories\RechargeRuleFactory> */
     use HasFactory;
+
+    public function rechargeBills(){
+        return $this->hasMany(RechargeBill::class);
+    }
 }

@@ -14,10 +14,11 @@ return new class extends Migration
         Schema::create('recharge_rules', function (Blueprint $table) {
             $table->id();
 
-            $table->double('points');
-            $table->enum('status', ['completed', 'pending', 'failed']);
-            $table->double('money');
+            $table->integer('points');
+            // $table->enum('status', ['active', 'deleted']);
+            $table->decimal('money', 10, 2);
             
+            $table->softDeletes();
             $table->timestamps();
         });
     }

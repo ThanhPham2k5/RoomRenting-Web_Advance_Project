@@ -14,9 +14,10 @@ return new class extends Migration
         Schema::create('pay_rules', function (Blueprint $table) {
             $table->id();
 
-            $table->double('points');
-            $table->enum('status', ['completed', 'pending', 'failed']);
+            $table->integer('points');
+            // $table->enum('status', ['active', 'deleted']);
 
+            $table->softDeletes();
             $table->timestamps();
         });
     }

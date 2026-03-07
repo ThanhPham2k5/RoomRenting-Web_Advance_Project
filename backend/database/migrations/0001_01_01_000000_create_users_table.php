@@ -15,19 +15,10 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->enum('role', ['user', 'admin', 'postManager', 'billManager', 'userManager']);
-            $table->dateTime('date_of_birth');
-            $table->string('gender');
-            $table->string('house_number');
-            $table->string('ward');
-            $table->string('province');
-            $table->string('phone_number');
-            $table->string('name');
-            $table->integer('points');
-            $table->string('pid');
+            $table->integer('points')->default(0);
 
-            $table->foreignId('account_id')->constrained()->cascadeOnDelete();
-    
+            $table->foreignId('account_id')->unique()->constrained()->cascadeOnDelete();
+            $table->foreignId('personal_info_id')->constrained()->cascadeOnDelete();
             
             $table->timestamps();
         });

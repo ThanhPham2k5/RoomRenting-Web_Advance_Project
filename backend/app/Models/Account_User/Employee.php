@@ -10,6 +10,11 @@ class Employee extends Model
     /** @use HasFactory<\Database\Factories\EmployeeFactory> */
     use HasFactory;
 
+    public function personalInfo(){
+        return $this->belongsTo(PersonalInfo::class);
+    }
+
+
     public function account(){
         return $this->belongsTo(Account::class);
     }

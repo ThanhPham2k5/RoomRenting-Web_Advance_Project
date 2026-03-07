@@ -13,10 +13,12 @@ return new class extends Migration
     {
         Schema::create('accounts', function (Blueprint $table) {
             $table->id();
+            $table->enum('role', ['user', 'admin', 'postManager', 'billManager', 'userManager']);
             $table->string('username')->unique();
             $table->string('password');
-            $table->enum('status', ['active','deleted']);
+            // $table->enum('status', ['active','deleted']);
 
+            $table->softDeletes();
             $table->timestamps();
         });
     }

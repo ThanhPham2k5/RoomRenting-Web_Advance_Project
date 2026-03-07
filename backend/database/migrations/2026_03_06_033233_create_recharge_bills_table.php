@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('recharge_bills', function (Blueprint $table) {
             $table->id();
 
-            $table->double('money');
-            $table->double('total_money');
+            $table->decimal('money', 10, 2);
+            $table->decimal('total_money', 10, 2);
+            $table->decimal('vat', 8, 2);
             $table->enum('status', ['completed', 'pending', 'failed']);
 
             $table->foreignId('account_id')->constrained()->cascadeOnDelete();

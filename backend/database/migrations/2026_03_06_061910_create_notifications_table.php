@@ -15,13 +15,16 @@ return new class extends Migration
             $table->id();
 
             $table->string('title');
-            $table->string('content');
-            // chiuj
-            $table->enum('status', ['']);
+            $table->text('content');
+            
+            $table->enum('status', ['read', 'unread']);
             $table->enum('notification_type', ['news', 'transaction']);
             
             $table->foreignId('account_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('post_id')->constrained()->cascadeOnDelete();
+            $table->morphs('notifiable'); //polymorphic, could be from comment, post, recharge, pay
+            // creates:
+            // notifiable_id
+            // notifiable_type
 
             $table->timestamps();
         });

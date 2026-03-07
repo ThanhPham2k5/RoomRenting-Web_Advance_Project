@@ -14,9 +14,8 @@ return new class extends Migration
         Schema::create('pay_bills', function (Blueprint $table) {
             $table->id();
 
-            $table->double('points');
+            $table->integer('points');
             $table->enum('status', ['completed', 'pending', 'failed']);
-            $table->double('vat');
             
             // 1-n relationship with accounts, posts, and pay_rules
             $table->foreignId('account_id')->constrained()->cascadeOnDelete();

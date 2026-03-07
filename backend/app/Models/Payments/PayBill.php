@@ -14,4 +14,12 @@ class PayBill extends Model
         return $this->belongsTo(PayRule::class);
     }
 
+    public function account(){
+        return $this->belongsTo(Account::class);
+    }
+
+    public function post(){
+        return $this->belongsTo(Post::class);
+    }
+
 }

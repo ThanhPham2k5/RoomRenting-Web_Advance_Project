@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a59389decc3f6069f384f7a80bf3f0f9",
+    "content-hash": "bdedc8bba1369114d4e24c669cc91239",
     "packages": [
         {
             "name": "brick/math",
@@ -3095,6 +3095,62 @@
                 "source": "https://github.com/bobthecow/psysh/tree/v0.12.20"
             },
             "time": "2026-02-11T15:05:28+00:00"
+        },
+        {
+            "name": "quangtam/vietnam-address-database",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/quangtam/vietnam-address-database.git",
+                "reference": "cf9aa6d3fd38661dcb0c6248adeb003384b8e2ea"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/quangtam/vietnam-address-database/zipball/cf9aa6d3fd38661dcb0c6248adeb003384b8e2ea",
+                "reference": "cf9aa6d3fd38661dcb0c6248adeb003384b8e2ea",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.4"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "VietnamAddressDatabase\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Quang Tam",
+                    "email": "quangtamvu@gmail.com"
+                }
+            ],
+            "description": "Raw JSON database for Vietnamese administrative addresses according to Resolution 202/2025/QH15",
+            "homepage": "https://github.com/quangtam/vietnam-address-database",
+            "keywords": [
+                "address",
+                "administrative",
+                "data",
+                "database",
+                "districts",
+                "json",
+                "provinces",
+                "vietnam",
+                "vietnamese",
+                "wards"
+            ],
+            "support": {
+                "issues": "https://github.com/quangtam/vietnam-address-database/issues",
+                "source": "https://github.com/quangtam/vietnam-address-database/tree/v1.0.0"
+            },
+            "time": "2025-07-15T16:48:09+00:00"
         },
         {
             "name": "ralouphie/getallheaders",

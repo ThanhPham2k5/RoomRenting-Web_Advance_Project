@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Account_User;
 
+use App\Models\Notification\Notification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -9,6 +10,11 @@ class Employee extends Model
 {
     /** @use HasFactory<\Database\Factories\EmployeeFactory> */
     use HasFactory;
+
+    protected static function newFactory()
+    {
+        return \Database\Factories\EmployeeFactory::new();
+    }
 
     public function personalInfo(){
         return $this->belongsTo(PersonalInfo::class);

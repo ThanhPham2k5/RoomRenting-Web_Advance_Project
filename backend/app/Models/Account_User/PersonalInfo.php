@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Account_User;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -9,6 +9,11 @@ class PersonalInfo extends Model
 {
     /** @use HasFactory<\Database\Factories\PersonalInfoFactory> */
     use HasFactory;
+
+    protected static function newFactory()
+    {
+        return \Database\Factories\PersonalInfoFactory::new();
+    }
 
     protected $fillable = [
         'name',

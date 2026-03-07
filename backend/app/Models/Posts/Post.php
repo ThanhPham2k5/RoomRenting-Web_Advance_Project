@@ -1,7 +1,12 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Posts;
 
+use App\Models\Account_User\Account;
+use App\Models\Account_User\Employee;
+use App\Models\Account_User\User;
+use App\Models\Notification\Notification;
+use App\Models\Payments\PayBill;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,6 +16,11 @@ class Post extends Model
 {
     /** @use HasFactory<\Database\Factories\PostFactory> */
     use HasFactory, SoftDeletes;
+
+    protected static function newFactory()
+    {
+        return \Database\Factories\PostFactory::new();
+    }
 
     public function user(){
         return $this->belongsTo(User::class);

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Payments;
 
 use App\Http\Controllers\PayBillController;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

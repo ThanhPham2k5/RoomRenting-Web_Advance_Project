@@ -2,16 +2,16 @@
 
 namespace Database\Seeders;
 
-use App\Models\Account_User\PersonalInfo;
+use App\Models\Account_User\User;
 use Illuminate\Database\Seeder;
 
-class PersonalInfoSeeder extends Seeder
+class UserSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        PersonalInfo::factory()->count(50)->create(); //might be unecessary
+        User::factory()->count(20)->create();
     }
 }

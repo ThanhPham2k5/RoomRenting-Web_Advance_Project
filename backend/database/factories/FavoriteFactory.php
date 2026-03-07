@@ -2,6 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\Account_User\Account;
+use App\Models\Posts\Favorite;
+use App\Models\Posts\Post;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -9,6 +12,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class FavoriteFactory extends Factory
 {
+    protected $model = Favorite::class;
     /**
      * Define the model's default state.
      *
@@ -17,7 +21,8 @@ class FavoriteFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'account_id' => Account::inRandomOrder()->first()->id,
+            'post_id' => Post::inRandomOrder()->first()->id,
         ];
     }
 }

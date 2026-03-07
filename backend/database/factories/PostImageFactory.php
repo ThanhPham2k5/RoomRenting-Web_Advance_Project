@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Posts\Post;
+use App\Models\Posts\PostImage;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -9,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class PostImageFactory extends Factory
 {
+    protected $model = PostImage::class;
     /**
      * Define the model's default state.
      *
@@ -17,7 +20,11 @@ class PostImageFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'image_post_url' => fake()->imageUrl(800,600,'house'),
+
+            'order' => fake()->numberBetween(1,6),
+
+            'post_id' => Post::inRandomOrder()->first()->id,
         ];
     }
 }

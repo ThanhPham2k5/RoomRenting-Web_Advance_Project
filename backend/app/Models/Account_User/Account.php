@@ -1,7 +1,12 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Account_User;
 
+use App\Models\Form;
+use App\Models\Payments\PayBill;
+use App\Models\Payments\RechargeBill;
+use App\Models\Posts\Comment;
+use App\Models\Posts\Post;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -10,6 +15,11 @@ class Account extends Model
 {
     /** @use HasFactory<\Database\Factories\AccountFactory> */
     use HasFactory, SoftDeletes;
+
+    protected static function newFactory()
+    {
+        return \Database\Factories\AccountFactory::new();
+    }
 
     public function form(){
         return $this->hasOne(Form::class);

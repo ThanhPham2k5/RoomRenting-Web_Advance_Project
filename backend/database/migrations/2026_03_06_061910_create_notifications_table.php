@@ -13,6 +13,16 @@ return new class extends Migration
     {
         Schema::create('notifications', function (Blueprint $table) {
             $table->id();
+
+            $table->string('title');
+            $table->string('content');
+            // chiuj
+            $table->enum('status', ['']);
+            $table->enum('notification_type', ['news', 'transaction']);
+            
+            $table->foreignId('account_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('post_id')->constrained()->cascadeOnDelete();
+
             $table->timestamps();
         });
     }

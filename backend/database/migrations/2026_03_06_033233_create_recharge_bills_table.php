@@ -13,6 +13,14 @@ return new class extends Migration
     {
         Schema::create('recharge_bills', function (Blueprint $table) {
             $table->id();
+
+            $table->double('money');
+            $table->double('total_money');
+            $table->enum('status', ['completed', 'pending', 'failed']);
+
+            $table->foreignId('account_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('recharge_rule_id')->constrained()->cascadeOnDelete();
+            
             $table->timestamps();
         });
     }

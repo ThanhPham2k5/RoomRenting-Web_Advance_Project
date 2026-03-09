@@ -2,13 +2,18 @@
 
 namespace Database\Factories;
 
+use App\Models\Payments\RechargeBill;
+use App\Models\Account_User\Account;
+use App\Models\Payments\RechargeRule;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\RechargeBill>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Payments\RechargeBill>
  */
 class RechargeBillFactory extends Factory
 {
+    protected $model = RechargeBill::class;
+
     /**
      * Define the model's default state.
      *
@@ -16,8 +21,120 @@ class RechargeBillFactory extends Factory
      */
     public function definition(): array
     {
+        $money = $this->faker->randomFloat(2, 50000, 500000);
+        $vatRate = $this->faker->randomFloat(2, 0, 0.1); // VAT rate 0-10%
+        $vat = round($money * $vatRate, 2);
+        $totalMoney = $money + $vat;
+
         return [
-            //
+            'money' => $money,
+            'total_money' => $totalMoney,
+            'vat' => $vat,
+            'status' => $this->faker->randomElement(['completed', 'pending', 'failed']),
+            'account_id' => Account::factory(),
+            'recharge_rule_id' => RechargeRule::factory(),
         ];
+    }
+
+    /**
+     * Indicate that the recharge bill is completed.
+     *
+     * @return static
+     */
+    public function completed(): static
+    {
+        return $this->state(fn(array $attributes) => [
+            'status' => 'completed',
+        ]);
+    }
+
+    /**
+     * Indicate that the recharge bill is pending.
+     *
+     * @return static
+     */
+    public function pending(): static
+    {
+        return $this->state(fn(array $attributes) => [
+            'status' => 'pending',
+        ]);
+    }
+
+    /**
+     * Indicate that the recharge bill is failed.
+     *
+     * @return static
+     */
+    public function failed(): static
+    {
+        return $this->state(fn(array $attributes) => [
+            'status' => 'failed',
+        ]);
+    }
+
+    /**
+     * Set a specific money amount for the recharge bill.
+     *
+     * @param float $money
+     * @return static
+     */
+    public function withMoney(float $money): static
+    {
+        $vatRate = $this->faker->randomFloat(2, 0, 0.1);
+        $vat = round($money * $vatRate, 2);
+        $totalMoney = $money + $vat;
+
+        return $this->state(fn(array $attributes) => [
+            'money' => $money,
+            'vat' => $vat,
+            'total_money' => $totalMoney,
+        ]);
+    }
+
+    /**
+     * Set a specific VAT rate for the recharge bill.
+     *
+     * @param float $vatRate
+     * @return static
+     */
+    public function withVatRate(float $vatRate): static
+    {
+        return $this->state(function (array $attributes) use ($vatRate) {
+            $money = $attributes['money'] ?? $this->faker->randomFloat(2, 50000, 500000);
+            $vat = round($money * $vatRate, 2);
+            $totalMoney = $money + $vat;
+
+            return [
+                'money' => $money,
+                'vat' => $vat,
+                'total_money' => $totalMoney,
+            ];
+        });
+    }
+
+    /**
+     * Set the recharge bill to use a specific account.
+     *
+     * @param mixed $account
+     * @return static
+     */
+    public function forAccount($account): static
+    {
+        return $this->state(fn(array $attributes) => [
+            'account_id' => $account->id,
+        ]);
+    }
+
+    /**
+     * Set the recharge bill to use a specific recharge rule.
+     *
+     * @param mixed $rechargeRule
+     * @return static
+     */
+    public function forRechargeRule($rechargeRule): static
+    {
+        return $this->state(fn(array $attributes) => [
+            'recharge_rule_id' => $rechargeRule->id,
+        ]);
     }
 }

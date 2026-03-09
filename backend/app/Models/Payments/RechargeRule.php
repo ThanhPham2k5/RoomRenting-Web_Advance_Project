@@ -11,6 +11,11 @@ class RechargeRule extends Model
     /** @use HasFactory<\Database\Factories\RechargeRuleFactory> */
     use HasFactory, SoftDeletes;
 
+    protected static function newFactory()
+    {
+        return \Database\Factories\RechargeRuleFactory::new();
+    }
+
     public function rechargeBills(){
         return $this->hasMany(RechargeBill::class);
     }

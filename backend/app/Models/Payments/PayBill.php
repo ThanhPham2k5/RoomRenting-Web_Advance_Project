@@ -12,6 +12,11 @@ class PayBill extends Model
     /** @use HasFactory<\Database\Factories\PayBillFactory> */
     use HasFactory;
 
+    protected static function newFactory()
+    {
+        return \Database\Factories\PayBillFactory::new();
+    }
+
     public function payRule(){
         return $this->belongsTo(PayRule::class);
     }

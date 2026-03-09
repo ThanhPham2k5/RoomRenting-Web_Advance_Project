@@ -18,4 +18,9 @@ class Notification extends Model
     public function notifiable(){ 
         return $this->morphTo();
     }
+
+    protected static function newFactory()
+    {
+        return \Database\Factories\NotificationFactory::new();
+    }
 }

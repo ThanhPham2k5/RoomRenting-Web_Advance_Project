@@ -11,6 +11,11 @@ class RechargeBill extends Model
     /** @use HasFactory<\Database\Factories\RechargeBillFactory> */
     use HasFactory;
 
+    protected static function newFactory()
+    {
+        return \Database\Factories\RechargeBillFactory::new();
+    }
+
     public function rechargeRule(){
         return $this->belongsTo(RechargeRule::class);
     }

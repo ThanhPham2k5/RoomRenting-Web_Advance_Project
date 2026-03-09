@@ -22,7 +22,14 @@ class DatabaseSeeder extends Seeder
             PostSeeder::class,
             PostImageSeeder::class,
             CommentSeeder::class,
-            FavoriteSeeder::class
+            FavoriteSeeder::class,
+
+            FormSeeder::class,
+            NotificationSeeder::class,
+            PayBillSeeder::class,
+            PayRuleSeeder::class,
+            RechargeBillSeeder::class,
+            RechargeRuleSeeder::class,
         ]);
     }
 }

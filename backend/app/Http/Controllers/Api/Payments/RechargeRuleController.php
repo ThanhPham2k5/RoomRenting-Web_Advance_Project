@@ -1,20 +1,20 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\Payments;
 
-use App\Models\PayRule;
+use App\Models\Payments\RechargeRule;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StorePayRuleRequest;
-use App\Http\Requests\UpdatePayRuleRequest;
+use App\Http\Requests\StoreRechargeRuleRequest;
+use App\Http\Requests\UpdateRechargeRuleRequest;
 
-class PayRuleController extends Controller
+class RechargeRuleController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        return RechargeRule::all();
     }
 
     /**
@@ -28,7 +28,7 @@ class PayRuleController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorePayRuleRequest $request)
+    public function store(StoreRechargeRuleRequest $request)
     {
         //
     }
@@ -36,7 +36,7 @@ class PayRuleController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(PayRule $payRule)
+    public function show(RechargeRule $rechargeRule)
     {
         //
     }
@@ -44,7 +44,7 @@ class PayRuleController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(PayRule $payRule)
+    public function edit(RechargeRule $rechargeRule)
     {
         //
     }
@@ -52,7 +52,7 @@ class PayRuleController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatePayRuleRequest $request, PayRule $payRule)
+    public function update(UpdateRechargeRuleRequest $request, RechargeRule $rechargeRule)
     {
         //
     }
@@ -60,7 +60,7 @@ class PayRuleController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(PayRule $payRule)
+    public function destroy(RechargeRule $rechargeRule)
     {
         //
     }

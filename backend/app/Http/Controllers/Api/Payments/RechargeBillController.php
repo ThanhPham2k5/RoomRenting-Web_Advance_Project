@@ -1,20 +1,20 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\Payments;
 
-use App\Models\Form;
+use App\Models\Payments\RechargeBill;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreFormRequest;
-use App\Http\Requests\UpdateFormRequest;
+use App\Http\Requests\StoreRechargeBillRequest;
+use App\Http\Requests\UpdateRechargeBillRequest;
 
-class FormController extends Controller
+class RechargeBillController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        return RechargeBill::all();
     }
 
     /**
@@ -28,7 +28,7 @@ class FormController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreFormRequest $request)
+    public function store(StoreRechargeBillRequest $request)
     {
         //
     }
@@ -36,7 +36,7 @@ class FormController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Form $form)
+    public function show(RechargeBill $rechargeBill)
     {
         //
     }
@@ -44,7 +44,7 @@ class FormController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Form $form)
+    public function edit(RechargeBill $rechargeBill)
     {
         //
     }
@@ -52,7 +52,7 @@ class FormController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateFormRequest $request, Form $form)
+    public function update(UpdateRechargeBillRequest $request, RechargeBill $rechargeBill)
     {
         //
     }
@@ -60,7 +60,7 @@ class FormController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Form $form)
+    public function destroy(RechargeBill $rechargeBill)
     {
         //
     }

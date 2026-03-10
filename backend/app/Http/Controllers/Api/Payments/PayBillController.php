@@ -1,20 +1,20 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\Payments;
 
-use App\Models\RechargeBill;
+use App\Models\Payments\PayBill;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreRechargeBillRequest;
-use App\Http\Requests\UpdateRechargeBillRequest;
+use App\Http\Requests\StorePayBillRequest;
+use App\Http\Requests\UpdatePayBillRequest;
 
-class RechargeBillController extends Controller
+class PayBillController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        return PayBill::all();
     }
 
     /**
@@ -28,7 +28,7 @@ class RechargeBillController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreRechargeBillRequest $request)
+    public function store(StorePayBillRequest $request)
     {
         //
     }
@@ -36,7 +36,7 @@ class RechargeBillController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(RechargeBill $rechargeBill)
+    public function show(PayBill $payBill)
     {
         //
     }
@@ -44,7 +44,7 @@ class RechargeBillController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(RechargeBill $rechargeBill)
+    public function edit(PayBill $payBill)
     {
         //
     }
@@ -52,7 +52,7 @@ class RechargeBillController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateRechargeBillRequest $request, RechargeBill $rechargeBill)
+    public function update(UpdatePayBillRequest $request, PayBill $payBill)
     {
         //
     }
@@ -60,7 +60,7 @@ class RechargeBillController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(RechargeBill $rechargeBill)
+    public function destroy(PayBill $payBill)
     {
         //
     }

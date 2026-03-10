@@ -1,20 +1,20 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\Posts;
 
-use App\Models\Notification;
+use App\Models\Posts\Post;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreNotificationRequest;
-use App\Http\Requests\UpdateNotificationRequest;
+use App\Http\Requests\StorePostRequest;
+use App\Http\Requests\UpdatePostRequest;
 
-class NotificationController extends Controller
+class PostController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        return Post::all();
     }
 
     /**
@@ -28,7 +28,7 @@ class NotificationController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreNotificationRequest $request)
+    public function store(StorePostRequest $request)
     {
         //
     }
@@ -36,7 +36,7 @@ class NotificationController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Notification $notification)
+    public function show(Post $post)
     {
         //
     }
@@ -44,7 +44,7 @@ class NotificationController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Notification $notification)
+    public function edit(Post $post)
     {
         //
     }
@@ -52,7 +52,7 @@ class NotificationController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateNotificationRequest $request, Notification $notification)
+    public function update(UpdatePostRequest $request, Post $post)
     {
         //
     }
@@ -60,7 +60,7 @@ class NotificationController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Notification $notification)
+    public function destroy(Post $post)
     {
         //
     }

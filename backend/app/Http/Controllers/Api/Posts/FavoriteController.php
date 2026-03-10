@@ -1,20 +1,20 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\Posts;
 
-use App\Models\PersonalInfo;
+use App\Models\Posts\Favorite;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StorePersonalInfoRequest;
-use App\Http\Requests\UpdatePersonalInfoRequest;
+use App\Http\Requests\StoreFavoriteRequest;
+use App\Http\Requests\UpdateFavoriteRequest;
 
-class PersonalInfoController extends Controller
+class FavoriteController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        return Favorite::all();
     }
 
     /**
@@ -28,7 +28,7 @@ class PersonalInfoController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorePersonalInfoRequest $request)
+    public function store(StoreFavoriteRequest $request)
     {
         //
     }
@@ -36,7 +36,7 @@ class PersonalInfoController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(PersonalInfo $personalInfo)
+    public function show(Favorite $favorite)
     {
         //
     }
@@ -44,7 +44,7 @@ class PersonalInfoController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(PersonalInfo $personalInfo)
+    public function edit(Favorite $favorite)
     {
         //
     }
@@ -52,7 +52,7 @@ class PersonalInfoController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatePersonalInfoRequest $request, PersonalInfo $personalInfo)
+    public function update(UpdateFavoriteRequest $request, Favorite $favorite)
     {
         //
     }
@@ -60,7 +60,7 @@ class PersonalInfoController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(PersonalInfo $personalInfo)
+    public function destroy(Favorite $favorite)
     {
         //
     }

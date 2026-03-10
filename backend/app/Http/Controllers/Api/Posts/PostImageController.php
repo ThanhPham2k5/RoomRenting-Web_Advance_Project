@@ -1,20 +1,20 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\Posts;
 
-use App\Models\Employee;
+use App\Models\Posts\PostImage;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreEmployeeRequest;
-use App\Http\Requests\UpdateEmployeeRequest;
+use App\Http\Requests\StorePostImageRequest;
+use App\Http\Requests\UpdatePostImageRequest;
 
-class EmployeeController extends Controller
+class PostImageController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        return PostImage::all();
     }
 
     /**
@@ -28,7 +28,7 @@ class EmployeeController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreEmployeeRequest $request)
+    public function store(StorePostImageRequest $request)
     {
         //
     }
@@ -36,7 +36,7 @@ class EmployeeController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Employee $employee)
+    public function show(PostImage $postImage)
     {
         //
     }
@@ -44,7 +44,7 @@ class EmployeeController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Employee $employee)
+    public function edit(PostImage $postImage)
     {
         //
     }
@@ -52,7 +52,7 @@ class EmployeeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateEmployeeRequest $request, Employee $employee)
+    public function update(UpdatePostImageRequest $request, PostImage $postImage)
     {
         //
     }
@@ -60,7 +60,7 @@ class EmployeeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Employee $employee)
+    public function destroy(PostImage $postImage)
     {
         //
     }

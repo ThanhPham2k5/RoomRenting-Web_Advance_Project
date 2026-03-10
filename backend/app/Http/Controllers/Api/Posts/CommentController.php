@@ -1,20 +1,20 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\Posts;
 
-use App\Models\RechargeRule;
+use App\Models\Posts\Comment;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreRechargeRuleRequest;
-use App\Http\Requests\UpdateRechargeRuleRequest;
+use App\Http\Requests\StoreCommentRequest;
+use App\Http\Requests\UpdateCommentRequest;
 
-class RechargeRuleController extends Controller
+class CommentController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        return Comment::all();
     }
 
     /**
@@ -28,7 +28,7 @@ class RechargeRuleController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreRechargeRuleRequest $request)
+    public function store(StoreCommentRequest $request)
     {
         //
     }
@@ -36,7 +36,7 @@ class RechargeRuleController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(RechargeRule $rechargeRule)
+    public function show(Comment $comment)
     {
         //
     }
@@ -44,7 +44,7 @@ class RechargeRuleController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(RechargeRule $rechargeRule)
+    public function edit(Comment $comment)
     {
         //
     }
@@ -52,7 +52,7 @@ class RechargeRuleController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateRechargeRuleRequest $request, RechargeRule $rechargeRule)
+    public function update(UpdateCommentRequest $request, Comment $comment)
     {
         //
     }
@@ -60,7 +60,7 @@ class RechargeRuleController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(RechargeRule $rechargeRule)
+    public function destroy(Comment $comment)
     {
         //
     }

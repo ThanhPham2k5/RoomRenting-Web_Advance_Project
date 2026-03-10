@@ -1,20 +1,20 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\Notification;
 
-use App\Models\Account;
+use App\Models\Notification\Notification;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreAccountRequest;
-use App\Http\Requests\UpdateAccountRequest;
+use App\Http\Requests\StoreNotificationRequest;
+use App\Http\Requests\UpdateNotificationRequest;
 
-class AccountController extends Controller
+class NotificationController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        return Notification::all();
     }
 
     /**
@@ -28,7 +28,7 @@ class AccountController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreAccountRequest $request)
+    public function store(StoreNotificationRequest $request)
     {
         //
     }
@@ -36,7 +36,7 @@ class AccountController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Account $account)
+    public function show(Notification $notification)
     {
         //
     }
@@ -44,7 +44,7 @@ class AccountController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Account $account)
+    public function edit(Notification $notification)
     {
         //
     }
@@ -52,7 +52,7 @@ class AccountController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateAccountRequest $request, Account $account)
+    public function update(UpdateNotificationRequest $request, Notification $notification)
     {
         //
     }
@@ -60,7 +60,7 @@ class AccountController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Account $account)
+    public function destroy(Notification $notification)
     {
         //
     }

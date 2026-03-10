@@ -1,20 +1,20 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\Payments;
 
-use App\Models\PayBill;
+use App\Models\Payments\PayRule;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StorePayBillRequest;
-use App\Http\Requests\UpdatePayBillRequest;
+use App\Http\Requests\StorePayRuleRequest;
+use App\Http\Requests\UpdatePayRuleRequest;
 
-class PayBillController extends Controller
+class PayRuleController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        return PayRule::all();
     }
 
     /**
@@ -28,7 +28,7 @@ class PayBillController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorePayBillRequest $request)
+    public function store(StorePayRuleRequest $request)
     {
         //
     }
@@ -36,7 +36,7 @@ class PayBillController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(PayBill $payBill)
+    public function show(PayRule $payRule)
     {
         //
     }
@@ -44,7 +44,7 @@ class PayBillController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(PayBill $payBill)
+    public function edit(PayRule $payRule)
     {
         //
     }
@@ -52,7 +52,7 @@ class PayBillController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatePayBillRequest $request, PayBill $payBill)
+    public function update(UpdatePayRuleRequest $request, PayRule $payRule)
     {
         //
     }
@@ -60,7 +60,7 @@ class PayBillController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(PayBill $payBill)
+    public function destroy(PayRule $payRule)
     {
         //
     }

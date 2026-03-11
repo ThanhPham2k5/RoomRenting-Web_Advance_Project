@@ -31,8 +31,8 @@ class RechargeBillFactory extends Factory
             'total_money' => $totalMoney,
             'vat' => $vat,
             'status' => $this->faker->randomElement(['completed', 'pending', 'failed']),
-            'account_id' => Account::factory(),
-            'recharge_rule_id' => RechargeRule::factory(),
+            'account_id' => Account::inRandomOrder()->first()->id,
+            'recharge_rule_id' => RechargeRule::inRandomOrder()->first()->id,
         ];
     }
 

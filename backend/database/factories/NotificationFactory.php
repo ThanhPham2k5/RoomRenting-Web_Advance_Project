@@ -28,7 +28,7 @@ class NotificationFactory extends Factory
             'content' => $this->faker->paragraph(),
             'status' => $this->faker->randomElement(['read', 'unread']),
             'notification_type' => $this->faker->randomElement(['news', 'transaction']),
-            'account_id' => Account::factory(),
+            'account_id' => Account::inRandomOrder()->first()->id,
             'notifiable_id' => $post->id,
             'notifiable_type' => Post::class,
         ];

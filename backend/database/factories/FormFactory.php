@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Helpers\VietnamAddress;
 use App\Models\Form;
 use App\Models\Account_User\Account;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -20,15 +21,17 @@ class FormFactory extends Factory
      */
     public function definition(): array
     {
+        $province = VietnamAddress::randomProvince();
+        $ward = VietnamAddress::randomWard($province['province_code']);
         return [
             'price_min' => $this->faker->numberBetween(1000000, 5000000),
             'price_max' => $this->faker->numberBetween(5000001, 15000000),
             'area' => $this->faker->randomFloat(2, 20, 200),
-            'ward' => $this->faker->word(),
-            'province' => $this->faker->city(),
+            'ward' => $ward['name'],
+            'province' => $province['name'],
             'room_type' => $this->faker->randomElement(['room', 'apartment', 'dorm']),
             'max_occupants' => $this->faker->numberBetween(1, 10),
-            'account_id' => Account::factory(),
+            // 'account_id' => Account::inRandomOrder()->first()->id,
         ];
     }
 

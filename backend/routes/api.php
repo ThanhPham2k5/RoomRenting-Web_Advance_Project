@@ -14,22 +14,22 @@ use App\Http\Controllers\Api\Payments\PayBillController;
 use App\Http\Controllers\Api\Payments\PayRuleController;
 use App\Http\Controllers\Api\Payments\RechargeBillController;
 use App\Http\Controllers\Api\Payments\RechargeRuleController;
+use App\Http\Controllers\UserController;
 
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
 /* API routes for Account_User 
     - AccountController
     - EmployeeController
     - PersonalInfoController
 */
-Route::group(['prefix' => 'Account_User', 'namespace' => 'App\Http\Controllers\Api\Account_User'], function () {
-    Route::apiResource('Account', AccountController::class);
-    Route::apiResource('Employee', EmployeeController::class);
-    Route::apiResource('PersonalInfo', PersonalInfoController::class);
-});
+
+Route::apiResource('accounts', AccountController::class);
+Route::apiResources('users', UserController::class);
+Route::apiResource('employees', EmployeeController::class);
+Route::apiResource('personalInfos', PersonalInfoController::class);
 
 /* API routes for Posts 
     - CommentController
@@ -37,19 +37,15 @@ Route::group(['prefix' => 'Account_User', 'namespace' => 'App\Http\Controllers\A
     - PostImageController
     - FavoriteController
 */
-Route::group(['prefix' => 'Posts', 'namespace' => 'App\Http\Controllers\Api\Posts'], function () {
-    Route::apiResource('Comment', CommentController::class);
-    Route::apiResource('Post', PostController::class);
-    Route::apiResource('PostImage', PostImageController::class);
-    Route::apiResource('Favorite', FavoriteController::class);
-});
+Route::apiResource('comments', CommentController::class);
+Route::apiResource('posts', PostController::class);
+Route::apiResource('postImages', PostImageController::class);
+Route::apiResource('favorites', FavoriteController::class);
 
 /* API routes for Form 
     - FormController
 */
-Route::group(['prefix' => 'Form', 'namespace' => 'App\Http\Controllers\Api'], function () {
-    Route::apiResource('Form', FormController::class);
-});
+Route::apiResource('forms', FormController::class);
 
 /* API routes for Payments 
     - PayBillController
@@ -57,9 +53,7 @@ Route::group(['prefix' => 'Form', 'namespace' => 'App\Http\Controllers\Api'], fu
     - RechargeBillController
     - RechargeRuleController
 */
-Route::group(['prefix' => 'Payments', 'namespace' => 'App\Http\Controllers\Api\Payments'], function () {
-    Route::apiResource('PayBill', PayBillController::class);
-    Route::apiResource('PayRule', PayRuleController::class);
-    Route::apiResource('RechargeBill', RechargeBillController::class);
-    Route::apiResource('RechargeRule', RechargeRuleController::class);
-});
+Route::apiResource('payBills', PayBillController::class);
+Route::apiResource('payRules', PayRuleController::class);
+Route::apiResource('rechargeBills', RechargeBillController::class);
+Route::apiResource('rechargeRules', RechargeRuleController::class);

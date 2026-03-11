@@ -6,6 +6,8 @@ use App\Models\Posts\Comment;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCommentRequest;
 use App\Http\Requests\UpdateCommentRequest;
+use App\Http\Resources\Posts\CommentCollection;
+use App\Http\Resources\Posts\CommentResource;
 
 class CommentController extends Controller
 {
@@ -14,7 +16,7 @@ class CommentController extends Controller
      */
     public function index()
     {
-        return Comment::all();
+        return new CommentCollection(Comment::all());
     }
 
     /**
@@ -38,7 +40,7 @@ class CommentController extends Controller
      */
     public function show(Comment $comment)
     {
-        //
+        return new CommentResource($comment);
     }
 
     /**

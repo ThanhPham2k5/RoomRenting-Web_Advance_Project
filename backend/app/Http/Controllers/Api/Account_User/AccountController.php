@@ -6,6 +6,8 @@ use App\Models\Account_User\Account;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreAccountRequest;
 use App\Http\Requests\UpdateAccountRequest;
+use App\Http\Resources\Account_User\AccountCollection;
+use App\Http\Resources\Account_User\AccountResource;
 
 class AccountController extends Controller
 {
@@ -14,7 +16,7 @@ class AccountController extends Controller
      */
     public function index()
     {
-        return Account::all();
+        return new AccountCollection(Account::all());
     }
 
     /**
@@ -38,7 +40,7 @@ class AccountController extends Controller
      */
     public function show(Account $account)
     {
-        //
+        return new AccountResource($account);
     }
 
     /**

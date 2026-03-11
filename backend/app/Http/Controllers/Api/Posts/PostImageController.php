@@ -6,6 +6,8 @@ use App\Models\Posts\PostImage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePostImageRequest;
 use App\Http\Requests\UpdatePostImageRequest;
+use App\Http\Resources\Posts\PostImageCollection;
+use App\Http\Resources\Posts\PostImageResource;
 
 class PostImageController extends Controller
 {
@@ -14,7 +16,7 @@ class PostImageController extends Controller
      */
     public function index()
     {
-        return PostImage::all();
+        return new PostImageCollection(PostImage::all());
     }
 
     /**
@@ -38,7 +40,7 @@ class PostImageController extends Controller
      */
     public function show(PostImage $postImage)
     {
-        //
+        return new PostImageResource($postImage);
     }
 
     /**

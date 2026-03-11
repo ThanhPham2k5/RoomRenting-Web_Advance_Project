@@ -6,6 +6,8 @@ use App\Models\Payments\PayBill;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePayBillRequest;
 use App\Http\Requests\UpdatePayBillRequest;
+use App\Http\Resources\Payments\PayBillCollection;
+use App\Http\Resources\Payments\PayBillResource;
 
 class PayBillController extends Controller
 {
@@ -14,7 +16,7 @@ class PayBillController extends Controller
      */
     public function index()
     {
-        return PayBill::all();
+        return new PayBillCollection(PayBill::all());
     }
 
     /**
@@ -38,7 +40,7 @@ class PayBillController extends Controller
      */
     public function show(PayBill $payBill)
     {
-        //
+        return new PayBillResource($payBill);
     }
 
     /**

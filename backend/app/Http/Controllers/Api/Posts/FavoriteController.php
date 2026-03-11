@@ -6,6 +6,8 @@ use App\Models\Posts\Favorite;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreFavoriteRequest;
 use App\Http\Requests\UpdateFavoriteRequest;
+use App\Http\Resources\Posts\FavoriteCollection;
+use App\Http\Resources\Posts\FavoriteResource;
 
 class FavoriteController extends Controller
 {
@@ -14,7 +16,7 @@ class FavoriteController extends Controller
      */
     public function index()
     {
-        return Favorite::all();
+        return new FavoriteCollection(Favorite::all());
     }
 
     /**
@@ -38,7 +40,7 @@ class FavoriteController extends Controller
      */
     public function show(Favorite $favorite)
     {
-        //
+        return new FavoriteResource($favorite);
     }
 
     /**

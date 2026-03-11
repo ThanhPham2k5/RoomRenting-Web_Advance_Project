@@ -6,6 +6,8 @@ use App\Models\Form;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreFormRequest;
 use App\Http\Requests\UpdateFormRequest;
+use App\Http\Resources\FormCollection;
+use App\Http\Resources\FormResource;
 
 class FormController extends Controller
 {
@@ -14,7 +16,7 @@ class FormController extends Controller
      */
     public function index()
     {
-        return Form::all();
+        return new FormCollection(Form::all());
     }
 
     /**
@@ -38,7 +40,7 @@ class FormController extends Controller
      */
     public function show(Form $form)
     {
-        //
+        return new FormResource($form);
     }
 
     /**

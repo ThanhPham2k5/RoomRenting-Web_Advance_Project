@@ -6,6 +6,8 @@ use App\Models\Payments\RechargeBill;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreRechargeBillRequest;
 use App\Http\Requests\UpdateRechargeBillRequest;
+use App\Http\Resources\Payments\RechargeBillCollection;
+use App\Http\Resources\Payments\RechargeBillResource;
 
 class RechargeBillController extends Controller
 {
@@ -14,7 +16,7 @@ class RechargeBillController extends Controller
      */
     public function index()
     {
-        return RechargeBill::all();
+        return new RechargeBillCollection(RechargeBill::all());
     }
 
     /**
@@ -38,7 +40,7 @@ class RechargeBillController extends Controller
      */
     public function show(RechargeBill $rechargeBill)
     {
-        //
+        return new RechargeBillResource($rechargeBill);
     }
 
     /**

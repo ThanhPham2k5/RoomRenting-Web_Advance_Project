@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\Account_User;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Account_User\UserCollection;
+use App\Http\Resources\Account_User\UserResource;
 use App\Models\Account_User\User;
 use Illuminate\Http\Request;
 
@@ -13,7 +15,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        return User::all();
+        return new UserCollection(User::all());
     }
 
     /**
@@ -37,7 +39,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        //
+        return new UserResource($user);
     }
 
     /**

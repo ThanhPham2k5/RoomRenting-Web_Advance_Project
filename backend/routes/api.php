@@ -5,16 +5,17 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Account_User\AccountController;
 use App\Http\Controllers\Api\Account_User\EmployeeController;
 use App\Http\Controllers\Api\Account_User\PersonalInfoController;
+use App\Http\Controllers\Api\Account_User\UserController;
 use App\Http\Controllers\Api\Posts\CommentController;
 use App\Http\Controllers\Api\Posts\PostController;
 use App\Http\Controllers\Api\Posts\PostImageController;
 use App\Http\Controllers\Api\Posts\FavoriteController;
 use App\Http\Controllers\Api\FormController;
+use App\Http\Controllers\Api\Notification\NotificationController;
 use App\Http\Controllers\Api\Payments\PayBillController;
 use App\Http\Controllers\Api\Payments\PayRuleController;
 use App\Http\Controllers\Api\Payments\RechargeBillController;
 use App\Http\Controllers\Api\Payments\RechargeRuleController;
-use App\Http\Controllers\UserController;
 
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
@@ -27,7 +28,7 @@ use App\Http\Controllers\UserController;
 */
 
 Route::apiResource('accounts', AccountController::class);
-Route::apiResources('users', UserController::class);
+Route::apiResource('users', UserController::class);
 Route::apiResource('employees', EmployeeController::class);
 Route::apiResource('personalInfos', PersonalInfoController::class);
 
@@ -46,6 +47,11 @@ Route::apiResource('favorites', FavoriteController::class);
     - FormController
 */
 Route::apiResource('forms', FormController::class);
+
+/* API routes for Notification 
+    - NotificationController
+*/
+Route::apiResource('notifications', NotificationController::class);
 
 /* API routes for Payments 
     - PayBillController

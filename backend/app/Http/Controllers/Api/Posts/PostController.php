@@ -6,6 +6,8 @@ use App\Models\Posts\Post;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
+use App\Http\Resources\Posts\PostCollection;
+use App\Http\Resources\Posts\PostResource;
 
 class PostController extends Controller
 {
@@ -14,7 +16,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        return Post::all();
+        return new PostCollection(Post::all());
     }
 
     /**
@@ -38,7 +40,7 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        //
+        return new PostResource($post);
     }
 
     /**

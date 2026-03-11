@@ -6,6 +6,8 @@ use App\Models\Payments\RechargeRule;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreRechargeRuleRequest;
 use App\Http\Requests\UpdateRechargeRuleRequest;
+use App\Http\Resources\Payments\RechargeRuleCollection;
+use App\Http\Resources\Payments\RechargeRuleResource;
 
 class RechargeRuleController extends Controller
 {
@@ -14,7 +16,7 @@ class RechargeRuleController extends Controller
      */
     public function index()
     {
-        return RechargeRule::all();
+        return new RechargeRuleCollection(RechargeRule::all());
     }
 
     /**
@@ -38,7 +40,7 @@ class RechargeRuleController extends Controller
      */
     public function show(RechargeRule $rechargeRule)
     {
-        //
+        return new RechargeRuleResource($rechargeRule);
     }
 
     /**

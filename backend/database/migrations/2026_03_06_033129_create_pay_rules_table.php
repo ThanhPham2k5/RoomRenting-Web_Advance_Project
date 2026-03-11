@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
 
             $table->integer('points');
-            // $table->enum('status', ['active', 'deleted']);
 
             $table->softDeletes();
             $table->timestamps();

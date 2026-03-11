@@ -6,6 +6,8 @@ use App\Models\Account_User\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreEmployeeRequest;
 use App\Http\Requests\UpdateEmployeeRequest;
+use App\Http\Resources\Account_User\EmployeeCollection;
+use App\Http\Resources\Account_User\EmployeeResource;
 
 class EmployeeController extends Controller
 {
@@ -14,7 +16,7 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        return Employee::all();
+        return new EmployeeCollection(Employee::all()); 
     }
 
     /**
@@ -38,7 +40,7 @@ class EmployeeController extends Controller
      */
     public function show(Employee $employee)
     {
-        //
+        return new EmployeeResource($employee);
     }
 
     /**

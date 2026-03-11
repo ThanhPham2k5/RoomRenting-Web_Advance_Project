@@ -6,6 +6,8 @@ use App\Models\Account_User\PersonalInfo;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePersonalInfoRequest;
 use App\Http\Requests\UpdatePersonalInfoRequest;
+use App\Http\Resources\Account_User\PersonalInfoCollection;
+use App\Http\Resources\Account_User\PersonalInfoResource;
 
 class PersonalInfoController extends Controller
 {
@@ -14,7 +16,7 @@ class PersonalInfoController extends Controller
      */
     public function index()
     {
-        return PersonalInfo::all();
+        return new PersonalInfoCollection(PersonalInfo::all());
     }
 
     /**
@@ -38,7 +40,7 @@ class PersonalInfoController extends Controller
      */
     public function show(PersonalInfo $personalInfo)
     {
-        //
+        return new PersonalInfoResource($personalInfo);
     }
 
     /**

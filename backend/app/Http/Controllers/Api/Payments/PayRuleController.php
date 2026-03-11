@@ -6,6 +6,8 @@ use App\Models\Payments\PayRule;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePayRuleRequest;
 use App\Http\Requests\UpdatePayRuleRequest;
+use App\Http\Resources\Payments\PayRuleCollection;
+use App\Http\Resources\Payments\PayRuleResource;
 
 class PayRuleController extends Controller
 {
@@ -14,7 +16,7 @@ class PayRuleController extends Controller
      */
     public function index()
     {
-        return PayRule::all();
+        return new PayRuleCollection(PayRule::all()); 
     }
 
     /**
@@ -38,7 +40,7 @@ class PayRuleController extends Controller
      */
     public function show(PayRule $payRule)
     {
-        //
+        return new PayRuleResource($payRule);
     }
 
     /**

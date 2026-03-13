@@ -6,6 +6,8 @@ use App\Models\Notification\Notification;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreNotificationRequest;
 use App\Http\Requests\UpdateNotificationRequest;
+use App\Http\Resources\NotificationCollection;
+use App\Http\Resources\NotificationResource;
 
 class NotificationController extends Controller
 {
@@ -14,7 +16,7 @@ class NotificationController extends Controller
      */
     public function index()
     {
-        return Notification::all();
+        return new NotificationCollection(Notification::all());  
     }
 
     /**
@@ -38,7 +40,7 @@ class NotificationController extends Controller
      */
     public function show(Notification $notification)
     {
-        //
+        return new NotificationResource($notification);
     }
 
     /**

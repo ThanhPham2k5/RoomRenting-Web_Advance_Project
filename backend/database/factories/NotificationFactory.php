@@ -21,16 +21,16 @@ class NotificationFactory extends Factory
      */
     public function definition(): array
     {
-        $post = Post::factory()->create();
-
         return [
             'title' => $this->faker->sentence(),
             'content' => $this->faker->paragraph(),
             'status' => $this->faker->randomElement(['read', 'unread']),
             'notification_type' => $this->faker->randomElement(['news', 'transaction']),
             'account_id' => Account::inRandomOrder()->first()->id,
-            'notifiable_id' => $post->id,
-            'notifiable_type' => Post::class,
+
+            // leave polymorphic empty by default
+            'notifiable_id' => null,
+            'notifiable_type' => null,
         ];
     }
 

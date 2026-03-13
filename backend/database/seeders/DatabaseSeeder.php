@@ -30,6 +30,8 @@ class DatabaseSeeder extends Seeder
             PayBillSeeder::class,
             RechargeRuleSeeder::class,
             RechargeBillSeeder::class,
+
+            NotificationSeeder::class,
         ]);
     }
 }

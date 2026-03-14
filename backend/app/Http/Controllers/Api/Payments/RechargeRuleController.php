@@ -2,21 +2,30 @@
 
 namespace App\Http\Controllers\Api\Payments;
 
+use App\Filter\RechargeRuleFilter;
 use App\Models\Payments\RechargeRule;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreRechargeRuleRequest;
 use App\Http\Requests\UpdateRechargeRuleRequest;
 use App\Http\Resources\Payments\RechargeRuleCollection;
 use App\Http\Resources\Payments\RechargeRuleResource;
+use Illuminate\Http\Request;
 
 class RechargeRuleController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return new RechargeRuleCollection(RechargeRule::all());
+        $filter = new RechargeRuleFilter();
+        $queryItems = $filter->transform($request);
+
+        if(count($queryItems) == 0){
+            return new RechargeRuleCollection(RechargeRule::paginate());
+        }
+        $RechargeRules = RechargeRule::where($queryItems)->paginate();
+        return new RechargeRuleCollection($RechargeRules->appends($request->query()));
     }
 
     /**

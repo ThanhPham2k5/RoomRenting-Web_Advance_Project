@@ -2,21 +2,30 @@
 
 namespace App\Http\Controllers\Api\Account_User;
 
+use App\Filter\EmployeeFilter;
 use App\Models\Account_User\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreEmployeeRequest;
 use App\Http\Requests\UpdateEmployeeRequest;
 use App\Http\Resources\Account_User\EmployeeCollection;
 use App\Http\Resources\Account_User\EmployeeResource;
+use Illuminate\Http\Request;
 
 class EmployeeController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return new EmployeeCollection(Employee::all()); 
+        $filter = new EmployeeFilter();
+        $queryItems = $filter->transform($request);
+
+        if(count($queryItems) == 0){
+            return new EmployeeCollection(Employee::paginate());
+        }
+        $Employees = Employee::where($queryItems)->paginate();
+        return new EmployeeCollection($Employees->appends($request->query()));
     }
 
     /**

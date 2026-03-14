@@ -2,21 +2,30 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Filter\FormFilter;
 use App\Models\Form;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreFormRequest;
 use App\Http\Requests\UpdateFormRequest;
 use App\Http\Resources\FormCollection;
 use App\Http\Resources\FormResource;
+use Illuminate\Http\Request;
 
 class FormController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return new FormCollection(Form::all());
+        $filter = new FormFilter();
+        $queryItems = $filter->transform($request);
+
+        if(count($queryItems) == 0){
+            return new FormCollection(Form::paginate());
+        }
+        $Forms = Form::where($queryItems)->paginate();
+        return new FormCollection($Forms->appends($request->query()));
     }
 
     /**

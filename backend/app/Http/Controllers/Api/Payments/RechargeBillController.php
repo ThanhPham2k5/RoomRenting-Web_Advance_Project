@@ -2,21 +2,30 @@
 
 namespace App\Http\Controllers\Api\Payments;
 
+use App\Filter\RechargeBillFilter;
 use App\Models\Payments\RechargeBill;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreRechargeBillRequest;
 use App\Http\Requests\UpdateRechargeBillRequest;
 use App\Http\Resources\Payments\RechargeBillCollection;
 use App\Http\Resources\Payments\RechargeBillResource;
+use Illuminate\Http\Request;
 
 class RechargeBillController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return new RechargeBillCollection(RechargeBill::all());
+        $filter = new RechargeBillFilter();
+        $queryItems = $filter->transform($request);
+
+        if(count($queryItems) == 0){
+            return new RechargeBillCollection(RechargeBill::paginate());
+        }
+        $RechargeBills = RechargeBill::where($queryItems)->paginate();
+        return new RechargeBillCollection($RechargeBills->appends($request->query()));
     }
 
     /**

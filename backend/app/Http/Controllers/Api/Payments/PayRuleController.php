@@ -2,21 +2,30 @@
 
 namespace App\Http\Controllers\Api\Payments;
 
+use App\Filter\PayRuleFilter;
 use App\Models\Payments\PayRule;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePayRuleRequest;
 use App\Http\Requests\UpdatePayRuleRequest;
 use App\Http\Resources\Payments\PayRuleCollection;
 use App\Http\Resources\Payments\PayRuleResource;
+use Illuminate\Http\Request;
 
 class PayRuleController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return new PayRuleCollection(PayRule::all()); 
+        $filter = new PayRuleFilter();
+        $queryItems = $filter->transform($request);
+
+        if(count($queryItems) == 0){
+            return new PayRuleCollection(PayRule::paginate());
+        }
+        $PayRules = PayRule::where($queryItems)->paginate();
+        return new PayRuleCollection($PayRules->appends($request->query())); 
     }
 
     /**

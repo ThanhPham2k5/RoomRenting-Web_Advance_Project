@@ -2,21 +2,30 @@
 
 namespace App\Http\Controllers\Api\Payments;
 
+use App\Filter\PayBillFilter;
 use App\Models\Payments\PayBill;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePayBillRequest;
 use App\Http\Requests\UpdatePayBillRequest;
 use App\Http\Resources\Payments\PayBillCollection;
 use App\Http\Resources\Payments\PayBillResource;
+use Illuminate\Http\Request;
 
 class PayBillController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return new PayBillCollection(PayBill::all());
+        $filter = new PayBillFilter();
+        $queryItems = $filter->transform($request);
+
+        if(count($queryItems) == 0){
+            return new PayBillCollection(PayBill::paginate());
+        }
+        $PayBills = PayBill::where($queryItems)->paginate();
+        return new PayBillCollection($PayBills->appends($request->query()));
     }
 
     /**

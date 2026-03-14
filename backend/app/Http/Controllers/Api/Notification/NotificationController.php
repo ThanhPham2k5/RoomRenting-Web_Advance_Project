@@ -2,21 +2,30 @@
 
 namespace App\Http\Controllers\Api\Notification;
 
+use App\Filter\NotificationFilter;
 use App\Models\Notification\Notification;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreNotificationRequest;
 use App\Http\Requests\UpdateNotificationRequest;
 use App\Http\Resources\NotificationCollection;
 use App\Http\Resources\NotificationResource;
+use Illuminate\Http\Request;
 
 class NotificationController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return new NotificationCollection(Notification::all());  
+        $filter = new NotificationFilter();
+        $queryItems = $filter->transform($request);
+
+        if(count($queryItems) == 0){
+            return new NotificationCollection(Notification::paginate());
+        }
+        $Notifications = Notification::where($queryItems)->paginate();
+        return new NotificationCollection($Notifications->appends($request->query()));  
     }
 
     /**

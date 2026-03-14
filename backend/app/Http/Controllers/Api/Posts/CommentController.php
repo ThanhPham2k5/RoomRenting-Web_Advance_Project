@@ -2,21 +2,30 @@
 
 namespace App\Http\Controllers\Api\Posts;
 
+use App\Filter\CommentFilter;
 use App\Models\Posts\Comment;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCommentRequest;
 use App\Http\Requests\UpdateCommentRequest;
 use App\Http\Resources\Posts\CommentCollection;
 use App\Http\Resources\Posts\CommentResource;
+use Illuminate\Http\Request;
 
 class CommentController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return new CommentCollection(Comment::all());
+        $filter = new CommentFilter();
+        $queryItems = $filter->transform($request);
+
+        if(count($queryItems) == 0){
+            return new CommentCollection(Comment::paginate());
+        }
+        $Comments = Comment::where($queryItems)->paginate();
+        return new CommentCollection($Comments->appends($request->query()));
     }
 
     /**

@@ -2,21 +2,30 @@
 
 namespace App\Http\Controllers\Api\Posts;
 
+use App\Filter\PostFilter;
 use App\Models\Posts\Post;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Http\Resources\Posts\PostCollection;
 use App\Http\Resources\Posts\PostResource;
+use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return new PostCollection(Post::all());
+        $filter = new PostFilter();
+        $queryItems = $filter->transform($request);
+
+        if(count($queryItems) == 0){
+            return new PostCollection(Post::paginate());
+        }
+        $Posts = Post::where($queryItems)->paginate();
+        return new PostCollection($Posts->appends($request->query()));
     }
 
     /**

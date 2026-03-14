@@ -2,21 +2,30 @@
 
 namespace App\Http\Controllers\Api\Account_User;
 
+use App\Filter\AccountFilter;
 use App\Models\Account_User\Account;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreAccountRequest;
 use App\Http\Requests\UpdateAccountRequest;
 use App\Http\Resources\Account_User\AccountCollection;
 use App\Http\Resources\Account_User\AccountResource;
+use Illuminate\Http\Request;
 
 class AccountController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return new AccountCollection(Account::all());
+        $filter = new AccountFilter();
+        $queryItems = $filter->transform($request);
+
+        if(count($queryItems) == 0){
+            return new AccountCollection(Account::paginate());
+        }
+        $accounts = Account::where($queryItems)->paginate();
+        return new AccountCollection($accounts->appends($request->query()));
     }
 
     /**

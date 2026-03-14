@@ -1,0 +1,83 @@
+.table-component .main-content{
+    width: 1140px;
+    margin-right: auto;
+    margin-left: auto;
+    padding: 30px;
+    border-radius: 12px;
+    border: #E0E3EB solid 1px;
+}
+.table-component .top-btn {
+    background-color: transparent;
+    border: #E0E3EB solid 1px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    width: 170px;
+    height: 48px;
+    font-size: 1.6rem;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+}
+.table-component .top .title {
+    font-size: 2.4rem;
+    font-weight: 600;
+    line-height: 3.2rem;
+}
+.table-component .top{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.table-component .cta{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+.table-component .table-btn{
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    width: 40px; 
+    height: 40px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #1F2937;
+}
+.table-component .admin-table{
+    width: 100%;
+    margin-top: 20px;
+}
+.admin-table thead tr {
+    background-color: #F5F7FA;
+}
+.admin-table thead th {
+    height: 64px;
+    text-align: center;
+    vertical-align: middle;
+}
+.admin-table tbody td {
+    height: 64px;
+    text-align: center;
+    vertical-align: middle;
+}
+.admin-table th, .admin-table td {
+    border-bottom: 1px solid #D8D8D8;
+}
+.badge {
+    border-radius: 10px;
+    color: white;
+    display: inline-flex; 
+    justify-content: center;
+    align-items: center;
+    width: 130px;
+    height: 35px;
+}
+.badge-success { background-color: #10B981; } 
+.badge-danger { background-color: #FD5454; }  
+.badge-warning { background-color: #FCBE2D; } 
+.badge-orange { background-color: #F97316; } 

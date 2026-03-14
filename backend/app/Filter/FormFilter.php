@@ -8,9 +8,9 @@ class FormFilter extends ApiFilter{
         'priceMax' => ['eq', 'lt', 'gt', 'lte', 'gte'],
         'priceMin' => ['eq', 'lt', 'gt', 'lte', 'gte'],
         'area' => ['eq', 'lt', 'gt', 'lte', 'gte'],
-        'ward' => ['eq'],
-        'province' => ['eq'],
-        'roomType' => ['eq', 'ne'],
+        'ward' => ['eq', 'like'],
+        'province' => ['eq', 'like'],
+        'roomType' => ['eq', 'ne', 'in'],
         'maxOccupants' => ['eq', 'lt', 'gt', 'lte', 'gte'],
     ];
     protected $columnMap = [

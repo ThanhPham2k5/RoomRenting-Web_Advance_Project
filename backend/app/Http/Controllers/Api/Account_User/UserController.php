@@ -17,13 +17,14 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $filter = new UserFilter();
-        $queryItems = $filter->transform($request);
 
-        if(count($queryItems) == 0){
-            return new UserCollection(User::paginate());
-        }
-        $Users = User::where($queryItems)->paginate();
-        return new UserCollection($Users->appends($request->query()));
+        $query = User::query();
+
+        $query = $filter->transform($request, $query);
+
+        return new UserCollection(
+            $query->paginate()->appends($request->query())
+        );
     }
 
     /**

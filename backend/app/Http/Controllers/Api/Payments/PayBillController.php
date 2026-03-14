@@ -19,13 +19,14 @@ class PayBillController extends Controller
     public function index(Request $request)
     {
         $filter = new PayBillFilter();
-        $queryItems = $filter->transform($request);
 
-        if(count($queryItems) == 0){
-            return new PayBillCollection(PayBill::paginate());
-        }
-        $PayBills = PayBill::where($queryItems)->paginate();
-        return new PayBillCollection($PayBills->appends($request->query()));
+        $query = PayBill::query();
+
+        $query = $filter->transform($request, $query);
+
+        return new PayBillCollection(
+            $query->paginate()->appends($request->query())
+        );
     }
 
     /**

@@ -19,13 +19,14 @@ class CommentController extends Controller
     public function index(Request $request)
     {
         $filter = new CommentFilter();
-        $queryItems = $filter->transform($request);
 
-        if(count($queryItems) == 0){
-            return new CommentCollection(Comment::paginate());
-        }
-        $Comments = Comment::where($queryItems)->paginate();
-        return new CommentCollection($Comments->appends($request->query()));
+        $query = Comment::query();
+
+        $query = $filter->transform($request, $query);
+
+        return new CommentCollection(
+            $query->paginate()->appends($request->query())
+        );
     }
 
     /**

@@ -19,13 +19,14 @@ class RechargeRuleController extends Controller
     public function index(Request $request)
     {
         $filter = new RechargeRuleFilter();
-        $queryItems = $filter->transform($request);
 
-        if(count($queryItems) == 0){
-            return new RechargeRuleCollection(RechargeRule::paginate());
-        }
-        $RechargeRules = RechargeRule::where($queryItems)->paginate();
-        return new RechargeRuleCollection($RechargeRules->appends($request->query()));
+        $query = RechargeRule::query();
+
+        $query = $filter->transform($request, $query);
+
+        return new RechargeRuleCollection(
+            $query->paginate()->appends($request->query())
+        );
     }
 
     /**

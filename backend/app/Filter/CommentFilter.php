@@ -5,7 +5,7 @@ namespace App\Filter;
 
 class CommentFilter extends ApiFilter{
     protected $safeParms = [
-        'content' => ['eq'],
+        'content' => ['eq', 'like'],
             
     ];
     protected $columnMap = [];

@@ -6,11 +6,11 @@ class PersonalInfoFilter extends ApiFilter{
     protected $safeParms = [
         'dateOfBirth' => ['eq', 'lt', 'gt', 'lte', 'gte'],
         'gender' => ['eq', 'ne'],
-        'houseNumber' => ['eq'],
-        'ward' => ['eq'],
-        'province' => ['eq'],
-        'phoneNumber' => ['eq'],
-        'name' => ['eq'],
+        'houseNumber' => ['eq', 'like'],
+        'ward' => ['eq', 'like'],
+        'province' => ['eq', 'like'],
+        'phoneNumber' => ['eq', 'like'],
+        'name' => ['eq', 'like'],
         'pid' => ['eq'],
     ];
     protected $columnMap = [

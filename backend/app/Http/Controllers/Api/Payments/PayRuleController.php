@@ -19,13 +19,14 @@ class PayRuleController extends Controller
     public function index(Request $request)
     {
         $filter = new PayRuleFilter();
-        $queryItems = $filter->transform($request);
 
-        if(count($queryItems) == 0){
-            return new PayRuleCollection(PayRule::paginate());
-        }
-        $PayRules = PayRule::where($queryItems)->paginate();
-        return new PayRuleCollection($PayRules->appends($request->query())); 
+        $query = PayRule::query();
+
+        $query = $filter->transform($request, $query);
+
+        return new PayRuleCollection(
+            $query->paginate()->appends($request->query())
+        ); 
     }
 
     /**

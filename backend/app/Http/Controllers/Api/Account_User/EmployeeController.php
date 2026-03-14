@@ -19,13 +19,14 @@ class EmployeeController extends Controller
     public function index(Request $request)
     {
         $filter = new EmployeeFilter();
-        $queryItems = $filter->transform($request);
 
-        if(count($queryItems) == 0){
-            return new EmployeeCollection(Employee::paginate());
-        }
-        $Employees = Employee::where($queryItems)->paginate();
-        return new EmployeeCollection($Employees->appends($request->query()));
+        $query = Employee::query();
+
+        $query = $filter->transform($request, $query);
+
+        return new EmployeeCollection(
+            $query->paginate()->appends($request->query())
+        );
     }
 
     /**

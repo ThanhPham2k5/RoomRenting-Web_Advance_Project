@@ -19,13 +19,14 @@ class NotificationController extends Controller
     public function index(Request $request)
     {
         $filter = new NotificationFilter();
-        $queryItems = $filter->transform($request);
 
-        if(count($queryItems) == 0){
-            return new NotificationCollection(Notification::paginate());
-        }
-        $Notifications = Notification::where($queryItems)->paginate();
-        return new NotificationCollection($Notifications->appends($request->query()));  
+        $query = Notification::query();
+
+        $query = $filter->transform($request, $query);
+
+        return new NotificationCollection(
+            $query->paginate()->appends($request->query())
+        ); 
     }
 
     /**

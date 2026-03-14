@@ -19,13 +19,14 @@ class RechargeBillController extends Controller
     public function index(Request $request)
     {
         $filter = new RechargeBillFilter();
-        $queryItems = $filter->transform($request);
 
-        if(count($queryItems) == 0){
-            return new RechargeBillCollection(RechargeBill::paginate());
-        }
-        $RechargeBills = RechargeBill::where($queryItems)->paginate();
-        return new RechargeBillCollection($RechargeBills->appends($request->query()));
+        $query = RechargeBill::query();
+
+        $query = $filter->transform($request, $query);
+
+        return new RechargeBillCollection(
+            $query->paginate()->appends($request->query())
+        );
     }
 
     /**

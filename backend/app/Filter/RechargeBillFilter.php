@@ -8,7 +8,7 @@ class RechargeBillFilter extends ApiFilter{
         'money' => ['eq', 'lt', 'gt', 'lte', 'gte'],
         'totalMoney' => ['eq', 'lt', 'gt', 'lte', 'gte'],
         'vat' => ['eq', 'lt', 'gt', 'lte', 'gte'],
-        'status' => ['eq', 'ne'],
+        'status' => ['eq', 'ne', 'in'],
             
     ];
     protected $columnMap = [

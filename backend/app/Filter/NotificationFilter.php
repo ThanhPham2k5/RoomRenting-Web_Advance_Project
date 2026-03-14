@@ -4,11 +4,11 @@ namespace App\Filter;
 
 class NotificationFilter extends ApiFilter{
     protected $safeParms = [
-        'title' => ['eq'],
-        'content' => ['eq'],
-        'status' => ['eq', 'ne'],
-        'notificationType' => ['eq', 'ne'],
-        'notifiableType' => ['eq', 'ne'],
+        'title' => ['eq', 'like'],
+        'content' => ['eq', 'like'],
+        'status' => ['eq', 'ne', 'in'],
+        'notificationType' => ['eq', 'ne', 'in'],
+        'notifiableType' => ['eq', 'ne', 'in'],
     ];
     protected $columnMap = [
         'notificationType' => 'notification_type',

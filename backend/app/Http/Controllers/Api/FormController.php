@@ -19,13 +19,14 @@ class FormController extends Controller
     public function index(Request $request)
     {
         $filter = new FormFilter();
-        $queryItems = $filter->transform($request);
 
-        if(count($queryItems) == 0){
-            return new FormCollection(Form::paginate());
-        }
-        $Forms = Form::where($queryItems)->paginate();
-        return new FormCollection($Forms->appends($request->query()));
+        $query = Form::query();
+
+        $query = $filter->transform($request, $query);
+
+        return new FormCollection(
+            $query->paginate()->appends($request->query())
+        );
     }
 
     /**

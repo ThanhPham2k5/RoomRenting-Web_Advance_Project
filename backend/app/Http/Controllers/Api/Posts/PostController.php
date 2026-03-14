@@ -19,13 +19,14 @@ class PostController extends Controller
     public function index(Request $request)
     {
         $filter = new PostFilter();
-        $queryItems = $filter->transform($request);
 
-        if(count($queryItems) == 0){
-            return new PostCollection(Post::paginate());
-        }
-        $Posts = Post::where($queryItems)->paginate();
-        return new PostCollection($Posts->appends($request->query()));
+        $query = Post::query();
+
+        $query = $filter->transform($request, $query);
+
+        return new PostCollection(
+            $query->paginate()->appends($request->query())
+        );
     }
 
     /**

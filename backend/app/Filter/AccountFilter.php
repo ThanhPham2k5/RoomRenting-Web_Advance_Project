@@ -6,8 +6,8 @@ use Illuminate\Http\Request;
 
 class AccountFilter extends ApiFilter{
     protected $safeParms = [
-        'role' => ['eq', 'ne'],
-        'username' => ['eq'],
+        'role' => ['eq', 'ne', 'in'],
+        'username' => ['eq', 'like'],
     ];
     protected $columnMap = [];
     protected $operatorMap = [

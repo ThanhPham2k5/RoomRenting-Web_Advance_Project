@@ -19,13 +19,14 @@ class AccountController extends Controller
     public function index(Request $request)
     {
         $filter = new AccountFilter();
-        $queryItems = $filter->transform($request);
 
-        if(count($queryItems) == 0){
-            return new AccountCollection(Account::paginate());
-        }
-        $accounts = Account::where($queryItems)->paginate();
-        return new AccountCollection($accounts->appends($request->query()));
+        $query = Account::query();
+
+        $query = $filter->transform($request, $query);
+
+        return new AccountCollection(
+            $query->paginate()->appends($request->query())
+        );
     }
 
     /**

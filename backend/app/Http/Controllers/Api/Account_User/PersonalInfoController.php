@@ -19,13 +19,14 @@ class PersonalInfoController extends Controller
     public function index(Request $request)
     {
         $filter = new PersonalInfoFilter();
-        $queryItems = $filter->transform($request);
 
-        if(count($queryItems) == 0){
-            return new PersonalInfoCollection(PersonalInfo::paginate());
-        }
-        $PersonalInfos = PersonalInfo::where($queryItems)->paginate();
-        return new PersonalInfoCollection($PersonalInfos->appends($request->query()));
+        $query = PersonalInfo::query();
+
+        $query = $filter->transform($request, $query);
+
+        return new PersonalInfoCollection(
+            $query->paginate()->appends($request->query())
+        );
     }
 
     /**

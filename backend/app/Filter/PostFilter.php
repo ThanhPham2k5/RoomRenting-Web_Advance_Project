@@ -5,17 +5,17 @@ namespace App\Filter;
 
 class PostFilter extends ApiFilter{
     protected $safeParms = [
-        'title' => ['eq'],
+        'title' => ['eq', 'like'],
         'price' => ['eq', 'lt', 'gt', 'lte', 'gte'],
         'area' => ['eq', 'lt', 'gt', 'lte', 'gte'],
-        'houseNumber' => ['eq'],
-        'ward' => ['eq'],
-        'province' => ['eq'],
-        'description' => ['eq'],
+        'houseNumber' => ['eq', 'like'],
+        'ward' => ['eq', 'like'],
+        'province' => ['eq', 'like'],
+        'description' => ['eq', 'like'],
         'deposit' => ['eq', 'lt', 'gt', 'lte', 'gte'],
-        'status' => ['eq', 'ne'],
+        'status' => ['eq', 'ne', 'in'],
         'authorized' => ['eq', 'ne'],
-        'roomType' => ['eq', 'ne'],
+        'roomType' => ['eq', 'ne', 'in'],
         'maxOccupants' => ['eq', 'lt', 'gt', 'lte', 'gte'],
             
     ];
@@ -29,7 +29,7 @@ class PostFilter extends ApiFilter{
         'lt' => '<',
         'gt' => '>',
         'lte' => '<=',
-        'gte' => '>='
+        'gte' => '>=',
     ];
 }
 ?>

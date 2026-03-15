@@ -3,15 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="../../../css/client/reset.css" />
-    <link rel="stylesheet" href="../../../css/client/main.css" />
-    <link rel="stylesheet" href="../../../css/client/components/footer.css" />
+    <link rel="stylesheet" href="/RoomRenting-Web_Advance_Project/frontend/css/client/reset.css" />
+    <link rel="stylesheet" href="/RoomRenting-Web_Advance_Project/frontend/css/client/main.css" />
+    <link rel="stylesheet" href="/RoomRenting-Web_Advance_Project/frontend/css/client/components/footer.css" />
   </head>
   <body>
     <div class="footer">
       <div class="footer-logo">
         <img
-          src="../../../assets/img/logo.png"
+          src="/RoomRenting-Web_Advance_Project/frontend/assets/img/logo.png"
           alt="logo.png"
           class="footer-logo-img"
         />
@@ -27,7 +27,7 @@
       <div class="footer-socials">
         <a href="">
           <img
-            src="../../../assets/img/facebook.png"
+            src="/RoomRenting-Web_Advance_Project/frontend/assets/img/facebook.png"
             alt="facebook.png"
             class="footer-facebook footer-socials-ico"
           />
@@ -35,7 +35,7 @@
 
         <a href="">
           <img
-            src="../../../assets/img/twitter.png"
+            src="/RoomRenting-Web_Advance_Project/frontend/assets/img/twitter.png"
             alt="twitter.png"
             class="footer-twitter footer-socials-ico"
           />
@@ -43,7 +43,7 @@
 
         <a href="">
           <img
-            src="../../../assets/img/instagram.png"
+            src="/RoomRenting-Web_Advance_Project/frontend/assets/img/instagram.png"
             alt="instagram.png"
             class="footer-instagram footer-socials-ico"
           />
@@ -51,7 +51,7 @@
 
         <a href="">
           <img
-            src="../../../assets/img/thread.png"
+            src="/RoomRenting-Web_Advance_Project/frontend/assets/img/thread.png"
             alt="thread.png"
             class="footer-thread footer-socials-ico"
           />

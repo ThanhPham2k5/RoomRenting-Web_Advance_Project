@@ -1,3 +1,7 @@
+<?php
+  include("./components/header.php")
+?>
+
 <!doctype html>
 <html lang="vi">
   <head>
@@ -91,7 +95,7 @@
 
       <div class="newpost-postlist">
         <!-- a post sample -->
-        <a href="./index.html" class="post">
+        <a href="./index.php" class="post">
           <div class="post-favour">
             <img
               src="../../assets/img/favour.png"
@@ -128,7 +132,7 @@
           </div>
         </a>
 
-        <a href="./index.html" class="post">
+        <a href="./index.php" class="post">
           <div class="post-favour">
             <img
               src="../../assets/img/unfavour.png"
@@ -165,7 +169,7 @@
           </div>
         </a>
 
-        <a href="./index.html" class="post">
+        <a href="./index.php" class="post">
           <div class="post-favour">
             <img
               src="../../assets/img/unfavour.png"
@@ -202,7 +206,7 @@
           </div>
         </a>
 
-        <a href="./index.html" class="post">
+        <a href="./index.php" class="post">
           <div class="post-favour">
             <img
               src="../../assets/img/unfavour.png"
@@ -239,7 +243,7 @@
           </div>
         </a>
 
-        <a href="./index.html" class="post">
+        <a href="./index.php" class="post">
           <div class="post-favour">
             <img
               src="../../assets/img/unfavour.png"
@@ -282,7 +286,7 @@
       <div class="suggest">
         <div class="suggest-text">Muốn nhận bài đăng phù hợp?</div>
 
-        <a href="./index.html" class="suggest-link"> Thêm đề xuất của bạn</a>
+        <a href="./index.php" class="suggest-link"> Thêm đề xuất của bạn</a>
       </div>
     </div>
 
@@ -294,7 +298,7 @@
 
       <div class="newpost-postlist">
         <!-- a post sample -->
-        <a href="./index.html" class="post">
+        <a href="./index.php" class="post">
           <div class="post-favour">
             <img
               src="../../assets/img/favour.png"
@@ -331,7 +335,7 @@
           </div>
         </a>
 
-        <a href="./index.html" class="post">
+        <a href="./index.php" class="post">
           <div class="post-favour">
             <img
               src="../../assets/img/unfavour.png"
@@ -368,7 +372,7 @@
           </div>
         </a>
 
-        <a href="./index.html" class="post">
+        <a href="./index.php" class="post">
           <div class="post-favour">
             <img
               src="../../assets/img/unfavour.png"
@@ -405,7 +409,7 @@
           </div>
         </a>
 
-        <a href="./index.html" class="post">
+        <a href="./index.php" class="post">
           <div class="post-favour">
             <img
               src="../../assets/img/unfavour.png"
@@ -442,7 +446,7 @@
           </div>
         </a>
 
-        <a href="./index.html" class="post">
+        <a href="./index.php" class="post">
           <div class="post-favour">
             <img
               src="../../assets/img/unfavour.png"
@@ -484,3 +488,7 @@
     </div>
   </body>
 </html>
+
+<?php
+  include("./components/footer.php")
+?>

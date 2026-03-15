@@ -3,15 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="../../../css/client/reset.css" />
-    <link rel="stylesheet" href="../../../css/client/main.css" />
-    <link rel="stylesheet" href="../../../css/client/components/header.css" />
+    <link rel="stylesheet" href="/RoomRenting-Web_Advance_Project/frontend/css/client/reset.css" />
+    <link rel="stylesheet" href="/RoomRenting-Web_Advance_Project/frontend/css/client/main.css" />
+    <link rel="stylesheet" href="/RoomRenting-Web_Advance_Project/frontend/css/client/components/header.css" />
   </head>
   <body>
     <div class="header">
-      <a class="header-logo" href="../index.html">
+      <a class="header-logo" href="/RoomRenting-Web_Advance_Project/frontend/pages/client/index.php">
         <img
-          src="../../../assets/img/logo.png"
+          src="/RoomRenting-Web_Advance_Project/frontend/assets/img/logo.png"
           alt="logo.png"
           class="header-logo-img"
         />
@@ -32,7 +32,7 @@
       <div class="header-menu">
         <button class="header-button header-menu-button">
           <img
-            src="../../../assets/img/menu-ico.png"
+            src="/RoomRenting-Web_Advance_Project/frontend/assets/img/menu-ico.png"
             alt="menu-ico"
             class="header-menu-ico"
           />

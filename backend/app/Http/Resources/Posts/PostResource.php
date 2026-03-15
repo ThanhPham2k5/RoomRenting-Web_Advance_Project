@@ -2,6 +2,10 @@
 
 namespace App\Http\Resources\Posts;
 
+use App\Http\Resources\Account_User\EmployeeResource;
+use App\Http\Resources\Account_User\UserResource;
+use App\Http\Resources\NotificationResource;
+use App\Http\Resources\Payments\PayBillResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -28,9 +32,28 @@ class PostResource extends JsonResource
             'authorized' => $this->authorized,
             'roomType' => $this->room_type,
             'maxOccupants' => $this->max_occupants,
-            'userId' => $this->user_id,
-            'employeeId' => $this->employee_id,
             'deletedAt' => $this->deleted_at,
+            'user' => UserResource::make(
+                $this->whenLoaded('user')
+            ),
+            'employee' => EmployeeResource::make(
+                $this->whenLoaded('employee')
+            ),
+            'postImages' => PostImageResource::collection(
+                $this->whenLoaded('postImages')
+            ),
+            'comments' => CommentResource::collection(
+                $this->whenLoaded('comments')
+            ),
+            'payBills' => PayBillResource::collection(
+                $this->whenLoaded('payBills')
+            ),
+            'favorites' => FavoriteResource::collection(
+                $this->whenLoaded('favorites')
+            ),
+            'notifications' => NotificationResource::collection(
+                $this->whenLoaded('notifications')
+            )
         ];
     }
 }

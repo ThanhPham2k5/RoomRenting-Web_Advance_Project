@@ -46,7 +46,8 @@ class Post extends Model
         return $this->hasMany(PayBill::class);
     }
 
-    public function favoriteBy(){
-        return $this->belongsToMany(Account::class, 'favorite');
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class);
     }
 }

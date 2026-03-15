@@ -18,6 +18,9 @@ class PayRuleResource extends JsonResource
             'id' => $this->id,
             'points' => $this->points,
             'deletedAt' => $this->deleted_at,
+            'payBills' => PayBillResource::collection(
+                $this->whenLoaded('payBills')
+            )
         ];
     }
 }

@@ -10,23 +10,42 @@ use App\Http\Requests\UpdateRechargeBillRequest;
 use App\Http\Resources\Payments\RechargeBillCollection;
 use App\Http\Resources\Payments\RechargeBillResource;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\AllowedSort;
+use Spatie\QueryBuilder\Enums\FilterOperator;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class RechargeBillController extends Controller
 {
+
+    private $allowedIncludes = [
+        'account',
+        'rechargeRule',
+    ];
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $filter = new RechargeBillFilter();
+        $RechargeBills = QueryBuilder::for(RechargeBill::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->allowedFilters([
+            AllowedFilter::exact('id'),
+            AllowedFilter::operator('money', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
+            AllowedFilter::operator('totalMoney', FilterOperator::DYNAMIC, '', 'total_money'), // =, <>, >, <, >=, <=
+            AllowedFilter::operator('vat', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
+            AllowedFilter::operator('status', FilterOperator::DYNAMIC), // =, <>
+        ])
+        ->allowedSorts([
+            'id',
+            'money',
+            AllowedSort::field('totalMoney', 'total_money')
+        ])
+        ->paginate()
+        ->appends($request->query());
 
-        $query = RechargeBill::query();
-
-        $query = $filter->transform($request, $query);
-
-        return new RechargeBillCollection(
-            $query->paginate()->appends($request->query())
-        );
+        return new RechargeBillCollection($RechargeBills);
     }
 
     /**
@@ -50,6 +69,10 @@ class RechargeBillController extends Controller
      */
     public function show(RechargeBill $rechargeBill)
     {
+        $rechargeBill = QueryBuilder::for(RechargeBill::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->findOrFail($rechargeBill->id);
+
         return new RechargeBillResource($rechargeBill);
     }
 

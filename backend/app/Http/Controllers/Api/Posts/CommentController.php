@@ -10,23 +10,36 @@ use App\Http\Requests\UpdateCommentRequest;
 use App\Http\Resources\Posts\CommentCollection;
 use App\Http\Resources\Posts\CommentResource;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\Enums\FilterOperator;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class CommentController extends Controller
 {
+
+    private $allowedIncludes = [
+        'account',
+        'post',
+    ];
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $filter = new CommentFilter();
+        $Comments = QueryBuilder::for(Comment::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->allowedFilters([
+            AllowedFilter::exact('id'),
+            AllowedFilter::partial('content')
+        ])
+        ->allowedSorts([
+            'id',
+        ])
+        ->paginate()
+        ->appends($request->query());
 
-        $query = Comment::query();
-
-        $query = $filter->transform($request, $query);
-
-        return new CommentCollection(
-            $query->paginate()->appends($request->query())
-        );
+        return new CommentCollection($Comments);
     }
 
     /**
@@ -50,6 +63,10 @@ class CommentController extends Controller
      */
     public function show(Comment $comment)
     {
+        $comment = QueryBuilder::for(Comment::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->findOrFail($comment->id);
+
         return new CommentResource($comment);
     }
 

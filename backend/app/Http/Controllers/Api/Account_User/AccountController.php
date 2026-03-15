@@ -10,23 +10,47 @@ use App\Http\Requests\UpdateAccountRequest;
 use App\Http\Resources\Account_User\AccountCollection;
 use App\Http\Resources\Account_User\AccountResource;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\Enums\FilterOperator;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class AccountController extends Controller
 {
+
+    private $allowedIncludes = [
+        'form',
+        'user',
+        'employee',
+        'user.posts',
+        'employee.posts',
+        'comments',
+        'favorites.post',
+        'rechargeBills',
+        'payBills'
+    ];
+
+    private $allowSorts = [
+        'id',
+    ];
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $filter = new AccountFilter();
+        $accounts = QueryBuilder::for(Account::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->allowedFilters([
+            AllowedFilter::partial('username'),
+            AllowedFilter::exact('id'),
 
-        $query = Account::query();
+            AllowedFilter::operator('role', FilterOperator::DYNAMIC) // =, <>
+        ])
+        ->allowedSorts($this->allowSorts)
+        ->paginate()
+        ->appends($request->query());
 
-        $query = $filter->transform($request, $query);
-
-        return new AccountCollection(
-            $query->paginate()->appends($request->query())
-        );
+        return new AccountCollection($accounts);
     }
 
     /**
@@ -50,6 +74,10 @@ class AccountController extends Controller
      */
     public function show(Account $account)
     {
+        $account = QueryBuilder::for(Account::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->findOrFail($account->id);
+
         return new AccountResource($account);
     }
 

@@ -10,23 +10,37 @@ use App\Http\Requests\UpdateRechargeRuleRequest;
 use App\Http\Resources\Payments\RechargeRuleCollection;
 use App\Http\Resources\Payments\RechargeRuleResource;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\Enums\FilterOperator;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class RechargeRuleController extends Controller
 {
+
+    private $allowedIncludes = [
+        'rechargeBills',
+    ];
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $filter = new RechargeRuleFilter();
+        $RechargeRules = QueryBuilder::for(RechargeRule::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->allowedFilters([
+            AllowedFilter::exact('id'),
+            AllowedFilter::operator('points', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
+            AllowedFilter::operator('money', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
+        ])
+        ->allowedSorts([
+            'id',
+            'points',
+        ])
+        ->paginate()
+        ->appends($request->query());
 
-        $query = RechargeRule::query();
-
-        $query = $filter->transform($request, $query);
-
-        return new RechargeRuleCollection(
-            $query->paginate()->appends($request->query())
-        );
+        return new RechargeRuleCollection($RechargeRules);
     }
 
     /**
@@ -50,6 +64,10 @@ class RechargeRuleController extends Controller
      */
     public function show(RechargeRule $rechargeRule)
     {
+        $rechargeRule = QueryBuilder::for(RechargeRule::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->findOrFail($rechargeRule->id);
+
         return new RechargeRuleResource($rechargeRule);
     }
 

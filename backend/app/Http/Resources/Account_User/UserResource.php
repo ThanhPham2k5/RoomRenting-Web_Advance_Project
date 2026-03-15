@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Account_User;
 
+use App\Http\Resources\Posts\PostResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -17,8 +18,15 @@ class UserResource extends JsonResource
         return [
             'id' => $this->id,
             'points' => $this->points,
-            'accountId' => $this->account_id,
-            'personalInfoId' => $this->personal_info_id,
+            'account' => AccountResource::make(
+                $this->whenLoaded('account')
+            ),
+            'personalInfo' => PersonalInfoResource::make(
+                $this->whenLoaded('personalInfo')
+            ),
+            'posts' => PostResource::collection(
+                $this->whenLoaded('posts')
+            ),
         ];
     }
 }

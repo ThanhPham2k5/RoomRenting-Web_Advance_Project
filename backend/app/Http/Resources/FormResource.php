@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Resources\Account_User\AccountResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -23,7 +24,9 @@ class FormResource extends JsonResource
             'province' => $this->province,
             'roomType' => $this->room_type,
             'maxOccupants' => $this->max_occupants,
-            'accountId' => $this->account_id,
+            'account' => AccountResource::make(
+                $this->whenLoaded('account')
+            ),
         ];
     }
 }

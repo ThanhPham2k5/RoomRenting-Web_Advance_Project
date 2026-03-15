@@ -18,7 +18,9 @@ class PostImageResource extends JsonResource
             'id' => $this->id,
             'imagePostUrl' => $this->image_post_url,
             'order' => $this->order,
-            'postId' => $this->post_id,
+            'post' => PostResource::make(
+                $this->whenLoaded('post')
+            ),
         ];
     }
 }

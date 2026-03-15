@@ -1,0 +1,15 @@
+.comment-page {
+    width: 1200px;
+    margin-right: auto;
+    margin-left: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    padding-bottom: 30px;
+}
+.comment-page .sb{
+    padding: 0 30px;
+    width: 100%;
+}

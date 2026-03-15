@@ -22,6 +22,8 @@ require_once __DIR__ . '/core/function.php';
     <link rel="stylesheet" href="../../css/admin/index.css" />
     <link rel="stylesheet" href="../../css/admin/account.css" />
     <link rel="stylesheet" href="../../css/admin/permission.css" />
+    <link rel="stylesheet" href="../../css/admin/sale.css" />
+    <link rel="stylesheet" href="../../css/admin/comment.css" />
 </head>
 <body>
     <div class="index-content">
@@ -31,7 +33,7 @@ require_once __DIR__ . '/core/function.php';
 
         <div class="main-page">
             <?php
-            renderComponent('account', true);
+            renderComponent('comment', true);
             ?>
         </div>
     </div>

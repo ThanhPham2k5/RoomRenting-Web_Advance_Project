@@ -10,6 +10,7 @@ use App\Http\Requests\UpdateNotificationRequest;
 use App\Http\Resources\NotificationCollection;
 use App\Http\Resources\NotificationResource;
 use Illuminate\Http\Request;
+use App\Models\Posts\Post;
 
 class NotificationController extends Controller
 {
@@ -42,7 +43,19 @@ class NotificationController extends Controller
      */
     public function store(StoreNotificationRequest $request)
     {
-        //
+        $validated = $request->validated();
+        
+        $post = Post::findOrFail($request->post_id);
+
+        $notification = new Notification($validated);
+        $notification->notifiable()->associate($post);
+
+        $notification->save();
+
+        return response()->json([
+            'message' => 'Notification created successfully',
+            'notification' => new NotificationResource($notification)
+        ]);
     }
 
     /**
@@ -66,7 +79,20 @@ class NotificationController extends Controller
      */
     public function update(UpdateNotificationRequest $request, Notification $notification)
     {
-        //
+         $validated = $request->validated();
+
+        // nếu có post_id thì cập nhật quan hệ polymorphic
+        if ($request->post_id) {
+            $post = Post::findOrFail($request->post_id);
+            $notification->notifiable()->associate($post);
+        }
+
+        $notification->update($validated);
+
+        return response()->json([
+            'message' => 'Notification updated successfully',
+            'notification' => new NotificationResource($notification)
+        ]);
     }
 
     /**
@@ -74,6 +100,20 @@ class NotificationController extends Controller
      */
     public function destroy(Notification $notification)
     {
-        //
+        $notification->delete();
+
+        return response()->json([
+            'message' => 'Notification deleted successfully'
+        ]);
+    }
+
+    public function markAsRead(Notification $notification)
+    {
+        $notification->update(['status' => 'read']);
+
+        return response()->json([
+            'message' => 'Notification marked as read',
+            'notification' => new NotificationResource($notification)
+        ]);
     }
 }

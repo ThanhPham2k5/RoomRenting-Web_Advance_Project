@@ -50,8 +50,10 @@ Route::apiResource('forms', FormController::class);
 
 /* API routes for Notification 
     - NotificationController
+    - markAsRead method for NotificationController
 */
 Route::apiResource('notifications', NotificationController::class);
+Route::put('/notifications/{notification}/mark-as-read', [NotificationController::class, 'markAsRead']);
 
 /* API routes for Payments 
     - PayBillController

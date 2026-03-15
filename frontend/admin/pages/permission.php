@@ -1,7 +1,7 @@
 <?php 
-    $titleData = ['titleContent' => "Tổng quan", 'group' => false, 'insert' => true, 'edit' => false, 'delete' => false, 'handle' => true];
-    $tableHeader = ['Id', 'Người đăng bài', 'Thời gian', 'Tình trạng', 'Chi tiết'];
-
+    $titleData = ['titleContent' => "Phân quyền", 'group' => false, 'insert' => true, 'edit' => true, 'delete' => true, 'handle' => false];
+    $tableHeader = ['Id', 'Tên quyền', 'Mô tả', 'Danh sách nhân viên', 'Chi tiết'];
+    $type = ['type' => "1"];
     ob_start(); 
     ?>
         <tr>
@@ -127,26 +127,14 @@
     <?php 
     $tbodyHtml = ob_get_clean();
 
-    $tableData = ['tableTitle' =>"Thông tin bài đăng", 'tableHeader' => $tableHeader, 'time' => true, 'status' => true, 'tbodyHtml' => $tbodyHtml];
+    $tableData = ['tableTitle' =>"Thông tin quyền", 'tableHeader' => $tableHeader, 'time' => false, 'status' => false, 'tbodyHtml' => $tbodyHtml];
 ?>
 
-<div class="overview-page">
+<div class="permission-page">
     <?php include __DIR__ . "/../components/header.php" ?>
-
     <?php renderComponent("title",false,$titleData) ?> 
-
-    <div class="thongke">
-        <div class="data">
-            <div class="title">
-                <p class="content">Thống kê bài đăng trong tháng</p>
-                <input type="number" placeholder="Nhập vào năm (VD:2005)">
-            </div>
-
-            <div class="chart">
-
-            </div>
-        </div>
+    <div class="sb">
+        <?php renderComponent("searchbar",false,$type) ?>
     </div>
-
     <?php renderComponent("table",false,$tableData) ?>
 </div>

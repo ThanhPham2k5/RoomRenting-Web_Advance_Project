@@ -4,7 +4,7 @@
     border-radius: 12px;
 }
 .searchbar-component .main-content{
-    width: 1200px;
+    width: 1140px;
     height: 68px;
     margin-right: auto;
     margin-left: auto;
@@ -30,6 +30,9 @@
     font-weight: 500;
     line-height: 2.4rem;
     width: 100%;
+}
+.searchbar-component .search input:focus {
+    outline: none;
 }
 .searchbar-component .cta{
     display: flex;

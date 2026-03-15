@@ -19,10 +19,21 @@ require_once __DIR__ . '/core/function.php';
     <link rel="stylesheet" href="assets/css/main.css" />
     <link rel="stylesheet" href="assets/css/overview.css" />
     <link rel="stylesheet" href="assets/css/title.css" />
+    <link rel="stylesheet" href="assets/css/index.css" />
+    <link rel="stylesheet" href="assets/css/account.css" />
+    <link rel="stylesheet" href="assets/css/permission.css" />
 </head>
 <body>
-    <?php
-    renderComponent('overview', true);
-    ?>
+    <div class="index-content">
+        <div class="nav">
+            <?php renderComponent("navigation",false) ?>
+        </div>
+
+        <div class="main-page">
+            <?php
+            renderComponent('permission', true);
+            ?>
+        </div>
+    </div>
 </body>
 </html>

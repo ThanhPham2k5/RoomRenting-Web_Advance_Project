@@ -6,6 +6,7 @@
     flex-direction: column;
     gap: 50px;
     padding: 20px 0;
+    height: 100%;
 }
 .navigation-component .logo img{
     height: 40px;

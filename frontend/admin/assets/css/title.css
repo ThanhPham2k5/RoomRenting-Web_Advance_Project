@@ -49,3 +49,22 @@
     border-radius: 12px;
     border: #E0E3EB solid 1px;
 }
+.title-component .cta .btn_insert,
+.title-component .cta .btn_delete,
+.title-component .cta .btn_edit{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    gap: 10px;
+    border-radius: 12px;
+    border: #E0E3EB solid 1px;
+    height: 44px;
+    width: 96px;
+}
+.title-component .cta{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}

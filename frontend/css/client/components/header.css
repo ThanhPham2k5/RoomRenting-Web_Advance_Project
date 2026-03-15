@@ -1,0 +1,146 @@
+/* header css (work well with pc/laptop) */
+.header {
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+}
+
+.header-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px 0px 10px 10px;
+  text-decoration: none;
+  color: #000;
+}
+
+.header-logo-img {
+  width: 64px;
+  height: 64px;
+}
+
+.header-logo-text {
+  font-family: "Header_2";
+}
+
+.header-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px 10px 10px 0px;
+}
+
+.header-button {
+  width: 120px;
+  height: 40px;
+  border: none;
+  border-radius: 999px;
+  font-family: "Body";
+  font-size: inherit;
+  cursor: pointer;
+}
+
+.button-sign-up {
+  color: #fff;
+  background-color: var(--orange);
+  margin-right: 15px;
+  transition: all ease 0.2s;
+}
+
+.button-sign-up:hover {
+  /* background-color: var(--orange-hover); */
+  opacity: 0.8;
+}
+
+.button-log-in {
+  color: #000;
+  background-color: #fff;
+  border: 1px solid var(--black);
+  transition: all ease 0.2s;
+  margin-right: 10px;
+}
+
+.button-log-in:hover {
+  background-color: var(--white-stroke);
+}
+
+.header-menu {
+  display: none;
+}
+
+/* responsive (mobile & tablet) */
+@media (max-width: 767.99px) {
+  .header {
+    flex-direction: row-reverse;
+    margin: 0 10px;
+  }
+
+  .header-buttons {
+    display: none;
+  }
+
+  .header-menu {
+    display: block;
+  }
+
+  .header-menu-button {
+    background-color: var(--orange);
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  /* .header-menu-button:hover {
+    opacity: 0.8;
+  } */
+
+  .header-menu-text {
+    color: #fff;
+    font-family: "Body";
+    font-style: inherit;
+  }
+
+  .sidebar {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    align-items: center;
+    border-radius: 6px;
+    background-color: var(--orange);
+    position: absolute;
+    top: 80%;
+    left: 0;
+    padding: 10px 10px;
+  }
+
+  .sidebar-item {
+    width: 140px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* text-align: center; */
+    text-decoration: none;
+    color: #fff;
+    font-family: "Body";
+    font-style: inherit;
+    /* background-color: var(--orange-hover); */
+    border: 1px solid var(--white-stroke);
+    border-radius: 6px;
+  }
+}
+
+@media (max-width: 479.99px) {
+  .header-logo-text {
+    font-size: 1.6rem;
+  }
+}

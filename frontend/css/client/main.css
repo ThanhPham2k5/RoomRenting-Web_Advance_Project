@@ -13,24 +13,24 @@
 
 @font-face {
   font-family: "Header_1";
-  src: url("../assets/font/Roboto/static/Roboto-SemiBold.ttf");
+  src: url("../../assets/font/Roboto/static/Roboto-SemiBold.ttf");
 }
 
 @font-face {
   font-family: "Header_2";
   font-size: 3.2rem;
   line-height: 4rem;
-  src: url("../assets/font/Roboto/static/Roboto-SemiBold.ttf");
+  src: url("../../assets/font/Roboto/static/Roboto-SemiBold.ttf");
 }
 
 @font-face {
   font-family: "Header_3";
-  src: url("../assets/font/Roboto/static/Roboto-SemiBold.ttf");
+  src: url("../../assets/font/Roboto/static/Roboto-SemiBold.ttf");
 }
 
 @font-face {
   font-family: "Body";
-  src: url("../assets/font/Roboto/static/Roboto-Medium.ttf");
+  src: url("../../assets/font/Roboto/static/Roboto-Medium.ttf");
 }
 
 h1 {

@@ -1,74 +1,6 @@
-.header {
-  position: fixed;
-  z-index: 1;
-  top: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #fff;
-}
+/* header css */
 
-.header-logo {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 10px 0px 10px 10px;
-  text-decoration: none;
-  color: #000;
-}
-
-.header-logo-img {
-  width: 64px;
-  height: 64px;
-}
-
-.header-logo-text {
-  font-family: "Header_2";
-}
-
-.header-buttons {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 10px 10px 10px 0px;
-}
-
-.header-button {
-  width: 120px;
-  height: 40px;
-  border: none;
-  border-radius: 999px;
-  font-family: "Body";
-  font-size: inherit;
-  cursor: pointer;
-}
-
-.button-sign-up {
-  color: #fff;
-  background-color: var(--orange);
-  margin-right: 15px;
-  transition: all ease 0.2s;
-}
-
-.button-sign-up:hover {
-  /* background-color: var(--orange-hover); */
-  opacity: 0.8;
-}
-
-.button-log-in {
-  color: #000;
-  background-color: #fff;
-  border: 1px solid var(--black);
-  transition: all ease 0.2s;
-  margin-right: 10px;
-}
-
-.button-log-in:hover {
-  background-color: var(--white-stroke);
-}
-
+/* body css */
 .hero {
   margin-top: 84px;
   display: flex;
@@ -333,4 +265,62 @@
   font-size: inherit;
   text-decoration: none;
   cursor: pointer;
+}
+
+/* footer css */
+.footer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--orange);
+}
+
+.footer-logo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #fff;
+  margin-top: 50px;
+  border-radius: 12px;
+}
+
+.footer-logo-img {
+  width: 64px;
+  height: 64px;
+}
+
+.footer-slogan {
+  color: #fff;
+  text-align: center;
+  margin: 43px 0;
+}
+
+.footer-socials {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  gap: 30px;
+  margin-bottom: 17px;
+}
+
+.footer-socials-ico {
+  width: 30px;
+  height: 30px;
+}
+
+.footer-line {
+  height: 1px;
+  width: 80%;
+  background-color: var(--white-stroke);
+  border-radius: 9999px;
+}
+
+.footer-copyright {
+  font-family: "Body";
+  font-style: inherit;
+  font-size: 1.2rem;
+  color: #fff;
+  margin: 50px;
 }

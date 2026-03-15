@@ -74,7 +74,7 @@
   display: none;
 }
 
-/* responsive (mobile & tablet) */
+/* responsive (tablet) */
 @media (max-width: 767.99px) {
   .header {
     flex-direction: row-reverse;
@@ -139,8 +139,29 @@
   }
 }
 
+/* reponsive (mobile) */
 @media (max-width: 479.99px) {
   .header-logo-text {
     font-size: 1.6rem;
+  }
+}
+
+@media (max-width: 424.99px) {
+  .header-logo-text {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 374.99px) {
+  .header-logo-text {
+    font-size: 1rem;
+  }
+
+  .header-button {
+    width: 100px;
+  }
+
+  .header-logo {
+    margin: 10px 0;
   }
 }

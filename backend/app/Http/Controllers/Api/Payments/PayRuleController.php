@@ -42,7 +42,14 @@ class PayRuleController extends Controller
      */
     public function store(StorePayRuleRequest $request)
     {
-        //
+        $validated = $request->validated();
+        
+        $payRule = PayRule::create($validated);
+
+        return response()->json([
+            'message' => 'Pay rule created successfully',
+            'payRule' => new PayRuleResource($payRule)
+        ], 201);
     }
 
     /**
@@ -66,7 +73,14 @@ class PayRuleController extends Controller
      */
     public function update(UpdatePayRuleRequest $request, PayRule $payRule)
     {
-        //
+        $validated = $request->validated();
+        
+        $payRule->update($validated);
+
+        return response()->json([
+            'message' => 'Pay rule updated successfully',
+            'payRule' => new PayRuleResource($payRule)
+        ]);
     }
 
     /**
@@ -74,6 +88,10 @@ class PayRuleController extends Controller
      */
     public function destroy(PayRule $payRule)
     {
-        //
+        $payRule->delete();
+
+        return response()->json([
+            'message' => 'Pay rule deleted successfully'
+        ]);
     }
 }

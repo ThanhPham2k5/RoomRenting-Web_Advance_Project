@@ -42,7 +42,21 @@ class AccountController extends Controller
      */
     public function store(StoreAccountRequest $request)
     {
-        //
+        $request->validated();
+        
+        $account = Account::create([
+            'username' => $request->username,
+            'password' => bcrypt($request->password),
+            'role' => $request->role,
+        ]);
+
+        $token = $account->createToken($request->username);
+
+        return 
+            [
+                new AccountResource($account),
+                'token' => $token->plainTextToken
+            ];
     }
 
     /**

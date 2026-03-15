@@ -1,7 +1,7 @@
 <div class="navigation-component">
     <div class="main-content">
         <div class="logo">
-            <img src="assets/images/logo.png" alt="logo">
+            <img src="../../assets/admin/images/logo.png" alt="logo">
             <p>RoomRenting.com</p>
         </div>
 

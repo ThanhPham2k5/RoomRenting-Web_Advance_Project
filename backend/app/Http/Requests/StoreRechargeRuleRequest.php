@@ -22,7 +22,8 @@ class StoreRechargeRuleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'point' => 'required|integer|min:1',
+            'money' => 'required|numeric|min:0.01',
         ];
     }
 }

@@ -1,0 +1,58 @@
+.navigation-component .main-content{
+    width: 240px;
+    margin-right: auto;
+    margin-left: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+    padding: 20px 0;
+    height: 100%;
+}
+.navigation-component .logo img{
+    height: 40px;
+    width: 40px;
+    object-fit: cover;
+}
+.navigation-component .logo p{
+    font-size: 2.4rem;
+    line-height: 3.2rem;
+    font-weight: 600;
+}
+.navigation-component .logo{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.navigation-component .item{
+    position: relative;
+}
+.navigation-component .item a{
+    text-decoration: none;
+    color: #1F2937;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+.navigation-component .item.active a::before{
+    content: "";
+    width: 2px;
+    height: 24px;
+    background-color: #F97316;
+    border-radius: 15px;
+    position: absolute;
+    left: 0;
+}
+.navigation-component .item a:hover,
+.navigation-component .item.active a{
+    color: #F97316;
+}
+.navigation-component .item .dangxuat{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.navigation-component .item.line{
+    height: 1px;
+    background-color: #979797;
+}

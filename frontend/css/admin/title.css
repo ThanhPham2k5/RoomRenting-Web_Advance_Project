@@ -1,0 +1,70 @@
+.title-component .group .item .icon{
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 30px;
+    width: 30px;
+}
+.title-component .group .item .icon .part2{
+    position: absolute;
+    bottom: 3px;
+    left: 5px;
+    height: 30px;
+    width: 25px;
+}
+.title-component .group .item .icon .part3{
+    position: absolute;
+    bottom: 15px;
+    left: 23px;
+    width: 10px;
+}
+.title-component .group .item .info .sub-info{
+    color:#626687;
+}
+.title-component{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 0 30px;
+}
+.title-component .content{
+    font-weight: 600;
+    font-size: 3.2rem;
+    line-height: 4rem;
+}
+.title-component .group{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+}
+.title-component .group .item{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    gap: 10px;
+    border-radius: 12px;
+    border: #E0E3EB solid 1px;
+}
+.title-component .cta .btn_insert,
+.title-component .cta .btn_delete,
+.title-component .cta .btn_edit{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    gap: 10px;
+    border-radius: 12px;
+    border: #E0E3EB solid 1px;
+    height: 44px;
+    width: 96px;
+}
+.title-component .cta{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}

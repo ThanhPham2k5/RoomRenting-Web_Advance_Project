@@ -1,0 +1,55 @@
+.overview-page {
+    width: 1200px;
+    margin-right: auto;
+    margin-left: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    padding-bottom: 30px;
+}
+.overview-page .thongke{
+    padding: 0 30px;
+    width: 100%;
+}
+.overview-page .thongke .data{
+    padding: 30px;
+    border: #E0E3EB solid 1px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+    gap: 20px;
+    height: 596px;
+}
+.overview-page .thongke .data .title{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+.overview-page .thongke .data input{
+    border: #E0E3EB solid 1px;
+    border-radius: 12px;
+    height: 35px;
+    padding: 0px 0px 0px 15px;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 1.6rem;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    line-height: 2.4rem;
+    width: 210px;
+}
+.overview-page .thongke .data .title .content{
+    font-weight: 600;
+    font-size: 2.4rem;
+    line-height: 3.2rem;
+}
+.overview-page .thongke .data .chart{
+    background-color: pink;
+    width: 100%;
+    height: 100%;
+}

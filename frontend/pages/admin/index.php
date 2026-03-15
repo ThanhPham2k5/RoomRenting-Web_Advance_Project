@@ -24,18 +24,22 @@ require_once __DIR__ . '/core/function.php';
     <link rel="stylesheet" href="../../css/admin/permission.css" />
     <link rel="stylesheet" href="../../css/admin/sale.css" />
     <link rel="stylesheet" href="../../css/admin/comment.css" />
+    <link rel="stylesheet" href="../../css/admin/bill.css" />
+    <link rel="stylesheet" href="../../css/admin/price.css" />
+    <link rel="stylesheet" href="../../css/admin/card.css" />
 </head>
 <body>
-    <div class="index-content">
+    <?php renderComponent("card",false) ?>
+    <!-- <div class="index-content">
         <div class="nav">
-            <?php renderComponent("navigation",false) ?>
+            <?php // renderComponent("navigation",false) ?> 
         </div>
 
         <div class="main-page">
             <?php
-            renderComponent('comment', true);
+            //renderComponent('price', true);
             ?>
         </div>
-    </div>
+    </div> -->
 </body>
 </html>

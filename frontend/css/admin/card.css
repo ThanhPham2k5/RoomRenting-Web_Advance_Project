@@ -1,0 +1,71 @@
+.card{
+    width: 373px;
+    height: 430px;
+    border-radius: 12px;
+    border: #E0E3EB solid 1px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.card .cta button{
+    font-size: 1.6rem;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    line-height: 2.4rem;
+    border: none;
+    background-color: transparent;
+    height: 44px;
+    width: 88px;
+    color: #FFF;
+    border-radius: 12px;
+}
+.card .post-img{
+    width: 373px;
+    height: 242px;
+    object-fit: cover;
+}
+.card .location .info,
+.card .price .area,
+.card .location svg{
+    color:#626687;
+}
+.card .location{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 0 10px;
+    gap: 10px;
+    margin-top: 5px;
+}
+.card .title{
+    padding: 0 0 0 10px;
+}
+.card .price{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-top: 5px;
+}
+.card .price .main{
+    color: #F97316;
+    font-size: 2.4rem;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    line-height: 3.2rem;
+    font-weight: 600;
+}
+.card .cta{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 15px;
+}
+.card .cta .green{
+    background-color:#10B981;
+}
+.card .cta .yellow{
+    background-color:#FCBE2D;
+}
+.card .cta .red{
+    background-color: #FD5454;
+}

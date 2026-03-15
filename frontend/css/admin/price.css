@@ -1,0 +1,43 @@
+.price-page {
+    width: 1200px;
+    margin-right: auto;
+    margin-left: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    padding-bottom: 30px;
+}
+.price-page .sb{
+    padding: 0 30px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 10px;
+}
+.price-page .sb .tab-pane{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+.price-page .sb .tab-pane .item{
+    font-size: 2.4rem;
+    line-height: 3.2rem;
+    font-weight: 600;
+}
+.price-page .sb .tab-pane .item:hover{
+    color: #F97316;
+}
+.price-page .sb .tab-pane .item.active{
+    border-bottom: #F97316 solid 3px;
+    color: #F97316;
+}
+.price-page .sb .line{
+    background-color: #E6EAEF;
+    height: 1px;
+    width: 100%;
+}

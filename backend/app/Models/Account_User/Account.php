@@ -11,11 +11,13 @@ use App\Models\Posts\Post;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Laravel\Sanctum\HasApiTokens;
 
 class Account extends Model
 {
     /** @use HasFactory<\Database\Factories\AccountFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, HasApiTokens;
+    protected $fillable = ['username', 'password', 'role'];
 
     protected static function newFactory()
     {

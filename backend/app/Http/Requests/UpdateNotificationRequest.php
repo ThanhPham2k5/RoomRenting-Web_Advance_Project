@@ -11,7 +11,7 @@ class UpdateNotificationRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,13 @@ class UpdateNotificationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+            'status' => 'sometimes|in:unread,read',
+            'notification_type' => 'required|string|in:news,transaction',
+            'account_id' => 'required|exists:accounts,id',
+            'notifiable_type' => 'nullable|string',
+            'notifiable_id' => 'nullable|integer',
         ];
     }
 }

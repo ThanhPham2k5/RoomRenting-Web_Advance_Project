@@ -22,7 +22,9 @@ class StoreRechargeBillRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'money' => 'required|numeric|min:0.01',
+            'total_money' => 'required|numeric|min:0.01',
+            'vat' => 'required|numeric|min:0',
         ];
     }
 }

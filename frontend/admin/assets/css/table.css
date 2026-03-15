@@ -50,25 +50,26 @@
 }
 .table-component .admin-table{
     width: 100%;
-    margin-top: 20px;
+    border-collapse: collapse;
 }
-.admin-table thead tr {
+.table-component .admin-table thead th {
+    height: 64px;
+    text-align: center;
+    vertical-align: middle;
+    position: sticky; 
+    top: 0;
+    z-index: 10;
     background-color: #F5F7FA;
 }
-.admin-table thead th {
+.table-component .admin-table tbody td {
     height: 64px;
     text-align: center;
     vertical-align: middle;
 }
-.admin-table tbody td {
-    height: 64px;
-    text-align: center;
-    vertical-align: middle;
-}
-.admin-table th, .admin-table td {
+.table-component .admin-table th, .admin-table td {
     border-bottom: 1px solid #D8D8D8;
 }
-.badge {
+.table-component .badge {
     border-radius: 10px;
     color: white;
     display: inline-flex; 
@@ -77,7 +78,15 @@
     width: 130px;
     height: 35px;
 }
-.badge-success { background-color: #10B981; } 
-.badge-danger { background-color: #FD5454; }  
-.badge-warning { background-color: #FCBE2D; } 
-.badge-orange { background-color: #F97316; } 
+.table-component .badge-success { background-color: #10B981; } 
+.table-component .badge-danger { background-color: #FD5454; }  
+.table-component .badge-warning { background-color: #FCBE2D; } 
+.table-component .badge-orange { background-color: #F97316; } 
+.table-component .table-wrapper {
+    max-height: 450px;
+    overflow-y: auto;
+    margin-top: 20px;
+    
+    scrollbar-width: thin;
+    scrollbar-color: #CBD5E1 transparent;
+}

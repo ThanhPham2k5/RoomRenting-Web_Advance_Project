@@ -17,10 +17,12 @@ require_once __DIR__ . '/core/function.php';
     <link rel="stylesheet" href="assets/css/navigation.css" />
     <link rel="stylesheet" href="assets/css/table.css" />
     <link rel="stylesheet" href="assets/css/main.css" />
+    <link rel="stylesheet" href="assets/css/overview.css" />
+    <link rel="stylesheet" href="assets/css/title.css" />
 </head>
 <body>
     <?php
-    render_component('table');
+    renderComponent('overview', true);
     ?>
 </body>
 </html>

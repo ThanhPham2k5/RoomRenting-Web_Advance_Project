@@ -42,7 +42,14 @@ class FormController extends Controller
      */
     public function store(StoreFormRequest $request)
     {
-        //
+        $validated = $request->validated();
+
+        $form = Form::create($validated);
+
+        return response()->json([
+            'message' => 'Form created successfully',
+            'form' => new FormResource($form)
+        ], 201);
     }
 
     /**
@@ -66,7 +73,14 @@ class FormController extends Controller
      */
     public function update(UpdateFormRequest $request, Form $form)
     {
-        //
+        $validated = $request->validated();
+
+        $form->update($validated);
+
+        return response()->json([
+            'message' => 'Form updated successfully',
+            'form' => new FormResource($form)
+        ]);
     }
 
     /**
@@ -74,6 +88,10 @@ class FormController extends Controller
      */
     public function destroy(Form $form)
     {
-        //
+        $form->delete();
+
+        return response()->json([
+            'message' => 'Form deleted successfully'
+        ]);
     }
 }

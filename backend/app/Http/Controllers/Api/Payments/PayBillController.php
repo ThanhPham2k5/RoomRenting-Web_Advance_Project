@@ -42,7 +42,14 @@ class PayBillController extends Controller
      */
     public function store(StorePayBillRequest $request)
     {
-        //
+        $validated = $request->validated();
+        
+        $payBill = PayBill::create($validated);
+
+        return response()->json([
+            'message' => 'Pay bill created successfully',
+            'payBill' => new PayBillResource($payBill)
+        ], 201);
     }
 
     /**
@@ -66,7 +73,14 @@ class PayBillController extends Controller
      */
     public function update(UpdatePayBillRequest $request, PayBill $payBill)
     {
-        //
+        $validated = $request->validated();
+        
+        $payBill->update($validated);
+
+        return response()->json([
+            'message' => 'Pay bill updated successfully',
+            'payBill' => new PayBillResource($payBill)
+        ]);
     }
 
     /**
@@ -74,6 +88,10 @@ class PayBillController extends Controller
      */
     public function destroy(PayBill $payBill)
     {
-        //
+        $payBill->delete();
+
+        return response()->json([
+            'message' => 'Pay bill deleted successfully'
+        ]);
     }
 }

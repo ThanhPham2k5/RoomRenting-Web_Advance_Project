@@ -42,7 +42,14 @@ class PostController extends Controller
      */
     public function store(StorePostRequest $request)
     {
-        //
+        $validated = $request->validated();
+
+        $post = Post::create($validated);
+
+        return response()->json([
+            'message' => 'Post created successfully',
+            'post' => new PostResource($post)
+        ], 201);
     }
 
     /**
@@ -66,7 +73,14 @@ class PostController extends Controller
      */
     public function update(UpdatePostRequest $request, Post $post)
     {
-        //
+        $validated = $request->validated();
+
+        $post->update($validated);
+
+        return response()->json([
+            'message' => 'Post updated successfully',
+            'post' => new PostResource($post)
+        ]);
     }
 
     /**
@@ -74,6 +88,10 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        //
+        $post->delete();
+
+        return response()->json([
+            'message' => 'Post deleted successfully'
+        ]);
     }
 }

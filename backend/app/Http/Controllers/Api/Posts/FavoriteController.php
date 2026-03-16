@@ -32,7 +32,14 @@ class FavoriteController extends Controller
      */
     public function store(StoreFavoriteRequest $request)
     {
-        //
+        $validated = $request->validated();
+
+        $favorite = Favorite::create($validated);
+
+        return response()->json([
+            'message' => 'Favorite created successfully',
+            'favorite' => new FavoriteResource($favorite)
+        ], 201);
     }
 
     /**
@@ -56,7 +63,14 @@ class FavoriteController extends Controller
      */
     public function update(UpdateFavoriteRequest $request, Favorite $favorite)
     {
-        //
+        $validated = $request->validated();
+
+        $favorite->update($validated);
+
+        return response()->json([
+            'message' => 'Favorite updated successfully',
+            'favorite' => new FavoriteResource($favorite)
+        ]);
     }
 
     /**
@@ -64,6 +78,10 @@ class FavoriteController extends Controller
      */
     public function destroy(Favorite $favorite)
     {
-        //
+        $favorite->delete();
+
+        return response()->json([
+            'message' => 'Favorite deleted successfully'
+        ]);
     }
 }

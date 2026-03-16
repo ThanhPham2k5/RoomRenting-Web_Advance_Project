@@ -42,7 +42,14 @@ class CommentController extends Controller
      */
     public function store(StoreCommentRequest $request)
     {
-        //
+        $validated = $request->validated();
+
+        $comment = Comment::create($validated);
+
+        return response()->json([
+            'message' => 'Comment created successfully',
+            'comment' => new CommentResource($comment)
+        ], 201);
     }
 
     /**
@@ -66,7 +73,14 @@ class CommentController extends Controller
      */
     public function update(UpdateCommentRequest $request, Comment $comment)
     {
-        //
+        $validated = $request->validated();
+
+        $comment->update($validated);
+
+        return response()->json([
+            'message' => 'Comment updated successfully',
+            'comment' => new CommentResource($comment)
+        ]);
     }
 
     /**
@@ -74,6 +88,10 @@ class CommentController extends Controller
      */
     public function destroy(Comment $comment)
     {
-        //
+        $comment->delete();
+
+        return response()->json([
+            'message' => 'Comment deleted successfully'
+        ]);
     }
 }

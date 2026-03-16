@@ -42,7 +42,14 @@ class RechargeBillController extends Controller
      */
     public function store(StoreRechargeBillRequest $request)
     {
-        //
+        $validated = $request->validated();
+        
+        $rechargeBill = RechargeBill::create($validated);
+
+        return response()->json([
+            'message' => 'Recharge bill created successfully',
+            'rechargeBill' => new RechargeBillResource($rechargeBill)
+        ], 201);
     }
 
     /**
@@ -66,7 +73,14 @@ class RechargeBillController extends Controller
      */
     public function update(UpdateRechargeBillRequest $request, RechargeBill $rechargeBill)
     {
-        //
+        $validated = $request->validated();
+        
+        $rechargeBill->update($validated);
+
+        return response()->json([
+            'message' => 'Recharge bill updated successfully',
+            'rechargeBill' => new RechargeBillResource($rechargeBill)
+        ]);
     }
 
     /**
@@ -74,6 +88,10 @@ class RechargeBillController extends Controller
      */
     public function destroy(RechargeBill $rechargeBill)
     {
-        //
+        $rechargeBill->delete();
+
+        return response()->json([
+            'message' => 'Recharge bill deleted successfully'
+        ]);
     }
 }

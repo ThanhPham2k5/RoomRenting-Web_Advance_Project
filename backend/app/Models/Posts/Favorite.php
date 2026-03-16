@@ -2,6 +2,7 @@
 
 namespace App\Models\Posts;
 
+use App\Models\Account_User\Account;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -16,11 +17,11 @@ class Favorite extends Model
         return \Database\Factories\FavoriteFactory::new();
     }
 
-    // public function favoritePosts(){
-    //     return $this->belongsToMany(Post::class, 'favorite');
-    // }
+    public function account(){
+        return $this->belongsTo(Account::class);
+    }
 
-    // public function favoriteBy(){
-    //     return $this->belongsToMany(Account::class, 'favorite');
-    // }
+    public function post(){
+        return $this->belongsTo(Post::class);
+    }
 }

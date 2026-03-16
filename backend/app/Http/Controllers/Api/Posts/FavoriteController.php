@@ -8,15 +8,35 @@ use App\Http\Requests\StoreFavoriteRequest;
 use App\Http\Requests\UpdateFavoriteRequest;
 use App\Http\Resources\Posts\FavoriteCollection;
 use App\Http\Resources\Posts\FavoriteResource;
+use Illuminate\Http\Request;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\Enums\FilterOperator;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class FavoriteController extends Controller
 {
+    private $allowedIncludes = [
+        'account',
+        'post',
+    ];
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return new FavoriteCollection(Favorite::all());
+        $Favorites = QueryBuilder::for(Favorite::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->allowedFilters([
+            AllowedFilter::exact('id'),
+        ])
+        ->allowedSorts([
+            'id',
+        ])
+        ->paginate()
+        ->appends($request->query());
+
+        return new FavoriteCollection($Favorites);
     }
 
     /**
@@ -47,6 +67,10 @@ class FavoriteController extends Controller
      */
     public function show(Favorite $favorite)
     {
+        $favorite = QueryBuilder::for(Favorite::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->findOrFail($favorite->id);
+
         return new FavoriteResource($favorite);
     }
 

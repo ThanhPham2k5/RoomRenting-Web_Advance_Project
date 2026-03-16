@@ -11,23 +11,40 @@ use App\Http\Resources\NotificationCollection;
 use App\Http\Resources\NotificationResource;
 use Illuminate\Http\Request;
 use App\Models\Posts\Post;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\Enums\FilterOperator;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class NotificationController extends Controller
 {
+
+    private $allowedIncludes = [
+        'account',
+        'notifiable'
+    ];
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $filter = new NotificationFilter();
+        $Notifications = QueryBuilder::for(Notification::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->allowedFilters([
+            AllowedFilter::exact('id'),
+            AllowedFilter::partial('title'),
+            AllowedFilter::partial('content'),
+            AllowedFilter::operator('status', FilterOperator::DYNAMIC), // =, <>
+            AllowedFilter::operator('notificationType', FilterOperator::DYNAMIC, '', 'notification_type'), // =, <>
+            AllowedFilter::partial('notifiableType', 'notifiable_type'),
+        ])
+        ->allowedSorts([
+            'id',
+        ])
+        ->paginate()
+        ->appends($request->query());
 
-        $query = Notification::query();
-
-        $query = $filter->transform($request, $query);
-
-        return new NotificationCollection(
-            $query->paginate()->appends($request->query())
-        ); 
+        return new NotificationCollection($Notifications);
     }
 
     /**
@@ -63,6 +80,10 @@ class NotificationController extends Controller
      */
     public function show(Notification $notification)
     {
+        $notification = QueryBuilder::for(Notification::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->findOrFail($notification->id);
+
         return new NotificationResource($notification);
     }
 

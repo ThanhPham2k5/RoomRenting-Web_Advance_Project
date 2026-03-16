@@ -10,23 +10,39 @@ use App\Http\Requests\UpdatePayBillRequest;
 use App\Http\Resources\Payments\PayBillCollection;
 use App\Http\Resources\Payments\PayBillResource;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\Enums\FilterOperator;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class PayBillController extends Controller
 {
+
+    private $allowedIncludes = [
+        'account',
+        'payRule',
+        'post',
+    ];
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $filter = new PayBillFilter();
+        $PayBills = QueryBuilder::for(PayBill::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->allowedFilters([
+            AllowedFilter::exact('id'),
+            AllowedFilter::operator('points', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
+            AllowedFilter::operator('status', FilterOperator::DYNAMIC), // =, <>
+        ])
+        ->allowedSorts([
+            'id',
+            'points',
+        ])
+        ->paginate()
+        ->appends($request->query());
 
-        $query = PayBill::query();
-
-        $query = $filter->transform($request, $query);
-
-        return new PayBillCollection(
-            $query->paginate()->appends($request->query())
-        );
+        return new PayBillCollection($PayBills);
     }
 
     /**
@@ -57,6 +73,10 @@ class PayBillController extends Controller
      */
     public function show(PayBill $payBill)
     {
+        $payBill = QueryBuilder::for(PayBill::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->findOrFail($payBill->id);
+
         return new PayBillResource($payBill);
     }
 

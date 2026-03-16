@@ -6,6 +6,7 @@ use App\Models\Form;
 use App\Models\Payments\PayBill;
 use App\Models\Payments\RechargeBill;
 use App\Models\Posts\Comment;
+use App\Models\Posts\Favorite;
 use App\Models\Posts\Post;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -38,15 +39,12 @@ class Account extends Model
 
     public function comments(){
         return $this->hasMany(Comment::class);
-    }
-
-    public function posts(){
-        return $this->hasMany(Post::class);
-    }
-
-    public function favoritePosts(){
-        return $this->belongsToMany(Post::class, 'favorite');
     } 
+
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class);
+    }
 
     public function rechargeBills(){
         return $this->hasMany(RechargeBill::class);

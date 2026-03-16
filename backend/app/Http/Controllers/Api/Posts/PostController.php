@@ -10,23 +10,57 @@ use App\Http\Requests\UpdatePostRequest;
 use App\Http\Resources\Posts\PostCollection;
 use App\Http\Resources\Posts\PostResource;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\AllowedSort;
+use Spatie\QueryBuilder\Enums\FilterOperator;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class PostController extends Controller
 {
+    private $allowedIncludes = [
+        'user',
+        'employee',
+        'postImages',
+        'comments',
+        'comments.account',
+        'payBills',
+        'favorites.account',
+        'notifications'
+    ];
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $filter = new PostFilter();
+        $Posts = QueryBuilder::for(Post::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->allowedFilters([
+            AllowedFilter::exact('id'),
+            AllowedFilter::partial('title'),
+            AllowedFilter::operator('price', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
+            AllowedFilter::operator('area', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
+            AllowedFilter::partial('houseNumber', 'house_number'),
+            AllowedFilter::partial('ward'),
+            AllowedFilter::partial('province'),
+            AllowedFilter::partial('description'),
+            AllowedFilter::operator('deposit', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
+            AllowedFilter::operator('status', FilterOperator::DYNAMIC), // =, <>
+            AllowedFilter::operator('authorized', FilterOperator::DYNAMIC), // =, <>
+            AllowedFilter::operator('roomType', FilterOperator::DYNAMIC, '', 'room_type'), // =, <>
+            AllowedFilter::operator('maxOccupants', FilterOperator::DYNAMIC, '', 'max_occupants'), // =, <>, >, <, >=, <=
+        ])
+        ->allowedSorts([
+            'id',
+            'price',
+            'area',
+            'deposit',
+            AllowedSort::field('maxOccupants','max_occupants')
+        ])
+        ->paginate()
+        ->appends($request->query());
 
-        $query = Post::query();
-
-        $query = $filter->transform($request, $query);
-
-        return new PostCollection(
-            $query->paginate()->appends($request->query())
-        );
+        return new PostCollection($Posts);
     }
 
     /**
@@ -57,6 +91,10 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
+        $post = QueryBuilder::for(Post::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->findOrFail($post->id);
+
         return new PostResource($post);
     }
 

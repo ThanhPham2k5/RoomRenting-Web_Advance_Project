@@ -10,23 +10,35 @@ use App\Http\Requests\UpdatePayRuleRequest;
 use App\Http\Resources\Payments\PayRuleCollection;
 use App\Http\Resources\Payments\PayRuleResource;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\Enums\FilterOperator;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class PayRuleController extends Controller
 {
+    private $allowedIncludes = [
+        'payBills',
+    ];
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $filter = new PayRuleFilter();
+        $PayRules = QueryBuilder::for(PayRule::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->allowedFilters([
+            AllowedFilter::exact('id'),
+            AllowedFilter::operator('points', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
+        ])
+        ->allowedSorts([
+            'id',
+            'points',
+        ])
+        ->paginate()
+        ->appends($request->query());
 
-        $query = PayRule::query();
-
-        $query = $filter->transform($request, $query);
-
-        return new PayRuleCollection(
-            $query->paginate()->appends($request->query())
-        ); 
+        return new PayRuleCollection($PayRules);
     }
 
     /**
@@ -57,6 +69,10 @@ class PayRuleController extends Controller
      */
     public function show(PayRule $payRule)
     {
+        $payRule = QueryBuilder::for(PayRule::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->findOrFail($payRule->id);
+
         return new PayRuleResource($payRule);
     }
 

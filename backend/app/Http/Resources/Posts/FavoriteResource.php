@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Posts;
 
+use App\Http\Resources\Account_User\AccountResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -16,8 +17,12 @@ class FavoriteResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'accountId' => $this->account_id,
-            'postId' => $this->post_id,
+            'account' => AccountResource::make(
+                $this->whenLoaded('account')
+            ),
+            'post' => PostResource::make(
+                $this->whenLoaded('post')
+            )
         ];
     }
 }

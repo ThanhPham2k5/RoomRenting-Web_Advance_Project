@@ -8,23 +8,38 @@ use App\Http\Resources\Account_User\UserCollection;
 use App\Http\Resources\Account_User\UserResource;
 use App\Models\Account_User\User;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\AllowedSort;
+use Spatie\QueryBuilder\Enums\FilterOperator;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class UserController extends Controller
 {
+    private $allowedIncludes = [
+        'account',
+        'personalInfo',
+        'posts',
+    ];
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $filter = new UserFilter();
+        $Users = QueryBuilder::for(User::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->allowedFilters([
+            AllowedFilter::exact('id'),
+            AllowedFilter::operator('points', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
+        ])
+        ->allowedSorts([
+            'id',
+            'points',
+        ])
+        ->paginate()
+        ->appends($request->query());
 
-        $query = User::query();
-
-        $query = $filter->transform($request, $query);
-
-        return new UserCollection(
-            $query->paginate()->appends($request->query())
-        );
+        return new UserCollection($Users);
     }
 
     /**
@@ -48,6 +63,10 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
+        $user = QueryBuilder::for(User::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->findOrFail($user->id);
+
         return new UserResource($user);
     }
 

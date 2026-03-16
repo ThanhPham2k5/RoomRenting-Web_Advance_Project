@@ -10,23 +10,46 @@ use App\Http\Requests\UpdateFormRequest;
 use App\Http\Resources\FormCollection;
 use App\Http\Resources\FormResource;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\AllowedSort;
+use Spatie\QueryBuilder\Enums\FilterOperator;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class FormController extends Controller
 {
+
+    private $allowedIncludes = [
+        'account',
+    ];
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $filter = new FormFilter();
+        $Forms = QueryBuilder::for(Form::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->allowedFilters([
+            AllowedFilter::exact('id'),
+            AllowedFilter::operator('priceMax', FilterOperator::DYNAMIC, '', 'price_max'), // =, <>, >, <, >=, <=
+            AllowedFilter::operator('priceMin', FilterOperator::DYNAMIC, '', 'price_min'), // =, <>, >, <, >=, <=
+            AllowedFilter::operator('area', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
+            AllowedFilter::partial('ward'),
+            AllowedFilter::partial('province'),
+            AllowedFilter::operator('roomType', FilterOperator::DYNAMIC, '', 'room_type'), // =, <>
+            AllowedFilter::operator('maxOccupants', FilterOperator::DYNAMIC, '', 'max_occupants'), // =, <>, >, <, >=, <=
+        ])
+        ->allowedSorts([
+            'id',
+            AllowedSort::field('priceMax','price_max'),
+            AllowedSort::field('priceMin','price_min'),
+            'area',
+            AllowedSort::field('maxOccupants','max_occupants')
+        ])
+        ->paginate()
+        ->appends($request->query());
 
-        $query = Form::query();
-
-        $query = $filter->transform($request, $query);
-
-        return new FormCollection(
-            $query->paginate()->appends($request->query())
-        );
+        return new FormCollection($Forms);
     }
 
     /**
@@ -57,6 +80,10 @@ class FormController extends Controller
      */
     public function show(Form $form)
     {
+        $form = QueryBuilder::for(Form::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->findOrFail($form->id);
+
         return new FormResource($form);
     }
 

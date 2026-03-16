@@ -9,6 +9,7 @@ class Favorite extends Model
 {
     /** @use HasFactory<\Database\Factories\FavoriteFactory> */
     use HasFactory;
+    protected $fillable = ['post_id', 'account_id'];
 
     protected static function newFactory()
     {

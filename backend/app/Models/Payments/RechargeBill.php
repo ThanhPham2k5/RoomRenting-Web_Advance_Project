@@ -10,6 +10,7 @@ class RechargeBill extends Model
 {
     /** @use HasFactory<\Database\Factories\RechargeBillFactory> */
     use HasFactory;
+    protected $fillable = ['money', 'total_money', 'vat', 'status', 'recharge_rule_id', 'account_id'];
 
     protected static function newFactory()
     {

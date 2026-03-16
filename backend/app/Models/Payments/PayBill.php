@@ -11,6 +11,7 @@ class PayBill extends Model
 {
     /** @use HasFactory<\Database\Factories\PayBillFactory> */
     use HasFactory;
+    protected $fillable = ['account_id', 'pay_rule_id', 'post_id', 'status', 'points'];
 
     protected static function newFactory()
     {

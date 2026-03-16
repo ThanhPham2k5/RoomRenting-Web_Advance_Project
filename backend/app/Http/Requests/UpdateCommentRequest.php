@@ -22,7 +22,9 @@ class UpdateCommentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'content' => 'required|string|min:1|max:1000'
+            'content' => 'required|string|min:1|max:1000',
+            'post_id' => 'required|exists:posts,id',
+            'account_id' => 'required|exists:accounts,id',
         ];
     }
 }

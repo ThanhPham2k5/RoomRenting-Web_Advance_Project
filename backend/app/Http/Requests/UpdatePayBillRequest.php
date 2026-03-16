@@ -11,7 +11,7 @@ class UpdatePayBillRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,11 @@ class UpdatePayBillRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'point' => 'required|integer|min:1',
+            'points' => 'required|integer|min:1',
+            'status' => 'required|string|in:completed,failed',
+            'account_id' => 'required|exists:accounts,id',
+            'pay_rule_id' => 'required|exists:pay_rules,id',
+            'post_id' => 'required|exists:posts,id',
         ];
     }
 }

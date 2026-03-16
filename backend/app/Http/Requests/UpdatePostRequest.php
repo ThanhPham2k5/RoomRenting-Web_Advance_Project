@@ -11,7 +11,7 @@ class UpdatePostRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -25,11 +25,17 @@ class UpdatePostRequest extends FormRequest
             'title' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
             'area' => 'required|numeric|min:0',
-            'houseNumber' => 'required|string|max:255',
+            'house_number' => 'required|string|max:255',
             'ward' => 'required|string|max:255',
             'province' => 'required|string|max:255',
             'description' => 'required|string',
             'deposit' => 'required|numeric|min:0',
+            'status' => 'required|string|in:rejected,pending,expired,completed,failed',
+            'room_type' => 'required|string|in:room,apartment,dorm',
+            'max_occupants' => 'required|integer|min:1',
+            'user_id' => 'required|exists:users,id',
+            'employee_id' => 'nullable|exists:employees,id',
+            'authorized' => 'required|boolean',
         ];
     }
 }

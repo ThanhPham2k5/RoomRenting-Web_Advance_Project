@@ -11,7 +11,7 @@ class StoreRechargeRuleRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,7 @@ class StoreRechargeRuleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'point' => 'required|integer|min:1',
+            'points' => 'required|integer|min:1',
             'money' => 'required|numeric|min:0.01',
         ];
     }

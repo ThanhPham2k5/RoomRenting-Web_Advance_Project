@@ -11,7 +11,7 @@ class StoreRechargeBillRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,10 @@ class StoreRechargeBillRequest extends FormRequest
         return [
             'money' => 'required|numeric|min:0.01',
             'total_money' => 'required|numeric|min:0.01',
+            'status' => 'required|in:completed,failed',
             'vat' => 'required|numeric|min:0',
+            'recharge_rule_id' => 'required|exists:recharge_rules,id',
+            'account_id' => 'required|exists:accounts,id',
         ];
     }
 }

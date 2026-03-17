@@ -31,19 +31,23 @@ class EmployeeController extends Controller
      */
     public function index(Request $request)
     {
-        $Employees = QueryBuilder::for(Employee::class)
+        $query = QueryBuilder::for(Employee::class)
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
             AllowedFilter::exact('id'),
             AllowedFilter::partial('account.username'),
-            AllowedFilter::operator(
-                'account.role',
-                FilterOperator::DYNAMIC // =, <>
-            ),
+            AllowedFilter::exact('account.role'),
         ])
-        ->allowedSorts($this->allowSorts)
-        ->paginate()
-        ->appends($request->query());
+        ->allowedSorts($this->allowSorts);
+
+        $perPage = $request->per_page ?? 15;
+
+        if ($perPage === 'all') {
+            $Employees = $query->get();
+        } else {
+            $Employees = $query->paginate((int) $perPage)
+                ->appends($request->query());
+        }
 
         return new EmployeeCollection($Employees);
     }

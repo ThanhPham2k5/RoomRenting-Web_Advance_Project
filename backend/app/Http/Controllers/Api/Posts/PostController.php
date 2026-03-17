@@ -33,7 +33,7 @@ class PostController extends Controller
      */
     public function index(Request $request)
     {
-        $Posts = QueryBuilder::for(Post::class)
+        $query = QueryBuilder::for(Post::class)
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
             AllowedFilter::exact('id'),
@@ -45,9 +45,9 @@ class PostController extends Controller
             AllowedFilter::partial('province'),
             AllowedFilter::partial('description'),
             AllowedFilter::operator('deposit', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
-            AllowedFilter::operator('status', FilterOperator::DYNAMIC), // =, <>
+            AllowedFilter::exact('status'),
             AllowedFilter::operator('authorized', FilterOperator::DYNAMIC), // =, <>
-            AllowedFilter::operator('roomType', FilterOperator::DYNAMIC, '', 'room_type'), // =, <>
+            AllowedFilter::exact('roomType', 'room_type'),
             AllowedFilter::operator('maxOccupants', FilterOperator::DYNAMIC, '', 'max_occupants'), // =, <>, >, <, >=, <=
         ])
         ->allowedSorts([
@@ -56,9 +56,16 @@ class PostController extends Controller
             'area',
             'deposit',
             AllowedSort::field('maxOccupants','max_occupants')
-        ])
-        ->paginate()
-        ->appends($request->query());
+        ]);
+
+        $perPage = $request->per_page ?? 15;
+
+        if ($perPage === 'all') {
+            $Posts = $query->get();
+        } else {
+            $Posts = $query->paginate((int) $perPage)
+                ->appends($request->query());
+        }
 
         return new PostCollection($Posts);
     }

@@ -38,17 +38,24 @@ class AccountController extends Controller
      */
     public function index(Request $request)
     {
-        $accounts = QueryBuilder::for(Account::class)
+        $query = QueryBuilder::for(Account::class)
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
             AllowedFilter::partial('username'),
             AllowedFilter::exact('id'),
 
-            AllowedFilter::operator('role', FilterOperator::DYNAMIC) // =, <>
+            AllowedFilter::exact('role')
         ])
-        ->allowedSorts($this->allowSorts)
-        ->paginate()
-        ->appends($request->query());
+        ->allowedSorts($this->allowSorts);
+
+        $perPage = $request->per_page ?? 15;
+
+        if ($perPage === 'all') {
+            $accounts = $query->get();
+        } else {
+            $accounts = $query->paginate((int) $perPage)
+                ->appends($request->query());
+        }
 
         return new AccountCollection($accounts);
     }

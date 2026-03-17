@@ -28,7 +28,7 @@ class NotificationController extends Controller
      */
     public function index(Request $request)
     {
-        $Notifications = QueryBuilder::for(Notification::class)
+        $query = QueryBuilder::for(Notification::class)
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
             AllowedFilter::exact('id'),
@@ -40,9 +40,16 @@ class NotificationController extends Controller
         ])
         ->allowedSorts([
             'id',
-        ])
-        ->paginate()
-        ->appends($request->query());
+        ]);
+
+        $perPage = $request->per_page ?? 15;
+
+        if ($perPage === 'all') {
+            $Notifications = $query->get();
+        } else {
+            $Notifications = $query->paginate((int) $perPage)
+                ->appends($request->query());
+        }
 
         return new NotificationCollection($Notifications);
     }

@@ -25,7 +25,7 @@ class PostImageController extends Controller
      */
     public function index(Request $request)
     {
-        $PostImages = QueryBuilder::for(PostImage::class)
+        $query = QueryBuilder::for(PostImage::class)
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
             AllowedFilter::exact('id'),
@@ -35,9 +35,16 @@ class PostImageController extends Controller
         ->allowedSorts([
             'id',
             'order'
-        ])
-        ->paginate()
-        ->appends($request->query());
+        ]);
+
+        $perPage = $request->per_page ?? 15;
+
+        if ($perPage === 'all') {
+            $PostImages = $query->get();
+        } else {
+            $PostImages = $query->paginate((int) $perPage)
+                ->appends($request->query());
+        }
 
         return new PostImageCollection($PostImages);
     }

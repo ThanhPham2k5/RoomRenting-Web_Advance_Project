@@ -25,16 +25,23 @@ class FavoriteController extends Controller
      */
     public function index(Request $request)
     {
-        $Favorites = QueryBuilder::for(Favorite::class)
+        $query = QueryBuilder::for(Favorite::class)
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
             AllowedFilter::exact('id'),
         ])
         ->allowedSorts([
             'id',
-        ])
-        ->paginate()
-        ->appends($request->query());
+        ]);
+
+        $perPage = $request->per_page ?? 15;
+
+        if ($perPage === 'all') {
+            $Favorites = $query->get();
+        } else {
+            $Favorites = $query->paginate((int) $perPage)
+                ->appends($request->query());
+        }
 
         return new FavoriteCollection($Favorites);
     }

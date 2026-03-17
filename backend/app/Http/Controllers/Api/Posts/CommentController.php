@@ -27,7 +27,7 @@ class CommentController extends Controller
      */
     public function index(Request $request)
     {
-        $Comments = QueryBuilder::for(Comment::class)
+        $query = QueryBuilder::for(Comment::class)
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
             AllowedFilter::exact('id'),
@@ -35,9 +35,16 @@ class CommentController extends Controller
         ])
         ->allowedSorts([
             'id',
-        ])
-        ->paginate()
-        ->appends($request->query());
+        ]);
+
+        $perPage = $request->per_page ?? 15;
+
+        if ($perPage === 'all') {
+            $Comments = $query->get();
+        } else {
+            $Comments = $query->paginate((int) $perPage)
+                ->appends($request->query());
+        }
 
         return new CommentCollection($Comments);
     }

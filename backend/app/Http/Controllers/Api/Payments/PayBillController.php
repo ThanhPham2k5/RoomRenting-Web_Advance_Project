@@ -28,19 +28,26 @@ class PayBillController extends Controller
      */
     public function index(Request $request)
     {
-        $PayBills = QueryBuilder::for(PayBill::class)
+        $query = QueryBuilder::for(PayBill::class)
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
             AllowedFilter::exact('id'),
             AllowedFilter::operator('points', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
-            AllowedFilter::operator('status', FilterOperator::DYNAMIC), // =, <>
+            AllowedFilter::exact('status'),
         ])
         ->allowedSorts([
             'id',
             'points',
-        ])
-        ->paginate()
-        ->appends($request->query());
+        ]);
+
+        $perPage = $request->per_page ?? 15;
+
+        if ($perPage === 'all') {
+            $PayBills = $query->get();
+        } else {
+            $PayBills = $query->paginate((int) $perPage)
+                ->appends($request->query());
+        }
 
         return new PayBillCollection($PayBills);
     }

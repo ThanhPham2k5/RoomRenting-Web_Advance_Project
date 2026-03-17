@@ -25,7 +25,7 @@ class PayRuleController extends Controller
      */
     public function index(Request $request)
     {
-        $PayRules = QueryBuilder::for(PayRule::class)
+        $query = QueryBuilder::for(PayRule::class)
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
             AllowedFilter::exact('id'),
@@ -34,9 +34,16 @@ class PayRuleController extends Controller
         ->allowedSorts([
             'id',
             'points',
-        ])
-        ->paginate()
-        ->appends($request->query());
+        ]);
+
+        $perPage = $request->per_page ?? 15;
+
+        if ($perPage === 'all') {
+            $PayRules = $query->get();
+        } else {
+            $PayRules = $query->paginate((int) $perPage)
+                ->appends($request->query());
+        }
 
         return new PayRuleCollection($PayRules);
     }

@@ -27,7 +27,7 @@ class FormController extends Controller
      */
     public function index(Request $request)
     {
-        $Forms = QueryBuilder::for(Form::class)
+        $query = QueryBuilder::for(Form::class)
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
             AllowedFilter::exact('id'),
@@ -36,7 +36,7 @@ class FormController extends Controller
             AllowedFilter::operator('area', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
             AllowedFilter::partial('ward'),
             AllowedFilter::partial('province'),
-            AllowedFilter::operator('roomType', FilterOperator::DYNAMIC, '', 'room_type'), // =, <>
+            AllowedFilter::exact('roomType', 'room_type'),
             AllowedFilter::operator('maxOccupants', FilterOperator::DYNAMIC, '', 'max_occupants'), // =, <>, >, <, >=, <=
         ])
         ->allowedSorts([
@@ -45,9 +45,16 @@ class FormController extends Controller
             AllowedSort::field('priceMin','price_min'),
             'area',
             AllowedSort::field('maxOccupants','max_occupants')
-        ])
-        ->paginate()
-        ->appends($request->query());
+        ]);
+
+        $perPage = $request->per_page ?? 15;
+
+        if ($perPage === 'all') {
+            $Forms = $query->get();
+        } else {
+            $Forms = $query->paginate((int) $perPage)
+                ->appends($request->query());
+        }
 
         return new FormCollection($Forms);
     }

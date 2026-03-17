@@ -25,7 +25,7 @@ class PersonalInfoController extends Controller
      */
     public function index(Request $request)
     {
-        $PersonalInfos = QueryBuilder::for(PersonalInfo::class)
+        $query = QueryBuilder::for(PersonalInfo::class)
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
             AllowedFilter::exact('id'),
@@ -40,9 +40,16 @@ class PersonalInfoController extends Controller
         ->allowedSorts([
             'id',
             AllowedSort::field('dateOfBirth', 'date_of_birth'),
-        ])
-        ->paginate()
-        ->appends($request->query());
+        ]);
+
+        $perPage = $request->per_page ?? 15;
+
+        if ($perPage === 'all') {
+            $PersonalInfos = $query->get();
+        } else {
+            $PersonalInfos = $query->paginate((int) $perPage)
+                ->appends($request->query());
+        }
 
         return new PersonalInfoCollection($PersonalInfos);
     }

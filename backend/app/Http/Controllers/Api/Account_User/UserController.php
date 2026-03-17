@@ -26,18 +26,26 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $Users = QueryBuilder::for(User::class)
+        $query = QueryBuilder::for(User::class)
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
             AllowedFilter::exact('id'),
             AllowedFilter::operator('points', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
+            AllowedFilter::exact('account.role'),
         ])
         ->allowedSorts([
             'id',
             'points',
-        ])
-        ->paginate()
-        ->appends($request->query());
+        ]);
+
+        $perPage = $request->per_page ?? 15;
+
+        if ($perPage === 'all') {
+            $Users = $query->get();
+        } else {
+            $Users = $query->paginate((int) $perPage)
+                ->appends($request->query());
+        }
 
         return new UserCollection($Users);
     }

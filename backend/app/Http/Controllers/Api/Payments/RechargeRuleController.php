@@ -26,7 +26,7 @@ class RechargeRuleController extends Controller
      */
     public function index(Request $request)
     {
-        $RechargeRules = QueryBuilder::for(RechargeRule::class)
+        $query = QueryBuilder::for(RechargeRule::class)
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
             AllowedFilter::exact('id'),
@@ -36,9 +36,16 @@ class RechargeRuleController extends Controller
         ->allowedSorts([
             'id',
             'points',
-        ])
-        ->paginate()
-        ->appends($request->query());
+        ]);
+
+        $perPage = $request->per_page ?? 15;
+
+        if ($perPage === 'all') {
+            $RechargeRules = $query->get();
+        } else {
+            $RechargeRules = $query->paginate((int) $perPage)
+                ->appends($request->query());
+        }
 
         return new RechargeRuleCollection($RechargeRules);
     }

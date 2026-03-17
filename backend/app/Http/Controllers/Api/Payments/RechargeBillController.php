@@ -28,22 +28,29 @@ class RechargeBillController extends Controller
      */
     public function index(Request $request)
     {
-        $RechargeBills = QueryBuilder::for(RechargeBill::class)
+        $query = QueryBuilder::for(RechargeBill::class)
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
             AllowedFilter::exact('id'),
             AllowedFilter::operator('money', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
             AllowedFilter::operator('totalMoney', FilterOperator::DYNAMIC, '', 'total_money'), // =, <>, >, <, >=, <=
             AllowedFilter::operator('vat', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
-            AllowedFilter::operator('status', FilterOperator::DYNAMIC), // =, <>
+            AllowedFilter::exact('status'),
         ])
         ->allowedSorts([
             'id',
             'money',
             AllowedSort::field('totalMoney', 'total_money')
-        ])
-        ->paginate()
-        ->appends($request->query());
+        ]);
+
+        $perPage = $request->per_page ?? 15;
+
+        if ($perPage === 'all') {
+            $RechargeBills = $query->get();
+        } else {
+            $RechargeBills = $query->paginate((int) $perPage)
+                ->appends($request->query());
+        }
 
         return new RechargeBillCollection($RechargeBills);
     }

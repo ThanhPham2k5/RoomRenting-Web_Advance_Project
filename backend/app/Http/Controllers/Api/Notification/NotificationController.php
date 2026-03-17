@@ -11,6 +11,8 @@ use App\Http\Resources\NotificationCollection;
 use App\Http\Resources\NotificationResource;
 use Illuminate\Http\Request;
 use App\Models\Posts\Post;
+use App\Models\Payments\Paybill;
+use App\Models\Payments\Rechargebill;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\Enums\FilterOperator;
 use Spatie\QueryBuilder\QueryBuilder;
@@ -68,11 +70,19 @@ class NotificationController extends Controller
     public function store(StoreNotificationRequest $request)
     {
         $validated = $request->validated();
-        
-        $post = Post::findOrFail($request->post_id);
+        // Based on the input variable to determine
+        if (!empty($request['post_id'])) {
+            $model = Post::findOrFail($request['post_id']);
+        } elseif (!empty($request['paybill_id'])) {
+            $model = Paybill::findOrFail($request['paybill_id']);
+        } elseif (!empty($request['rechargebill_id'])) {
+            $model = Rechargebill::findOrFail($request['rechargebill_id']);
+        } else {
+            return response()->json(['message' => 'Missing target'], 400);
+        }
 
         $notification = new Notification($validated);
-        $notification->notifiable()->associate($post);
+        $notification->notifiable()->associate($model);
 
         $notification->save();
 

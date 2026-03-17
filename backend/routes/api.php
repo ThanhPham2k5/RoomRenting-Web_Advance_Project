@@ -46,8 +46,11 @@ Route::middleware('auth:sanctum')->group(function () {
 /* API routes for Form 
     - FormController
 */
+Route::middleware('auth:sanctum')
+    ->get('/forms/recommendations', [FormController::class, 'getRecommendedPosts']);
 Route::apiResource('forms', FormController::class)
     ->middleware('auth:sanctum');
+
 
 /* API routes for Notification 
     - NotificationController

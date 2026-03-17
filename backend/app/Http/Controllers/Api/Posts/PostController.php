@@ -87,6 +87,8 @@ class PostController extends Controller
 
         $post = Post::create($validated);
 
+        // Add notification to new post creation
+
         return response()->json([
             'message' => 'Post created successfully',
             'post' => new PostResource($post)

@@ -135,6 +135,11 @@
     <?php renderComponent("title",false,$titleData) ?> 
     <div class="sb">
         <?php renderComponent("searchbar",false,$type) ?>
+        <div class="line"></div>
+        <div class="tab-pane">
+            <p class="item active">KHÁCH HÀNG</p>
+            <p class="item">NHÂN VIÊN</p>
+        </div>
     </div>
     <?php renderComponent("table",false,$tableData) ?>
 </div>

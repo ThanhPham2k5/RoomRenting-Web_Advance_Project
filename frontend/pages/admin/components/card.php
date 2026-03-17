@@ -1,3 +1,7 @@
+<?php
+$status = $status ?? 'expired';
+?>
+
 <div class="card">
     <img class="post-img" src="../../assets/admin/images/post_img.png" alt="">
     <p class="title">Phòng giá 5 tỷ/ tháng, đường Trương Phước Phan, phường Bình Trị Đông, quận Bình Tân</p>
@@ -12,8 +16,26 @@
         <p class="area">57.5 m²</p>
     </div>
     <div class="cta">
-        <button class="green">Duyệt bài</button>
-        <button class="yellow">Từ chối</button>
-        <button class="red">Gỡ bài</button>
+        <?php 
+            if($status === "pending"){
+        ?>
+            <button class="green">Duyệt bài</button>
+            <button class="yellow">Từ chối</button>
+        <?php 
+            }else if($status === "rejected"){
+        ?>
+            <button class="blue">Xem lý do</button>
+            <button class="red">Gỡ bài</button>
+        <?php
+            }else if($status === "active"){
+        ?>    
+            <button class="red">Gỡ bài</button>
+        <?php 
+            }else if($status === "deleted"){
+        ?>
+            <button class="blue">Xem lý do</button>
+        <?php
+            } 
+        ?>
     </div>
 </div>

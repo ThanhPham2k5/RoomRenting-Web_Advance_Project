@@ -1,4 +1,4 @@
-.account-page {
+.post-page {
     width: 1200px;
     margin-right: auto;
     margin-left: auto;
@@ -9,7 +9,7 @@
     gap: 30px;
     padding-bottom: 30px;
 }
-.account-page .sb{
+.post-page .sb{
     padding: 0 30px;
     width: 100%;
     display: flex;
@@ -18,26 +18,30 @@
     flex-direction: column;
     gap: 10px;
 }
-.account-page .sb .tab-pane{
+.post-page .sb .tab-pane{
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 20px;
 }
-.account-page .sb .tab-pane .item{
+.post-page .sb .tab-pane .item{
     font-size: 2.4rem;
     line-height: 3.2rem;
     font-weight: 600;
 }
-.account-page .sb .tab-pane .item:hover{
+.post-page .sb .tab-pane .item:hover{
     color: #F97316;
 }
-.account-page .sb .tab-pane .item.active{
+.post-page .sb .tab-pane .item.active{
     border-bottom: #F97316 solid 3px;
     color: #F97316;
 }
-.account-page .sb .line{
+.post-page .sb .line{
     background-color: #E6EAEF;
     height: 1px;
     width: 100%;
+}
+.post-page .post-list{
+    padding: 0 30px;
+    width: 1200px;
 }

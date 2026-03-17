@@ -1,5 +1,12 @@
 <?php
 require_once __DIR__ . '/core/function.php';
+
+$page = $_GET['page'] ?? 'overview';
+$validPage = ['overview', 'account', 'bill', 'comment', 'permission', 'post', 'price', 'sale'];
+
+if(!in_array($page, $validPage)){
+    $page = "overview";
+}
 ?>
 
 <!DOCTYPE html>
@@ -27,19 +34,24 @@ require_once __DIR__ . '/core/function.php';
     <link rel="stylesheet" href="../../css/admin/bill.css" />
     <link rel="stylesheet" href="../../css/admin/price.css" />
     <link rel="stylesheet" href="../../css/admin/card.css" />
+    <link rel="stylesheet" href="../../css/admin/pagination.css" />
+    <link rel="stylesheet" href="../../css/admin/postcontainer.css" />
+    <link rel="stylesheet" href="../../css/admin/postcontainer.css" />
+    <link rel="stylesheet" href="../../css/admin/post.css" />
+    <link rel="stylesheet" href="../../css/admin/form.css" />
 </head>
 <body>
-    <?php renderComponent("card",false) ?>
-    <!-- <div class="index-content">
+    <?php renderComponent("form",false) ?>
+    <div class="index-content">
         <div class="nav">
-            <?php // renderComponent("navigation",false) ?> 
+            <?php renderComponent("navigation",false, ['currentPage' => $page]) ?> 
         </div>
 
         <div class="main-page">
             <?php
-            //renderComponent('price', true);
+            renderComponent($page, true);
             ?>
         </div>
-    </div> -->
+    </div>
 </body>
 </html>

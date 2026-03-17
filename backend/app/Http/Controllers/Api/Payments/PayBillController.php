@@ -21,6 +21,7 @@ class PayBillController extends Controller
         'account',
         'payRule',
         'post',
+        'notifications'
     ];
 
     /**

@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Payments;
 
 use App\Http\Resources\Account_User\AccountResource;
+use App\Http\Resources\NotificationResource;
 use App\Http\Resources\Posts\PostResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -29,6 +30,9 @@ class PayBillResource extends JsonResource
             'payRule' => PayRuleResource::make(
                 $this->whenLoaded('payRule')
             ),
+            'notifications' => NotificationResource::collection(
+                $this->whenLoaded('notifications')
+            )
         ];
     }
 }

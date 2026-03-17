@@ -21,6 +21,7 @@ class RechargeBillController extends Controller
     private $allowedIncludes = [
         'account',
         'rechargeRule',
+        'notifications'
     ];
 
     /**

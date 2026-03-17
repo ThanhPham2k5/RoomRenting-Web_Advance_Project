@@ -3,6 +3,7 @@
 namespace App\Models\Payments;
 
 use App\Models\Account_User\Account;
+use App\Models\Notification\Notification;
 use App\Models\Posts\Post;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -28,6 +29,10 @@ class PayBill extends Model
 
     public function post(){
         return $this->belongsTo(Post::class);
+    }
+
+    public function notifications(){
+        return $this->morphMany(Notification::class, 'notifiable');
     }
 
 }

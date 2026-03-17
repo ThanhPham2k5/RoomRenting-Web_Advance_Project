@@ -3,6 +3,7 @@
 namespace App\Models\Payments;
 
 use App\Models\Account_User\Account;
+use App\Models\Notification\Notification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -23,5 +24,9 @@ class RechargeBill extends Model
 
     public function account(){
         return $this->belongsTo(Account::class);
+    }
+
+    public function notifications(){
+        return $this->morphMany(Notification::class, 'notifiable');
     }
 }

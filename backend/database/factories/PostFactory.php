@@ -70,6 +70,8 @@ class PostFactory extends Factory
                 'dorm'
             ]),
 
+            'next_payment_date' => $status === 'completed' ? now()->addMonth() : null,
+
             'max_occupants' => fake()->numberBetween(1,6),
 
             'user_id' => User::inRandomOrder()->first()->id,

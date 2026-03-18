@@ -14,6 +14,7 @@ use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedSort;
 use Spatie\QueryBuilder\Enums\FilterOperator;
 use Spatie\QueryBuilder\QueryBuilder;
+use App\Events\PostCreated;
 
 class PostController extends Controller
 {
@@ -88,6 +89,7 @@ class PostController extends Controller
         $post = Post::create($validated);
 
         // Add notification to new post creation
+        event(new PostCreated($post));
 
         return response()->json([
             'message' => 'Post created successfully',
@@ -141,4 +143,6 @@ class PostController extends Controller
             'message' => 'Post deleted successfully'
         ]);
     }
+
+
 }

@@ -54,4 +54,12 @@ if(!in_array($page, $validPage)){
         </div>
     </div>
 </body>
+<script>
+    function openModal(idModal) {
+        document.getElementById(idModal).style.display = 'flex';
+    }
+    function closeModal(idModal) {
+        document.getElementById(idModal).style.display = 'none';
+    }
+</script>
 </html>

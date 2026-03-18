@@ -1,5 +1,7 @@
 <?php 
-    $titleData = ['titleContent' => "Phân quyền", 'group' => false, 'insert' => true, 'edit' => true, 'delete' => true, 'handle' => false];
+    $permissionInsertForm = "modal-them-phan-quyen";
+    $permissionEditForm = "modal-sua-phan-quyen";
+    $titleData = ['targetModal' => $permissionInsertForm, 'targetModal1' => $permissionEditForm, 'titleContent' => "Phân quyền", 'group' => false, 'insert' => true, 'edit' => true, 'delete' => true, 'handle' => false];
     $tableHeader = ['Id', 'Tên quyền', 'Mô tả', 'Danh sách nhân viên', 'Chi tiết'];
     $type = ['type' => "1"];
     ob_start(); 
@@ -137,4 +139,6 @@
         <?php renderComponent("searchbar",false,$type) ?>
     </div>
     <?php renderComponent("table",false,$tableData) ?>
+    <?php renderComponent("form",false,['title' => 'Thêm quyền', 'idModal' => $permissionInsertForm]) ?>
+    <?php renderComponent("form",false,['title' => 'Sửa quyền', 'idModal' => $permissionEditForm]) ?>
 </div>

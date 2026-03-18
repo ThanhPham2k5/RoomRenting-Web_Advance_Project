@@ -1,7 +1,6 @@
 <?php 
-    $titleData = ['titleContent' => "Tổng quan", 'group' => false, 'insert' => true, 'edit' => false, 'delete' => false, 'handle' => true];
+    $titleData = ['titleContent' => "Tổng quan", 'group' => false, 'insert' => false, 'edit' => false, 'delete' => false, 'handle' => false];
     $tableHeader = ['Id', 'Người đăng bài', 'Thời gian', 'Tình trạng', 'Chi tiết'];
-
     ob_start(); 
     ?>
         <tr>

@@ -1,7 +1,12 @@
-<div class="modal-overlay">
+<?php
+    $title = $title ?? "";
+    $idModal = $idModal ?? "default-modal";
+?>
+
+<div class="modal-overlay" id="<?php echo $idModal; ?>">
     <div class="modal-content">
         <div class="modal-header">
-            <p>Thêm tài khoản</p>
+            <p><?php echo $title; ?></p>
         </div>
         <form action="" method="POST">
             
@@ -66,7 +71,7 @@
 
             <div class="modal-footer">
                 <button class="submit" type="submit">Lưu</button>
-                <button class="cancel" type="button">Hủy</button>                
+                <button class="cancel" type="button" onclick="closeModal('<?php echo $currentPage; ?>')">Hủy</button>                
             </div>
         </form>
     </div>

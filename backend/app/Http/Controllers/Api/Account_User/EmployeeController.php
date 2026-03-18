@@ -10,23 +10,46 @@ use App\Http\Requests\UpdateEmployeeRequest;
 use App\Http\Resources\Account_User\EmployeeCollection;
 use App\Http\Resources\Account_User\EmployeeResource;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\Enums\FilterOperator;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class EmployeeController extends Controller
 {
+    private $allowedIncludes = [
+        'account',
+        'personalInfo',
+        'posts',
+    ];
+
+    private $allowSorts = [
+        'id',
+    ];
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $filter = new EmployeeFilter();
+        $query = QueryBuilder::for(Employee::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->allowedFilters([
+            AllowedFilter::exact('id'),
+            AllowedFilter::partial('account.username'),
+            AllowedFilter::exact('account.role'),
+        ])
+        ->allowedSorts($this->allowSorts);
 
-        $query = Employee::query();
+        $perPage = $request->per_page ?? 15;
 
-        $query = $filter->transform($request, $query);
+        if ($perPage === 'all') {
+            $Employees = $query->get();
+        } else {
+            $Employees = $query->paginate((int) $perPage)
+                ->appends($request->query());
+        }
 
-        return new EmployeeCollection(
-            $query->paginate()->appends($request->query())
-        );
+        return new EmployeeCollection($Employees);
     }
 
     /**
@@ -50,6 +73,10 @@ class EmployeeController extends Controller
      */
     public function show(Employee $employee)
     {
+        $employee = QueryBuilder::for(Employee::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->findOrFail($employee->id);
+
         return new EmployeeResource($employee);
     }
 

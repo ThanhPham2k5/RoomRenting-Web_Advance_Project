@@ -10,23 +10,50 @@ use App\Http\Requests\UpdateRechargeBillRequest;
 use App\Http\Resources\Payments\RechargeBillCollection;
 use App\Http\Resources\Payments\RechargeBillResource;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\AllowedSort;
+use Spatie\QueryBuilder\Enums\FilterOperator;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class RechargeBillController extends Controller
 {
+
+    private $allowedIncludes = [
+        'account',
+        'rechargeRule',
+        'notifications'
+    ];
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $filter = new RechargeBillFilter();
+        $query = QueryBuilder::for(RechargeBill::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->allowedFilters([
+            AllowedFilter::exact('id'),
+            AllowedFilter::operator('money', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
+            AllowedFilter::operator('totalMoney', FilterOperator::DYNAMIC, '', 'total_money'), // =, <>, >, <, >=, <=
+            AllowedFilter::operator('vat', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
+            AllowedFilter::exact('status'),
+        ])
+        ->allowedSorts([
+            'id',
+            'money',
+            AllowedSort::field('totalMoney', 'total_money')
+        ]);
 
-        $query = RechargeBill::query();
+        $perPage = $request->per_page ?? 15;
 
-        $query = $filter->transform($request, $query);
+        if ($perPage === 'all') {
+            $RechargeBills = $query->get();
+        } else {
+            $RechargeBills = $query->paginate((int) $perPage)
+                ->appends($request->query());
+        }
 
-        return new RechargeBillCollection(
-            $query->paginate()->appends($request->query())
-        );
+        return new RechargeBillCollection($RechargeBills);
     }
 
     /**
@@ -42,7 +69,14 @@ class RechargeBillController extends Controller
      */
     public function store(StoreRechargeBillRequest $request)
     {
-        //
+        $validated = $request->validated();
+        
+        $rechargeBill = RechargeBill::create($validated);
+
+        return response()->json([
+            'message' => 'Recharge bill created successfully',
+            'rechargeBill' => new RechargeBillResource($rechargeBill)
+        ], 201);
     }
 
     /**
@@ -50,6 +84,10 @@ class RechargeBillController extends Controller
      */
     public function show(RechargeBill $rechargeBill)
     {
+        $rechargeBill = QueryBuilder::for(RechargeBill::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->findOrFail($rechargeBill->id);
+
         return new RechargeBillResource($rechargeBill);
     }
 
@@ -66,7 +104,14 @@ class RechargeBillController extends Controller
      */
     public function update(UpdateRechargeBillRequest $request, RechargeBill $rechargeBill)
     {
-        //
+        $validated = $request->validated();
+        
+        $rechargeBill->update($validated);
+
+        return response()->json([
+            'message' => 'Recharge bill updated successfully',
+            'rechargeBill' => new RechargeBillResource($rechargeBill)
+        ]);
     }
 
     /**
@@ -74,6 +119,10 @@ class RechargeBillController extends Controller
      */
     public function destroy(RechargeBill $rechargeBill)
     {
-        //
+        $rechargeBill->delete();
+
+        return response()->json([
+            'message' => 'Recharge bill deleted successfully'
+        ]);
     }
 }

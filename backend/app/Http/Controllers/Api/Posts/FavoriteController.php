@@ -8,15 +8,42 @@ use App\Http\Requests\StoreFavoriteRequest;
 use App\Http\Requests\UpdateFavoriteRequest;
 use App\Http\Resources\Posts\FavoriteCollection;
 use App\Http\Resources\Posts\FavoriteResource;
+use Illuminate\Http\Request;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\Enums\FilterOperator;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class FavoriteController extends Controller
 {
+    private $allowedIncludes = [
+        'account',
+        'post',
+    ];
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return new FavoriteCollection(Favorite::all());
+        $query = QueryBuilder::for(Favorite::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->allowedFilters([
+            AllowedFilter::exact('id'),
+        ])
+        ->allowedSorts([
+            'id',
+        ]);
+
+        $perPage = $request->per_page ?? 15;
+
+        if ($perPage === 'all') {
+            $Favorites = $query->get();
+        } else {
+            $Favorites = $query->paginate((int) $perPage)
+                ->appends($request->query());
+        }
+
+        return new FavoriteCollection($Favorites);
     }
 
     /**
@@ -32,7 +59,14 @@ class FavoriteController extends Controller
      */
     public function store(StoreFavoriteRequest $request)
     {
-        //
+        $validated = $request->validated();
+
+        $favorite = Favorite::create($validated);
+
+        return response()->json([
+            'message' => 'Favorite created successfully',
+            'favorite' => new FavoriteResource($favorite)
+        ], 201);
     }
 
     /**
@@ -40,6 +74,10 @@ class FavoriteController extends Controller
      */
     public function show(Favorite $favorite)
     {
+        $favorite = QueryBuilder::for(Favorite::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->findOrFail($favorite->id);
+
         return new FavoriteResource($favorite);
     }
 
@@ -56,7 +94,14 @@ class FavoriteController extends Controller
      */
     public function update(UpdateFavoriteRequest $request, Favorite $favorite)
     {
-        //
+        $validated = $request->validated();
+
+        $favorite->update($validated);
+
+        return response()->json([
+            'message' => 'Favorite updated successfully',
+            'favorite' => new FavoriteResource($favorite)
+        ]);
     }
 
     /**
@@ -64,6 +109,10 @@ class FavoriteController extends Controller
      */
     public function destroy(Favorite $favorite)
     {
-        //
+        $favorite->delete();
+
+        return response()->json([
+            'message' => 'Favorite deleted successfully'
+        ]);
     }
 }

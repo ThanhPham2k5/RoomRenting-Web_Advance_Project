@@ -10,23 +10,54 @@ use App\Http\Requests\UpdateAccountRequest;
 use App\Http\Resources\Account_User\AccountCollection;
 use App\Http\Resources\Account_User\AccountResource;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\Enums\FilterOperator;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class AccountController extends Controller
 {
+
+    private $allowedIncludes = [
+        'form',
+        'user',
+        'employee',
+        'user.posts',
+        'employee.posts',
+        'comments',
+        'favorites.post',
+        'rechargeBills',
+        'payBills'
+    ];
+
+    private $allowSorts = [
+        'id',
+    ];
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $filter = new AccountFilter();
+        $query = QueryBuilder::for(Account::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->allowedFilters([
+            AllowedFilter::partial('username'),
+            AllowedFilter::exact('id'),
 
-        $query = Account::query();
+            AllowedFilter::exact('role')
+        ])
+        ->allowedSorts($this->allowSorts);
 
-        $query = $filter->transform($request, $query);
+        $perPage = $request->per_page ?? 15;
 
-        return new AccountCollection(
-            $query->paginate()->appends($request->query())
-        );
+        if ($perPage === 'all') {
+            $accounts = $query->get();
+        } else {
+            $accounts = $query->paginate((int) $perPage)
+                ->appends($request->query());
+        }
+
+        return new AccountCollection($accounts);
     }
 
     /**
@@ -42,21 +73,20 @@ class AccountController extends Controller
      */
     public function store(StoreAccountRequest $request)
     {
-        $request->validated();
+        $validated = $request->validated();
         
         $account = Account::create([
-            'username' => $request->username,
-            'password' => bcrypt($request->password),
-            'role' => $request->role,
+            'username' => $validated['username'],
+            'password' => bcrypt($validated['password']),
+            'role' => $validated['role'],
         ]);
 
-        $token = $account->createToken($request->username);
+        $token = $account->createToken($validated['username']);
 
-        return 
-            [
-                new AccountResource($account),
-                'token' => $token->plainTextToken
-            ];
+        return response()->json([
+            'account' => new AccountResource($account),
+            'token' => $token->plainTextToken
+        ], 201);
     }
 
     /**
@@ -64,6 +94,10 @@ class AccountController extends Controller
      */
     public function show(Account $account)
     {
+        $account = QueryBuilder::for(Account::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->findOrFail($account->id);
+
         return new AccountResource($account);
     }
 

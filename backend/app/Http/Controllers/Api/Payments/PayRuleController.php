@@ -10,23 +10,42 @@ use App\Http\Requests\UpdatePayRuleRequest;
 use App\Http\Resources\Payments\PayRuleCollection;
 use App\Http\Resources\Payments\PayRuleResource;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\Enums\FilterOperator;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class PayRuleController extends Controller
 {
+    private $allowedIncludes = [
+        'payBills',
+    ];
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $filter = new PayRuleFilter();
+        $query = QueryBuilder::for(PayRule::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->allowedFilters([
+            AllowedFilter::exact('id'),
+            AllowedFilter::operator('points', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
+        ])
+        ->allowedSorts([
+            'id',
+            'points',
+        ]);
 
-        $query = PayRule::query();
+        $perPage = $request->per_page ?? 15;
 
-        $query = $filter->transform($request, $query);
+        if ($perPage === 'all') {
+            $PayRules = $query->get();
+        } else {
+            $PayRules = $query->paginate((int) $perPage)
+                ->appends($request->query());
+        }
 
-        return new PayRuleCollection(
-            $query->paginate()->appends($request->query())
-        ); 
+        return new PayRuleCollection($PayRules);
     }
 
     /**
@@ -42,7 +61,14 @@ class PayRuleController extends Controller
      */
     public function store(StorePayRuleRequest $request)
     {
-        //
+        $validated = $request->validated();
+        
+        $payRule = PayRule::create($validated);
+
+        return response()->json([
+            'message' => 'Pay rule created successfully',
+            'payRule' => new PayRuleResource($payRule)
+        ], 201);
     }
 
     /**
@@ -50,6 +76,10 @@ class PayRuleController extends Controller
      */
     public function show(PayRule $payRule)
     {
+        $payRule = QueryBuilder::for(PayRule::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->findOrFail($payRule->id);
+
         return new PayRuleResource($payRule);
     }
 
@@ -66,7 +96,14 @@ class PayRuleController extends Controller
      */
     public function update(UpdatePayRuleRequest $request, PayRule $payRule)
     {
-        //
+        $validated = $request->validated();
+        
+        $payRule->update($validated);
+
+        return response()->json([
+            'message' => 'Pay rule updated successfully',
+            'payRule' => new PayRuleResource($payRule)
+        ]);
     }
 
     /**
@@ -74,6 +111,10 @@ class PayRuleController extends Controller
      */
     public function destroy(PayRule $payRule)
     {
-        //
+        $payRule->delete();
+
+        return response()->json([
+            'message' => 'Pay rule deleted successfully'
+        ]);
     }
 }

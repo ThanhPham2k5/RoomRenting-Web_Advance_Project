@@ -16,6 +16,7 @@ class Post extends Model
 {
     /** @use HasFactory<\Database\Factories\PostFactory> */
     use HasFactory, SoftDeletes;
+    protected $fillable = ['title', 'description', 'price', 'area', 'house_number', 'ward', 'province', 'deposit', 'status', 'authorized', 'user_id', 'employee_id', 'room_type', 'max_occupants'];
 
     protected static function newFactory()
     {
@@ -46,7 +47,8 @@ class Post extends Model
         return $this->hasMany(PayBill::class);
     }
 
-    public function favoriteBy(){
-        return $this->belongsToMany(Account::class, 'favorite');
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class);
     }
 }

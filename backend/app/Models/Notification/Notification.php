@@ -11,6 +11,8 @@ class Notification extends Model
     /** @use HasFactory<\Database\Factories\NotificationFactory> */
     use HasFactory;
 
+    protected $fillable = ['title', 'content', 'notification_type', 'account_id', 'notifiable_type', 'notifiable_id', 'status'];
+
     public function account(){
         return $this->belongsTo(Account::class);
     }

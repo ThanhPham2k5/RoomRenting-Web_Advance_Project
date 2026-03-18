@@ -3,6 +3,7 @@
 namespace App\Models\Account_User;
 
 use App\Models\Notification\Notification;
+use App\Models\Posts\Post;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -23,6 +24,10 @@ class User extends Model
 
     public function account(){
         return $this->belongsTo(Account::class);
+    }
+
+    public function posts(){
+        return $this->hasMany(Post::class);
     }
 
     public function notifications(){

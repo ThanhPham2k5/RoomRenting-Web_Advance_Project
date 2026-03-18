@@ -10,23 +10,47 @@ use App\Http\Requests\UpdatePayBillRequest;
 use App\Http\Resources\Payments\PayBillCollection;
 use App\Http\Resources\Payments\PayBillResource;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\Enums\FilterOperator;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class PayBillController extends Controller
 {
+
+    private $allowedIncludes = [
+        'account',
+        'payRule',
+        'post',
+        'notifications'
+    ];
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $filter = new PayBillFilter();
+        $query = QueryBuilder::for(PayBill::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->allowedFilters([
+            AllowedFilter::exact('id'),
+            AllowedFilter::operator('points', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
+            AllowedFilter::exact('status'),
+        ])
+        ->allowedSorts([
+            'id',
+            'points',
+        ]);
 
-        $query = PayBill::query();
+        $perPage = $request->per_page ?? 15;
 
-        $query = $filter->transform($request, $query);
+        if ($perPage === 'all') {
+            $PayBills = $query->get();
+        } else {
+            $PayBills = $query->paginate((int) $perPage)
+                ->appends($request->query());
+        }
 
-        return new PayBillCollection(
-            $query->paginate()->appends($request->query())
-        );
+        return new PayBillCollection($PayBills);
     }
 
     /**
@@ -42,7 +66,14 @@ class PayBillController extends Controller
      */
     public function store(StorePayBillRequest $request)
     {
-        //
+        $validated = $request->validated();
+        
+        $payBill = PayBill::create($validated);
+
+        return response()->json([
+            'message' => 'Pay bill created successfully',
+            'payBill' => new PayBillResource($payBill)
+        ], 201);
     }
 
     /**
@@ -50,6 +81,10 @@ class PayBillController extends Controller
      */
     public function show(PayBill $payBill)
     {
+        $payBill = QueryBuilder::for(PayBill::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->findOrFail($payBill->id);
+
         return new PayBillResource($payBill);
     }
 
@@ -66,7 +101,14 @@ class PayBillController extends Controller
      */
     public function update(UpdatePayBillRequest $request, PayBill $payBill)
     {
-        //
+        $validated = $request->validated();
+        
+        $payBill->update($validated);
+
+        return response()->json([
+            'message' => 'Pay bill updated successfully',
+            'payBill' => new PayBillResource($payBill)
+        ]);
     }
 
     /**
@@ -74,6 +116,10 @@ class PayBillController extends Controller
      */
     public function destroy(PayBill $payBill)
     {
-        //
+        $payBill->delete();
+
+        return response()->json([
+            'message' => 'Pay bill deleted successfully'
+        ]);
     }
 }

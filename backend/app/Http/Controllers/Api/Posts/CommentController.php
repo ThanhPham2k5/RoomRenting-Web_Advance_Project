@@ -10,23 +10,43 @@ use App\Http\Requests\UpdateCommentRequest;
 use App\Http\Resources\Posts\CommentCollection;
 use App\Http\Resources\Posts\CommentResource;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\Enums\FilterOperator;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class CommentController extends Controller
 {
+
+    private $allowedIncludes = [
+        'account',
+        'post',
+    ];
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $filter = new CommentFilter();
+        $query = QueryBuilder::for(Comment::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->allowedFilters([
+            AllowedFilter::exact('id'),
+            AllowedFilter::partial('content')
+        ])
+        ->allowedSorts([
+            'id',
+        ]);
 
-        $query = Comment::query();
+        $perPage = $request->per_page ?? 15;
 
-        $query = $filter->transform($request, $query);
+        if ($perPage === 'all') {
+            $Comments = $query->get();
+        } else {
+            $Comments = $query->paginate((int) $perPage)
+                ->appends($request->query());
+        }
 
-        return new CommentCollection(
-            $query->paginate()->appends($request->query())
-        );
+        return new CommentCollection($Comments);
     }
 
     /**
@@ -42,7 +62,14 @@ class CommentController extends Controller
      */
     public function store(StoreCommentRequest $request)
     {
-        //
+        $validated = $request->validated();
+
+        $comment = Comment::create($validated);
+
+        return response()->json([
+            'message' => 'Comment created successfully',
+            'comment' => new CommentResource($comment)
+        ], 201);
     }
 
     /**
@@ -50,6 +77,10 @@ class CommentController extends Controller
      */
     public function show(Comment $comment)
     {
+        $comment = QueryBuilder::for(Comment::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->findOrFail($comment->id);
+
         return new CommentResource($comment);
     }
 
@@ -66,7 +97,14 @@ class CommentController extends Controller
      */
     public function update(UpdateCommentRequest $request, Comment $comment)
     {
-        //
+        $validated = $request->validated();
+
+        $comment->update($validated);
+
+        return response()->json([
+            'message' => 'Comment updated successfully',
+            'comment' => new CommentResource($comment)
+        ]);
     }
 
     /**
@@ -74,6 +112,10 @@ class CommentController extends Controller
      */
     public function destroy(Comment $comment)
     {
-        //
+        $comment->delete();
+
+        return response()->json([
+            'message' => 'Comment deleted successfully'
+        ]);
     }
 }

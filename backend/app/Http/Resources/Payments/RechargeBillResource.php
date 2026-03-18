@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources\Payments;
 
+use App\Http\Resources\Account_User\AccountResource;
+use App\Http\Resources\NotificationResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -20,8 +22,15 @@ class RechargeBillResource extends JsonResource
             'totalMoney' => $this->total_money,
             'vat' => $this->vat,
             'status' => $this->status,
-            'accountId' => $this->account_id,
-            'rechargeRuleId' => $this->recharge_rule_id,
+            'account' => AccountResource::make(
+                $this->whenLoaded('account')
+            ),
+            'rechargeRule' => RechargeRuleResource::make(
+                $this->whenLoaded('rechargeRule')
+            ),
+            'notifications' => NotificationResource::collection(
+                $this->whenLoaded('notifications')
+            )
         ];
     }
 }

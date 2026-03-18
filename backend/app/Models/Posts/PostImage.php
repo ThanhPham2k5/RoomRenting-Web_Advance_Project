@@ -9,6 +9,7 @@ class PostImage extends Model
 {
     /** @use HasFactory<\Database\Factories\PostImageFactory> */
     use HasFactory;
+        protected $fillable = ['post_id', 'image_post_url', 'order'];
 
     protected static function newFactory()
     {

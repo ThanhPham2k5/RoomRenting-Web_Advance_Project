@@ -11,7 +11,7 @@ class UpdatePostImageRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,9 @@ class UpdatePostImageRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'post_id' => 'required|integer|exists:posts,id',
+            'image_post_url' => 'required',
+            'order' => 'nullable|integer',
         ];
     }
 }

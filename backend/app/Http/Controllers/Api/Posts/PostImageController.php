@@ -8,15 +8,45 @@ use App\Http\Requests\StorePostImageRequest;
 use App\Http\Requests\UpdatePostImageRequest;
 use App\Http\Resources\Posts\PostImageCollection;
 use App\Http\Resources\Posts\PostImageResource;
+use Illuminate\Http\Request;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\Enums\FilterOperator;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class PostImageController extends Controller
 {
+
+    private $allowedIncludes = [
+        'post',
+    ];
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return new PostImageCollection(PostImage::all());
+        $query = QueryBuilder::for(PostImage::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->allowedFilters([
+            AllowedFilter::exact('id'),
+            AllowedFilter::operator('order', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
+            AllowedFilter::operator('post.id', FilterOperator::DYNAMIC) // =, <>, >, <, >=, <=
+        ])
+        ->allowedSorts([
+            'id',
+            'order'
+        ]);
+
+        $perPage = $request->per_page ?? 15;
+
+        if ($perPage === 'all') {
+            $PostImages = $query->get();
+        } else {
+            $PostImages = $query->paginate((int) $perPage)
+                ->appends($request->query());
+        }
+
+        return new PostImageCollection($PostImages);
     }
 
     /**
@@ -32,7 +62,14 @@ class PostImageController extends Controller
      */
     public function store(StorePostImageRequest $request)
     {
-        //
+        $validated = $request->validated();
+
+        $postImage = PostImage::create($validated);
+
+        return response()->json([
+            'message' => 'Post image created successfully',
+            'post_image' => new PostImageResource($postImage)
+        ], 201);
     }
 
     /**
@@ -40,6 +77,10 @@ class PostImageController extends Controller
      */
     public function show(PostImage $postImage)
     {
+        $postImage = QueryBuilder::for(PostImage::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->findOrFail($postImage->id);
+
         return new PostImageResource($postImage);
     }
 
@@ -56,7 +97,14 @@ class PostImageController extends Controller
      */
     public function update(UpdatePostImageRequest $request, PostImage $postImage)
     {
-        //
+        $validated = $request->validated();
+
+        $postImage->update($validated);
+
+        return response()->json([
+            'message' => 'Post image updated successfully',
+            'post_image' => new PostImageResource($postImage)
+        ]);
     }
 
     /**
@@ -64,6 +112,10 @@ class PostImageController extends Controller
      */
     public function destroy(PostImage $postImage)
     {
-        //
+        $postImage->delete();
+
+        return response()->json([
+            'message' => 'Post image deleted successfully'
+        ]);
     }
 }

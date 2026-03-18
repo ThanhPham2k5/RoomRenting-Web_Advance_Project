@@ -8,23 +8,46 @@ use App\Http\Resources\Account_User\UserCollection;
 use App\Http\Resources\Account_User\UserResource;
 use App\Models\Account_User\User;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\AllowedSort;
+use Spatie\QueryBuilder\Enums\FilterOperator;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class UserController extends Controller
 {
+    private $allowedIncludes = [
+        'account',
+        'personalInfo',
+        'posts',
+    ];
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $filter = new UserFilter();
+        $query = QueryBuilder::for(User::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->allowedFilters([
+            AllowedFilter::exact('id'),
+            AllowedFilter::operator('points', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
+            AllowedFilter::exact('account.role'),
+        ])
+        ->allowedSorts([
+            'id',
+            'points',
+        ]);
 
-        $query = User::query();
+        $perPage = $request->per_page ?? 15;
 
-        $query = $filter->transform($request, $query);
+        if ($perPage === 'all') {
+            $Users = $query->get();
+        } else {
+            $Users = $query->paginate((int) $perPage)
+                ->appends($request->query());
+        }
 
-        return new UserCollection(
-            $query->paginate()->appends($request->query())
-        );
+        return new UserCollection($Users);
     }
 
     /**
@@ -48,6 +71,10 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
+        $user = QueryBuilder::for(User::class)
+        ->allowedIncludes($this->allowedIncludes)
+        ->findOrFail($user->id);
+
         return new UserResource($user);
     }
 

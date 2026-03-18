@@ -17,9 +17,7 @@ use App\Http\Controllers\Api\Payments\PayRuleController;
 use App\Http\Controllers\Api\Payments\RechargeBillController;
 use App\Http\Controllers\Api\Payments\RechargeRuleController;
 use App\Http\Controllers\AuthController;
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
+
 
 /* API routes for Account_User 
     - AccountController
@@ -38,32 +36,42 @@ Route::apiResource('personalInfos', PersonalInfoController::class);
     - PostImageController
     - FavoriteController
 */
-Route::apiResource('comments', CommentController::class);
-Route::apiResource('posts', PostController::class);
-Route::apiResource('postImages', PostImageController::class);
-Route::apiResource('favorites', FavoriteController::class);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('comments', CommentController::class);
+    Route::apiResource('posts', PostController::class);
+    Route::apiResource('postImages', PostImageController::class);
+    Route::apiResource('favorites', FavoriteController::class);
+});
 
 /* API routes for Form 
     - FormController
 */
-Route::apiResource('forms', FormController::class);
+Route::middleware('auth:sanctum')
+    ->get('/forms/recommendations', [FormController::class, 'getRecommendedPosts']);
+Route::apiResource('forms', FormController::class)
+    ->middleware('auth:sanctum');
+
 
 /* API routes for Notification 
     - NotificationController
+    - markAsRead method for NotificationController
 */
-Route::apiResource('notifications', NotificationController::class);
-
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('notifications', NotificationController::class);
+    Route::put('/notifications/{notification}/mark-as-read', [NotificationController::class, 'markAsRead']);
+});
 /* API routes for Payments 
     - PayBillController
     - PayRuleController
     - RechargeBillController
     - RechargeRuleController
 */
-Route::apiResource('payBills', PayBillController::class);
-Route::apiResource('payRules', PayRuleController::class);
-Route::apiResource('rechargeBills', RechargeBillController::class);
-Route::apiResource('rechargeRules', RechargeRuleController::class);
-
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('payBills', PayBillController::class);
+    Route::apiResource('payRules', PayRuleController::class);
+    Route::apiResource('rechargeBills', RechargeBillController::class);
+    Route::apiResource('rechargeRules', RechargeRuleController::class);
+});
 /* API routes for Auth 
     - AuthController
 */

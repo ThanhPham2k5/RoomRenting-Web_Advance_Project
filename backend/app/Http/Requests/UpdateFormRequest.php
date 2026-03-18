@@ -11,7 +11,7 @@ class UpdateFormRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,13 @@ class UpdateFormRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'price_max' => 'nullable|numeric|min:0',
+            'price_min' => 'nullable|numeric|min:0',
+            'area' => 'nullable|numeric|min:0',
+            'ward' => 'nullable|string|max:255',
+            'province' => 'nullable|string|max:255',
+            'room_type' => 'nullable|in:room,apartment,dorm',
+            'max_occupants' => 'nullable|integer|min:1',
         ];
     }
 }

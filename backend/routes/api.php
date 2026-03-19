@@ -82,11 +82,11 @@ Route::middleware(['auth:sanctum', 'permission:personalInfo.getAll'])->group(fun
 
 
 //Post
-Route::middleware(['permission:post.get'])->group(function(){
+Route::middleware(['auth:sanctum','permission:post.get'])->group(function(){
     Route::get('/posts/{post}', [PostController::class, 'show']);
 });
     
-Route::middleware(['permission:post.getAll'])->group(function(){
+Route::middleware(['auth:sanctum','permission:post.getAll'])->group(function(){
     Route::get('/posts', [PostController::class, 'index']);
 });
 
@@ -105,11 +105,11 @@ Route::middleware(['auth:sanctum', 'permission:post.delete'])->group(function(){
 
 
 //Comment
-Route::middleware(['permission:comment.get'])->group(function(){
+Route::middleware(['auth:sanctum','permission:comment.get'])->group(function(){
     Route::get('/comments/{comment}', [CommentController::class, 'show']);
 });
     
-Route::middleware(['permission:comment.getAll'])->group(function(){
+Route::middleware(['auth:sanctum','permission:comment.getAll'])->group(function(){
     Route::get('/comments', [CommentController::class, 'index']);
 });
 
@@ -127,11 +127,11 @@ Route::middleware(['auth:sanctum', 'permission:comment.delete'])->group(function
 
 
 //Favorite
-Route::middleware(['permission:favorite.get'])->group(function(){
+Route::middleware(['auth:sanctum','permission:favorite.get'])->group(function(){
     Route::get('/favorites/{favorite}', [FavoriteController::class, 'show']);
 });
     
-Route::middleware(['permission:favorite.getAll'])->group(function(){
+Route::middleware(['auth:sanctum','permission:favorite.getAll'])->group(function(){
     Route::get('/favorites', [FavoriteController::class, 'index']);
 });
 
@@ -180,7 +180,7 @@ Route::middleware(['auth:sanctum', 'permission:form.update'])->group(function(){
 Route::middleware(['auth:sanctum', 'permission:form.delete'])->group(function(){
     Route::delete('/forms/{form}', [FormController::class, 'destroy']);
 });
-Route::middleware('auth:sanctum', 'permission:form.getRecommendation')
+Route::middleware(['auth:sanctum', 'permission:form.getRecommendation'])
     ->get('/forms/recommendations', [FormController::class, 'getRecommendedPosts']);
 
 

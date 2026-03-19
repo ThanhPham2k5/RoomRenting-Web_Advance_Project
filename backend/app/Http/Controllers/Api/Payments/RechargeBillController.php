@@ -14,6 +14,7 @@ use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedSort;
 use Spatie\QueryBuilder\Enums\FilterOperator;
 use Spatie\QueryBuilder\QueryBuilder;
+use App\Events\RechargeBillCreated;
 
 class RechargeBillController extends Controller
 {
@@ -72,6 +73,10 @@ class RechargeBillController extends Controller
         $validated = $request->validated();
         
         $rechargeBill = RechargeBill::create($validated);
+
+        // Chưa cộng điểm vào tài khoảng
+
+        event(new RechargeBillCreated($rechargeBill));
 
         return response()->json([
             'message' => 'Recharge bill created successfully',

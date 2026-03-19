@@ -25,6 +25,7 @@ return new class extends Migration
             $table->boolean('authorized');
             $table->enum('room_type', ['room', 'apartment', 'dorm']);
             $table->integer('max_occupants');
+            $table->date('next_payment_date')->nullable();
 
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('employee_id')->nullable()->constrained()->nullOnDelete(); //post that haven't got approve doesn't have employee_id 

@@ -159,6 +159,8 @@ Route::middleware(['auth:sanctum', 'permission:delete form'])->group(function(){
 });
 
 //TODO: replace with permissions
+Route::middleware('auth:sanctum')
+    ->get('/forms/recommendations', [FormController::class, 'getRecommendedPosts']);
 Route::apiResource('forms', FormController::class)
     ->middleware('auth:sanctum');
 

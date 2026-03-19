@@ -21,7 +21,7 @@ return new class extends Migration
             $table->enum('notification_type', ['news', 'transaction']);
             
             $table->foreignId('account_id')->constrained()->cascadeOnDelete();
-            $table->morphs('notifiable'); //polymorphic, could be from comment, post, recharge, pay
+            $table->morphs('notifiable'); //polymorphic, could be from post, recharge, pay
             // creates:
             // notifiable_id
             // notifiable_type

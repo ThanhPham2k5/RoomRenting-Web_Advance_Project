@@ -16,22 +16,27 @@ class FavoriteSeeder extends Seeder
      */
     public function run(): void
     {
-        // Favorite::factory()->count(80)->create();
-
-        $accounts = Account::pluck('id');
-        $posts = Post::pluck('id');
+        // only normal users
+        $accounts = Account::role('user')->pluck('id');
+        $posts = Post::where('status', 'completed')->pluck('id'); // only approved post
 
         $favorites = [];
 
         foreach ($accounts as $account) {
 
-            $randomPosts = $posts->random(rand(1,3));
+            // 0–8 favorites
+            $count = rand(0, 8);
+
+            if ($count === 0) continue;
+
+            // pick random posts (no duplicates automatically)
+            $randomPosts = $posts->random(min($count, $posts->count()));
 
             foreach ($randomPosts as $post) {
                 $favorites[] = [
                     'account_id' => $account,
                     'post_id' => $post,
-                    'created_at' => now(),
+                    'created_at' => now()->subDays(rand(0, 10)),
                     'updated_at' => now(),
                 ];
             }

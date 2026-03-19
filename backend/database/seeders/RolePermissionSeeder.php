@@ -20,76 +20,96 @@ class RolePermissionSeeder extends Seeder
         //Permissions
         $permissions = [
             //Post
-            'create post',
-            'update post',
-            'delete post',
-            'view post',
-            'view all post',
+            'post.create',
+            'post.update',
+            'post.delete',
+            'post.get',
+            'post.getAll',
 
             //Comment
-            'create comment',
-            'update comment',
-            'delete comment',
-            'view comment',
+            'comment.create',
+            'comment.update',
+            'comment.delete',
+            'comment.get',
+            'comment.getAll',
+
+            //Favorite
+            'favorite.create',
+            'favorite.delete',
+            'favorite.get',
+            'favorite.getAll',
 
             //Bill
-            'create payBill',
-            'create payRule',
-            'update payBill',
-            'update payRule',
-            'delete payBill',
-            'delete payRule',
-            'view payBill',
-            'view payRule',
+            'payBill.create',
+            'payRule.create',
+            'payBill.update',
+            'payRule.update',
+            'payBill.delete',
+            'payRule.delete',
+            'payBill.get',
+            'payBill.getAll',
+            'payRule.get',
+            'payRule.getAll',
 
             //Recharge
-            'create rechargeBill',
-            'create rechargeRule',
-            'update rechargeBill',
-            'update rechargeRule',
-            'delete rechargeBill',
-            'delete rechargeRule',
-            'view rechargeBill',
-            'view rechargeRule',
+            'rechargeBill.create',
+            'rechargeRule.create',
+            'rechargeBill.update',
+            'rechargeRule.update',
+            'rechargeBill.delete',
+            'rechargeRule.delete',
+            'rechargeBill.get',
+            'rechargeBill.getAll',
+            'rechargeRule.get',
+            'rechargeRule.getAll',
 
             //Form
-            'update form',
-            'view form',
-            'view all form',
+            'form.create',
+            'form.update',
+            'form.get',
+            'form.getAll',
+            'form.getRecommendation',
+
+            //Notification
+            'notification.create',
+            'notification.update',
+            'notification.get',
+            'notification.delete',
+            'notification.getAll',
 
             //Account
-            'create account',
-            'update account',
-            'delete account',
-            'view account',
-            'view all account',
+            'account.create',
+            'account.update',
+            'account.delete',
+            'account.get',
+            'account.getAll',
 
             //User
-            'create user',
-            'update user',
-            'delete user',
-            'view user',
-            'view all user',
+            'user.create',
+            'user.update',
+            'user.delete',
+            'user.get',
+            'user.getAll',
 
             //Employee
-            'create employee',
-            'update employee',
-            'delete employee',
-            'view employee',
-            'view all employee',
+            'employee.create',
+            'employee.update',
+            'employee.delete',
+            'employee.get',
+            'employee.getAll',
 
             //PersonalInfo
-            'create personalInfo',
-            'update personalInfo',
-            'delete personalInfo',
-            'view personalInfo',
-            'view all personalInfo',
+            'personalInfo.create',
+            'personalInfo.update',
+            'personalInfo.delete',
+            'personalInfo.get',
+            'personalInfo.getAll',
         ];
+
 
         foreach($permissions as $permission)
             Permission::create(['name' => $permission, 'guard_name' => 'api']);
         
-
         //Roles
         $admin = Role::create(['name' => 'admin', 'guard_name' => 'api']);
         $postManager = Role::create(['name' => 'postManager', 'guard_name' => 'api']);
@@ -101,80 +121,116 @@ class RolePermissionSeeder extends Seeder
         //Assign Roles
         $admin->givePermissionTo(Permission::all());
         $postManager->givePermissionTo([
-            'create post',
-            'update post',
-            'delete post',
-            'view post'
+            'post.create',
+            'post.update',
+            'post.delete',
+            'post.get',
+            'post.getAll'
         ]);
         $billManager->givePermissionTo([
             //Bill
-            'create payRule',
-            'update payBill',
-            'update payRule',
-            'delete payBill',
-            'delete payRule',
-            'view payBill',
-            'view payRule',
+            'payRule.create',
+            'payBill.update',
+            'payRule.update',
+            'payBill.delete',
+            'payRule.delete',
+            'payBill.get',
+            'payBill.getAll',
+            'payRule.get',
+            'payRule.getAll',
 
             //Recharge
-            'create rechargeRule',
-            'update rechargeBill',
-            'update rechargeRule',
-            'delete rechargeBill',
-            'delete rechargeRule',
-            'view rechargeBill',
-            'view rechargeRule',
+            'rechargeRule.create',
+            'rechargeBill.update',
+            'rechargeRule.update',
+            'rechargeBill.delete',
+            'rechargeRule.delete',
+            'rechargeBill.get',
+            'rechargeBill.getAll',
+            'rechargeRule.get',
+            'rechargeRule.getAll',
         ]);
         $userManager->givePermissionTo([
             //Account
-            'create account',
-            'update account',
-            'delete account',
-            'view account',
-            'view all account',
+            'account.create',
+            'account.update',
+            'account.delete',
+            'account.get',
+            'account.getAll',
 
             //User
-            'create user',
-            'update user',
-            'delete user',
-            'view user',
-            'view all user',
+            'user.create',
+            'user.update',
+            'user.delete',
+            'user.get',
+            'user.getAll',
 
             //Employee
-            'create employee',
-            'update employee',
-            'delete employee',
-            'view employee',
-            'view all employee',
+            'employee.create',
+            'employee.update',
+            'employee.delete',
+            'employee.get',
+            'employee.getAll',
 
             //PersonalInfo
-            'create personalInfo',
-            'update personalInfo',
-            'delete personalInfo',
-            'view personalInfo',
-            'view all personalInfo',
+            'personalInfo.create',
+            'personalInfo.update',
+            'personalInfo.delete',
+            'personalInfo.get',
+            'personalInfo.getAll',
         ]);
         $user->givePermissionTo([
-            'create account',
-            'create user',
-            'create rechargeBill',
-            'create post',
-            'create payBill',
-            'create comment',
-            'create personalInfo',
-            'update personalInfo',
-            'update form',
-            'update comment',
-            'delete comment',
-            'view account',
-            'view user',
-            'view personalInfo',
-            'view comment',
-            'view post',
-            'view all post',
-            'view payBill',
-            'view rechargeBill',
-            'view form',
+            //Account
+            'account.create',
+            'account.get',
+        
+            //User
+            'user.create',
+            'user.get',
+
+            //PersonalInfo
+            'personalInfo.create',
+            'personalInfo.update',
+            'personalInfo.get',
+
+            //RecchargeBill
+            'rechargeBill.create',
+            'rechargeBill.get',
+
+            //PayBill
+            'payBill.create',
+            'payBill.get',
+
+            //Post
+            'post.create',
+            'post.get',
+            'post.getAll',
+
+            //Comment
+            'comment.create',
+            'comment.update',
+            'comment.get',
+            'comment.getAll',
+            'comment.delete',
+
+            //Favorite
+            'favorite.create',
+            'favorite.delete',
+            'favorite.get',
+            'favorite.getAll',
+
+            //Form
+            'form.create',
+            'form.update',
+            'form.get',
+            'form.getRecommendation',
+
+            //Notification
+            'notification.create',
+            'notification.update',
+            'notification.get',
+            'notification.delete',
+            'notification.getAll',
         ]);
     }
 }

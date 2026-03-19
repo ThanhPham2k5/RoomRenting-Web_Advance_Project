@@ -16,6 +16,6 @@ class RechargeRuleSeeder extends Seeder
      */
     public function run(): void
     {
-        RechargeRuleFactory::new()->count(40)->create();
+        RechargeRuleFactory::new()->count(5)->create();
     }
 }

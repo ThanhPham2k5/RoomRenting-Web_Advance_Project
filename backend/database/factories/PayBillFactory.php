@@ -23,11 +23,7 @@ class PayBillFactory extends Factory
     public function definition(): array
     {
         return [
-            'points' => $this->faker->numberBetween(10, 1000),
-            'status' => $this->faker->randomElement(['completed', 'pending', 'failed']),
-            'account_id' => Account::inRandomOrder()->first()->id,
-            'post_id' => Post::inRandomOrder()->first()->id,
-            'pay_rule_id' => PayRule::inRandomOrder()->first()->id,
+            'status' => fake()->randomElement(['completed', 'pending', 'failed']),
         ];
     }
 

@@ -19,12 +19,8 @@ class PostImageFactory extends Factory
      */
     public function definition(): array
     {
-        return [
-            'image_post_url' => fake()->imageUrl(800,600,'house'),
-
-            'order' => fake()->numberBetween(1,6),
-
-            'post_id' => Post::inRandomOrder()->first()->id,
+         return [
+            'image_post_url' => fake()->imageUrl(800, 600, 'house'),
         ];
     }
 }

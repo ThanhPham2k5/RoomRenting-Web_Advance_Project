@@ -17,7 +17,6 @@ return new class extends Migration
             $table->integer('points');
             $table->enum('status', ['completed', 'pending', 'failed']);
             
-            // 1-n relationship with accounts, posts, and pay_rules
             $table->foreignId('account_id')->constrained()->cascadeOnDelete();
             $table->foreignId('post_id')->constrained()->cascadeOnDelete();
             $table->foreignId('pay_rule_id')->constrained()->cascadeOnDelete();

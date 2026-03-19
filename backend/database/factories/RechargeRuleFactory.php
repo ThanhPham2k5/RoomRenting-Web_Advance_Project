@@ -21,7 +21,7 @@ class RechargeRuleFactory extends Factory
     {
         return [
             'points' => $this->faker->numberBetween(100, 5000),
-            'money' => $this->faker->randomFloat(2, 50000, 500000),
+            'money' => $this->faker->numberBetween(50000, 500000),
         ];
     }
 
@@ -43,26 +43,26 @@ class RechargeRuleFactory extends Factory
      *
      * @return static
      */
-    public function standard(): static
-    {
-        return $this->state(fn(array $attributes) => [
-            'points' => $this->faker->numberBetween(500, 2000),
-            'money' => $this->faker->randomFloat(2, 100000, 300000),
-        ]);
-    }
+    // public function standard(): static
+    // {
+    //     return $this->state(fn(array $attributes) => [
+    //         'points' => $this->faker->numberBetween(500, 2000),
+    //         'money' => $this->faker->randomFloat(2, 100000, 300000),
+    //     ]);
+    // }
 
-    /**
-     * Indicate that the recharge rule is a premium option (high points and money).
-     *
-     * @return static
-     */
-    public function premium(): static
-    {
-        return $this->state(fn(array $attributes) => [
-            'points' => $this->faker->numberBetween(2000, 5000),
-            'money' => $this->faker->randomFloat(2, 300000, 500000),
-        ]);
-    }
+    // /**
+    //  * Indicate that the recharge rule is a premium option (high points and money).
+    //  *
+    //  * @return static
+    //  */
+    // public function premium(): static
+    // {
+    //     return $this->state(fn(array $attributes) => [
+    //         'points' => $this->faker->numberBetween(2000, 5000),
+    //         'money' => $this->faker->randomFloat(2, 300000, 500000),
+    //     ]);
+    // }
 
     /**
      * Set a specific number of points for the recharge rule.

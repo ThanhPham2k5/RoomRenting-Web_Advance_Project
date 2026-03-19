@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('forms', function (Blueprint $table) {
             $table->id();
-            $table->decimal('price_max', 10, 2)->nullable();
-            $table->decimal('price_min', 10, 2)->nullable();
+            $table->decimal('price_max', 12, 0)->nullable();
+            $table->decimal('price_min', 12, 0)->nullable();
             $table->decimal('area', 8, 2)->nullable();
             $table->string('ward')->nullable();
             $table->string('province')->nullable();

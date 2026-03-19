@@ -14,6 +14,6 @@ class PayRuleSeeder extends Seeder
      */
     public function run(): void
     {
-        PayRuleFactory::new()->count(40)->create();
+        PayRuleFactory::new()->count(5)->create();
     }
 }

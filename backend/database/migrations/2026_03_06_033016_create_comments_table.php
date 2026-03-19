@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('account_id')->constrained()->cascadeOnDelete();
             $table->foreignId('post_id')->constrained()->cascadeOnDelete();
 
+            $table->index(['post_id']);
             $table->timestamps();
         });
     }

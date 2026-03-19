@@ -17,7 +17,7 @@ class FormSeeder extends Seeder
     public function run(): void
     {
         // Create forms for rooms
-        $accounts = Account::all();
+        $accounts = Account::role('user')->get();
 
         foreach ($accounts as $account) {
             Form::factory()->create([

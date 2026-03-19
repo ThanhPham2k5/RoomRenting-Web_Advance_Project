@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
 
             $table->integer('points');
-            $table->decimal('money', 10, 2);
+            $table->decimal('money', 12, 0);
             
             $table->softDeletes();
             $table->timestamps();

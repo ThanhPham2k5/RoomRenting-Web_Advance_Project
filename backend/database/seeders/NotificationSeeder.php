@@ -25,7 +25,7 @@ class NotificationSeeder extends Seeder
         $notifiables = $posts
             ->concat($recharges)
             ->concat($pays)
-            ->random();
+            ->random(30);
 
         foreach ($notifiables as $model) {
 

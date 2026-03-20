@@ -62,7 +62,8 @@ class PayRuleController extends Controller
     public function store(StorePayRuleRequest $request)
     {
         $validated = $request->validated();
-        
+        $validated['status'] = 'inactive';
+
         $payRule = PayRule::create($validated);
 
         return response()->json([
@@ -97,8 +98,10 @@ class PayRuleController extends Controller
     public function update(UpdatePayRuleRequest $request, PayRule $payRule)
     {
         $validated = $request->validated();
-        
-        $payRule->update($validated);
+        if (isset($validated['status']) && $validated['status'] === 'active') {
+            // Deactivate all other pay rules
+            PayRule::where('id', '!=', $payRule->id)->update(['status' => 'inactive']);
+        }
 
         return response()->json([
             'message' => 'Pay rule updated successfully',
@@ -111,6 +114,7 @@ class PayRuleController extends Controller
      */
     public function destroy(PayRule $payRule)
     {
+        $payRule['status'] = 'inactive';
         $payRule->delete();
 
         return response()->json([

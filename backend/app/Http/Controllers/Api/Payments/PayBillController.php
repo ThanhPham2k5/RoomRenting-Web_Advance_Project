@@ -67,15 +67,20 @@ class PayBillController extends Controller
      */
     public function store(StorePayBillRequest $request)
     {
-        $validated = $request->validated();
+        // The payment for the post will be handled by a scheduled job, so we don't need to create a pay bill here
+
+        // $validated = $request->validated();
         
-        $payBill = PayBill::create($validated);
+        // $payBill = PayBill::create($validated);
 
-        event(new PayBillCreated($payBill));
+        // event(new PayBillCreated($payBill));
 
+        // return response()->json([
+        //     'message' => 'Pay bill created successfully',
+        //     'payBill' => new PayBillResource($payBill)
+        // ], 201);
         return response()->json([
-            'message' => 'Pay bill created successfully',
-            'payBill' => new PayBillResource($payBill)
+            'message' => 'Pay bill auto create, no need to create manually',
         ], 201);
     }
 

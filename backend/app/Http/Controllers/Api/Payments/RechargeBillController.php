@@ -9,6 +9,7 @@ use App\Http\Requests\StoreRechargeBillRequest;
 use App\Http\Requests\UpdateRechargeBillRequest;
 use App\Http\Resources\Payments\RechargeBillCollection;
 use App\Http\Resources\Payments\RechargeBillResource;
+use App\Models\Payments\RechargeRule;
 use Illuminate\Http\Request;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedSort;
@@ -77,8 +78,9 @@ class RechargeBillController extends Controller
         $rechargeBill = RechargeBill::create($validated);
 
         // Increment user points
+        $point = RechargeRule::find($rechargeBill->recharge_rule_id)->points;
         $user = User::find(Account::find($rechargeBill->account_id)->user_id);
-        $user->increment('points', $rechargeBill->points);
+        $user->increment('points', $point);
         
         event(new RechargeBillCreated($rechargeBill));
 

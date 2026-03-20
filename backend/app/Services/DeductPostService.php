@@ -56,10 +56,8 @@ class DeductPostService
                     'next_payment_date' => Carbon::parse($post->next_payment_date)->addMonth()
                 ]);
                 if ($post->status == 'expired') {
-                    $post->update(['status' => 'completed']);
-                    $post->update([
-                        'next_payment_date' => Carbon::parse($post->next_payment_date)->now()->addMonth()
-                    ]);
+                    $post->update(['status' => 'completed',
+                                   'next_payment_date' => now()->addMonth()]);
                 }
 
                 event(new PayBillCreated($paybill));

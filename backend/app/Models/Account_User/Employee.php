@@ -33,4 +33,9 @@ class Employee extends Model
     public function notifications(){
         return $this->hasMany(Notification::class);
     }
+
+    protected $fillable = [
+        'account_id',
+        'personal_info_id'
+    ];
 }

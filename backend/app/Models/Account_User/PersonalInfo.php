@@ -22,6 +22,7 @@ class PersonalInfo extends Model
         'house_number',
         'ward',
         'province',
+        'email',
         'phone_number',
         'pid'
     ];

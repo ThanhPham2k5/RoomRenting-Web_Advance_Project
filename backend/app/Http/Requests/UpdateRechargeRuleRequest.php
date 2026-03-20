@@ -22,8 +22,7 @@ class UpdateRechargeRuleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'points' => 'required|integer|min:1',
-            'money' => 'required|numeric|min:0.01',
+            'status' => 'required|in:active',
         ];
     }
 }

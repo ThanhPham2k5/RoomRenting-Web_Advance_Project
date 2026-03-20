@@ -82,7 +82,9 @@ class RechargeBillController extends Controller
 
         // Increment user points
         $point = $rechargeBill->rechargeRule->points;
-        $user = User::where('id', $rechargeBill->account->user_id)->first();
+        $account = $rechargeBill->account;
+        $user = User::where('account_id', $account->id)->first();
+        
         $user->increment('points', $point);
         
         event(new RechargeBillCreated($rechargeBill));

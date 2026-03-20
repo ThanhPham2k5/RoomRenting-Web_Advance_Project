@@ -22,7 +22,7 @@ class UpdatePayRuleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'points' => 'required|integer|min:1',
+            'status' => 'required|in:active',
         ];
     }
 }

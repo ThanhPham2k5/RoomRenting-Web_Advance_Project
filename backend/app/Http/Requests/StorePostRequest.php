@@ -30,7 +30,7 @@ class StorePostRequest extends FormRequest
             'province' => 'required|string|max:255',
             'description' => 'required|string',
             'deposit' => 'required|numeric|min:0',
-            'status' => 'required|string|in:rejected,pending,expired,completed,failed',
+            'status' => 'required|string|in:pending,failed',
             'room_type' => 'required|string|in:room,apartment,dorm',
             'max_occupants' => 'required|integer|min:1',
             'user_id' => 'required|exists:users,id',

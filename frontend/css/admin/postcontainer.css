@@ -1,0 +1,8 @@
+.postcontainer-component .main-content{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+    width: 1140px;
+    margin-left: auto;
+    margin-right: auto;
+}

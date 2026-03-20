@@ -68,7 +68,7 @@
     align-items: center;
     white-space: nowrap;
 }
-.searchbar-component .line{
+.searchbar-component .linesb{
     width: 4px;
     height: 47px;
     border-radius: 15px;

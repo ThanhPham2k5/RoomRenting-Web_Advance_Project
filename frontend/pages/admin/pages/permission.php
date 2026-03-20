@@ -1,5 +1,7 @@
 <?php 
-    $titleData = ['titleContent' => "Phân quyền", 'group' => false, 'insert' => true, 'edit' => true, 'delete' => true, 'handle' => false];
+    $permissionInsertForm = "modal-them-phan-quyen";
+    $permissionEditForm = "modal-sua-phan-quyen";
+    $titleData = ['targetModal' => $permissionInsertForm, 'targetModal1' => $permissionEditForm, 'titleContent' => "Phân quyền", 'group' => false, 'insert' => true, 'edit' => true, 'delete' => true, 'handle' => false];
     $tableHeader = ['Id', 'Tên quyền', 'Mô tả', 'Danh sách nhân viên', 'Chi tiết'];
     $type = ['type' => "1"];
     ob_start(); 
@@ -137,4 +139,31 @@
         <?php renderComponent("searchbar",false,$type) ?>
     </div>
     <?php renderComponent("table",false,$tableData) ?>
+    <?php
+    ob_start();
+    ?>
+        <input type="hidden" name="action" value="addPermission">
+    
+        <div class="input-group">
+            <label>Tên quyền</label>
+            <input type="text" name="name" placeholder="Nhập tên quyền...">
+        </div>
+        <div class="input-group">
+            <label>Mô tả</label>
+            <input type="text" name="name" placeholder="Nhập mô tả...">
+        </div>
+        <div class="input-group">
+            <label>Chọn chức năng</label>
+            <select name="status">
+                <option value="">-- Chọn chức năng --</option>
+                <option value="">-- Chọn chức năng --</option>
+                <option value="">-- Chọn chức năng --</option>
+                <option value="">-- Chọn chức năng --</option>
+            </select>
+        </div>    
+    <?php 
+        $formInsertData = ob_get_clean();
+    ?>
+    <?php renderComponent("form",false,['title' => 'Thêm quyền', 'idModal' => $permissionInsertForm, 'formData' => $formInsertData]) ?>
+    <?php renderComponent("form",false,['title' => 'Sửa quyền', 'idModal' => $permissionEditForm]) ?>
 </div>

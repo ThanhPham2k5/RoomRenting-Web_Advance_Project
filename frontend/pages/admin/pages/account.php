@@ -109,7 +109,7 @@
     
         <div class="input-group">
             <label>Tên tài khoản</label>
-            <input type="text" name="name" value="<?php echo $accountEditData['username'] ?>">
+            <input type="text" name="name" value="<?php echo $accountEditData['username'] ?? "" ?>">
         </div>
         <div class="input-group">
             <label>Mật khẩu</label>

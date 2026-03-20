@@ -5,8 +5,8 @@
     $priceInsertForm1 = "modal-them-gia-quy-doi";
     $priceEditForm1 = "modal-sua-gia-quy-doi";
     $titleData = ['titleContent' => "Giá cả", 'group' => false, 'insert' => true, 'edit' => true, 'delete' => true, 'handle' => false];
-    $tableHeader = ['Id', 'Điểm', 'Tình trạng', 'Từ ngày', 'Đến ngày', 'Chi tiết'];
-    $tableHeader1 = ['Id', 'Số tiền', 'Điểm', 'Tình trạng', 'Từ ngày', 'Đến ngày', 'Chi tiết'];
+    $tableHeader = ['Id', 'Điểm', 'Tình trạng', 'Ngày khởi tạo', 'Chi tiết'];
+    $tableHeader1 = ['Id', 'Số tiền', 'Điểm', 'Tình trạng', 'Ngày khởi tạo', 'Chi tiết'];
     $type = ['type' => "1"];
     ob_start(); 
     ?>
@@ -162,14 +162,8 @@
             <label>Số điểm</label>
             <input type="text" name="name" placeholder="Nhập số điểm...">
         </div>
-        <div class="input-group">
-            <label>Thời gian</label>
-            <input type="text" name="name" placeholder="Từ ngày...">
-            <input type="text" name="name" placeholder="Đến ngày...">
-        </div> 
     <?php 
         $formInsertData = ob_get_clean();
     ?>
-    <?php renderComponent("form",false,['title' => 'Thêm giá đăng bài', 'idModal' => $permissionInsertForm, 'formData' => $formInsertData]) ?>
-    <?php renderComponent("form",false,['title' => 'Sửa giá đăng bài', 'idModal' => $permissionEditForm]) ?>
+    <?php renderComponent("form",false,['title' => 'Thêm giá đăng bài', 'idModal' => $priceInsertForm, 'formData' => $formInsertData]) ?>
 </div>

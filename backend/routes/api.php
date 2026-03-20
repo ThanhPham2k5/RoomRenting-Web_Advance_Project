@@ -89,9 +89,8 @@ Route::middleware(['auth:sanctum', 'permission:post.create'])->group(function(){
     Route::post('/posts', [PostController::class, 'store']);
 });
 
-Route::middleware(['auth:sanctum', 'permission:post.update'])->group(function(){
-    Route::put('/posts/{post}', [PostController::class, 'update']);
-});
+Route::middleware(['auth:sanctum', 'permission:post.update'])
+    ->put('/posts/{post}', [PostController::class, 'update']);
 
 Route::middleware(['auth:sanctum', 'permission:post.delete'])->group(function(){
     Route::delete('/posts/{post}', [PostController::class, 'destroy']);
@@ -294,7 +293,6 @@ Route::middleware(['auth:sanctum', 'permission:rechargeRule.update'])->group(fun
 Route::middleware(['auth:sanctum', 'permission:rechargeRule.delete'])->group(function(){
     Route::delete('/rechargeRules/{rechargeRule}', [RechargeRuleController::class, 'destroy']);
 });
-
 
 
 /* API routes for Auth 

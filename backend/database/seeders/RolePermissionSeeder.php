@@ -203,6 +203,7 @@ class RolePermissionSeeder extends Seeder
 
             //Post
             'post.create',
+            'post.update',
             'post.get',
             'post.getAll',
 

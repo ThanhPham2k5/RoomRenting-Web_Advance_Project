@@ -17,5 +17,7 @@ class RechargeRuleSeeder extends Seeder
     public function run(): void
     {
         RechargeRuleFactory::new()->count(5)->create();
+        $rechargeRule = RechargeRule::inRandomOrder()->first();
+        $rechargeRule->update(['status' => 'active']);
     }
 }

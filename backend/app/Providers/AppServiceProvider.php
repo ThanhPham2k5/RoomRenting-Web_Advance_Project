@@ -2,11 +2,17 @@
 
 namespace App\Providers;
 
+use App\Models\Posts\Post;
+use App\Policies\PostPolicy;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
+
+    protected $policies = [
+        Post::class => PostPolicy::class,
+    ];
     /**
      * Register any application services.
      */
@@ -20,11 +26,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Relation::enforceMorphMap([
-        //     'post' => \App\Models\Posts\Post::class,
-        //     'comment' => \App\Models\Posts\Comment::class,
-        //     'pay_bill' => \App\Models\Payments\PayBill::class,
-        //     'recharge_bill' => \App\Models\Payments\RechargeBill::class,
-        // ]);
+        //
     }
 }

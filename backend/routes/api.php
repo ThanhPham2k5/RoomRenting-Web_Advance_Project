@@ -67,11 +67,6 @@ Route::middleware(['auth:sanctum', 'permission:personalInfo.getAll'])->group(fun
     Route::get('/personalInfos', [PersonalInfoController::class, 'index']);
 });
     
-//TODO: replace with permissions
-// Route::apiResource('accounts', AccountController::class);
-// Route::apiResource('users', UserController::class);
-// Route::apiResource('employees', EmployeeController::class);
-// Route::apiResource('personalInfos', PersonalInfoController::class);
 
 /* API routes for Posts 
     - CommentController
@@ -149,14 +144,6 @@ Route::middleware(['auth:sanctum', 'permission:favorite.delete'])->group(functio
 
 
 
-//TODO: replace with permissions
-// Route::middleware('auth:sanctum')->group(function () {
-//     Route::apiResource('comments', CommentController::class);
-//     Route::apiResource('posts', PostController::class);
-//     Route::apiResource('postImages', PostImageController::class);
-//     Route::apiResource('favorites', FavoriteController::class);
-// });
-
 /* API routes for Form 
     - FormController
 */
@@ -184,13 +171,6 @@ Route::middleware(['auth:sanctum', 'permission:form.getRecommendation'])
     ->get('/forms/recommendations', [FormController::class, 'getRecommendedPosts']);
 
 
-//TODO: replace with permissions
-// Route::middleware('auth:sanctum')
-//     ->get('/forms/recommendations', [FormController::class, 'getRecommendedPosts']);
-// Route::apiResource('forms', FormController::class)
-//     ->middleware('auth:sanctum');
-
-
 
 /* API routes for Notification 
     - NotificationController
@@ -216,12 +196,6 @@ Route::middleware(['auth:sanctum', 'permission:notification.update'])->group(fun
 Route::middleware(['auth:sanctum', 'permission:notification.delete'])->group(function(){
     Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy']);
 });
-
-//TODO: replace with permissions
-// Route::middleware('auth:sanctum')->group(function () {
-//     Route::apiResource('notifications', NotificationController::class);
-//     Route::put('/notifications/{notification}/mark-as-read', [NotificationController::class, 'markAsRead']);
-// });
 
 
 
@@ -321,13 +295,6 @@ Route::middleware(['auth:sanctum', 'permission:rechargeRule.delete'])->group(fun
     Route::delete('/rechargeRules/{rechargeRule}', [RechargeRuleController::class, 'destroy']);
 });
 
-//TODO: replace with permissions
-// Route::middleware('auth:sanctum')->group(function () {
-//     Route::apiResource('payBills', PayBillController::class);
-//     Route::apiResource('payRules', PayRuleController::class);
-//     Route::apiResource('rechargeBills', RechargeBillController::class);
-//     Route::apiResource('rechargeRules', RechargeRuleController::class);
-// });
 
 
 /* API routes for Auth 

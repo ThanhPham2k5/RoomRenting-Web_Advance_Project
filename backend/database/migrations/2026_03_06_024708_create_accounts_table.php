@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('accounts', function (Blueprint $table) {
             $table->id();
-            // $table->enum('role', ['user', 'admin', 'postManager', 'billManager', 'userManager']);
+            $table->enum('role', ['user', 'employee']); //TODO: add roles to seeder
             $table->string('username')->unique();
             $table->string('password');
 

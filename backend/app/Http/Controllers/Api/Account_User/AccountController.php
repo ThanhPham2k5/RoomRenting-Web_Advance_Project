@@ -20,6 +20,7 @@ class AccountController extends Controller
     private $allowedIncludes = [
         'form',
         'user',
+        'roles',
         'employee',
         'user.posts',
         'employee.posts',

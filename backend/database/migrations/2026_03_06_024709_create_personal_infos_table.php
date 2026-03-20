@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('house_number');
             $table->string('ward');
             $table->string('province');
+            $table->string('email');
             $table->string('phone_number')->unique();
             $table->string('profile_url');
             $table->string('name');

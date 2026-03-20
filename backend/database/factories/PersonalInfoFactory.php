@@ -31,6 +31,7 @@ class PersonalInfoFactory extends Factory
             'house_number' => fake()->buildingNumber(),
             'ward' => $ward['name'],
             'province' => $province['name'],
+            'email' => $this->faker()->unque()->email(),
             'phone_number' => fake()->unique()->numerify('0#########'),
             'profile_url' => fake()->imageUrl(200,200,'people'),
             'pid' => fake()->unique()->numerify('###########'),

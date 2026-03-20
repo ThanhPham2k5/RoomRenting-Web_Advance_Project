@@ -77,24 +77,24 @@ Route::middleware(['auth:sanctum', 'permission:personalInfo.getAll'])->group(fun
 
 
 //Post
-Route::middleware(['auth:sanctum','permission:post.get'])->group(function(){
-    Route::get('/posts/{post}', [PostController::class, 'show']);
-});
-    
-Route::middleware(['auth:sanctum','permission:post.getAll'])->group(function(){
-    Route::get('/posts', [PostController::class, 'index']);
-});
+Route::middleware(['auth:sanctum','permission:post.get'])
+    ->get('/posts/{post}', [PostController::class, 'show']);
 
-Route::middleware(['auth:sanctum', 'permission:post.create'])->group(function(){
-    Route::post('/posts', [PostController::class, 'store']);
-});
+    
+Route::middleware(['auth:sanctum','permission:post.getAll'])
+    ->get('/posts', [PostController::class, 'index']);
+
+
+Route::middleware(['auth:sanctum', 'permission:post.create'])
+    ->post('/posts', [PostController::class, 'store']);
+
 
 Route::middleware(['auth:sanctum', 'permission:post.update'])
     ->put('/posts/{post}', [PostController::class, 'update']);
 
-Route::middleware(['auth:sanctum', 'permission:post.delete'])->group(function(){
-    Route::delete('/posts/{post}', [PostController::class, 'destroy']);
-});
+Route::middleware(['auth:sanctum', 'permission:post.delete'])
+    ->delete('/posts/{post}', [PostController::class, 'destroy']);
+
 
 
 

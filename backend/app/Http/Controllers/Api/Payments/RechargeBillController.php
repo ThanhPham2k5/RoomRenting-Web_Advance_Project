@@ -18,10 +18,11 @@ use Spatie\QueryBuilder\QueryBuilder;
 use App\Events\RechargeBillCreated;
 use App\Models\Account_User\Account;
 use App\Models\Account_User\User;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class RechargeBillController extends Controller
 {
-
+    use AuthorizesRequests;
     private $allowedIncludes = [
         'account',
         'rechargeRule',
@@ -33,6 +34,8 @@ class RechargeBillController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorize('viewAny');
+
         $query = QueryBuilder::for(RechargeBill::class)
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
@@ -95,6 +98,8 @@ class RechargeBillController extends Controller
      */
     public function show(RechargeBill $rechargeBill)
     {
+        $this->authorize('view', $rechargeBill);
+
         $rechargeBill = QueryBuilder::for(RechargeBill::class)
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($rechargeBill->id);

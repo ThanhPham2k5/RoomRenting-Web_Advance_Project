@@ -14,10 +14,11 @@ use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\Enums\FilterOperator;
 use Spatie\QueryBuilder\QueryBuilder;
 use App\Events\PayBillCreated;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class PayBillController extends Controller
 {
-
+    use AuthorizesRequests;
     private $allowedIncludes = [
         'account',
         'payRule',
@@ -30,6 +31,8 @@ class PayBillController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorize('viewAny');
+
         $query = QueryBuilder::for(PayBill::class)
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
@@ -89,6 +92,8 @@ class PayBillController extends Controller
      */
     public function show(PayBill $payBill)
     {
+        $this->authorize('view', $payBill);
+
         $payBill = QueryBuilder::for(PayBill::class)
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($payBill->id);

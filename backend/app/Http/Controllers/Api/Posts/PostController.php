@@ -125,6 +125,7 @@ class PostController extends Controller
     public function update(UpdatePostRequest $request, Post $post)
     {
         $this->authorize('update', $post);
+
         $validated = $request->validated();
 
         $post->update($validated);
@@ -140,6 +141,8 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
+        $this->authorize('delete', $post);
+
         $post->delete();
 
         return response()->json([

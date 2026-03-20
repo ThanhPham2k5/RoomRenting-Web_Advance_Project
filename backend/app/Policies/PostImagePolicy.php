@@ -2,16 +2,23 @@
 
 namespace App\Policies;
 
+use App\Models\Account_User\Account;
+use App\Models\Posts\PostImage;
 use Illuminate\Auth\Access\Response;
-use App\Models\PostImage;
-use App\Models\User;
+
 
 class PostImagePolicy
 {
+    private function canModify(Account $account, PostImage $postImage)
+    {
+        return 
+            $account->id === $postImage->post->user_id
+            || $account->hasAnyRole(['admin', 'post_manager']);
+    }
     /**
      * Determine whether the user can view any models.
      */
-    public function viewAny(User $user): bool
+    public function viewAny(Account $account): bool
     {
         return false;
     }
@@ -19,7 +26,7 @@ class PostImagePolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, PostImage $postImage): bool
+    public function view(Account $account, PostImage $postImage): bool
     {
         return false;
     }
@@ -27,7 +34,7 @@ class PostImagePolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user): bool
+    public function create(Account $account): bool
     {
         return false;
     }
@@ -35,23 +42,23 @@ class PostImagePolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, PostImage $postImage): bool
+    public function update(Account $account, PostImage $postImage): bool
     {
-        return false;
+        return $this->canModify($account, $postImage);
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, PostImage $postImage): bool
+    public function delete(Account $account, PostImage $postImage): bool
     {
-        return false;
+        return $this->canModify($account, $postImage);
     }
 
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, PostImage $postImage): bool
+    public function restore(Account $account, PostImage $postImage): bool
     {
         return false;
     }
@@ -59,7 +66,7 @@ class PostImagePolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, PostImage $postImage): bool
+    public function forceDelete(Account $account, PostImage $postImage): bool
     {
         return false;
     }

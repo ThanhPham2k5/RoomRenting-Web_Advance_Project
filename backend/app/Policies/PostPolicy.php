@@ -55,7 +55,9 @@ class PostPolicy
      */
     public function delete(Account $account, Post $post): bool
     {
-        return false;
+        // Owner
+        return $account->user && $account->user->id === $post->user_id
+            || $account->hasRole('post_manager');
     }
 
     /**
@@ -63,7 +65,8 @@ class PostPolicy
      */
     public function restore(Account $account, Post $post): bool
     {
-        return false;
+        // Owner
+        return $account->hasRole('post_manager');
     }
 
     /**

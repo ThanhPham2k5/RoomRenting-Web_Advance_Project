@@ -8,6 +8,7 @@ use App\Http\Requests\StorePostImageRequest;
 use App\Http\Requests\UpdatePostImageRequest;
 use App\Http\Resources\Posts\PostImageCollection;
 use App\Http\Resources\Posts\PostImageResource;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\Enums\FilterOperator;
@@ -15,7 +16,7 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 class PostImageController extends Controller
 {
-
+    use AuthorizesRequests;
     private $allowedIncludes = [
         'post',
     ];
@@ -97,6 +98,8 @@ class PostImageController extends Controller
      */
     public function update(UpdatePostImageRequest $request, PostImage $postImage)
     {
+        $this->authorize('update', $postImage);
+
         $validated = $request->validated();
 
         $postImage->update($validated);
@@ -112,6 +115,7 @@ class PostImageController extends Controller
      */
     public function destroy(PostImage $postImage)
     {
+        $this->authorize('delete', $postImage);
         $postImage->delete();
 
         return response()->json([

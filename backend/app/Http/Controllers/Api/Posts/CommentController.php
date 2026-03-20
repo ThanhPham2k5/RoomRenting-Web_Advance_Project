@@ -9,6 +9,7 @@ use App\Http\Requests\StoreCommentRequest;
 use App\Http\Requests\UpdateCommentRequest;
 use App\Http\Resources\Posts\CommentCollection;
 use App\Http\Resources\Posts\CommentResource;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\Enums\FilterOperator;
@@ -16,6 +17,8 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 class CommentController extends Controller
 {
+
+    use AuthorizesRequests;
 
     private $allowedIncludes = [
         'account',
@@ -97,6 +100,8 @@ class CommentController extends Controller
      */
     public function update(UpdateCommentRequest $request, Comment $comment)
     {
+        $this->authorize('update', $comment);
+
         $validated = $request->validated();
 
         $comment->update($validated);
@@ -111,7 +116,9 @@ class CommentController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy(Comment $comment)
-    {
+    {   
+        $this->authorize('delete', $comment);
+
         $comment->delete();
 
         return response()->json([

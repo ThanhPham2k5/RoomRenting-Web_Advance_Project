@@ -13,13 +13,14 @@ use Illuminate\Http\Request;
 use App\Models\Posts\Post;
 use App\Models\Payments\Paybill;
 use App\Models\Payments\Rechargebill;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\Enums\FilterOperator;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class NotificationController extends Controller
 {
-
+    use AuthorizesRequests;
     private $allowedIncludes = [
         'account',
         'notifiable'
@@ -97,6 +98,8 @@ class NotificationController extends Controller
      */
     public function show(Notification $notification)
     {
+        $this->authorize('view', $notification);
+
         $notification = QueryBuilder::for(Notification::class)
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($notification->id);
@@ -117,7 +120,9 @@ class NotificationController extends Controller
      */
     public function update(UpdateNotificationRequest $request, Notification $notification)
     {
-         $validated = $request->validated();
+        $this->authorize('update', $notification);
+
+        $validated = $request->validated();
 
         // nếu có post_id thì cập nhật quan hệ polymorphic
         if ($request->post_id) {
@@ -138,6 +143,8 @@ class NotificationController extends Controller
      */
     public function destroy(Notification $notification)
     {
+        $this->authorize('delete', $notification);
+
         $notification->delete();
 
         return response()->json([

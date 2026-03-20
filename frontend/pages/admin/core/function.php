@@ -23,7 +23,8 @@ function call_api($url, $method = 'GET', $data = []) {
         CURLOPT_CUSTOMREQUEST => $method,
         CURLOPT_HTTPHEADER => [
             "Accept: application/json",
-            "Content-Type: application/json"
+            "Content-Type: application/json",
+            "Authorization: Bearer 3|0cd07p7fJ57Vz5ARwF4S1bXy4cgiUT191TTLZDtO3d06dccf"
         ],
     ];
 
@@ -41,7 +42,7 @@ function call_api($url, $method = 'GET', $data = []) {
         return [];
     } else {
         $decoded = json_decode($response, true);
-        return $decoded['data'] ?? [];
+        return $decoded ?? [];
     }
 }
 ?>

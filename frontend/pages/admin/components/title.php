@@ -7,6 +7,8 @@
     $handle = $handle ?? false;
     $targetModal = $targetModal ?? 'default-modal';
     $targetModal1 = $targetModal1 ?? 'default-modal';
+    // $currentPage = $_GET['page'] >> 'overview';
+    // $currentTable = $_GET['table'] ?? '1';
 ?>
 
 <div class="title-component">

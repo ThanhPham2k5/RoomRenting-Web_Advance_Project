@@ -10,14 +10,21 @@ if(!in_array($page, $validPage)){
 }
 switch ($page) {
     case 'account':
-        $pageData['accounts'] = call_api('http://127.0.0.1:8000/api/accounts?per_page=all');
+        $pageNum = $_GET['p'] ?? 1;
+        $apiResult = call_api("http://127.0.0.1:8000/api/accounts?per_page=1&page={$pageNum}");
+        $pageData['accounts'] = $apiResult['data'] ?? [];
+        $pageData['paginationMeta'] = [
+            'current_page' => $apiResult['meta']['current_page'] ?? 1,
+            'last_page'    => $apiResult['meta']['last_page'] ?? 1,
+            'base_url'     => "index.php?page=account&table={$currentTable}" 
+        ];
         break;
 }
 
 if ($page === 'account' && isset($_GET['action']) && $_GET['action'] === 'edit') {
     $editId = $_GET['id'];
     $accountEditData = call_api("http://127.0.0.1:8000/api/accounts/{$editId}");
-    $pageData['accountEditData'] = $accountEditData;
+    $pageData['accountEditData'] = $accountEditData['data'];
     $pageData['autoOpenEditForm'] = true; 
 }
 ?>

@@ -4,7 +4,7 @@
     $priceEditForm = "modal-sua-gia-dang-bai";
     $priceInsertForm1 = "modal-them-gia-quy-doi";
     $priceEditForm1 = "modal-sua-gia-quy-doi";
-    $titleData = ['titleContent' => "Giá cả", 'group' => false, 'insert' => true, 'edit' => true, 'delete' => true, 'handle' => false];
+    $titleData = ['targetModal' => $priceInsertForm, 'targetModal1' => $priceEditForm, 'targetModal2' => $priceInsertForm1, 'targetModal3' => $priceEditForm1, 'titleContent' => "Giá cả", 'group' => false, 'insert' => true, 'edit' => true, 'delete' => true, 'handle' => false];
     $tableHeader = ['Id', 'Điểm', 'Tình trạng', 'Ngày khởi tạo', 'Chi tiết'];
     $tableHeader1 = ['Id', 'Số tiền', 'Điểm', 'Tình trạng', 'Ngày khởi tạo', 'Chi tiết'];
     $type = ['type' => "1"];

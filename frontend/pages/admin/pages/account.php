@@ -12,8 +12,8 @@
         echo '<tr><td colspan="5" style="text-align:center;">Không có dữ liệu hoặc lỗi kết nối máy chủ</td></tr>';
     }else{
         foreach ($accounts as $user){
-            $isVisible = false; 
-            $roleLower = strtolower($user['role']); 
+            $isVisible = true; 
+            $roleLower = strtolower($user['role'] ?? ""); 
             if ($currentTable === '2') {
                 if (str_contains($roleLower, 'manager')) {
                     $isVisible = true;
@@ -31,7 +31,7 @@
                 </td>
                 <td><?php echo ($user['id']); ?></td>
                 <td class="user-name"><?php echo ($user['username']); ?></td>
-                <td><?php echo ($user['role']); ?></td>
+                <td><?php echo ($user['role']) ?? ""; ?></td>
                 <td>
                     <?php if (($user['deletedAt']) === null): ?>
                         <span class="badge badge-success">Đang hoạt động</span>
@@ -68,6 +68,7 @@
         </div>
     </div>
     <?php renderComponent("table",false,$tableData) ?>
+    <?php renderComponent("pagination",false, ['paginationMeta' => $paginationMeta]) ?>
     <?php
     ob_start();
     ?>
@@ -123,7 +124,7 @@
                 <option value="">-- Chọn chức vụ --</option>
                 <option value="">-- Chọn chức vụ --</option>
             </select>
-        </div>    
+        </div>
         <div class="input-group">
             <label>Chọn quyền hạn</label>
             <select name="status">

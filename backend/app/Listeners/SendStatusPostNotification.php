@@ -1,0 +1,62 @@
+<?php
+
+namespace App\Listeners;
+
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use App\Events\StatusPostCreated;
+use App\Models\Notification\Notification;
+use App\Models\Posts\Post;
+
+class SendStatusPostNotification
+{
+    /**
+     * Create the event listener.
+     */
+    public function __construct()
+    {
+        //
+    }
+
+    /**
+     * Handle the event.
+     */
+    public function handle(StatusPostCreated $event): void
+    {
+        $status = $event->post->status;
+        $account = $event->post->user->account;
+
+
+        if ($status === 'rejected') {
+            Notification::create([
+                'title' => 'Bài đăng bị từ chối',,
+                'content' => 'Bài đăng #' . $event->post->id . ' đã bị từ chối. Vui lòng kiểm tra lại thông tin và thử đăng lại.',
+                'notification_type' => 'news',
+                'status' => 'unread',
+                'account_id' => $account->account_id,
+                'notifiable_id' => $event->post->id,
+                'notifiable_type' => Post::class,
+            ]);
+        } else if ($status === 'complete') {
+            Notification::create([
+                'title' => 'Bài đăng đã được duyệt',,
+                'content' => 'Bài đăng #' . $event->post->id . ' được duyệt.',
+                'notification_type' => 'news',
+                'status' => 'unread',
+                'account_id' => $account->account_id,
+                'notifiable_id' => $event->post->id,
+                'notifiable_type' => Post::class,
+            ]);
+        } else {
+            Notification::create([
+                'title' => 'Bài đăng đang được xét duyệt.',,
+                'content' => 'Bài đăng #' . $event->post->id . ' đang được duyệt.',
+                'notification_type' => 'news',
+                'status' => 'unread',
+                'account_id' => $account->account_id,
+                'notifiable_id' => $event->post->id,
+                'notifiable_type' => Post::class,
+            ]);
+        }
+    }
+}

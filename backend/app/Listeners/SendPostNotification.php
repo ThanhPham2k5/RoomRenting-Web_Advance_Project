@@ -26,14 +26,13 @@ class SendPostNotification
     {
         $post = $event->post;
 
-        // lấy tất cả form
+        // Get all Forms
         $forms = Form::all();
 
         foreach ($forms as $form) {
 
             $match = true;
 
-            // 💰 price
             if ($form->price_min && $post->price < $form->price_min) {
                 $match = false;
             }
@@ -42,7 +41,7 @@ class SendPostNotification
                 $match = false;
             }
 
-            // 📐 area (±20%)
+            // area (±20%)
             if ($form->area) {
                 $min = $form->area * 0.8;
                 $max = $form->area * 1.2;
@@ -52,7 +51,7 @@ class SendPostNotification
                 }
             }
 
-            // 📍 location
+            // location
             if ($form->province && $post->province !== $form->province) {
                 $match = false;
             }
@@ -61,17 +60,17 @@ class SendPostNotification
                 $match = false;
             }
 
-            // 🏠 room type
+            // room type
             if ($form->room_type && $post->room_type !== $form->room_type) {
                 $match = false;
             }
 
-            // 👥 occupants
+            // occupants
             if ($form->max_occupants && $post->max_occupants < $form->max_occupants) {
                 $match = false;
             }
 
-            // 🔥 nếu match → tạo notification
+            // If all criteria match, create a notification
             if ($match) {
                 Notification::create([
                     'title' => 'Có bài đăng mới phù hợp',

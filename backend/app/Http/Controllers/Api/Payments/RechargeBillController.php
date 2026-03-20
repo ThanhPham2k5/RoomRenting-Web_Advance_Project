@@ -15,6 +15,8 @@ use Spatie\QueryBuilder\AllowedSort;
 use Spatie\QueryBuilder\Enums\FilterOperator;
 use Spatie\QueryBuilder\QueryBuilder;
 use App\Events\RechargeBillCreated;
+use App\Models\Account_User\Account;
+use App\Models\Account_User\User;
 
 class RechargeBillController extends Controller
 {
@@ -74,8 +76,10 @@ class RechargeBillController extends Controller
         
         $rechargeBill = RechargeBill::create($validated);
 
-        // Chưa cộng điểm vào tài khoảng
-
+        // Increment user points
+        $user = User::find(Account::find($rechargeBill->account_id)->user_id);
+        $user->increment('points', $rechargeBill->points);
+        
         event(new RechargeBillCreated($rechargeBill));
 
         return response()->json([

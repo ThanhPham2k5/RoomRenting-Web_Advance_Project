@@ -31,7 +31,6 @@ class FormFactory extends Factory
             'province' => $province['name'],
             'room_type' => $this->faker->randomElement(['room', 'apartment', 'dorm']),
             'max_occupants' => $this->faker->numberBetween(1, 10),
-            // 'account_id' => Account::inRandomOrder()->first()->id,
         ];
     }
 

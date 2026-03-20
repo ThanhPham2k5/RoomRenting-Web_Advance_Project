@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\Enums\FilterOperator;
 use Spatie\QueryBuilder\QueryBuilder;
+use App\Events\PayBillCreated;
 
 class PayBillController extends Controller
 {
@@ -69,6 +70,8 @@ class PayBillController extends Controller
         $validated = $request->validated();
         
         $payBill = PayBill::create($validated);
+
+        event(new PayBillCreated($payBill));
 
         return response()->json([
             'message' => 'Pay bill created successfully',

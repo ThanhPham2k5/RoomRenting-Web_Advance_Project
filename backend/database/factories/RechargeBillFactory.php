@@ -21,8 +21,9 @@ class RechargeBillFactory extends Factory
      */
     public function definition(): array
     {
-        $money = $this->faker->randomFloat(2, 50000, 500000);
-        $vatRate = $this->faker->randomFloat(2, 0, 0.1); // VAT rate 0-10%
+        $rule = RechargeRule::all()->random(); // get random rule
+        $money = $rule->money;
+        $vatRate = 0.1;
         $vat = round($money * $vatRate, 2);
         $totalMoney = $money + $vat;
 
@@ -31,8 +32,7 @@ class RechargeBillFactory extends Factory
             'total_money' => $totalMoney,
             'vat' => $vat,
             'status' => $this->faker->randomElement(['completed', 'pending', 'failed']),
-            'account_id' => Account::inRandomOrder()->first()->id,
-            'recharge_rule_id' => RechargeRule::inRandomOrder()->first()->id,
+            'recharge_rule_id' =>$rule->id
         ];
     }
 

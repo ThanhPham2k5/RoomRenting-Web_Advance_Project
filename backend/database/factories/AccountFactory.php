@@ -23,13 +23,6 @@ class AccountFactory extends Factory
         return [
             'username' => fake()->unique()->userName(),
             'password' => Hash::make('password'),
-            'role' => fake()->randomElement([
-                'user',
-                'admin',
-                'postManager',
-                'billManager',
-                'userManager'
-            ]),
         ];
     }
 }

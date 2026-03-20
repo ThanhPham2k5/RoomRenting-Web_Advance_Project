@@ -16,7 +16,8 @@ class Post extends Model
 {
     /** @use HasFactory<\Database\Factories\PostFactory> */
     use HasFactory, SoftDeletes;
-    protected $fillable = ['title', 'description', 'price', 'area', 'house_number', 'ward', 'province', 'deposit', 'status', 'authorized', 'user_id', 'employee_id', 'room_type', 'max_occupants'];
+    protected $fillable = ['title', 'description', 'price', 'area', 'house_number', 'ward',
+                            'province', 'deposit', 'status', 'authorized', 'user_id', 'employee_id', 'room_type', 'max_occupants', 'next_payment_date'];
 
     protected static function newFactory()
     {

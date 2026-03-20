@@ -80,7 +80,7 @@ class NotificationController extends Controller
         } else {
             return response()->json(['message' => 'Missing target'], 400);
         }
-
+        $validated['status'] = 'unread';
         $notification = new Notification($validated);
         $notification->notifiable()->associate($model);
 

@@ -25,7 +25,7 @@ class PayRuleFactory extends Factory
     public function definition(): array
     {
         return [
-            'points' => $this->faker->numberBetween(10, 1000),
+            'points' => $this->faker->numberBetween(10, 50),
         ];
     }
 

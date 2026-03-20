@@ -36,6 +36,7 @@ class UpdatePostRequest extends FormRequest
             'user_id' => 'required|exists:users,id',
             'employee_id' => 'nullable|exists:employees,id',
             'authorized' => 'required|boolean',
+            'next_payment_date' => 'nullable|date',
         ];
     }
 }

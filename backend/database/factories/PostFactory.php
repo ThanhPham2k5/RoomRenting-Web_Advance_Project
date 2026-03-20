@@ -23,12 +23,19 @@ class PostFactory extends Factory
     {
         $province = VietnamAddress::randomProvince();
         $ward = VietnamAddress::randomWard($province['province_code']);
-         $status = fake()->randomElement([
+
+        $status = fake()->randomElement([
             'pending',
             'expired',
             'completed',
-            'failed'
-        ]);     
+            'completed',
+            'completed',
+            'completed',
+            'completed',
+            'completed', // bias for completed posts
+            'failed',
+            'rejected'
+        ]);
 
         return [
             'title' => fake()->randomElement([
@@ -41,13 +48,10 @@ class PostFactory extends Factory
             ]),
 
             'price' => fake()->numberBetween(1000000, 8000000),
-
             'area' => fake()->numberBetween(15, 60),
 
             'house_number' => fake()->buildingNumber(),
-
             'ward' => $ward['name'],
-
             'province' => $province['name'],
 
             'description' => fake()->randomElement([
@@ -61,22 +65,15 @@ class PostFactory extends Factory
             'deposit' => fake()->numberBetween(500000, 3000000),
 
             'status' => $status,
+            'authorized' => $status === 'completed',
 
-            'authorized' => $status === 'completed', // chưa duyệt thì = 0
+            'room_type' => fake()->randomElement(['room', 'apartment', 'dorm']),
 
-            'room_type' => fake()->randomElement([
-                'room',
-                'apartment',
-                'dorm'
-            ]),
+            'next_payment_date' => $status === 'completed'
+                ? now()->addMonth()
+                : null,
 
-            'max_occupants' => fake()->numberBetween(1,6),
-
-            'user_id' => User::inRandomOrder()->first()->id,
-
-            'employee_id' => $status === 'completed' // chưa duyệt thì NULL
-                        ? Employee::inRandomOrder()->first()->id
-                        : null,
+            'max_occupants' => fake()->numberBetween(1, 6),
         ];
     }
 }

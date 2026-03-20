@@ -21,11 +21,14 @@ class CommentFactory extends Factory
     public function definition(): array
     {
         return [
-            'content' => fake()->sentence(),
-
-            'account_id' => Account::inRandomOrder()->first()->id,
-
-            'post_id' => Post::inRandomOrder()->first()->id,
+            'content' => fake()->randomElement([
+                'Phòng này còn không ạ?',
+                'Giá có thương lượng không?',
+                'Có cho nuôi thú cưng không?',
+                'Điện nước tính như thế nào?',
+                'Có thể xem phòng vào cuối tuần không?',
+                'Phòng này gần trường nào vậy?',
+            ]),
         ];
     }
 }

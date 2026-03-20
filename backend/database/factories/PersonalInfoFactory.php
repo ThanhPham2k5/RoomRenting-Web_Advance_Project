@@ -26,12 +26,12 @@ class PersonalInfoFactory extends Factory
 
         return [
             'name' => fake()->name(),
-            'date_of_birth' => fake()->date(),
+            'date_of_birth' => fake()->dateTimeBetween('-30 years', '-18 years')->format('Y-m-d'),
             'gender' => fake()->randomElement(['male', 'female']),
             'house_number' => fake()->buildingNumber(),
             'ward' => $ward['name'],
             'province' => $province['name'],
-            'phone_number' => fake()->numerify('0#########'),
+            'phone_number' => fake()->unique()->numerify('0#########'),
             'profile_url' => fake()->imageUrl(200,200,'people'),
             'pid' => fake()->unique()->numerify('###########'),
         ];

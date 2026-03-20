@@ -1,34 +1,35 @@
 <?php
-  include("./components/header.php")
+  include(__DIR__ . "/core/config.php");
+  include(__DIR__ . "/components/header.php");
 ?>
 
 <!doctype html>
-<html lang="vi">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="../../css/client/reset.css" />
-    <link rel="stylesheet" href="../../css/client/main.css" />
-    <link rel="stylesheet" href="../../css/client/pages/homepage.css" />
+    <link rel="stylesheet" href='<?php echo BASE_URL . "/css/client/reset.css" ?>'/>
+    <link rel="stylesheet" href='<?php echo BASE_URL . "/css/client/main.css" ?>'/>
+    <link rel="stylesheet" href='<?php echo BASE_URL . "/css/client/pages/homepage.css" ?>'/>
 
     <link
       rel="icon"
       type="image/png"
-      href="../assets/favicon/favicon-96x96.png"
+      href='<?php echo BASE_URL . "/assets/favicon/favicon-96x96.png"?>'
       sizes="96x96"
     />
     <link
       rel="icon"
       type="image/svg+xml"
-      href="../assets/favicon/favicon.svg"
+      href='<?php echo BASE_URL . "/assets/favicon/favicon.svg"?>'
     />
-    <link rel="shortcut icon" href="../assets/favicon/favicon.ico" />
+    <link rel="shortcut icon" href='<?php echo BASE_URL . "/assets/favicon/favicon.ico"?>' />
     <link
       rel="apple-touch-icon"
       sizes="180x180"
-      href="../assets/favicon/apple-touch-icon.png"
+      href='<?php echo BASE_URL . "/assets/favicon/apple-touch-icon.png"?>'
     />
-    <link rel="manifest" href="../assets/favicon/site.webmanifest" />
+    <link rel="manifest" href='<?php echo BASE_URL . "/assets/favicon/site.webmanifest" ?>'/>
     <title>Home Page | RoomRenting</title>
   </head>
   <body>
@@ -51,7 +52,7 @@
         <div class="content-search">
           <div class="search-tool">
             <img
-              src="../../assets/img/Find.png"
+              src='<?php echo BASE_URL . "/assets/img/Find.png" ?>'
               alt="find.png"
               class="search-ico"
             />
@@ -70,7 +71,7 @@
           <div class="other-tools">
             <div class="filter-tool">
               <img
-                src="../../assets/img/Vector.png"
+                src='<?php echo BASE_URL . "/assets/img/Vector.png" ?>'
                 alt="filter.png"
                 class="filter-ico"
               />
@@ -84,7 +85,7 @@
       </div>
 
       <img
-        src="../../assets/img/hero-img.png"
+        src='<?php echo BASE_URL . "/assets/img/hero-img.png" ?>'
         alt="hero-img.png"
         class="hero-img"
       />
@@ -98,14 +99,14 @@
         <a href="./index.php" class="post">
           <div class="post-favour">
             <img
-              src="../../assets/img/favour.png"
+              src='<?php echo BASE_URL . "/assets/img/favour.png" ?>'
               alt="favour.png"
               class="post-favour-ico"
             />
           </div>
 
           <img
-            src="../../assets/img/post.png"
+            src='<?php echo BASE_URL . "/assets/img/post.png" ?>'
             alt="post.png"
             class="post-img"
           />
@@ -117,7 +118,7 @@
 
           <div class="post-address">
             <img
-              src="../../assets/img/address.png"
+              src='<?php echo BASE_URL . "/assets/img/address.png" ?>'
               alt="address.png"
               class="address-ico"
             />
@@ -135,14 +136,14 @@
         <a href="./index.php" class="post">
           <div class="post-favour">
             <img
-              src="../../assets/img/unfavour.png"
+              src='<?php echo BASE_URL . "/assets/img/unfavour.png" ?>'
               alt="favour.png"
               class="post-favour-ico"
             />
           </div>
 
           <img
-            src="../../assets/img/post.png"
+            src='<?php echo BASE_URL . "/assets/img/post.png" ?>'
             alt="post.png"
             class="post-img"
           />
@@ -154,7 +155,7 @@
 
           <div class="post-address">
             <img
-              src="../../assets/img/address.png"
+              src='<?php echo BASE_URL . "/assets/img/address.png" ?>'
               alt="address.png"
               class="address-ico"
             />
@@ -172,14 +173,14 @@
         <a href="./index.php" class="post">
           <div class="post-favour">
             <img
-              src="../../assets/img/unfavour.png"
+              src='<?php echo BASE_URL . "/assets/img/unfavour.png" ?>'
               alt="favour.png"
               class="post-favour-ico"
             />
           </div>
 
           <img
-            src="../../assets/img/post.png"
+            src='<?php echo BASE_URL . "/assets/img/post.png" ?>'
             alt="post.png"
             class="post-img"
           />
@@ -191,7 +192,7 @@
 
           <div class="post-address">
             <img
-              src="../../assets/img/address.png"
+              src='<?php echo BASE_URL . "/assets/img/address.png" ?>'
               alt="address.png"
               class="address-ico"
             />
@@ -209,14 +210,14 @@
         <a href="./index.php" class="post">
           <div class="post-favour">
             <img
-              src="../../assets/img/unfavour.png"
+              src='<?php echo BASE_URL . "/assets/img/unfavour.png" ?>'
               alt="favour.png"
               class="post-favour-ico"
             />
           </div>
 
           <img
-            src="../../assets/img/post.png"
+            src='<?php echo BASE_URL . "/assets/img/post.png" ?>'
             alt="post.png"
             class="post-img"
           />
@@ -228,7 +229,7 @@
 
           <div class="post-address">
             <img
-              src="../../assets/img/address.png"
+              src='<?php echo BASE_URL . "/assets/img/address.png" ?>'
               alt="address.png"
               class="address-ico"
             />
@@ -246,14 +247,14 @@
         <a href="./index.php" class="post">
           <div class="post-favour">
             <img
-              src="../../assets/img/unfavour.png"
+              src='<?php echo BASE_URL . "/assets/img/unfavour.png" ?>'
               alt="favour.png"
               class="post-favour-ico"
             />
           </div>
 
           <img
-            src="../../assets/img/post.png"
+            src='<?php echo BASE_URL . "/assets/img/post.png" ?>'
             alt="post.png"
             class="post-img"
           />
@@ -265,7 +266,7 @@
 
           <div class="post-address">
             <img
-              src="../../assets/img/address.png"
+              src='<?php echo BASE_URL . "/assets/img/address.png" ?>'
               alt="address.png"
               class="address-ico"
             />
@@ -301,14 +302,14 @@
         <a href="./index.php" class="post">
           <div class="post-favour">
             <img
-              src="../../assets/img/favour.png"
+              src='<?php echo BASE_URL . "/assets/img/favour.png" ?>'
               alt="favour.png"
               class="post-favour-ico"
             />
           </div>
 
           <img
-            src="../../assets/img/post.png"
+            src='<?php echo BASE_URL . "/assets/img/post.png" ?>'
             alt="post.png"
             class="post-img"
           />
@@ -320,7 +321,7 @@
 
           <div class="post-address">
             <img
-              src="../../assets/img/address.png"
+              src='<?php echo BASE_URL . "/assets/img/address.png" ?>'
               alt="address.png"
               class="address-ico"
             />
@@ -338,14 +339,14 @@
         <a href="./index.php" class="post">
           <div class="post-favour">
             <img
-              src="../../assets/img/unfavour.png"
+              src='<?php echo BASE_URL . "/assets/img/unfavour.png" ?>'
               alt="favour.png"
               class="post-favour-ico"
             />
           </div>
 
           <img
-            src="../../assets/img/post.png"
+            src='<?php echo BASE_URL . "/assets/img/post.png" ?>'
             alt="post.png"
             class="post-img"
           />
@@ -357,7 +358,7 @@
 
           <div class="post-address">
             <img
-              src="../../assets/img/address.png"
+              src='<?php echo BASE_URL . "/assets/img/address.png" ?>'
               alt="address.png"
               class="address-ico"
             />
@@ -375,14 +376,14 @@
         <a href="./index.php" class="post">
           <div class="post-favour">
             <img
-              src="../../assets/img/unfavour.png"
+              src='<?php echo BASE_URL . "/assets/img/unfavour.png" ?>'
               alt="favour.png"
               class="post-favour-ico"
             />
           </div>
 
           <img
-            src="../../assets/img/post.png"
+            src='<?php echo BASE_URL . "/assets/img/post.png" ?>'
             alt="post.png"
             class="post-img"
           />
@@ -394,7 +395,7 @@
 
           <div class="post-address">
             <img
-              src="../../assets/img/address.png"
+              src='<?php echo BASE_URL . "/assets/img/address.png" ?>'
               alt="address.png"
               class="address-ico"
             />
@@ -412,14 +413,14 @@
         <a href="./index.php" class="post">
           <div class="post-favour">
             <img
-              src="../../assets/img/unfavour.png"
+              src='<?php echo BASE_URL . "/assets/img/unfavour.png" ?>'
               alt="favour.png"
               class="post-favour-ico"
             />
           </div>
 
           <img
-            src="../../assets/img/post.png"
+            src='<?php echo BASE_URL . "/assets/img/post.png" ?>'
             alt="post.png"
             class="post-img"
           />
@@ -431,7 +432,7 @@
 
           <div class="post-address">
             <img
-              src="../../assets/img/address.png"
+              src='<?php echo BASE_URL . "/assets/img/address.png" ?>'
               alt="address.png"
               class="address-ico"
             />
@@ -449,14 +450,14 @@
         <a href="./index.php" class="post">
           <div class="post-favour">
             <img
-              src="../../assets/img/unfavour.png"
+              src='<?php echo BASE_URL . "/assets/img/unfavour.png" ?>'
               alt="favour.png"
               class="post-favour-ico"
             />
           </div>
 
           <img
-            src="../../assets/img/post.png"
+            src='<?php echo BASE_URL . "/assets/img/post.png" ?>'
             alt="post.png"
             class="post-img"
           />
@@ -468,7 +469,7 @@
 
           <div class="post-address">
             <img
-              src="../../assets/img/address.png"
+              src='<?php echo BASE_URL . "/assets/img/address.png" ?>'
               alt="address.png"
               class="address-ico"
             />
@@ -490,5 +491,5 @@
 </html>
 
 <?php
-  include("./components/footer.php")
+  include(__DIR__ . "/components/footer.php")
 ?>

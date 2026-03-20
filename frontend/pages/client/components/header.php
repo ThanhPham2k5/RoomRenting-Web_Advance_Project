@@ -1,17 +1,21 @@
+<?php
+  include_once(__DIR__ . "/../core/config.php")
+?>
+
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/RoomRenting-Web_Advance_Project/frontend/css/client/reset.css" />
-    <link rel="stylesheet" href="/RoomRenting-Web_Advance_Project/frontend/css/client/main.css" />
-    <link rel="stylesheet" href="/RoomRenting-Web_Advance_Project/frontend/css/client/components/header.css" />
+    <link rel="stylesheet" href='<?php echo BASE_URL . "/css/client/reset.css" ?> '/>
+    <link rel="stylesheet" href='<?php echo BASE_URL . "/css/client/main.css" ?>' />
+    <link rel="stylesheet" href='<?php echo BASE_URL . "/css/client/components/header.css" ?>' />
   </head>
   <body>
     <div class="header">
-      <a class="header-logo" href="/RoomRenting-Web_Advance_Project/frontend/pages/client/index.php">
+      <a class="header-logo" href='<?php echo BASE_URL . "/pages/client/index.php"?>'>
         <img
-          src="/RoomRenting-Web_Advance_Project/frontend/assets/img/logo.png"
+          src='<?php echo BASE_URL . "/assets/img/logo.png"?>'
           alt="logo.png"
           class="header-logo-img"
         />
@@ -22,17 +26,17 @@
       <!-- normal mode -->
       <div class="header-buttons">
         <!-- Navigate to Sign up Page -->
-        <button class="header-button button-sign-up">Đăng ký</button>
+        <a href='<?php echo BASE_URL . "/pages/client/signup.php" ?>' class="header-button button-sign-up">Đăng ký</a>
 
         <!-- Navigate to Log in Page -->
-        <button class="header-button button-log-in">Đăng nhập</button>
+        <a href='<?php echo BASE_URL . "/pages/client/login.php" ?>' class="header-button button-log-in">Đăng nhập</a>
       </div>
 
       <!-- responsive mode -->
       <div class="header-menu">
         <button class="header-button header-menu-button">
           <img
-            src="/RoomRenting-Web_Advance_Project/frontend/assets/img/menu-ico.png"
+            src='<?php echo BASE_URL . "/assets/img/menu-ico.png"?>'
             alt="menu-ico"
             class="header-menu-ico"
           />
@@ -41,9 +45,9 @@
         </button>
 
         <div class="sidebar">
-          <a href="" class="sidebar-item sidebar-signup">Đăng ký</a>
+          <a href='<?php echo BASE_URL . "/pages/client/signup.php" ?>' class="sidebar-item sidebar-signup">Đăng ký</a>
 
-          <a href="" class="sidebar-item sidebar-login">Đăng nhập</a>
+          <a href='<?php echo BASE_URL . "/pages/client/login.php" ?>' class="sidebar-item sidebar-login">Đăng nhập</a>
         </div>
       </div>
     </div>

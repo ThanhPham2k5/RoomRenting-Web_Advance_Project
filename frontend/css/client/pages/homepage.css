@@ -274,6 +274,11 @@
   text-decoration: none;
   cursor: pointer;
   text-align: center;
+  transition: all 0.1s linear;
+}
+
+.suggest-link:hover {
+  text-decoration: underline;
 }
 
 /* footer css */

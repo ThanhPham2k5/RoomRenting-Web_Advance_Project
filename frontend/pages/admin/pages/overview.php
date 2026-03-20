@@ -142,7 +142,7 @@
             </div>
 
             <div class="chart">
-
+                <canvas id="postsLineChart"></canvas>
             </div>
         </div>
     </div>

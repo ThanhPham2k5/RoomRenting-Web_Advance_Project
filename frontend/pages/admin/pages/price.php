@@ -1,6 +1,12 @@
 <?php 
+    $currentTable = $_GET['table'] ?? "1";
+    $priceInsertForm = "modal-them-gia-dang-bai";
+    $priceEditForm = "modal-sua-gia-dang-bai";
+    $priceInsertForm1 = "modal-them-gia-quy-doi";
+    $priceEditForm1 = "modal-sua-gia-quy-doi";
     $titleData = ['titleContent' => "Giá cả", 'group' => false, 'insert' => true, 'edit' => true, 'delete' => true, 'handle' => false];
     $tableHeader = ['Id', 'Điểm', 'Tình trạng', 'Từ ngày', 'Đến ngày', 'Chi tiết'];
+    $tableHeader1 = ['Id', 'Số tiền', 'Điểm', 'Tình trạng', 'Từ ngày', 'Đến ngày', 'Chi tiết'];
     $type = ['type' => "1"];
     ob_start(); 
     ?>
@@ -128,6 +134,7 @@
     $tbodyHtml = ob_get_clean();
 
     $tableData = ['tableTitle' =>"Thông tin giá đăng bài", 'tableHeader' => $tableHeader, 'time' => true, 'status' => true, 'tbodyHtml' => $tbodyHtml];
+    $tableData1 = ['tableTitle' =>"Thông tin giá trị quy đổi", 'tableHeader' => $tableHeader1, 'time' => true, 'status' => true, 'tbodyHtml' => $tbodyHtml];
 ?>
 
 <div class="price-page">
@@ -137,9 +144,32 @@
         <?php renderComponent("searchbar",false,$type) ?>
         <div class="line"></div>
         <div class="tab-pane">
-            <p class="item active">GIÁ ĐĂNG BÀI</p>
-            <p class="item">GIÁ TRỊ QUY ĐỔI ĐIỂM</p>
+            <a href="index.php?page=price&table=1" class="item <?php echo ($currentTable === '1') ? 'active' : ''; ?>">GIÁ ĐĂNG BÀI</a>
+            <a href="index.php?page=price&table=2" class="item <?php echo ($currentTable === '2') ? 'active' : ''; ?>">GIÁ TRỊ QUY ĐỔI ĐIỂM</a>
         </div>
     </div>
-    <?php renderComponent("table",false,$tableData) ?>
+    <?php if($currentTable === '1'){
+        renderComponent("table",false,$tableData);
+    }else if($currentTable === '2'){
+        renderComponent("table",false,$tableData1);
+    } ?>
+    <?php
+    ob_start();
+    ?>
+        <input type="hidden" name="action" value="addPricePost">
+    
+        <div class="input-group">
+            <label>Số điểm</label>
+            <input type="text" name="name" placeholder="Nhập số điểm...">
+        </div>
+        <div class="input-group">
+            <label>Thời gian</label>
+            <input type="text" name="name" placeholder="Từ ngày...">
+            <input type="text" name="name" placeholder="Đến ngày...">
+        </div> 
+    <?php 
+        $formInsertData = ob_get_clean();
+    ?>
+    <?php renderComponent("form",false,['title' => 'Thêm giá đăng bài', 'idModal' => $permissionInsertForm, 'formData' => $formInsertData]) ?>
+    <?php renderComponent("form",false,['title' => 'Sửa giá đăng bài', 'idModal' => $permissionEditForm]) ?>
 </div>

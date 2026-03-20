@@ -1,6 +1,8 @@
 <?php 
+    $currentTable = $_GET['table'] ?? "1";
     $titleData = ['titleContent' => "Hóa đơn", 'group' => false, 'insert' => false, 'edit' => false, 'delete' => false, 'handle' => true];
     $tableHeader = ['ID', 'ID tài khoản', 'ID bài đăng', 'Điểm', 'Tình trạng', 'Thời gian', 'Chi tiết'];
+    $tableHeader1 = ['ID', 'ID tài khoản', 'Số tiền', 'Tình trạng', 'Thời gian', 'Chi tiết'];
     $type = ['type' => "1"];
     ob_start(); 
     ?>
@@ -129,7 +131,8 @@
     <?php 
     $tbodyHtml = ob_get_clean();
 
-    $tableData = ['tableTitle' =>"Thông tin tài khoản", 'tableHeader' => $tableHeader, 'time' => true, 'status' => true, 'tbodyHtml' => $tbodyHtml];
+    $tableData = ['tableTitle' =>"Thông tin hóa đơn thanh toán", 'tableHeader' => $tableHeader, 'time' => true, 'status' => true, 'tbodyHtml' => $tbodyHtml];
+    $tableData1 = ['tableTitle' =>"Thông tin hóa đơn nạp tiền", 'tableHeader' => $tableHeader1, 'time' => true, 'status' => true, 'tbodyHtml' => $tbodyHtml];
 ?>
 
 <div class="bill-page">
@@ -139,9 +142,13 @@
         <?php renderComponent("searchbar",false,$type) ?>
         <div class="line"></div>
         <div class="tab-pane">
-            <p class="item active">HÓA ĐƠN THANH TOÁN</p>
-            <p class="item">HÓA ĐƠN NẠP TIỀN</p>
+            <a href="index.php?page=bill&table=1" class="item <?php echo ($currentTable === '1') ? 'active' : ''; ?>">HÓA ĐƠN THANH TOÁN</a>
+            <a href="index.php?page=bill&table=2" class="item <?php echo ($currentTable === '2') ? 'active' : ''; ?>">HÓA ĐƠN NẠP TIỀN</a>
         </div>
     </div>
-    <?php renderComponent("table",false,$tableData) ?>
+    <?php if($currentTable === '1'){
+        renderComponent("table",false,$tableData);
+    }else if($currentTable === '2'){
+        renderComponent("table",false,$tableData1);
+    } ?>
 </div>

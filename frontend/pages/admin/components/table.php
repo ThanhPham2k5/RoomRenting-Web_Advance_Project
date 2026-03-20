@@ -4,9 +4,9 @@ $tableHeader = $tableHeader ?? [];
 $time = $time ?? false;
 $status = $status ?? false;
 $tbodyHtml = $tbodyHtml ?? '';
+$currentPage = $_GET['page'];
 ?>
-
-<div class="table-component">
+<div class="table-component" id="<?php echo "table-" . $currentPage ?>">
     <div class="main-content">
         <div class="top">
             <p class="title"><?php echo $tableTitle ?></p>

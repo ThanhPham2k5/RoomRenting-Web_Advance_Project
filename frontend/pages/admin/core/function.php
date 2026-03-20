@@ -14,4 +14,34 @@ function renderComponent($componentName, $isPage, $props = []) {
         echo "Lỗi: Không tìm thấy component {$componentName}";
     }
 }
+function call_api($url, $method = 'GET', $data = []) {
+    $curl = curl_init();
+    $options = [
+        CURLOPT_URL => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT => 10,
+        CURLOPT_CUSTOMREQUEST => $method,
+        CURLOPT_HTTPHEADER => [
+            "Accept: application/json",
+            "Content-Type: application/json"
+        ],
+    ];
+
+    if (($method == 'POST' || $method == 'PUT') && !empty($data)) {
+        $options[CURLOPT_POSTFIELDS] = json_encode($data);
+    }
+
+    curl_setopt_array($curl, $options);
+
+    $response = curl_exec($curl);
+    $err = curl_error($curl);
+    curl_close($curl);
+
+    if ($err) {
+        return [];
+    } else {
+        $decoded = json_decode($response, true);
+        return $decoded['data'] ?? [];
+    }
+}
 ?>

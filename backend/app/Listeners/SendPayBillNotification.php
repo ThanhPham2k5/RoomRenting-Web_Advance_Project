@@ -25,10 +25,25 @@ class SendPayBillNotification
     {
         $payBill = $event->payBill;
 
+
         if (! $payBill instanceof PayBill) {
             return;
         }
 
+        if ($payBill->status === 'failed') {
+                Notification::create([
+                    'title' => 'Thanh toán hoá đơn thất bại',
+                    'content' => 'Hoá đơn thanh toán #' . $payBill->id . ' đã thất bại. Số điểm: ' . $payBill->points . '. Vui lòng kiểm tra lại số điểm của bạn.',
+                    'notification_type' => 'transaction',
+                    'status' => 'unread',
+                    'account_id' => $payBill->account_id,
+                    'notifiable_id' => $payBill->id,
+                    'notifiable_type' => PayBill::class,
+                ]);
+    
+                return;
+        } 
+        
         Notification::create([
             'title' => 'Thanh toán hoá đơn',
             'content' => 'Hoá đơn thanh toán #' . $payBill->id . ' đã được tạo. Số điểm: ' . $payBill->points . ', trạng thái: ' . $payBill->status . '.',
@@ -38,5 +53,6 @@ class SendPayBillNotification
             'notifiable_id' => $payBill->id,
             'notifiable_type' => PayBill::class,
         ]);
+        
     }
 }

@@ -30,7 +30,10 @@ class DeductMonthlyPostFee extends Command
         // Need review this code
         $posts = Post::whereDate('next_payment_date', '<=', today())
         ->whereNotNull('next_payment_date')
-        ->where('status', 'completed')
+        ->where(function ($query) {
+            $query->where('status', 'completed')
+                  ->orWhere('status', 'expired');
+        })
         ->get();
 
         $service = app(DeductPostService::class);

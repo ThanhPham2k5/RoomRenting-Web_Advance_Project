@@ -9,12 +9,15 @@ use App\Http\Requests\StoreRechargeBillRequest;
 use App\Http\Requests\UpdateRechargeBillRequest;
 use App\Http\Resources\Payments\RechargeBillCollection;
 use App\Http\Resources\Payments\RechargeBillResource;
+use App\Models\Payments\RechargeRule;
 use Illuminate\Http\Request;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedSort;
 use Spatie\QueryBuilder\Enums\FilterOperator;
 use Spatie\QueryBuilder\QueryBuilder;
 use App\Events\RechargeBillCreated;
+use App\Models\Account_User\Account;
+use App\Models\Account_User\User;
 
 class RechargeBillController extends Controller
 {
@@ -74,8 +77,11 @@ class RechargeBillController extends Controller
         
         $rechargeBill = RechargeBill::create($validated);
 
-        // Chưa cộng điểm vào tài khoảng
-
+        // Increment user points
+        $point = $rechargeBill->rechargeRule->points;
+        $user = User::where('id', $rechargeBill->account->user_id)->first();
+        $user->increment('points', $point);
+        
         event(new RechargeBillCreated($rechargeBill));
 
         return response()->json([

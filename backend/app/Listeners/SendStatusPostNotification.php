@@ -26,14 +26,13 @@ class SendStatusPostNotification
         $status = $event->post->status;
         $account = $event->post->user->account;
 
-
         if ($status === 'rejected') {
             Notification::create([
                 'title' => 'Bài đăng bị từ chối',
                 'content' => 'Bài đăng #' . $event->post->id . ' đã bị từ chối. Vui lòng kiểm tra lại thông tin và thử đăng lại.',
                 'notification_type' => 'news',
                 'status' => 'unread',
-                'account_id' => $account->account_id,
+                'account_id' => $account->id,
                 'notifiable_id' => $event->post->id,
                 'notifiable_type' => Post::class,
             ]);
@@ -43,7 +42,7 @@ class SendStatusPostNotification
                 'content' => 'Bài đăng #' . $event->post->id . ' được duyệt.',
                 'notification_type' => 'news',
                 'status' => 'unread',
-                'account_id' => $account->account_id,
+                'account_id' => $account->id,
                 'notifiable_id' => $event->post->id,
                 'notifiable_type' => Post::class,
             ]);
@@ -53,7 +52,7 @@ class SendStatusPostNotification
                 'content' => 'Bài đăng #' . $event->post->id . ' đang được duyệt.',
                 'notification_type' => 'news',
                 'status' => 'unread',
-                'account_id' => $account->account_id,
+                'account_id' => $account->id,
                 'notifiable_id' => $event->post->id,
                 'notifiable_type' => Post::class,
             ]);

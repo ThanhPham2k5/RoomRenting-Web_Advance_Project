@@ -63,10 +63,11 @@ class RechargeRuleController extends Controller
      */
     public function store(StoreRechargeRuleRequest $request)
     {
-        $validated = $request->validated();
-        $validated['status'] = 'inactive';
         
-        $rechargeRule = RechargeRule::create($validated);
+        $rechargeRule = RechargeRule::create([
+            ...$request->validated(),
+            'status' => 'inactive',
+        ]);
 
         return response()->json([
             'message' => 'Recharge rule created successfully',
@@ -103,6 +104,8 @@ class RechargeRuleController extends Controller
         if (isset($validated['status']) && $validated['status'] === 'active') {
             // Deactivate all other recharge rules
             RechargeRule::where('id', '!=', $rechargeRule->id)->update(['status' => 'inactive']);
+
+            $rechargeRule->update($validated);
         }
 
         return response()->json([
@@ -116,6 +119,11 @@ class RechargeRuleController extends Controller
      */
     public function destroy(RechargeRule $rechargeRule)
     {
+        if ($rechargeRule->status === 'active') {
+            return response()->json([
+            'message' => 'Done delete Recharge rule deleted'
+        ]);
+        }
         $rechargeRule['status'] = 'inactive';
         $rechargeRule->delete();
 

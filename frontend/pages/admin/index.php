@@ -2,21 +2,31 @@
 require_once __DIR__ . '/core/function.php';
 $pageData = [];
 $page = $_GET['page'] ?? 'overview';
-$validPage = ['overview', 'account', 'bill', 'comment', 'permission', 'post', 'price', 'sale'];
-$currentTable = $_GET['table'] ?? "1";
+$validPage = ['overview', 'account', 'bill', 'comment', 'permission', 'post', 'price'];
+$currentTable = $_GET['table'] ?? '1';
+$pageNum = $_GET['p'] ?? 1;
 
 if(!in_array($page, $validPage)){
     $page = "overview";
 }
 switch ($page) {
     case 'account':
-        $pageNum = $_GET['p'] ?? 1;
-        $apiResult = call_api("http://127.0.0.1:8000/api/accounts?per_page=1&page={$pageNum}");
+        $apiRole = ($currentTable === '1') ? 'user' : 'employee';
+        $apiResult = call_api("http://127.0.0.1:8000/api/accounts?per_page=6&page={$pageNum}&filter[role]={$apiRole}");
         $pageData['accounts'] = $apiResult['data'] ?? [];
         $pageData['paginationMeta'] = [
             'current_page' => $apiResult['meta']['current_page'] ?? 1,
             'last_page'    => $apiResult['meta']['last_page'] ?? 1,
             'base_url'     => "index.php?page=account&table={$currentTable}" 
+        ];
+        break;
+    case 'comment':
+        $apiResult = call_api("http://127.0.0.1:8000/api/comments?per_page=6&page={$pageNum}&include=account");
+        $pageData['comments'] = $apiResult['data'] ?? [];
+        $pageData['paginationMeta'] = [
+            'current_page' => $apiResult['meta']['current_page'] ?? 1,
+            'last_page'    => $apiResult['meta']['last_page'] ?? 1,
+            'base_url'     => "index.php?page=comment&table={$currentTable}" 
         ];
         break;
 }
@@ -87,23 +97,7 @@ if ($page === 'account' && isset($_GET['action']) && $_GET['action'] === 'edit')
             window.history.replaceState({}, '', currentUrl.toString());
         }
     }
-    async function loadAccountsIntoTable() {
-        try {
-            const response = await fetch('http://127.0.0.1:8000/api/accounts?per_page=all');
-            const result = await response.json();
-
-            if (result.success === true) {
-                const accounts = result.data;
-            }
-        } catch (error) {
-            console.error("Lỗi khi tải danh sách:", error);
-        }
-    }
     document.addEventListener("DOMContentLoaded", function() {
-        const tableAccounts = document.getElementById('table-<?php echo $page ?>');
-        if (tableAccounts) {
-            loadAccountsIntoTable();
-        }
         const canvasElement = document.getElementById('postsLineChart');
         if (canvasElement) {
             drawHardcodedLineChart();

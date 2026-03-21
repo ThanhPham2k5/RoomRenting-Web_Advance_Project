@@ -1,4 +1,5 @@
 <?php 
+    $paginationMeta = $paginationMeta ?? [];
     $currentTable = $_GET['table'] ?? "1";
     $accounts = $accounts ?? [];
     $accountEditData = $accountEditData ?? [];
@@ -12,10 +13,10 @@
         echo '<tr><td colspan="5" style="text-align:center;">Không có dữ liệu hoặc lỗi kết nối máy chủ</td></tr>';
     }else{
         foreach ($accounts as $user){
-            $isVisible = true; 
+            $isVisible = false; 
             $roleLower = strtolower($user['role'] ?? ""); 
             if ($currentTable === '2') {
-                if (str_contains($roleLower, 'manager')) {
+                if (str_contains($roleLower, 'employee')) {
                     $isVisible = true;
                 }
             } else {

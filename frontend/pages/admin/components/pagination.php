@@ -50,7 +50,7 @@
         <?php for ($i = $startPage; $i <= $endPage; $i++): ?>
             <a href="<?php echo $baseUrl . '&p=' . $i; ?>" 
                class="btn <?php echo ($i === $currentPage) ? 'active' : ''; ?>"
-               style="text-decoration: none; color: inherit; display: flex; align-items: center; justify-content: center;">
+               style="text-decoration: none; display: flex; align-items: center; justify-content: center;">
                 <?php echo $i; ?>
             </a>
         <?php endfor; ?>

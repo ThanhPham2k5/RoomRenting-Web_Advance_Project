@@ -13,3 +13,7 @@
     padding: 0 30px;
     width: 100%;
 }
+.comment-page a{
+    text-decoration: none;
+    color: black;
+}

@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\Account_User\Account;
 use App\Models\Account_User\PersonalInfo;
+use App\Models\Account_User\User;
 use App\Models\Form;
 use App\Models\Notification\Notification;
 use App\Models\Payments\PayBill;
@@ -11,6 +13,7 @@ use App\Models\Posts\Comment;
 use App\Models\Posts\Favorite;
 use App\Models\Posts\Post;
 use App\Models\Posts\PostImage;
+use App\Policies\AccountPolicy;
 use App\Policies\CommentPolicy;
 use App\Policies\FavoritePolicy;
 use App\Policies\FormPolicy;
@@ -20,6 +23,7 @@ use App\Policies\PersonalInfoPolicy;
 use App\Policies\PostImagePolicy;
 use App\Policies\PostPolicy;
 use App\Policies\RechargeBillPolicy;
+use App\Policies\UserPolicy;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
 
@@ -35,7 +39,9 @@ class AppServiceProvider extends ServiceProvider
         Favorite::class => FavoritePolicy::class,
         Notification::class => NotificationPolicy::class,
         PersonalInfo::class => PersonalInfoPolicy::class,
-        PostImage::class => PostImagePolicy::class
+        PostImage::class => PostImagePolicy::class,
+        Account::class => AccountPolicy::class,
+        User::class => UserPolicy::class
     ];
     /**
      * Register any application services.

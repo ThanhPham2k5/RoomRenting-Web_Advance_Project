@@ -3,10 +3,9 @@
 namespace App\Policies;
 
 use App\Models\Account_User\Account;
-use Illuminate\Auth\Access\Response;
+use App\Models\Account_User\User;
 
-
-class AccountPolicy
+class UserPolicy
 {
     public function before(Account $account, $ability)
     {
@@ -25,7 +24,7 @@ class AccountPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(Account $account, Account $viewAccount): bool
+    public function view(Account $account, User $user): bool
     {
         return false;
     }
@@ -41,25 +40,25 @@ class AccountPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(Account $account, Account $editAccount): bool
+    public function update(Account $account, User $user): bool
     {
         // Owner
-        return $account->id === $editAccount->id
+        return $account->id === $user->account_id
             || $account->hasRole('userManager');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(Account $account, Account $deleteAccount): bool
+    public function delete(Account $account, User $user): bool
     {
-        return $account->hasRole('userManager');
+        return false;
     }
 
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(Account $account,  Account $restoreAccount): bool
+    public function restore(Account $account,  User $user): bool
     {
         return false;
     }
@@ -67,7 +66,7 @@ class AccountPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(Account $account, Account $fdeleteAccount): bool
+    public function forceDelete(Account $account, User $user): bool
     {
         return false;
     }

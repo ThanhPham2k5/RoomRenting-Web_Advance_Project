@@ -99,6 +99,15 @@ class PersonalInfoController extends Controller
     public function update(UpdatePersonalInfoRequest $request, PersonalInfo $personalInfo)
     {
         $this->authorize('update', $personalInfo);
+
+        $validated = $request->validated();
+
+        $personalInfo->update($validated);
+
+        return response()->json([
+            'message' => 'Personal Info update successfully',
+            'personalInfo' => $personalInfo
+        ]);
     }
 
     /**

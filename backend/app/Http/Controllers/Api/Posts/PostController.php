@@ -148,7 +148,9 @@ class PostController extends Controller
     public function destroy(Post $post)
     {
         $this->authorize('delete', $post);
-
+        
+        $post->postImages()->delete();
+        $post->comments()->delete();
         $post->delete();
 
         return response()->json([

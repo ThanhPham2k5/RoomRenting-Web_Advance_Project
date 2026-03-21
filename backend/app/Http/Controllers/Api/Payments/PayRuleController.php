@@ -118,8 +118,8 @@ class PayRuleController extends Controller
     {
         if ($payRule->status == 'active'){
             return response()->json([
-            'message' => 'Dont delete payrule active'
-        ]);
+                'message' => 'Cannot delete active rule'
+            ]);
         }
         $payRule['status'] = 'inactive';
         $payRule->delete();

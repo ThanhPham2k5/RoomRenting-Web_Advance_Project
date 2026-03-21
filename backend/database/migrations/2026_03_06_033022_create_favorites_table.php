@@ -19,6 +19,7 @@ return new class extends Migration
 
             $table->timestamps();
 
+            $table->softDeletes();
             $table->unique(['account_id', 'post_id']);
         });
     }

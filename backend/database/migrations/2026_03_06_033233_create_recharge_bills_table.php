@@ -22,6 +22,7 @@ return new class extends Migration
             $table->foreignId('account_id')->constrained()->cascadeOnDelete();
             $table->foreignId('recharge_rule_id')->constrained()->cascadeOnDelete();
             
+            $table->softDeletes();
             $table->timestamps();
         });
     }

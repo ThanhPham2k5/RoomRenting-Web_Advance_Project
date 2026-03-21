@@ -8,13 +8,18 @@ use App\Http\Requests\StoreAccountRequest;
 use App\Http\Requests\UpdateAccountRequest;
 use App\Http\Resources\Account_User\AccountCollection;
 use App\Http\Resources\Account_User\AccountResource;
+use App\Services\AccountService;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\Enums\FilterOperator;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class AccountController extends Controller
-{
+{   
+    use AuthorizesRequests;
+
+    private AccountService $accountService;
 
     private $allowedIncludes = [
         'form',
@@ -32,6 +37,11 @@ class AccountController extends Controller
     private $allowSorts = [
         'id',
     ];
+
+    public function __construct(AccountService $accountService)
+    {
+        $this->accountService = $accountService;
+    }
 
     /**
      * Display a listing of the resource.
@@ -75,18 +85,9 @@ class AccountController extends Controller
     {
         $validated = $request->validated();
         
-        $account = Account::create([
-            'username' => $validated['username'],
-            'password' => bcrypt($validated['password']),
-            'role' => $validated['role'],
-        ]);
+        $result = $this->accountService->createAccount($validated);
 
-        $token = $account->createToken($validated['username']);
-
-        return response()->json([
-            'account' => new AccountResource($account),
-            'token' => $token->plainTextToken
-        ], 201);
+        return response()->json($result, 201);
     }
 
     /**
@@ -114,7 +115,13 @@ class AccountController extends Controller
      */
     public function update(UpdateAccountRequest $request, Account $account)
     {
-        //
+        $this->authorize('update', $account);
+
+        $validated = $request->validated();
+
+        $result = $this->accountService->updateAccount($account, $validated);
+
+        return response()->json($result);
     }
 
     /**
@@ -122,6 +129,56 @@ class AccountController extends Controller
      */
     public function destroy(Account $account)
     {
-        //
+        if($account->hasRole('admin'))
+            return response()->json([
+                'message' => 'Cannot delete this account'
+            ]);
+        $this->authorize('delete', $account);
+
+        $result = $this->accountService->deleteAccount($account);
+
+        return response()->json($result);
+    }
+
+    public function assignRoles(Request $request, Account $account)
+    {
+        $request->validate([
+            'roles' => 'required|array',
+            'roles.*' => 'exists:roles,name'
+        ]);
+
+        $account->assignRole($request->roles);
+        
+        return response()->json([
+            'message' => 'Roles assigned'
+        ]);
+    }
+
+    public function syncRoles(Request $request, Account $account)
+    {
+        $request->validate([
+            'roles' => 'required|array',
+            'roles.*' => 'exists:roles,name'
+        ]);
+
+        $account->syncRoles($request->roles);
+
+        return response()->json([
+            'message' => 'Roles synced'
+        ]);
+    }
+
+    public function assignPermissions(Request $request, Account $account)
+    {
+        $request->validate([
+            'permissions' => 'required|array',
+            'permissions.*' => 'exists:permissions,name'
+        ]);
+
+        $account->givePermissionTo($request->permissions);
+
+        return response()->json([
+            'message' => 'Permissions assigned'
+        ]);
     }
 }

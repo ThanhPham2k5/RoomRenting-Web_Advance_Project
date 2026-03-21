@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api\Account_User;
 
-use App\Filter\PersonalInfoFilter;
 use App\Models\Account_User\PersonalInfo;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePersonalInfoRequest;

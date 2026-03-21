@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api\Payments;
 
-use App\Filter\PayRuleFilter;
 use App\Models\Payments\PayRule;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePayRuleRequest;

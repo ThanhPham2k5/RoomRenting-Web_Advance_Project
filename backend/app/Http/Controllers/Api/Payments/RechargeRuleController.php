@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api\Payments;
 
-use App\Filter\RechargeRuleFilter;
 use App\Models\Payments\RechargeRule;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreRechargeRuleRequest;

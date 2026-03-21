@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api\Account_User;
 
-use App\Filter\UserFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Account_User\UserCollection;
 use App\Http\Resources\Account_User\UserResource;

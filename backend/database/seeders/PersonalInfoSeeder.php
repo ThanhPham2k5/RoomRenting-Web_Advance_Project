@@ -24,6 +24,13 @@ class PersonalInfoSeeder extends Seeder
                 'profile_url' => 'https://testingbot.com/free-online-tools/random-avatar/200?u=annguyen',
             ],
             [
+                'name' => 'Nguyễn Thanh Bình',
+                'gender' => 'male',
+                'dob' => '1997-02-08',
+                'email' => 'thanhbinh@example.com',
+                'profile_url' => 'https://testingbot.com/free-online-tools/random-avatar/200?u=thanhbinh',
+            ],
+            [
                 'name' => 'Trần Thị Bình',
                 'gender' => 'female',
                 'dob' => '1999-08-21',

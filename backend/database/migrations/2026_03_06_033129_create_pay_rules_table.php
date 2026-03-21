@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('pay_rules', function (Blueprint $table) {
             $table->id();
-
+            
+            $table->enum('status', ['active', 'inactive']);
             $table->integer('points');
 
             $table->softDeletes();

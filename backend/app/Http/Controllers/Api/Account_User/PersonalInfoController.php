@@ -9,6 +9,7 @@ use App\Http\Requests\StorePersonalInfoRequest;
 use App\Http\Requests\UpdatePersonalInfoRequest;
 use App\Http\Resources\Account_User\PersonalInfoCollection;
 use App\Http\Resources\Account_User\PersonalInfoResource;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedSort;
@@ -17,6 +18,7 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 class PersonalInfoController extends Controller
 {
+    use AuthorizesRequests;
 
     private $allowedIncludes = [];
 
@@ -75,6 +77,8 @@ class PersonalInfoController extends Controller
      */
     public function show(PersonalInfo $personalInfo)
     {
+        $this->authorize('view', $personalInfo);
+
         $personalInfo = QueryBuilder::for(PersonalInfo::class)
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($personalInfo->id);
@@ -95,7 +99,7 @@ class PersonalInfoController extends Controller
      */
     public function update(UpdatePersonalInfoRequest $request, PersonalInfo $personalInfo)
     {
-        //
+        $this->authorize('update', $personalInfo);
     }
 
     /**

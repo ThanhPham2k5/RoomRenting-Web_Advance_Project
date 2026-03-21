@@ -17,10 +17,11 @@ use Spatie\QueryBuilder\Enums\FilterOperator;
 use Spatie\QueryBuilder\QueryBuilder;
 use App\Models\Posts\Post;
 use App\Http\Resources\Posts\PostCollection;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class FormController extends Controller
 {
-
+    use AuthorizesRequests;
     private $allowedIncludes = [
         'account',
     ];
@@ -99,6 +100,8 @@ class FormController extends Controller
      */
     public function show(Form $form)
     {
+        $this->authorize('view', $form);
+
         $form = QueryBuilder::for(Form::class)
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($form->id);
@@ -119,6 +122,8 @@ class FormController extends Controller
      */
     public function update(UpdateFormRequest $request, Form $form)
     {
+        $this->authorize('update', $form);
+
         $validated = $request->validated();
 
         $form->update($validated);

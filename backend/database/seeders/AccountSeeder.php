@@ -32,6 +32,11 @@ class AccountSeeder extends Seeder
                 'role' => 'postManager'
             ],
             [
+                'username' => 'comment_manager',
+                'password' => bcrypt('Comment@123456'),
+                'role' => 'commentManager'
+            ],
+            [
                 'username' => 'bill_manager',
                 'password' => bcrypt('Bill@123456'),
                 'role' => 'billManager'

@@ -2,32 +2,43 @@
 
 namespace App\Policies;
 
+use App\Models\Account_User\Account;
+use App\Models\Payments\PayBill;
 use Illuminate\Auth\Access\Response;
-use App\Models\PayBill;
-use App\Models\User;
+
 
 class PayBillPolicy
 {
+
+    public function before(Account $account, $ability)
+    {
+        if ($account->hasRole('admin')) {
+            return true;
+        }
+    }
     /**
      * Determine whether the user can view any models.
      */
-    public function viewAny(User $user): bool
+    public function viewAny(Account $account): bool
     {
-        return false;
+        // Owner
+        return $account->hasRole('bill_manager');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, PayBill $payBill): bool
+    public function view(Account $account, PayBill $payBill): bool
     {
-        return false;
+        // Owner
+        return $account->id === $payBill->account_id
+            || $account->hasRole('bill_manager');
     }
 
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user): bool
+    public function create(Account $account): bool
     {
         return false;
     }
@@ -35,7 +46,7 @@ class PayBillPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, PayBill $payBill): bool
+    public function update(Account $account, PayBill $payBill): bool
     {
         return false;
     }
@@ -43,7 +54,7 @@ class PayBillPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, PayBill $payBill): bool
+    public function delete(Account $account, PayBill $payBill): bool
     {
         return false;
     }
@@ -51,7 +62,7 @@ class PayBillPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, PayBill $payBill): bool
+    public function restore(Account $account, PayBill $payBill): bool
     {
         return false;
     }
@@ -59,7 +70,7 @@ class PayBillPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, PayBill $payBill): bool
+    public function forceDelete(Account $account, PayBill $payBill): bool
     {
         return false;
     }

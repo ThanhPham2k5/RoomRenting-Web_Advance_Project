@@ -8,6 +8,7 @@ use App\Http\Requests\StoreFavoriteRequest;
 use App\Http\Requests\UpdateFavoriteRequest;
 use App\Http\Resources\Posts\FavoriteCollection;
 use App\Http\Resources\Posts\FavoriteResource;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\Enums\FilterOperator;
@@ -15,6 +16,7 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 class FavoriteController extends Controller
 {
+    use AuthorizesRequests;
     private $allowedIncludes = [
         'account',
         'post',
@@ -74,6 +76,8 @@ class FavoriteController extends Controller
      */
     public function show(Favorite $favorite)
     {
+        $this->authorize('view', $favorite);
+
         $favorite = QueryBuilder::for(Favorite::class)
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($favorite->id);
@@ -94,6 +98,8 @@ class FavoriteController extends Controller
      */
     public function update(UpdateFavoriteRequest $request, Favorite $favorite)
     {
+        $this->authorize('update', $favorite);
+
         $validated = $request->validated();
 
         $favorite->update($validated);
@@ -109,6 +115,8 @@ class FavoriteController extends Controller
      */
     public function destroy(Favorite $favorite)
     {
+        $this->authorize('delete', $favorite);
+
         $favorite->delete();
 
         return response()->json([

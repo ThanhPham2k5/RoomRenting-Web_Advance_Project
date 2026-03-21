@@ -25,6 +25,7 @@ class PayRuleFactory extends Factory
     public function definition(): array
     {
         return [
+            'status' => 'inactive',
             'points' => $this->faker->numberBetween(10, 50),
         ];
     }

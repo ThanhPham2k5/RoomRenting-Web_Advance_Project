@@ -9,16 +9,20 @@ use App\Http\Requests\StoreRechargeBillRequest;
 use App\Http\Requests\UpdateRechargeBillRequest;
 use App\Http\Resources\Payments\RechargeBillCollection;
 use App\Http\Resources\Payments\RechargeBillResource;
+use App\Models\Payments\RechargeRule;
 use Illuminate\Http\Request;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedSort;
 use Spatie\QueryBuilder\Enums\FilterOperator;
 use Spatie\QueryBuilder\QueryBuilder;
 use App\Events\RechargeBillCreated;
+use App\Models\Account_User\Account;
+use App\Models\Account_User\User;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class RechargeBillController extends Controller
 {
-
+    use AuthorizesRequests;
     private $allowedIncludes = [
         'account',
         'rechargeRule',
@@ -30,6 +34,8 @@ class RechargeBillController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorize('viewAny');
+
         $query = QueryBuilder::for(RechargeBill::class)
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
@@ -74,8 +80,13 @@ class RechargeBillController extends Controller
         
         $rechargeBill = RechargeBill::create($validated);
 
-        // Chưa cộng điểm vào tài khoảng
-
+        // Increment user points
+        $point = $rechargeBill->rechargeRule->points;
+        $account = $rechargeBill->account;
+        $user = User::where('account_id', $account->id)->first();
+        
+        $user->increment('points', $point);
+        
         event(new RechargeBillCreated($rechargeBill));
 
         return response()->json([
@@ -89,6 +100,8 @@ class RechargeBillController extends Controller
      */
     public function show(RechargeBill $rechargeBill)
     {
+        $this->authorize('view', $rechargeBill);
+
         $rechargeBill = QueryBuilder::for(RechargeBill::class)
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($rechargeBill->id);

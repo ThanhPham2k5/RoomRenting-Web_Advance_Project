@@ -33,4 +33,10 @@ class User extends Model
     public function notifications(){
         return $this->hasMany(Notification::class);
     }
+
+    protected $fillable = [
+        'points',
+        'account_id',
+        'personal_info_id'
+    ];
 }

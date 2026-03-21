@@ -26,6 +26,13 @@ class RolePermissionSeeder extends Seeder
             'post.get',
             'post.getAll',
 
+            //PostImages
+            'postImage.create',
+            'postImage.update',
+            'postImage.delete',
+            'postImage.get',
+            'postImage.getAll',
+
             //Comment
             'comment.create',
             'comment.update',
@@ -115,17 +122,34 @@ class RolePermissionSeeder extends Seeder
         $postManager = Role::create(['name' => 'postManager', 'guard_name' => 'api']);
         $billManager = Role::create(['name' => 'billManager', 'guard_name' => 'api']);
         $userManager = Role::create(['name' => 'userManager', 'guard_name' => 'api']);
+        $commentManager = Role::create(['name' => 'commentManager', 'guard_name' => 'api']);
         $user = Role::create(['name' => 'user', 'guard_name' => 'api']);
 
         
         //Assign Roles
         $admin->givePermissionTo(Permission::all());
         $postManager->givePermissionTo([
+            //Post
             'post.create',
             'post.update',
             'post.delete',
             'post.get',
-            'post.getAll'
+            'post.getAll',
+
+            //PostImage
+            'postImage.create',
+            'postImage.update',
+            'postImage.delete',
+            'postImage.get',
+            'postImage.getAll',
+        ]);
+        $commentManager->givePermissionTo([
+            //Comment
+            'comment.create',
+            'comment.update',
+            'comment.delete',
+            'comment.get',
+            'comment.getAll',
         ]);
         $billManager->givePermissionTo([
             //Bill
@@ -203,8 +227,17 @@ class RolePermissionSeeder extends Seeder
 
             //Post
             'post.create',
+            'post.update',
+            'post.delete',
             'post.get',
             'post.getAll',
+
+            //PostImage
+            'postImage.create',
+            'postImage.update',
+            'postImage.delete',
+            'postImage.get',
+            'postImage.getAll',
 
             //Comment
             'comment.create',

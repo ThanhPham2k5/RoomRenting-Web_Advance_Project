@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Api\Posts;
 
+use _PHPStan_781aefaf6\Composer\XdebugHandler\Status;
 use App\Filter\PostFilter;
+use App\Listeners\SendStatusPostNotification;
 use App\Models\Posts\Post;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePostRequest;
@@ -15,9 +17,12 @@ use Spatie\QueryBuilder\AllowedSort;
 use Spatie\QueryBuilder\Enums\FilterOperator;
 use Spatie\QueryBuilder\QueryBuilder;
 use App\Events\PostCreated;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Events\StatusPostCreated;
 
 class PostController extends Controller
 {
+    use AuthorizesRequests;
     private $allowedIncludes = [
         'user',
         'employee',
@@ -87,9 +92,7 @@ class PostController extends Controller
         $validated = $request->validated();
 
         $post = Post::create($validated);
-
-        // Add notification to new post creation
-        event(new PostCreated($post));
+        event(new StatusPostCreated($post));
 
         return response()->json([
             'message' => 'Post created successfully',
@@ -122,9 +125,17 @@ class PostController extends Controller
      */
     public function update(UpdatePostRequest $request, Post $post)
     {
+        $this->authorize('update', $post);
+
         $validated = $request->validated();
 
         $post->update($validated);
+
+        // If status changed to 'completed', fire PostCreated event
+        if ($validated['status'] === 'completed') {
+            event(new PostCreated($post));
+        }
+        event(new StatusPostCreated($post));
 
         return response()->json([
             'message' => 'Post updated successfully',
@@ -137,6 +148,8 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
+        $this->authorize('delete', $post);
+
         $post->delete();
 
         return response()->json([

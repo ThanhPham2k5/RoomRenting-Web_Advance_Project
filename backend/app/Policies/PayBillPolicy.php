@@ -22,7 +22,7 @@ class PayBillPolicy
     public function viewAny(Account $account): bool
     {
         // Owner
-        return $account->hasRole('bill_manager');
+        return $account->hasRole('billManager');
     }
 
     /**
@@ -32,7 +32,7 @@ class PayBillPolicy
     {
         // Owner
         return $account->id === $payBill->account_id
-            || $account->hasRole('bill_manager');
+            || $account->hasRole('billManager');
     }
 
     /**

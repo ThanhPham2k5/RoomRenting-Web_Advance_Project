@@ -47,7 +47,7 @@ class CommentPolicy
     {
         // Owner
         return $account->id === $comment->account_id
-            || $account->hasRole('comment_manager');
+            || $account->hasRole('commentManager');
     }
 
     /**
@@ -57,7 +57,7 @@ class CommentPolicy
     {
         // Owner
         return $account->id === $comment->account_id
-            || $account->hasRole('comment_manager');
+            || $account->hasRole('commentManager');
     }
 
     /**

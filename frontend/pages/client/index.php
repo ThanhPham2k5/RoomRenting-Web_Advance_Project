@@ -1,6 +1,5 @@
 <?php
   include(__DIR__ . "/core/config.php");
-  include(__DIR__ . "/components/header.php");
 ?>
 
 <!doctype html>
@@ -33,6 +32,8 @@
     <title>Home Page | RoomRenting</title>
   </head>
   <body>
+    <?php include(__DIR__ . "/components/header.php"); ?>
+
     <div class="hero">
       <div class="hero-content">
         <div class="content-title">
@@ -282,7 +283,7 @@
         </a>
       </div>
 
-      <button class="more">Xem thêm</button>
+      <a href='<?php echo BASE_URL . "/pages/client/posts.php"?>' class="more">Xem thêm</a>
 
       <div class="suggest">
         <div class="suggest-text">Muốn nhận bài đăng phù hợp?</div>
@@ -485,11 +486,9 @@
         </a>
       </div>
 
-      <button class="more">Xem thêm</button>
+      <a href='<?php echo BASE_URL . "/pages/client/suggest-posts.php"?>' class="more">Xem thêm</a>
     </div>
+    
+    <?php include(__DIR__ . "/components/footer.php") ?>
   </body>
 </html>
-
-<?php
-  include(__DIR__ . "/components/footer.php")
-?>

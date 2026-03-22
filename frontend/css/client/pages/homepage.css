@@ -157,7 +157,7 @@
 .post {
   width: 250px;
   position: relative;
-  border: 1px solid var(--white-stroke);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 12px;
   cursor: pointer;
   text-decoration: none;
@@ -237,6 +237,8 @@
 
 .more {
   margin: 0 20px;
+  text-decoration: none;
+  color: #000;
   font-family: "Body";
   font-size: inherit;
   padding: 10px 30px;

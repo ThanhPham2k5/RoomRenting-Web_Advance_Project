@@ -97,7 +97,7 @@
 
       <div class="newpost-postlist">
         <!-- a post sample -->
-        <a href="./index.php" class="post">
+        <a href="./detail-post.php" class="post">
           <div class="post-favour">
             <img
               src='<?php echo BASE_URL . "/assets/img/favour.png" ?>'
@@ -134,7 +134,8 @@
           </div>
         </a>
 
-        <a href="./index.php" class="post">
+        <?php for ($i = 1; $i <= 4; $i++) { ?>
+        <a href="./detail-post.php" class="post">
           <div class="post-favour">
             <img
               src='<?php echo BASE_URL . "/assets/img/unfavour.png" ?>'
@@ -170,117 +171,7 @@
             <div class="post-square">57.5 m2</div>
           </div>
         </a>
-
-        <a href="./index.php" class="post">
-          <div class="post-favour">
-            <img
-              src='<?php echo BASE_URL . "/assets/img/unfavour.png" ?>'
-              alt="favour.png"
-              class="post-favour-ico"
-            />
-          </div>
-
-          <img
-            src='<?php echo BASE_URL . "/assets/img/post.png" ?>'
-            alt="post.png"
-            class="post-img"
-          />
-
-          <div class="post-title">
-            Phòng giá 5 tỷ/ tháng, đường Trương Phước Phan, phường Bình Trị
-            Đông, quận Bình Tân
-          </div>
-
-          <div class="post-address">
-            <img
-              src='<?php echo BASE_URL . "/assets/img/address.png" ?>'
-              alt="address.png"
-              class="address-ico"
-            />
-
-            <div class="address-info">Phường Bình Trị Đông, Tp Hồ Chí Minh</div>
-          </div>
-
-          <div class="post-info">
-            <h3 class="post-price">5 tỷ/tháng</h3>
-
-            <div class="post-square">57.5 m2</div>
-          </div>
-        </a>
-
-        <a href="./index.php" class="post">
-          <div class="post-favour">
-            <img
-              src='<?php echo BASE_URL . "/assets/img/unfavour.png" ?>'
-              alt="favour.png"
-              class="post-favour-ico"
-            />
-          </div>
-
-          <img
-            src='<?php echo BASE_URL . "/assets/img/post.png" ?>'
-            alt="post.png"
-            class="post-img"
-          />
-
-          <div class="post-title">
-            Phòng giá 5 tỷ/ tháng, đường Trương Phước Phan, phường Bình Trị
-            Đông, quận Bình Tân
-          </div>
-
-          <div class="post-address">
-            <img
-              src='<?php echo BASE_URL . "/assets/img/address.png" ?>'
-              alt="address.png"
-              class="address-ico"
-            />
-
-            <div class="address-info">Phường Bình Trị Đông, Tp Hồ Chí Minh</div>
-          </div>
-
-          <div class="post-info">
-            <h3 class="post-price">5 tỷ/tháng</h3>
-
-            <div class="post-square">57.5 m2</div>
-          </div>
-        </a>
-
-        <a href="./index.php" class="post">
-          <div class="post-favour">
-            <img
-              src='<?php echo BASE_URL . "/assets/img/unfavour.png" ?>'
-              alt="favour.png"
-              class="post-favour-ico"
-            />
-          </div>
-
-          <img
-            src='<?php echo BASE_URL . "/assets/img/post.png" ?>'
-            alt="post.png"
-            class="post-img"
-          />
-
-          <div class="post-title">
-            Phòng giá 5 tỷ/ tháng, đường Trương Phước Phan, phường Bình Trị
-            Đông, quận Bình Tân
-          </div>
-
-          <div class="post-address">
-            <img
-              src='<?php echo BASE_URL . "/assets/img/address.png" ?>'
-              alt="address.png"
-              class="address-ico"
-            />
-
-            <div class="address-info">Phường Bình Trị Đông, Tp Hồ Chí Minh</div>
-          </div>
-
-          <div class="post-info">
-            <h3 class="post-price">5 tỷ/tháng</h3>
-
-            <div class="post-square">57.5 m2</div>
-          </div>
-        </a>
+        <?php } ?>
       </div>
 
       <a href='<?php echo BASE_URL . "/pages/client/posts.php"?>' class="more">Xem thêm</a>
@@ -300,7 +191,7 @@
 
       <div class="newpost-postlist">
         <!-- a post sample -->
-        <a href="./index.php" class="post">
+        <a href="./detail-post.php" class="post">
           <div class="post-favour">
             <img
               src='<?php echo BASE_URL . "/assets/img/favour.png" ?>'
@@ -337,7 +228,8 @@
           </div>
         </a>
 
-        <a href="./index.php" class="post">
+        <?php for ($i = 1; $i <= 4; $i++) { ?>
+        <a href="./detail-post.php" class="post">
           <div class="post-favour">
             <img
               src='<?php echo BASE_URL . "/assets/img/unfavour.png" ?>'
@@ -373,117 +265,7 @@
             <div class="post-square">57.5 m2</div>
           </div>
         </a>
-
-        <a href="./index.php" class="post">
-          <div class="post-favour">
-            <img
-              src='<?php echo BASE_URL . "/assets/img/unfavour.png" ?>'
-              alt="favour.png"
-              class="post-favour-ico"
-            />
-          </div>
-
-          <img
-            src='<?php echo BASE_URL . "/assets/img/post.png" ?>'
-            alt="post.png"
-            class="post-img"
-          />
-
-          <div class="post-title">
-            Phòng giá 5 tỷ/ tháng, đường Trương Phước Phan, phường Bình Trị
-            Đông, quận Bình Tân
-          </div>
-
-          <div class="post-address">
-            <img
-              src='<?php echo BASE_URL . "/assets/img/address.png" ?>'
-              alt="address.png"
-              class="address-ico"
-            />
-
-            <div class="address-info">Phường Bình Trị Đông, Tp Hồ Chí Minh</div>
-          </div>
-
-          <div class="post-info">
-            <h3 class="post-price">5 tỷ/tháng</h3>
-
-            <div class="post-square">57.5 m2</div>
-          </div>
-        </a>
-
-        <a href="./index.php" class="post">
-          <div class="post-favour">
-            <img
-              src='<?php echo BASE_URL . "/assets/img/unfavour.png" ?>'
-              alt="favour.png"
-              class="post-favour-ico"
-            />
-          </div>
-
-          <img
-            src='<?php echo BASE_URL . "/assets/img/post.png" ?>'
-            alt="post.png"
-            class="post-img"
-          />
-
-          <div class="post-title">
-            Phòng giá 5 tỷ/ tháng, đường Trương Phước Phan, phường Bình Trị
-            Đông, quận Bình Tân
-          </div>
-
-          <div class="post-address">
-            <img
-              src='<?php echo BASE_URL . "/assets/img/address.png" ?>'
-              alt="address.png"
-              class="address-ico"
-            />
-
-            <div class="address-info">Phường Bình Trị Đông, Tp Hồ Chí Minh</div>
-          </div>
-
-          <div class="post-info">
-            <h3 class="post-price">5 tỷ/tháng</h3>
-
-            <div class="post-square">57.5 m2</div>
-          </div>
-        </a>
-
-        <a href="./index.php" class="post">
-          <div class="post-favour">
-            <img
-              src='<?php echo BASE_URL . "/assets/img/unfavour.png" ?>'
-              alt="favour.png"
-              class="post-favour-ico"
-            />
-          </div>
-
-          <img
-            src='<?php echo BASE_URL . "/assets/img/post.png" ?>'
-            alt="post.png"
-            class="post-img"
-          />
-
-          <div class="post-title">
-            Phòng giá 5 tỷ/ tháng, đường Trương Phước Phan, phường Bình Trị
-            Đông, quận Bình Tân
-          </div>
-
-          <div class="post-address">
-            <img
-              src='<?php echo BASE_URL . "/assets/img/address.png" ?>'
-              alt="address.png"
-              class="address-ico"
-            />
-
-            <div class="address-info">Phường Bình Trị Đông, Tp Hồ Chí Minh</div>
-          </div>
-
-          <div class="post-info">
-            <h3 class="post-price">5 tỷ/tháng</h3>
-
-            <div class="post-square">57.5 m2</div>
-          </div>
-        </a>
+        <?php } ?>
       </div>
 
       <a href='<?php echo BASE_URL . "/pages/client/suggest-posts.php"?>' class="more">Xem thêm</a>

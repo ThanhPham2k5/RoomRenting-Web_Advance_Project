@@ -82,7 +82,7 @@
 @media (max-width: 767.99px) {
   .header {
     flex-direction: row-reverse;
-    margin: 0 10px;
+    padding: 0 10px;
   }
 
   .header-buttons {

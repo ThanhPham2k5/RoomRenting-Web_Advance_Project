@@ -84,7 +84,7 @@ Route::middleware(['auth:sanctum', 'permission:personalInfo.getAll'])
     ->get('/personalInfos', [PersonalInfoController::class, 'index']);
 
 Route::middleware(['auth:sanctum', 'permission:personalInfo.update'])
-    ->put('/personalInfos', [PersonalInfoController::class, 'update']);
+    ->put('/personalInfos/{personalInfo}', [PersonalInfoController::class, 'update']);
 
     
 

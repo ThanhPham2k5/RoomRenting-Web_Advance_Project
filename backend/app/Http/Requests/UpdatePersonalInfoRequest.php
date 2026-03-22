@@ -11,7 +11,7 @@ class UpdatePersonalInfoRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -30,17 +30,16 @@ class UpdatePersonalInfoRequest extends FormRequest
             'ward' => 'sometimes|nullable|string|max:255',
             'province' => 'sometimes|nullable|string|max:255',
 
-            'email' => 'sometimes|nullable|email|unique:personal_infos,email,' . $this->personal_info,
+            'email' => 'sometimes|email|unique:personal_infos,email,' . $this->personal_info,
 
             'phone_number' => [
                 'sometimes',
-                'nullable',
                 'string',
                 'regex:/^(03|05|07|08|09)[0-9]{8}$/',
                 'unique:personal_infos,phone_number,' . $this->personal_info
             ],
 
-            'profile_url' => 'sometimes|nullable|string|max:255',
+            'profile_url' => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:2048',
 
             'name' => 'sometimes|nullable|string|max:255',
 

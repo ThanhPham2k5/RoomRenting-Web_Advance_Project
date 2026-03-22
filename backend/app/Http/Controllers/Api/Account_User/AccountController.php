@@ -28,6 +28,8 @@ class AccountController extends Controller
         'employee',
         'user.posts',
         'employee.posts',
+        'user.personalInfo',
+        'employee.personalInfo',
         'comments',
         'favorites.post',
         'rechargeBills',

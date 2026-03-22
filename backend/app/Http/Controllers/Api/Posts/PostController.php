@@ -18,6 +18,7 @@ use Spatie\QueryBuilder\QueryBuilder;
 use App\Events\PostCreated;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Events\StatusPostCreated;
+use Illuminate\Support\Facades\DB;
 
 class PostController extends Controller
 {
@@ -88,15 +89,47 @@ class PostController extends Controller
      */
     public function store(StorePostRequest $request)
     {
-        $validated = $request->validated();
+        return DB::transaction(function () use ($request) {
 
-        $post = Post::create($validated);
-        event(new StatusPostCreated($post));
+            $validated = $request->validated();
 
-        return response()->json([
-            'message' => 'Post created successfully',
-            'post' => new PostResource($post)
-        ], 201);
+            // Remove images from post data
+            $images = $request->file('images');
+
+            unset($validated['images']);
+
+            // Create post
+            $post = Post::create($validated);
+
+            // Store images
+            if ($images) {
+                foreach ($images as $index => $image) {
+                    // Rename to order
+                    $filename = ($index + 1) . '.' . $image->getClientOriginalExtension();
+
+                    // Save file
+                    $path = $image->storeAs(
+                        "posts/{$post->id}/images",
+                        $filename,
+                        "public"
+                    );
+
+                    // Save DB
+                    $post->postImages()->create([
+                        'image_post_url' => $path,
+                        'order' => $index + 1,
+                    ]);
+                }
+            }
+
+            // Fire create image event
+            event(new StatusPostCreated($post));
+
+            return response()->json([
+                'message' => 'Post created successfully',
+                'post' => new PostResource($post->load('postImages'))
+            ], 201);
+        });
     }
 
     /**

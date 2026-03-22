@@ -6,6 +6,7 @@ use App\Models\Posts\Post;
 use App\Models\Posts\PostImage;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Storage;
 
 class PostImageSeeder extends Seeder
 {
@@ -24,7 +25,7 @@ class PostImageSeeder extends Seeder
             for ($i = 1; $i <= $count; $i++) {
                 PostImage::create([
                     'post_id' => $post->id,
-                    'image_post_url' => $this->image(),
+                    'image_post_url' => $this->image($post->id, $i),
                     'order' => $i,
                 ]);
             }
@@ -32,15 +33,28 @@ class PostImageSeeder extends Seeder
 
     }
 
-    private function image()
+    // private function image()
+    // {
+    //     return collect([
+    //         'https://images.unsplash.com/photo-1507089947368-19c1da9775ae',
+    //         'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2',
+    //         'https://images.unsplash.com/photo-1505691938895-1758d7feb511',
+    //         'https://images.unsplash.com/photo-1484154218962-a197022b5858',
+    //         'https://images.unsplash.com/photo-1493809842364-78817add7ffb',
+    //         'https://images.unsplash.com/photo-1572120360610-d971b9b639c4',
+    //     ])->random();
+    // }
+
+    private function image($postId, $order)
     {
-        return collect([
-            'https://images.unsplash.com/photo-1507089947368-19c1da9775ae',
-            'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2',
-            'https://images.unsplash.com/photo-1505691938895-1758d7feb511',
-            'https://images.unsplash.com/photo-1484154218962-a197022b5858',
-            'https://images.unsplash.com/photo-1493809842364-78817add7ffb',
-            'https://images.unsplash.com/photo-1572120360610-d971b9b639c4',
-        ])->random();
+        // fake image content
+        $filename = "{$order}.jpg";
+
+        $path = "posts/{$postId}/images/{$filename}";
+
+        // create dummy file
+        Storage::disk('public')->put($path, file_get_contents('https://picsum.photos/300'));
+
+        return $path;
     }
 }

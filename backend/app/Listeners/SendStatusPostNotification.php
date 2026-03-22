@@ -23,10 +23,10 @@ class SendStatusPostNotification
      */
     public function handle(StatusPostCreated $event): void
     {
-        $status = $event->post->status;
+        $post = $event->post;
         $account = $event->post->user->account;
 
-        if ($status === 'rejected') {
+        if ($post['status'] === 'rejected') {
             Notification::create([
                 'title' => 'Bài đăng bị từ chối',
                 'content' => 'Bài đăng #' . $event->post->id . ' đã bị từ chối. Vui lòng kiểm tra lại thông tin và thử đăng lại.',
@@ -36,7 +36,7 @@ class SendStatusPostNotification
                 'notifiable_id' => $event->post->id,
                 'notifiable_type' => Post::class,
             ]);
-        } else if ($status === 'complete') {
+        } else if ($post['status'] === 'completed') {
             Notification::create([
                 'title' => 'Bài đăng đã được duyệt',
                 'content' => 'Bài đăng #' . $event->post->id . ' được duyệt.',

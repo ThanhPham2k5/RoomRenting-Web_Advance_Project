@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\Payments\RechargeRuleController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\AddressController;
 
 /* API routes for Account_User 
     - AccountController
@@ -314,3 +315,13 @@ Route::middleware(['auth:sanctum'])
     ->apiResource('permissions', PermissionController::class);
 
 
+/* API routes for Address 
+    - AddressController
+*/
+
+Route::get('/address/provinces', [AddressController::class, 'getProvinces']);
+Route::get('/address/provinces/{code}', [AddressController::class, 'getProvinceByCode']);
+Route::get('/address/provinces/{code}/wards', [AddressController::class, 'getWardsFromProvinceCode']);
+
+Route::get('/address/wards', [AddressController::class, 'getWards']);
+Route::get('/address/wards/{code}', [AddressController::class, 'getWardByCode']);

@@ -187,6 +187,11 @@
   transform: scale(1.08);
 }
 
+.post-body {
+  text-decoration: none;
+  color: #000;
+}
+
 .post-img {
   width: 250px;
 }

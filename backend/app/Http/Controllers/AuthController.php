@@ -2,56 +2,32 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Api\Account_User\AccountController;
+use App\Http\Requests\StoreAccountRequest;
 use App\Models\Account_User\Account;
-use App\Models\Account_User\PersonalInfo;
-use App\Models\Account_User\User;
+use App\Services\AccountService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthController extends Controller
 {
-    public function register(Request $request){
-        $fields = $request->validate([
-            'username' => 'required|string|min:3|max:30|unique:accounts,username',
-            'password' => 'required|string|min:8|max:255',
-            'email' => 'required|email|unique:personal_infos,email',
-            'phone_number' => [
-                'required',
-                'string',
-                'regex:/^(03|05|07|08|09)[0-9]{8}$/'
-            ]
-        ]);
+    private AccountService $accountService;
 
-        // Create PersonalInfo
-        $personalInfo = PersonalInfo::create([
-            'email' => $fields['email'],
-            'phone_number' => $fields['phone_number'],
-        ]);
+    public function __construct(AccountService $accountService)
+    {
+        $this->accountService = $accountService;
+    }
+    
+    public function register(StoreAccountRequest $request){
+        $validated = $request->validated();
 
-        // Create Account
-        $account = Account::create([
-            'username' => $fields['username'],
-            'password' => bcrypt($fields['password']),
-            'role' => 'user',
-        ]);
+        $result = $this->accountService->createAccount($validated);
 
-        // Create User
-        $user = User::create([
-            'points' => 0,
-            'account_id' => $account->id,
-            'personal_info_id' => $personalInfo->id,
-        ]);
-
-        // Create token
-        $token = $account->createToken($fields['username']);
+        $token = $result['account']->createToken($validated['username']);
 
         return response()->json([
-            'account' => $account,
-            'user' => $user,
-            'personalInfo' => $personalInfo,
-            'token' => $token->plainTextToken,
+            ...$result,
+            'token' => $token->plainTextToken
         ], 201);
     }
 

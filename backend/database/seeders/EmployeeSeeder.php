@@ -17,26 +17,6 @@ class EmployeeSeeder extends Seeder
      */
     public function run(): void
     {
-        
-        // $roles = [
-        //     'postManager',
-        //     'billManager',
-        //     'userManager'
-        // ];
-
-        // foreach ($roles as $role) {
-        //     $account = Account::factory()->create([
-        //         'role' => $role
-        //     ]);
-
-        //     $personalInfo = PersonalInfo::factory()->create();
-
-        //     Employee::create([
-        //         'account_id' => $account->id,
-        //         'personal_info_id' => $personalInfo->id
-        //     ]);
-        // }
-
 
 
         $roles = ['admin', 'postManager', 'billManager', 'userManager'];

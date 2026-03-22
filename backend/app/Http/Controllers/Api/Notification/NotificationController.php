@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api\Notification;
 
-use App\Filter\NotificationFilter;
 use App\Models\Notification\Notification;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreNotificationRequest;

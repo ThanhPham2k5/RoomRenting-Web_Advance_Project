@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('name')->nullable();
             $table->string('pid')->unique()->nullable();
 
+            $table->softDeletes();
             $table->timestamps();
         });
     }

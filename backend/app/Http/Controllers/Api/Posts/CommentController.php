@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api\Posts;
 
-use App\Filter\CommentFilter;
 use App\Models\Posts\Comment;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCommentRequest;

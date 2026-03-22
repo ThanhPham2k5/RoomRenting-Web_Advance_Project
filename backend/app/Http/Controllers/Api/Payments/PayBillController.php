@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api\Payments;
 
-use App\Filter\PayBillFilter;
 use App\Models\Payments\PayBill;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePayBillRequest;

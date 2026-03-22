@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignId('post_id')->constrained()->cascadeOnDelete();
 
             $table->unique(['post_id', 'order']);
+            $table->softDeletes();
             $table->timestamps();
         });
     }

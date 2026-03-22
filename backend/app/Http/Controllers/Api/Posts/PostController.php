@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api\Posts;
 
 use _PHPStan_781aefaf6\Composer\XdebugHandler\Status;
-use App\Filter\PostFilter;
 use App\Listeners\SendStatusPostNotification;
 use App\Models\Posts\Post;
 use App\Http\Controllers\Controller;
@@ -149,7 +148,9 @@ class PostController extends Controller
     public function destroy(Post $post)
     {
         $this->authorize('delete', $post);
-
+        
+        $post->postImages()->delete();
+        $post->comments()->delete();
         $post->delete();
 
         return response()->json([

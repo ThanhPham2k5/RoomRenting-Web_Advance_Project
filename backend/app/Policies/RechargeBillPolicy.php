@@ -21,7 +21,7 @@ class RechargeBillPolicy
     public function viewAny(Account $account): bool
     {
         // Owner
-        return $account->hasRole('bill_manager');
+        return $account->hasRole('billManager');
     }
 
     /**
@@ -31,7 +31,7 @@ class RechargeBillPolicy
     {
         // Owner
         return $account->id === $rechargeBill->account_id
-            || $account->hasRole('bill_manager');
+            || $account->hasRole('billManager');
     }
 
     /**

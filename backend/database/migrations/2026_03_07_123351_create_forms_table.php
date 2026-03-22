@@ -23,6 +23,7 @@ return new class extends Migration
 
             $table->foreignId('account_id')->unique()->constrained()->cascadeOnDelete();
 
+            $table->softDeletes();
             $table->timestamps();
         });
     }

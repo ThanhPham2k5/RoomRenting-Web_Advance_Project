@@ -47,7 +47,7 @@ class PostPolicy
     {
         // Owner
         return $account->user && $account->user->id === $post->user_id
-            || $account->hasRole('post_manager');
+            || $account->hasRole('postManager');
     }
 
     /**
@@ -57,7 +57,7 @@ class PostPolicy
     {
         // Owner
         return $account->user && $account->user->id === $post->user_id
-            || $account->hasRole('post_manager');
+            || $account->hasRole('postManager');
     }
 
     /**
@@ -66,7 +66,7 @@ class PostPolicy
     public function restore(Account $account, Post $post): bool
     {
         // Owner
-        return $account->hasRole('post_manager');
+        return $account->hasRole('postManager');
     }
 
     /**

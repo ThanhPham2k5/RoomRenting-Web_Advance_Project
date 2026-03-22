@@ -111,6 +111,11 @@ class RolePermissionSeeder extends Seeder
             'personalInfo.delete',
             'personalInfo.get',
             'personalInfo.getAll',
+
+            //Assign
+            'account.assignRoles',
+            'account.assignPermissions',
+            'account.syncRoles'
         ];
 
 
@@ -202,14 +207,20 @@ class RolePermissionSeeder extends Seeder
             'personalInfo.delete',
             'personalInfo.get',
             'personalInfo.getAll',
+
+            //Assign
+            'account.assignRoles',
+            'account.assignPermissions',
+            'account.syncRoles'
         ]);
         $user->givePermissionTo([
             //Account
             'account.create',
+            'account.update',
             'account.get',
         
             //User
-            'user.create',
+            'user.update',
             'user.get',
 
             //PersonalInfo
@@ -217,7 +228,7 @@ class RolePermissionSeeder extends Seeder
             'personalInfo.update',
             'personalInfo.get',
 
-            //RecchargeBill
+            //RechargeBill
             'rechargeBill.create',
             'rechargeBill.get',
 

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api\Account_User;
 
-use App\Filter\PersonalInfoFilter;
 use App\Models\Account_User\PersonalInfo;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePersonalInfoRequest;
@@ -100,6 +99,15 @@ class PersonalInfoController extends Controller
     public function update(UpdatePersonalInfoRequest $request, PersonalInfo $personalInfo)
     {
         $this->authorize('update', $personalInfo);
+
+        $validated = $request->validated();
+
+        $personalInfo->update($validated);
+
+        return response()->json([
+            'message' => 'Personal Info update successfully',
+            'personalInfo' => $personalInfo
+        ]);
     }
 
     /**

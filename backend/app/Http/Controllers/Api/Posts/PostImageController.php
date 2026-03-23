@@ -63,14 +63,17 @@ class PostImageController extends Controller
      */
     public function store(StorePostImageRequest $request)
     {
-        $validated = $request->validated();
+        // Will be remove
 
-        $postImage = PostImage::create($validated);
+        // $validated = $request->validated();
 
-        return response()->json([
-            'message' => 'Post image created successfully',
-            'post_image' => new PostImageResource($postImage)
-        ], 201);
+        // $postImage = PostImage::create($validated);
+
+        // return response()->json([
+        //     'message' => 'Post image created successfully',
+        //     'post_image' => new PostImageResource($postImage)
+        // ], 201);
+        
     }
 
     /**
@@ -98,16 +101,18 @@ class PostImageController extends Controller
      */
     public function update(UpdatePostImageRequest $request, PostImage $postImage)
     {
-        $this->authorize('update', $postImage);
+        // Will be remove
 
-        $validated = $request->validated();
+        // $this->authorize('update', $postImage);
 
-        $postImage->update($validated);
+        // $validated = $request->validated();
 
-        return response()->json([
-            'message' => 'Post image updated successfully',
-            'post_image' => new PostImageResource($postImage)
-        ]);
+        // $postImage->update($validated);
+
+        // return response()->json([
+        //     'message' => 'Post image updated successfully',
+        //     'post_image' => new PostImageResource($postImage)
+        // ]);
     }
 
     /**
@@ -115,11 +120,13 @@ class PostImageController extends Controller
      */
     public function destroy(PostImage $postImage)
     {
-        $this->authorize('delete', $postImage);
-        $postImage->delete();
+        // Will be remove
 
-        return response()->json([
-            'message' => 'Post image deleted successfully'
-        ]);
+        // $this->authorize('delete', $postImage);
+        // $postImage->delete();
+
+        // return response()->json([
+        //     'message' => 'Post image deleted successfully'
+        // ]);
     }
 }

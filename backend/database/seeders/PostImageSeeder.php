@@ -20,7 +20,7 @@ class PostImageSeeder extends Seeder
         foreach ($posts as $post) {
 
             // each post has 5 images
-            $count = 5;
+            $count = 1;
 
             for ($i = 1; $i <= $count; $i++) {
                 PostImage::create([

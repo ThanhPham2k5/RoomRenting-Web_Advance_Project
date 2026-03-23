@@ -60,7 +60,6 @@ class EmployeeSeeder extends Seeder
         // fake image content
         $path = "profiles/{$personalInfo->employee->account_id}/avatar.jpg";
         
-
         // create dummy file
         Storage::disk('public')->put($path, file_get_contents('https://picsum.photos/300'));
 

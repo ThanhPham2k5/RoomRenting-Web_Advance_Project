@@ -43,6 +43,10 @@ Route::middleware(['auth:sanctum', 'permission:account.update'])
 Route::middleware(['auth:sanctum', 'permission:account.delete'])
     ->delete('/accounts/{account}', [AccountController::class, 'destroy']);
 
+Route::middleware(['auth:sanctum', 'permission:account.restore'])
+    ->post('/accounts/{account}/restore', [AccountController::class, 'restore'])
+    ->withTrashed();
+
 
 // Assignments
 Route::middleware(['auth:sanctum', 'permission:account.assignRoles'])
@@ -111,7 +115,10 @@ Route::middleware(['auth:sanctum', 'permission:post.update'])
 
 Route::middleware(['auth:sanctum', 'permission:post.delete'])
     ->delete('/posts/{post}', [PostController::class, 'destroy']);
-
+    
+Route::middleware(['auth:sanctum', 'permission:post.restore'])
+    ->post('/posts/{post}/restore', [PostController::class, 'restore'])
+    ->withTrashed();
 
 //Comment
 Route::middleware(['auth:sanctum','permission:comment.get'])
@@ -129,7 +136,9 @@ Route::middleware(['auth:sanctum', 'permission:comment.update'])
 Route::middleware(['auth:sanctum', 'permission:comment.delete'])
     ->delete('/comments/{comment}', [CommentController::class, 'destroy']);
 
-
+Route::middleware(['auth:sanctum', 'permission:comment.restore'])
+    ->post('/comments/{comment}/restore', [CommentController::class, 'restore'])
+    ->withTrashed();
 
 //Favorite
 Route::middleware(['auth:sanctum','permission:favorite.get'])
@@ -190,7 +199,9 @@ Route::middleware(['auth:sanctum', 'permission:notification.update'])
 Route::middleware(['auth:sanctum', 'permission:notification.delete'])
 ->delete('/notifications/{notification}', [NotificationController::class, 'destroy']);
 
-
+Route::middleware(['auth:sanctum', 'permission:notification.restore'])
+    ->post('/notifications/{notification}/restore', [NotificationController::class, 'restore'])
+    ->withTrashed();
 
 
 /* API routes for Payments 
@@ -219,7 +230,9 @@ Route::middleware(['auth:sanctum', 'permission:payBill.update'])
 Route::middleware(['auth:sanctum', 'permission:payBill.delete'])
 ->delete('/payBills/{payBill}', [PayBillController::class, 'destroy']);
 
-
+Route::middleware(['auth:sanctum', 'permission:payBill.restore'])
+    ->post('/payBills/{payBill}/restore', [PayBillController::class, 'restore'])
+    ->withTrashed();
 
 
 //PayRule
@@ -242,7 +255,9 @@ Route::middleware(['auth:sanctum', 'permission:payRule.update'])
 Route::middleware(['auth:sanctum', 'permission:payRule.delete'])
 ->delete('/payRules/{payRule}', [PayRuleController::class, 'destroy']);
 
-
+Route::middleware(['auth:sanctum', 'permission:payRule.restore'])
+    ->post('/payRules/{payRule}/restore', [PayRuleController::class, 'restore'])
+    ->withTrashed();
 
 
 //RechargeBill
@@ -265,7 +280,9 @@ Route::middleware(['auth:sanctum', 'permission:rechargeBill.update'])
 Route::middleware(['auth:sanctum', 'permission:rechargeBill.delete'])
 ->delete('/rechargeBills/{rechargeBill}', [RechargeBillController::class, 'destroy']);
 
-
+Route::middleware(['auth:sanctum', 'permission:rechargeBill.restore'])
+    ->post('/rechargeBills/{rechargeBill}/restore', [RechargeBillController::class, 'restore'])
+    ->withTrashed();
 
 
 //RechargeRule
@@ -288,7 +305,9 @@ Route::middleware(['auth:sanctum', 'permission:rechargeRule.update'])
 Route::middleware(['auth:sanctum', 'permission:rechargeRule.delete'])
 ->delete('/rechargeRules/{rechargeRule}', [RechargeRuleController::class, 'destroy']);
 
-
+Route::middleware(['auth:sanctum', 'permission:rechargeRule.restore'])
+    ->post('/rechargeRules/{rechargeRule}/restore', [RechargeRuleController::class, 'restore'])
+    ->withTrashed();
 
 /* API routes for Auth 
     - AuthController

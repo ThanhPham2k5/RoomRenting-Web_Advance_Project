@@ -124,4 +124,15 @@ class CommentController extends Controller
             'message' => 'Comment deleted successfully'
         ]);
     }
+    public function restore($id)
+    {
+        $comment = Comment::onlyTrashed()->findOrFail($id);
+ 
+        $comment->restore();
+ 
+        return response()->json([
+            'message' => 'Comment restored successfully',
+            'comment'    => new CommentResource($comment),
+        ]);
+    }
 }

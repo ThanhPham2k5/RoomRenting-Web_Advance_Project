@@ -142,4 +142,15 @@ class RechargeBillController extends Controller
             'message' => 'Recharge bill deleted successfully'
         ]);
     }
+
+    public function restore($id) {
+
+        $rechargeBill = RechargeBill::onlyTrashed()->findOrFail($id);
+
+        $rechargeBill->restore();
+
+        return response()->json([
+            'message' => 'RehargeBill restored successfully',
+        ]);
+    }
 }

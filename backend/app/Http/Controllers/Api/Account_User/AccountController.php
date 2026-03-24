@@ -14,6 +14,8 @@ use Illuminate\Http\Request;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\Enums\FilterOperator;
 use Spatie\QueryBuilder\QueryBuilder;
+use App\Models\Form;
+use Illuminate\Support\Facades\DB;
 
 class AccountController extends Controller
 {   
@@ -138,6 +140,13 @@ class AccountController extends Controller
         $this->authorize('delete', $account);
 
         $result = $this->accountService->deleteAccount($account);
+
+        return response()->json($result);
+    }
+
+    public function restore($id) {
+        $account = Account::onlyTrashed()->findOrFail($id);
+        $result = $this->accountService->restoreAccount($account);
 
         return response()->json($result);
     }

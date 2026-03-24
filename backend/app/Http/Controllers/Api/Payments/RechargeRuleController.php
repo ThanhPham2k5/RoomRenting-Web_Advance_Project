@@ -12,10 +12,10 @@ use Illuminate\Http\Request;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\Enums\FilterOperator;
 use Spatie\QueryBuilder\QueryBuilder;
-
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 class RechargeRuleController extends Controller
 {
-
+    use AuthorizesRequests;    
     private $allowedIncludes = [
         'rechargeBills',
     ];
@@ -120,7 +120,7 @@ class RechargeRuleController extends Controller
     {
         if ($rechargeRule->status === 'active') {
             return response()->json([
-            'message' => 'Done delete Recharge rule deleted'
+            'message' => 'Cannot delete while in active status'
         ]);
         }
         $rechargeRule['status'] = 'inactive';
@@ -128,6 +128,17 @@ class RechargeRuleController extends Controller
 
         return response()->json([
             'message' => 'Recharge rule deleted successfully'
+        ]);
+    }
+
+    public function restore($id) {
+
+        $rechargeRule = RechargeRule::onlyTrashed()->findOrFail($id);
+
+        $rechargeRule->restore();
+
+        return response()->json([
+            'message' => 'RechargeRule restored successfully'
         ]);
     }
 }

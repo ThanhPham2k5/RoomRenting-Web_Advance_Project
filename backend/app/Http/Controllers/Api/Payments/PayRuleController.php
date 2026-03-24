@@ -12,9 +12,11 @@ use Illuminate\Http\Request;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\Enums\FilterOperator;
 use Spatie\QueryBuilder\QueryBuilder;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class PayRuleController extends Controller
 {
+    use AuthorizesRequests;
     private $allowedIncludes = [
         'payBills',
     ];
@@ -118,7 +120,7 @@ class PayRuleController extends Controller
     {
         if ($payRule->status == 'active'){
             return response()->json([
-                'message' => 'Cannot delete active rule'
+                'message' => 'Cannot delete while in active status'
             ]);
         }
         $payRule['status'] = 'inactive';
@@ -126,6 +128,17 @@ class PayRuleController extends Controller
 
         return response()->json([
             'message' => 'Pay rule deleted successfully'
+        ]);
+    }
+
+    public function restore($id) {
+
+        $payRule = PayRule::onlyTrashed()->findOrFail($id);
+
+        $payRule->restore();
+
+        return response()->json([
+            'message' => 'PayRule restored successfully'
         ]);
     }
 }

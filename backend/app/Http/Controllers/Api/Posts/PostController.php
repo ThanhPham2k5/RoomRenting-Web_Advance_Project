@@ -180,14 +180,32 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        $this->authorize('delete', $post);
-        
-        $post->postImages()->delete();
-        $post->comments()->delete();
-        $post->delete();
+        return DB::transaction(function () use ($post) {
+            $this->authorize('delete', $post);
+            
+            $post->postImages()->delete();
+            $post->comments()->delete();
+            $post->favorites()->delete();
+            $post->delete();
 
+            return response()->json([
+                'message' => 'Post deleted successfully'
+            ]);
+        });   
+    }
+
+    public function restore($id)
+    {
+        $post = Post::onlyTrashed()->findOrFail($id);
+ 
+        $post->postImages()->restore();
+        $post->comments()->restore();
+        $post->favorites()->restore();
+        $post->restore();
+ 
         return response()->json([
-            'message' => 'Post deleted successfully'
+            'message' => 'Post restored successfully',
+            'post'    => new PostResource($post->load('postImages')),
         ]);
     }
 

@@ -134,4 +134,16 @@ class PayBillController extends Controller
             'message' => 'Pay bill deleted successfully'
         ]);
     }
+
+
+    public function restore($id) {
+
+        $payBill = PayBill::onlyTrashed()->findOrFail($id);
+
+        $payBill->restore();
+
+        return response()->json([
+            'message' => 'PayBill restored successfully'
+        ]);
+    }
 }

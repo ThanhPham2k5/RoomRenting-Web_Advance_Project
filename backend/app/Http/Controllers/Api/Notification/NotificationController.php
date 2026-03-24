@@ -160,4 +160,16 @@ class NotificationController extends Controller
             'notification' => new NotificationResource($notification)
         ]);
     }
+
+    public function restore($id) {
+
+        $noti = Notification::onlyTrashed()->findOrFail($id);
+
+        $noti->restore();
+
+        return response()->json([
+            'message' => 'Notification restored successfully',
+            'notification'    => new NotificationResource($noti),
+        ]);
+    }
 }

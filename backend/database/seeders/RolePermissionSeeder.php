@@ -25,6 +25,7 @@ class RolePermissionSeeder extends Seeder
             'post.delete',
             'post.get',
             'post.getAll',
+            'post.restore',
 
             //PostImages
             'postImage.create',
@@ -39,6 +40,7 @@ class RolePermissionSeeder extends Seeder
             'comment.delete',
             'comment.get',
             'comment.getAll',
+            'comment.restore',
 
             //Favorite
             'favorite.create',
@@ -57,6 +59,8 @@ class RolePermissionSeeder extends Seeder
             'payBill.getAll',
             'payRule.get',
             'payRule.getAll',
+            'payBill.restore',
+            'payRule.restore',
 
             //Recharge
             'rechargeBill.create',
@@ -69,6 +73,8 @@ class RolePermissionSeeder extends Seeder
             'rechargeBill.getAll',
             'rechargeRule.get',
             'rechargeRule.getAll',
+            'rechargeBill.restore',
+            'rechargeRule.restore',
 
             //Form
             'form.create',
@@ -83,6 +89,7 @@ class RolePermissionSeeder extends Seeder
             'notification.get',
             'notification.delete',
             'notification.getAll',
+            'notification.restore',
 
             //Account
             'account.create',
@@ -90,6 +97,7 @@ class RolePermissionSeeder extends Seeder
             'account.delete',
             'account.get',
             'account.getAll',
+            'account.restore',
 
             //User
             'user.create',
@@ -140,6 +148,7 @@ class RolePermissionSeeder extends Seeder
             'post.delete',
             'post.get',
             'post.getAll',
+            'post.restore',
 
             //PostImage
             'postImage.create',
@@ -155,6 +164,7 @@ class RolePermissionSeeder extends Seeder
             'comment.delete',
             'comment.get',
             'comment.getAll',
+            'comment.restore',
         ]);
         $billManager->givePermissionTo([
             //Bill
@@ -167,6 +177,8 @@ class RolePermissionSeeder extends Seeder
             'payBill.getAll',
             'payRule.get',
             'payRule.getAll',
+            'payRule.restore',
+            'payBill.restore',
 
             //Recharge
             'rechargeRule.create',
@@ -178,6 +190,8 @@ class RolePermissionSeeder extends Seeder
             'rechargeBill.getAll',
             'rechargeRule.get',
             'rechargeRule.getAll',
+            'rechargeRule.restore',
+            'rechargeBill.restore',
         ]);
         $userManager->givePermissionTo([
             //Account
@@ -186,6 +200,7 @@ class RolePermissionSeeder extends Seeder
             'account.delete',
             'account.get',
             'account.getAll',
+            'account.restore',
 
             //User
             'user.create',

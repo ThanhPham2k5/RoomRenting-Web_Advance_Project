@@ -88,27 +88,56 @@ class AccountService
     }
 
     public function deleteAccount($account)
-{
-    return DB::transaction(function () use ($account) {
-        // Delete User or Employee
-        if ($account->user) {
-            $account->form->delete();
-            $account->user->personalInfo->delete();
-            $account->user->delete();
-        }
+    {
+        return DB::transaction(function () use ($account) {
+            // Delete User or Employee
+            if ($account->user) {
+                $account->form->delete();
+                $account->user->personalInfo->delete();
+                $account->user->delete();
+            }
 
-        if ($account->employee) {
-            $account->employee->personalInfo->delete();
-            $account->employee->delete();
-        }
+            if ($account->employee) {
+                $account->employee->personalInfo->delete();
+                $account->employee->delete();
+            }
 
-        // Delete Account
-        $account->delete();
+            // Delete Account
+            $account->delete();
 
-        return [
-            'message' => 'Account deleted successfully'
-        ];
-    });
-}
+            return [
+                'message' => 'Account deleted successfully'
+            ];
+        });
+    }
+
+    public function restoreAccount($account)
+    {
+        return DB::transaction(function () use ($account) {
+            // Restore User
+            if ($account->user()->withTrashed()->exists()) {
+                $user = $account->user()->withTrashed()->first();
+                
+                $user->personalInfo()->withTrashed()->restore();
+                $user->restore();
+                $account->form()->withTrashed()->restore();
+            }
+
+            // Restore Employee
+            if ($account->employee()->withTrashed()->exists()) {
+                $employee = $account->employee()->withTrashed()->first();
+                
+                $employee->personalInfo()->withTrashed()->restore();
+                $employee->restore();
+            }
+
+            // Restore Account
+            $account->restore();
+
+            return [
+                'message' => 'Account restored successfully'
+            ];
+        });
+    }
 }
 ?>

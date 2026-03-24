@@ -5,11 +5,12 @@ namespace App\Models\Posts;
 use App\Models\Account_User\Account;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Comment extends Model
 {
     /** @use HasFactory<\Database\Factories\CommentFactory> */
-    use HasFactory;
+    use HasFactory, SoftDeletes;
     protected $fillable = ['content', 'post_id', 'account_id'];
 
     protected static function newFactory()

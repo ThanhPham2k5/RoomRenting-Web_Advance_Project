@@ -2,7 +2,7 @@
 require_once __DIR__ . '/core/function.php';
 $pageData = [];
 $page = $_GET['page'] ?? 'overview';
-$validPage = ['overview', 'account', 'bill', 'comment', 'permission', 'post', 'price'];
+$validPage = ['overview', 'account', 'bill', 'comment', 'permission', 'post', 'price', 'setting'];
 $currentTable = $_GET['table'] ?? '1';
 $pageNum = $_GET['p'] ?? 1;
 
@@ -12,7 +12,7 @@ if(!in_array($page, $validPage)){
 switch ($page) {
     case 'account':
         $apiRole = ($currentTable === '1') ? 'user' : 'employee';
-        $apiResult = call_api("http://127.0.0.1:8000/api/accounts?per_page=6&page={$pageNum}&filter[role]={$apiRole}");
+        $apiResult = call_api("http://127.0.0.1:8000/api/accounts?per_page=4&page={$pageNum}&filter[role]={$apiRole}");
         $pageData['accounts'] = $apiResult['data'] ?? [];
         $pageData['paginationMeta'] = [
             'current_page' => $apiResult['meta']['current_page'] ?? 1,
@@ -21,12 +21,29 @@ switch ($page) {
         ];
         break;
     case 'comment':
-        $apiResult = call_api("http://127.0.0.1:8000/api/comments?per_page=6&page={$pageNum}&include=account");
+        $apiResult = call_api("http://127.0.0.1:8000/api/comments?per_page=4&page={$pageNum}&include=account");
         $pageData['comments'] = $apiResult['data'] ?? [];
         $pageData['paginationMeta'] = [
             'current_page' => $apiResult['meta']['current_page'] ?? 1,
             'last_page'    => $apiResult['meta']['last_page'] ?? 1,
             'base_url'     => "index.php?page=comment&table={$currentTable}" 
+        ];
+        break;
+    case 'post':
+        $apiSt = match($currentTable) {
+            '1' => 'active',
+            '2' => 'rejected',
+            '3' => 'pending',
+            '4' => 'expired',
+            '5' => 'failed',
+            default => 'active'
+        };
+        $apiResult = call_api("http://127.0.0.1:8000/api/posts?per_page=1&page={$pageNum}&include=postImages&filter[status]={$apiSt}");
+        $pageData['posts'] = $apiResult['data'] ?? [];
+        $pageData['paginationMeta'] = [
+            'current_page' => $apiResult['meta']['current_page'] ?? 1,
+            'last_page'    => $apiResult['meta']['last_page'] ?? 1,
+            'base_url'     => "index.php?page=post&table={$currentTable}" 
         ];
         break;
 }
@@ -68,6 +85,8 @@ if ($page === 'account' && isset($_GET['action']) && $_GET['action'] === 'edit')
     <link rel="stylesheet" href="../../css/admin/postcontainer.css" />
     <link rel="stylesheet" href="../../css/admin/post.css" />
     <link rel="stylesheet" href="../../css/admin/form.css" />
+    <link rel="stylesheet" href="../../css/admin/setting.css" />
+    <link rel="stylesheet" href="../../css/admin/postdetail.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -76,7 +95,7 @@ if ($page === 'account' && isset($_GET['action']) && $_GET['action'] === 'edit')
         <div class="nav">
             <?php renderComponent("navigation",false, ['currentPage' => $page]) ?> 
         </div>
-
+        <?php renderComponent("postdetail",false) ?>
         <div class="main-page">
             <?php
             renderComponent($page, true, $pageData);
@@ -85,6 +104,51 @@ if ($page === 'account' && isset($_GET['action']) && $_GET['action'] === 'edit')
     </div>
 </body>
 <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Nhảy xuống tọa độ đã lưu
+        const savedScrollPosition = sessionStorage.getItem('scrollPosition');
+        if (savedScrollPosition) {
+            window.scrollTo({
+                top: parseInt(savedScrollPosition),
+                behavior: 'instant'
+            });
+            sessionStorage.removeItem('scrollPosition');
+        }
+        const filterLinks = document.querySelectorAll('.dropdown-menu a');
+        filterLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                sessionStorage.setItem('scrollPosition', window.scrollY);
+            });
+        });
+        
+        // Vẽ biểu đồ
+        const canvasElement = document.getElementById('postsLineChart');
+        if (canvasElement) {
+            drawHardcodedLineChart();
+        }
+
+        // Nút bấm ở table
+        const dropdownBtns = document.querySelectorAll('.dropdown-container .top-btn');
+        dropdownBtns.forEach(btn => {
+            btn.addEventListener('click', function(event) {
+                event.stopPropagation();
+                const currentContainer = this.closest('.dropdown-container');
+                document.querySelectorAll('.dropdown-container.active').forEach(container => {
+                    if (container !== currentContainer) {
+                        container.classList.remove('active');
+                    }
+                });
+                currentContainer.classList.toggle('active');
+            });
+        });
+        document.addEventListener('click', function(event) {
+            if (event.target.closest('.dropdown-menu')) return;
+            document.querySelectorAll('.dropdown-container.active').forEach(container => {
+                container.classList.remove('active');
+            });
+        });
+        
+    });
     function openModal(idModal) {
         document.getElementById(idModal).style.display = 'flex';
     }
@@ -97,12 +161,6 @@ if ($page === 'account' && isset($_GET['action']) && $_GET['action'] === 'edit')
             window.history.replaceState({}, '', currentUrl.toString());
         }
     }
-    document.addEventListener("DOMContentLoaded", function() {
-        const canvasElement = document.getElementById('postsLineChart');
-        if (canvasElement) {
-            drawHardcodedLineChart();
-        }
-    });
     function selectRow(trElement) {
         const radio = trElement.querySelector('input[type="radio"]');
         
@@ -141,18 +199,20 @@ if ($page === 'account' && isset($_GET['action']) && $_GET['action'] === 'edit')
     }
     function handleSearch() {
         const keyword = document.getElementById('searchInput').value.toLowerCase().trim();
-        const allRows = document.querySelectorAll('.admin-table tbody tr');
-        allRows.forEach(row => {
-            const textInRow = row.textContent.toLowerCase();
-            if (textInRow.includes(keyword)) {
-                row.style.display = ''; 
+        const searchableItems = document.querySelectorAll('.admin-table tbody tr, .postcontainer-component .card');
+        
+        searchableItems.forEach(item => {
+            const textInItem = item.textContent.toLowerCase();
+            if (textInItem.includes(keyword)) {
+                item.style.display = ''; 
             } 
             else {
-                row.style.display = 'none'; 
+                item.style.display = 'none'; 
                 
-                if (row.classList.contains('row-active')) {
-                    row.classList.remove('row-active');
-                    const radio = row.querySelector('input[type="radio"]');
+                // Khối lệnh này chỉ chạy nếu phần tử là dòng của bảng (có class row-active)
+                if (item.classList.contains('row-active')) {
+                    item.classList.remove('row-active');
+                    const radio = item.querySelector('input[type="radio"]');
                     if (radio) radio.checked = false;
                 }
             }

@@ -45,3 +45,7 @@
     padding: 0 30px;
     width: 1200px;
 }
+.post-page a{
+    text-decoration: none;
+    color: black;
+}

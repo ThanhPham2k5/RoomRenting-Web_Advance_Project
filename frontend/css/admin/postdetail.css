@@ -1,0 +1,159 @@
+.post-detail-component-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(17, 24, 39, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    backdrop-filter: blur(3px);
+    display: none;
+}
+.post-detail-component-content {
+    width: 1000px;
+    max-width: 95vw;
+    max-height: 90vh; 
+    background-color: #FFFFFF;
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    gap: 40px; 
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    overflow-y: auto; 
+}
+.post-detail-component-content .post-img {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.post-detail-component-content .main-image-wrapper {
+    position: relative;
+    width: 100%;
+}
+.post-detail-component-content .main-image-wrapper img {
+    width: 100%;
+    height: 380px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 2px solid #E0E3EB;
+    transition: all 0.2s ease;
+}
+.post-detail-component-content .sub-post-img {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr)); 
+    gap: 12px;
+}
+.post-detail-component-content .sub-post-img .image-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1; 
+}
+.post-detail-component-content .sub-post-img .image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
+}
+.post-detail-component-content .main-image-wrapper .btn-delete-img,
+.post-detail-component-content .sub-post-img .btn-delete-img {
+    position: absolute; 
+    top: -6px; 
+    right: -6px; 
+    width: 26px;
+    height: 26px;
+    background-color: #EF4444; 
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 1.6rem;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    padding-bottom: 2px;
+}
+.post-detail-component-content .main-image-wrapper:hover .btn-delete-img,
+.post-detail-component-content .sub-post-img .image-wrapper:hover .btn-delete-img { 
+    opacity: 1; 
+}
+.post-detail-component-content .main-image-wrapper .btn-delete-img:hover,
+.post-detail-component-content .sub-post-img .btn-delete-img:hover {
+    background-color: #DC2626; 
+    transform: scale(1.15);
+}
+.post-detail-component-content .main-image-wrapper:has(.btn-delete-img:hover) img,
+.post-detail-component-content .sub-post-img .image-wrapper:has(.btn-delete-img:hover) img {
+    border-color: #EF4444;
+    opacity: 0.85;
+}
+.post-detail-component-content .sub-post-img label {
+    grid-column: 1 / -1; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px;
+    background-color: #EEF2FF;
+    color: #2563EB;
+    border: 1px dashed #2563EB; 
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 4px;
+}
+.post-detail-component-content .sub-post-img label:hover { background-color: #E0E7FF; }
+.post-detail-component-content .sub-post-img input { display: none; }
+.post-detail-component-content .post-info {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.post-detail-component-content .location { 
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+    color: #626687; 
+}
+.post-detail-component-content .price {
+    display: flex; 
+    align-items: center; 
+    gap: 24px; 
+}
+.post-detail-component-content .price .main {
+    font-size: 2.4rem; 
+    line-height: 3.2rem;
+    font-weight: 600;
+    color: #F97316; 
+}
+.post-detail-component-content .price .area { 
+    color: #626687;
+}
+.post-detail-component-content .post-info .detail {
+    white-space: pre-line; 
+    color: #626687;
+}
+.post-detail-component-content .post-info button {
+    width: 100%;
+    height: 50px;
+    background-color: #10B981;
+    color: white;
+    font-size: 1.6rem;
+    line-height: 2.4rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.post-detail-component-content .post-info button:hover {
+    background-color: #059669;
+}

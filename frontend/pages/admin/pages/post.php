@@ -1,4 +1,7 @@
 <?php 
+$posts = $posts ?? [];
+$paginationMeta = $paginationMeta ?? [];
+$currentTable = $_GET['table'] ?? "1";
 $titleData = ['titleContent' => "Bài đăng", 'group' => false, 'insert' => false, 'edit' => false, 'delete' => false, 'handle' => false];
 ?>
 
@@ -9,15 +12,15 @@ $titleData = ['titleContent' => "Bài đăng", 'group' => false, 'insert' => fal
         <?php renderComponent("searchbar",false) ?>
         <div class="line"></div>
         <div class="tab-pane">
-            <p class="item active">ĐANG HIỂN THỊ (0)</p>
-            <p class="item">BỊ TỪ CHỐI (0)</p>
-            <p class="item">CHỜ DUYỆT (0)</p>
-            <p class="item">HẾT HẠN (0)</p>
-            <p class="item">BỊ XÓA (0)</p>
+            <a href="index.php?page=post&table=1" class="item <?php echo ($currentTable === '1') ? 'active' : ''; ?>">ĐANG HIỂN THỊ</a>
+            <a href="index.php?page=post&table=2" class="item <?php echo ($currentTable === '2') ? 'active' : ''; ?>">BỊ TỪ CHỐI</a>
+            <a href="index.php?page=post&table=3" class="item <?php echo ($currentTable === '3') ? 'active' : ''; ?>">CHỜ DUYỆT</a>
+            <a href="index.php?page=post&table=4" class="item <?php echo ($currentTable === '4') ? 'active' : ''; ?>">HẾT HẠN</a>
+            <a href="index.php?page=post&table=5" class="item <?php echo ($currentTable === '5') ? 'active' : ''; ?>">BỊ XÓA</a>
         </div>
     </div>
     <div class="post-list">
-        <?php renderComponent("postcontainer",false) ?>
-        <?php renderComponent("pagination",false) ?>
+        <?php renderComponent("postcontainer",false,['posts' => $posts]) ?>
+        <?php renderComponent("pagination",false,['paginationMeta' => $paginationMeta]) ?>
     </div>
 </div>

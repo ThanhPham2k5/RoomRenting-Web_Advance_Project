@@ -7,6 +7,7 @@
     justify-content: space-between;
     align-items: center;
     flex-direction: column;
+    overflow: hidden;
 }
 .card .cta button{
     font-size: 1.6rem;
@@ -22,7 +23,7 @@
 }
 .card .post-img{
     width: 100%;
-    height: 100%;
+    height: 172px;
     object-fit: cover;
 }
 .card .location .info,
@@ -50,8 +51,6 @@
 }
 .card .price .main{
     color: #F97316;
-    font-size: 2.4rem;
-    font-family: 'Roboto', sans-serif;
     font-weight: 500;
     line-height: 3.2rem;
     font-weight: 600;

@@ -1,0 +1,150 @@
+.setting-page {
+    width: 1200px;
+    margin: 0 auto;
+    padding-bottom: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+}
+
+.setting-page-main {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    gap: 30px;
+}
+.setting-page-main .left {
+    width: 320px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 20px;
+    border: 1px solid #E0E3EB;
+    border-radius: 12px;
+}
+
+.setting-page-main .left .item {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+.setting-page-main .left .item p {
+    flex: 1;
+    margin-left: 12px;
+}
+.setting-page-main .left .item:hover {
+    background-color: #F5F7FA;
+}
+
+.setting-page-main .left .item.active {
+    background-color: #F5F7FA;
+}
+.setting-page-main .right-info,
+.setting-page-main .right-account {
+    flex: 1;
+    border: 1px solid #E0E3EB;
+    border-radius: 12px;
+    padding: 32px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+.setting-page-main .right-info > p,
+.setting-page-main .right-account > p {
+    font-size: 2.4rem;
+    line-height: 3.2rem;
+    font-weight: 600;
+    border-bottom: 1px solid #E0E3EB;
+    padding-bottom: 12px;
+}
+.setting-page-main .right-info .item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.setting-page-main .right-info .item input,
+.setting-page-main .right-account input {
+    width: 100%;
+    height: 44px;
+    padding: 0 16px;
+    border: 1px solid #E0E3EB;
+    border-radius: 12px;
+    background-color: #F9FAFB;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.setting-page-main .right-info .item input:focus,
+.setting-page-main .right-account input:focus {
+    background-color: #FFF;
+    border-color: black;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+.setting-page-main .right-info .item:has(input + input) {
+    gap: 12px;
+}
+.setting-page-main .btn-save {
+    font-size: 1.6rem;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    line-height: 2.4rem;
+    align-self: center;
+    margin-top: 10px;
+    padding: 12px 30px;
+    background-color: #F97316;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+}
+.setting-page-main .btn-save:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 8px -2px rgba(37, 99, 235, 0.3);
+}
+.setting-page-main .btn-save:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px -1px rgba(37, 99, 235, 0.2);
+}
+.setting-page-main .right-info .avatar-edit-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 10px;
+}
+.setting-page-main .avatar-edit-section .avatar-preview {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #E0E3EB;
+    padding: 2px;
+}
+.setting-page-main .avatar-edit-section .avatar-action {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+}
+.setting-page-main .avatar-edit-section .btn-change-avatar {
+    padding: 8px 16px;
+    border: 1px solid #E0E3EB;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.setting-page-main .avatar-edit-section .btn-change-avatar:hover {
+    background-color: #F9FAFB;
+    border-color: #9CA3AF;
+}
+.setting-page-main .avatar-edit-section .avatar-hint {
+    color: #626687;
+    margin: 0;
+}

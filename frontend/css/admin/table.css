@@ -6,20 +6,6 @@
     border-radius: 12px;
     border: #E0E3EB solid 1px;
 }
-.table-component .top-btn {
-    background-color: transparent;
-    border: #E0E3EB solid 1px;
-    border-radius: 12px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 16px;
-    width: 170px;
-    height: 48px;
-    font-size: 1.6rem;
-    font-family: 'Roboto', sans-serif;
-    font-weight: 500;
-}
 .table-component .top .title {
     font-size: 2.4rem;
     font-weight: 600;
@@ -95,4 +81,112 @@
 }
 .table-component tbody tr.row-active {
     background-color: #e3f2fd;
+}
+.table-component .dropdown-container {
+    position: relative;
+    display: inline-block;
+}
+.table-component .dropdown-container .top-btn,
+.table-component .top-btn {
+    cursor: pointer;
+    transition: all 0.2s;
+    background-color: transparent;
+    border: #E0E3EB solid 1px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    width: 170px;
+    height: 48px;
+    font-size: 1.6rem;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+}
+.table-component .dropdown-container.active .top-btn {
+    border-color: #CBD5E1;
+    background-color: #F9FAFB;
+}
+.table-component .dropdown-container .top-btn svg:last-child {
+    transition: transform 0.3s ease;
+}
+.table-component .dropdown-container.active .top-btn svg:last-child {
+    transform: rotate(180deg);
+}
+.table-component .dropdown-container .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 170px;
+    margin-top: 8px;
+    background-color: #FFFFFF;
+    border: 1px solid #E0E3EB;
+    border-radius: 8px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    list-style: none;
+    
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 100; 
+}
+.table-component .dropdown-container.active .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+.table-component .dropdown-container .dropdown-menu li a {
+    display: block;
+    padding: 10px 16px;
+    color: #1F2937;
+    text-decoration: none;
+    transition: background-color 0.2s, color 0.2s;
+}
+.table-component .dropdown-container .dropdown-menu li a:hover {
+    background-color: #EEF2FF;
+    color: #2563EB;
+}
+.table-component .dropdown-container .custom-date-menu {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.table-component .dropdown-container .custom-date-menu .date-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.table-component .dropdown-container .custom-date-menu .custom-date-input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #D1D5DB;
+    border-radius: 6px;
+    font-size: 1.5rem;
+    outline: none;
+    box-sizing: border-box;
+    font-family: inherit;
+    cursor: pointer;
+}
+.table-component .dropdown-container .custom-date-menu .custom-date-input:focus {
+    border-color: #2563EB;
+}
+.table-component .dropdown-container .custom-date-menu .btn-filter-date {
+    margin-top: 8px;
+    padding: 10px;
+    background-color: #2563EB;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    width: 100%;
+    font-size: 1.6rem; 
+    line-height: 2.4rem;
+    font-weight: 500;
+    font-family: inherit;
+}
+.table-component .dropdown-container .custom-date-menu .btn-filter-date:hover {
+    background-color: #1D4ED8;
 }

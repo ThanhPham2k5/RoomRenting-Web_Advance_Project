@@ -63,7 +63,6 @@ Route::middleware(['auth:sanctum', 'permission:account.assignPermissions'])
 Route::middleware(['auth:sanctum', 'permission:user.get'])
     ->get('/users/{user}', [UserController::class, 'show']);
 
-
 Route::middleware(['auth:sanctum', 'permission:user.getAll'])
     ->get('/users', [UserController::class, 'index']);
 
@@ -182,19 +181,15 @@ Route::middleware(['auth:sanctum', 'permission:form.getRecommendation'])
 //Notification
 Route::middleware(['auth:sanctum', 'permission:notification.get'])
 ->get('/notifications/{notification}', [NotificationController::class, 'show']);
-
     
 Route::middleware(['auth:sanctum', 'permission:notification.getAll'])
 ->get('/notifications', [NotificationController::class, 'index']);
 
-
 Route::middleware(['auth:sanctum', 'permission:notification.create'])
 ->post('/notifications', [NotificationController::class, 'store']);
 
-
 Route::middleware(['auth:sanctum', 'permission:notification.update'])
 ->put('/notifications/{notification}', [NotificationController::class, 'update']);
-
 
 Route::middleware(['auth:sanctum', 'permission:notification.delete'])
 ->delete('/notifications/{notification}', [NotificationController::class, 'destroy']);
@@ -213,19 +208,15 @@ Route::middleware(['auth:sanctum', 'permission:notification.restore'])
 //PayBill
 Route::middleware(['auth:sanctum', 'permission:payBill.get'])
 ->get('/payBills/{payBill}', [PayBillController::class, 'show']);
-
     
 Route::middleware(['auth:sanctum', 'permission:payBill.getAll'])
 ->get('/payBills', [PayBillController::class, 'index']);
 
-
 Route::middleware(['auth:sanctum', 'permission:payBill.create'])
 ->post('/payBills', [PayBillController::class, 'store']);
 
-
 Route::middleware(['auth:sanctum', 'permission:payBill.update'])
 ->put('/payBills/{payBill}', [PayBillController::class, 'update']);
-
 
 Route::middleware(['auth:sanctum', 'permission:payBill.delete'])
 ->delete('/payBills/{payBill}', [PayBillController::class, 'destroy']);
@@ -238,19 +229,15 @@ Route::middleware(['auth:sanctum', 'permission:payBill.restore'])
 //PayRule
 Route::middleware(['auth:sanctum', 'permission:payRule.get'])
 ->get('/payRules/{payRule}', [PayRuleController::class, 'show']);
-
     
 Route::middleware(['auth:sanctum', 'permission:payRule.getAll'])
 ->get('/payRules', [PayRuleController::class, 'index']);
 
-
 Route::middleware(['auth:sanctum', 'permission:payRule.create'])
 ->post('/payRules', [PayRuleController::class, 'store']);
 
-
 Route::middleware(['auth:sanctum', 'permission:payRule.update'])
 ->put('/payRules/{payRule}', [PayRuleController::class, 'update']);
-
 
 Route::middleware(['auth:sanctum', 'permission:payRule.delete'])
 ->delete('/payRules/{payRule}', [PayRuleController::class, 'destroy']);
@@ -263,19 +250,15 @@ Route::middleware(['auth:sanctum', 'permission:payRule.restore'])
 //RechargeBill
 Route::middleware(['auth:sanctum', 'permission:rechargeBill.get'])
 ->get('/rechargeBills/{rechargeBill}', [RechargeBillController::class, 'show']);
-
     
 Route::middleware(['auth:sanctum', 'permission:rechargeBill.getAll'])
 ->get('/rechargeBills', [RechargeBillController::class, 'index']);
 
-
 Route::middleware(['auth:sanctum', 'permission:rechargeBill.create'])
 ->post('/rechargeBills', [RechargeBillController::class, 'store']);
 
-
 Route::middleware(['auth:sanctum', 'permission:rechargeBill.update'])
 ->put('/rechargeBills/{rechargeBill}', [RechargeBillController::class, 'update']);
-
 
 Route::middleware(['auth:sanctum', 'permission:rechargeBill.delete'])
 ->delete('/rechargeBills/{rechargeBill}', [RechargeBillController::class, 'destroy']);
@@ -288,19 +271,15 @@ Route::middleware(['auth:sanctum', 'permission:rechargeBill.restore'])
 //RechargeRule
 Route::middleware(['auth:sanctum', 'permission:rechargeRule.get'])
 ->get('/rechargeRules/{rechargeRule}', [RechargeRuleController::class, 'show']);
-
     
 Route::middleware(['auth:sanctum', 'permission:rechargeRule.getAll'])
 ->get('/rechargeRules', [RechargeRuleController::class, 'index']);
 
-
 Route::middleware(['auth:sanctum', 'permission:rechargeRule.create'])
 ->post('/rechargeRules', [RechargeRuleController::class, 'store']);
 
-
 Route::middleware(['auth:sanctum', 'permission:rechargeRule.update'])
 ->put('/rechargeRules/{rechargeRule}', [RechargeRuleController::class, 'update']);
-
 
 Route::middleware(['auth:sanctum', 'permission:rechargeRule.delete'])
 ->delete('/rechargeRules/{rechargeRule}', [RechargeRuleController::class, 'destroy']);
@@ -313,9 +292,12 @@ Route::middleware(['auth:sanctum', 'permission:rechargeRule.restore'])
     - AuthController
 */
 Route::post('/register', [AuthController::class, 'register']);
+
 Route::post('/login', [AuthController::class, 'login']);
+
 Route::post('/logout', [AuthController::class, 'logout'])
     ->middleware('auth:sanctum');
+
 
 /* API routes for Roles and Permissions 
     - RoleController
@@ -338,9 +320,15 @@ Route::middleware(['auth:sanctum'])
     - AddressController
 */
 
+//Province
 Route::get('/address/provinces', [AddressController::class, 'getProvinces']);
+
 Route::get('/address/provinces/{code}', [AddressController::class, 'getProvinceByCode']);
+
 Route::get('/address/provinces/{code}/wards', [AddressController::class, 'getWardsFromProvinceCode']);
 
+
+//Ward
 Route::get('/address/wards', [AddressController::class, 'getWards']);
+
 Route::get('/address/wards/{code}', [AddressController::class, 'getWardByCode']);

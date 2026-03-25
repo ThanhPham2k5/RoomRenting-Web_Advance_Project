@@ -37,11 +37,12 @@ class RoleController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|unique:roles,name'
+        $validate = $request->validate([
+            'name' => 'required|string|unique:roles,name',
+            'description' => 'nullable|string'
         ]);
 
-        $role = Role::create(['name' => $request->name]);
+        $role = Role::create($validate);
 
         return response()->json([
             'message' => 'Role created successfully',
@@ -60,11 +61,12 @@ class RoleController extends Controller
 
     public function update(Request $request, Role $role)
     {
-        $request->validate([
-            'name' => 'required|string|unique:roles,name,' . $role->id
+        $validate = $request->validate([
+            'name' => 'required|string|unique:roles,name,' . $role->id,
+            'description' => 'sometimes|string'
         ]);
 
-        $role->update(['name' => $request->name]);
+        $role->update($validate);
 
         return response()->json([
             'message' => 'Role updated successfully',

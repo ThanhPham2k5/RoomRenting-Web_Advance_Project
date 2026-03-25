@@ -17,7 +17,9 @@ class PayRuleResource extends JsonResource
         return [
             'id' => $this->id,
             'points' => $this->points,
+            'status' => $this->status,
             'deletedAt' => $this->deleted_at,
+            'createdAt' => $this->created_at,
             'payBills' => PayBillResource::collection(
                 $this->whenLoaded('payBills')
             )

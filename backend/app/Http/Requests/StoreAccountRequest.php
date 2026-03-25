@@ -22,9 +22,17 @@ class StoreAccountRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'username' => 'required|string|min:3|max:255|unique:accounts',
+            'username' => 'required|string|min:3|max:30|unique:accounts,username',
             'password' => 'required|string|min:8|max:255|confirmed',
-            'role' => 'required|string|in:user,admin,postManager,billManager,UserManager',
+            'email' => 'required|email|unique:personal_infos,email',
+            'role' => 'required|string|in:user,employee',
+            'phone_number' => [
+                'required',
+                'string',
+                'regex:/^(03|05|07|08|09)[0-9]{8}$/'
+            ],
+            'roles' => 'required|array',
+            'roles.*' => 'exists:roles,name'
         ];
     }
 }

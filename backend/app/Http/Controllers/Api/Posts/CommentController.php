@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api\Posts;
 
-use App\Filter\CommentFilter;
 use App\Models\Posts\Comment;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCommentRequest;
@@ -123,6 +122,17 @@ class CommentController extends Controller
 
         return response()->json([
             'message' => 'Comment deleted successfully'
+        ]);
+    }
+    public function restore($id)
+    {
+        $comment = Comment::onlyTrashed()->findOrFail($id);
+ 
+        $comment->restore();
+ 
+        return response()->json([
+            'message' => 'Comment restored successfully',
+            'comment'    => new CommentResource($comment),
         ]);
     }
 }

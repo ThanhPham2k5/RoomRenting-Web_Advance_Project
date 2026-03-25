@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Helpers\VietnamAddress;
 use App\Models\Account_User\PersonalInfo;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Storage;
 
 class PersonalInfoSeeder extends Seeder
 {
@@ -169,7 +170,7 @@ class PersonalInfoSeeder extends Seeder
             $province = VietnamAddress::randomProvince();
             $ward = VietnamAddress::randomWard($province['province_code']);
 
-            PersonalInfo::create([
+            $personalInfo = PersonalInfo::create([
                 'name' => $person['name'],
                 'gender' => $person['gender'],
                 'date_of_birth' => $person['dob'],
@@ -180,7 +181,6 @@ class PersonalInfoSeeder extends Seeder
                 
                 'email' => $person['email'],
                 'phone_number' => $this->phone(),
-                'profile_url' => $person['profile_url'],
                 'pid' => $this->pid(),
             ]);
         }

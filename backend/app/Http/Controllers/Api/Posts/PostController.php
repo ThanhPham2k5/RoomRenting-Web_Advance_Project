@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api\Posts;
 
 use _PHPStan_781aefaf6\Composer\XdebugHandler\Status;
-use App\Filter\PostFilter;
 use App\Listeners\SendStatusPostNotification;
 use App\Models\Posts\Post;
 use App\Http\Controllers\Controller;
@@ -19,6 +18,7 @@ use Spatie\QueryBuilder\QueryBuilder;
 use App\Events\PostCreated;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Events\StatusPostCreated;
+use Illuminate\Support\Facades\DB;
 
 class PostController extends Controller
 {
@@ -89,15 +89,47 @@ class PostController extends Controller
      */
     public function store(StorePostRequest $request)
     {
-        $validated = $request->validated();
+        return DB::transaction(function () use ($request) {
 
-        $post = Post::create($validated);
-        event(new StatusPostCreated($post));
+            $validated = $request->validated();
 
-        return response()->json([
-            'message' => 'Post created successfully',
-            'post' => new PostResource($post)
-        ], 201);
+            // Remove images from post data
+            $images = $request->file('images');
+
+            unset($validated['images']);
+
+            // Create post
+            $post = Post::create($validated);
+
+            // Store images
+            if ($images) {
+                foreach ($images as $index => $image) {
+                    // Rename to order
+                    $filename = ($index + 1) . '.' . $image->getClientOriginalExtension();
+
+                    // Save file
+                    $path = $image->storeAs(
+                        "posts/{$post->id}/images",
+                        $filename,
+                        "public"
+                    );
+
+                    // Save DB
+                    $post->postImages()->create([
+                        'image_post_url' => $path,
+                        'order' => $index + 1,
+                    ]);
+                }
+            }
+
+            // Fire create image event
+            event(new StatusPostCreated($post));
+
+            return response()->json([
+                'message' => 'Post created successfully',
+                'post' => new PostResource($post->load('postImages'))
+            ], 201);
+        });
     }
 
     /**
@@ -148,12 +180,32 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        $this->authorize('delete', $post);
+        return DB::transaction(function () use ($post) {
+            $this->authorize('delete', $post);
+            
+            $post->postImages()->delete();
+            $post->comments()->delete();
+            $post->favorites()->delete();
+            $post->delete();
 
-        $post->delete();
+            return response()->json([
+                'message' => 'Post deleted successfully'
+            ]);
+        });   
+    }
 
+    public function restore($id)
+    {
+        $post = Post::onlyTrashed()->findOrFail($id);
+ 
+        $post->postImages()->restore();
+        $post->comments()->restore();
+        $post->favorites()->restore();
+        $post->restore();
+ 
         return response()->json([
-            'message' => 'Post deleted successfully'
+            'message' => 'Post restored successfully',
+            'post'    => new PostResource($post->load('postImages')),
         ]);
     }
 

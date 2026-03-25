@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api\Payments;
 
-use App\Filter\PayBillFilter;
 use App\Models\Payments\PayBill;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePayBillRequest;
@@ -133,6 +132,18 @@ class PayBillController extends Controller
 
         return response()->json([
             'message' => 'Pay bill deleted successfully'
+        ]);
+    }
+
+
+    public function restore($id) {
+
+        $payBill = PayBill::onlyTrashed()->findOrFail($id);
+
+        $payBill->restore();
+
+        return response()->json([
+            'message' => 'PayBill restored successfully'
         ]);
     }
 }

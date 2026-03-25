@@ -11,7 +11,7 @@ class PayRule extends Model
 {
     /** @use HasFactory<\Database\Factories\PayRuleFactory> */
     use HasFactory, SoftDeletes;
-    protected $fillable = ['points'];
+    protected $fillable = ['points', 'status'];
 
         protected static function newFactory()
     {

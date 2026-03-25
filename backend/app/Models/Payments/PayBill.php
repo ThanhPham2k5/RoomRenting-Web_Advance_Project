@@ -7,11 +7,12 @@ use App\Models\Notification\Notification;
 use App\Models\Posts\Post;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PayBill extends Model
 {
     /** @use HasFactory<\Database\Factories\PayBillFactory> */
-    use HasFactory;
+    use HasFactory, SoftDeletes;
     protected $fillable = ['account_id', 'pay_rule_id', 'post_id', 'status', 'points'];
 
     protected static function newFactory()

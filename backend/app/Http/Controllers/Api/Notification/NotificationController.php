@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api\Notification;
 
-use App\Filter\NotificationFilter;
 use App\Models\Notification\Notification;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreNotificationRequest;
@@ -159,6 +158,18 @@ class NotificationController extends Controller
         return response()->json([
             'message' => 'Notification marked as read',
             'notification' => new NotificationResource($notification)
+        ]);
+    }
+
+    public function restore($id) {
+
+        $noti = Notification::onlyTrashed()->findOrFail($id);
+
+        $noti->restore();
+
+        return response()->json([
+            'message' => 'Notification restored successfully',
+            'notification'    => new NotificationResource($noti),
         ]);
     }
 }

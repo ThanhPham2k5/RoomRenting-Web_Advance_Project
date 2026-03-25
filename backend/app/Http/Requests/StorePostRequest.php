@@ -37,6 +37,8 @@ class StorePostRequest extends FormRequest
             'employee_id' => 'nullable|exists:employees,id',
             'authorized' => 'required|boolean',
             'next_payment_date' => 'nullable|date',
+            'images' => 'required|array',
+            'images.*' => 'image|mimes:jpg,jpeg,png|max:2048',
         ];
     }
 }

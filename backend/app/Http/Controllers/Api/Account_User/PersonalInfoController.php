@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api\Account_User;
 
-use App\Filter\PersonalInfoFilter;
 use App\Models\Account_User\PersonalInfo;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePersonalInfoRequest;
@@ -11,6 +10,7 @@ use App\Http\Resources\Account_User\PersonalInfoCollection;
 use App\Http\Resources\Account_User\PersonalInfoResource;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedSort;
 use Spatie\QueryBuilder\Enums\FilterOperator;
@@ -20,7 +20,12 @@ class PersonalInfoController extends Controller
 {
     use AuthorizesRequests;
 
-    private $allowedIncludes = [];
+    private $allowedIncludes = [
+        'user',
+        'employee',
+        'user.account',
+        'employee.account'
+    ];
 
     /**
      * Display a listing of the resource.
@@ -99,7 +104,50 @@ class PersonalInfoController extends Controller
      */
     public function update(UpdatePersonalInfoRequest $request, PersonalInfo $personalInfo)
     {
+        
         $this->authorize('update', $personalInfo);
+
+        $validated = $request->validated();
+
+        // Handle profile image upload
+        if ($request->hasFile('profile_url')) {
+
+            // delete old image (if exists)
+            if ($personalInfo->profile_url) {
+                Storage::disk('public')->delete($personalInfo->profile_url);
+            }
+
+            $image = $request->file('profile_url');
+
+            // Rename to avatar
+            $filename = 'avatar.' . $image->getClientOriginalExtension();
+
+            if($personalInfo->user){
+                // store new image
+                $path = $image->storeAs(
+                    "profiles/{$personalInfo->user->account_id}",
+                    $filename,
+                    "public"
+                );
+            }else{
+                // store new image
+                $path = $image->storeAs(
+                    "profiles/{$personalInfo->employee->account_id}",
+                    $filename,
+                    "public"
+                );
+            }
+
+            $validated['profile_url'] = $path;
+        }
+
+
+        $personalInfo->update($validated);
+
+        return response()->json([
+            'message' => 'Personal Info update successfully',
+            'personalInfo' => new PersonalInfoResource($personalInfo)
+        ]);
     }
 
     /**

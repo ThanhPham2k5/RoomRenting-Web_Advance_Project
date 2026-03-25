@@ -13,7 +13,7 @@ class PostImagePolicy
     {
         return 
             $account->id === $postImage->post->user_id
-            || $account->hasAnyRole(['admin', 'post_manager']);
+            || $account->hasAnyRole(['admin', 'postManager']);
     }
     /**
      * Determine whether the user can view any models.

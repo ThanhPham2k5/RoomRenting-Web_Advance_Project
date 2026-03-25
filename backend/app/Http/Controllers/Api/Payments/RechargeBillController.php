@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api\Payments;
 
-use App\Filter\RechargeBillFilter;
 use App\Models\Payments\RechargeBill;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreRechargeBillRequest;
@@ -141,6 +140,17 @@ class RechargeBillController extends Controller
 
         return response()->json([
             'message' => 'Recharge bill deleted successfully'
+        ]);
+    }
+
+    public function restore($id) {
+
+        $rechargeBill = RechargeBill::onlyTrashed()->findOrFail($id);
+
+        $rechargeBill->restore();
+
+        return response()->json([
+            'message' => 'RehargeBill restored successfully',
         ]);
     }
 }

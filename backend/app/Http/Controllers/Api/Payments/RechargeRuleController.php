@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api\Payments;
 
-use App\Filter\RechargeRuleFilter;
 use App\Models\Payments\RechargeRule;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreRechargeRuleRequest;
@@ -13,10 +12,10 @@ use Illuminate\Http\Request;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\Enums\FilterOperator;
 use Spatie\QueryBuilder\QueryBuilder;
-
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 class RechargeRuleController extends Controller
 {
-
+    use AuthorizesRequests;    
     private $allowedIncludes = [
         'rechargeBills',
     ];
@@ -63,10 +62,11 @@ class RechargeRuleController extends Controller
      */
     public function store(StoreRechargeRuleRequest $request)
     {
-        $validated = $request->validated();
-        $validated['status'] = 'inactive';
         
-        $rechargeRule = RechargeRule::create($validated);
+        $rechargeRule = RechargeRule::create([
+            ...$request->validated(),
+            'status' => 'inactive',
+        ]);
 
         return response()->json([
             'message' => 'Recharge rule created successfully',
@@ -103,6 +103,8 @@ class RechargeRuleController extends Controller
         if (isset($validated['status']) && $validated['status'] === 'active') {
             // Deactivate all other recharge rules
             RechargeRule::where('id', '!=', $rechargeRule->id)->update(['status' => 'inactive']);
+
+            $rechargeRule->update($validated);
         }
 
         return response()->json([
@@ -116,11 +118,27 @@ class RechargeRuleController extends Controller
      */
     public function destroy(RechargeRule $rechargeRule)
     {
+        if ($rechargeRule->status === 'active') {
+            return response()->json([
+            'message' => 'Cannot delete while in active status'
+        ]);
+        }
         $rechargeRule['status'] = 'inactive';
         $rechargeRule->delete();
 
         return response()->json([
             'message' => 'Recharge rule deleted successfully'
+        ]);
+    }
+
+    public function restore($id) {
+
+        $rechargeRule = RechargeRule::onlyTrashed()->findOrFail($id);
+
+        $rechargeRule->restore();
+
+        return response()->json([
+            'message' => 'RechargeRule restored successfully'
         ]);
     }
 }

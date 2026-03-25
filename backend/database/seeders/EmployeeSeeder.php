@@ -9,6 +9,7 @@ use App\Models\Account_User\User;
 use Database\Factories\AccountFactory;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Storage;
 
 class EmployeeSeeder extends Seeder
 {
@@ -17,26 +18,6 @@ class EmployeeSeeder extends Seeder
      */
     public function run(): void
     {
-        
-        // $roles = [
-        //     'postManager',
-        //     'billManager',
-        //     'userManager'
-        // ];
-
-        // foreach ($roles as $role) {
-        //     $account = Account::factory()->create([
-        //         'role' => $role
-        //     ]);
-
-        //     $personalInfo = PersonalInfo::factory()->create();
-
-        //     Employee::create([
-        //         'account_id' => $account->id,
-        //         'personal_info_id' => $personalInfo->id
-        //     ]);
-        // }
-
 
 
         $roles = ['admin', 'postManager', 'billManager', 'userManager'];
@@ -64,8 +45,24 @@ class EmployeeSeeder extends Seeder
                     'account_id' => $account->id,
                     'personal_info_id' => $personalInfo->id,
                 ]);
+
+                //update profile
+                $personalInfo->update([
+                    'profile_url' => $this->profile($personalInfo),
+                ]);
             }
         }
         
+    }
+
+    private function profile($personalInfo)
+    {   
+        // fake image content
+        $path = "profiles/{$personalInfo->employee->account_id}/avatar.jpg";
+        
+        // create dummy file
+        Storage::disk('public')->put($path, file_get_contents('https://picsum.photos/300'));
+
+        return $path;
     }
 }

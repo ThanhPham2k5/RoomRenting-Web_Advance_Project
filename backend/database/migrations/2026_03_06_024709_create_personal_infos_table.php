@@ -14,16 +14,17 @@ return new class extends Migration
         Schema::create('personal_infos', function (Blueprint $table) {
             $table->id();
             $table->date('date_of_birth')->nullable();
-            $table->string('gender')->nullable();
+            $table->enum('gender', ['male', 'female', 'other'])->nullable();
             $table->string('house_number')->nullable();
             $table->string('ward')->nullable();
             $table->string('province')->nullable();
-            $table->string('email');
+            $table->string('email')->unique();
             $table->string('phone_number')->unique();
-            $table->string('profile_url')->nullable();
+            $table->text('profile_url')->nullable();
             $table->string('name')->nullable();
             $table->string('pid')->unique()->nullable();
 
+            $table->softDeletes();
             $table->timestamps();
         });
     }

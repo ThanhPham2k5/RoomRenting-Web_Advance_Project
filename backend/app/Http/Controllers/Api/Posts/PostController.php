@@ -123,7 +123,7 @@ class PostController extends Controller
             }
 
             // Fire create image event
-            event(new StatusPostCreated($post));
+            event(new StatusPostCreated($post, $request->comment));
 
             return response()->json([
                 'message' => 'Post created successfully',
@@ -160,6 +160,12 @@ class PostController extends Controller
         $this->authorize('update', $post);
 
         $validated = $request->validated();
+        
+        if ($request->status === $post->status) {
+            return response()->json([
+                'message' => 'Can not update post with similiar status'
+            ]);            
+        }
 
         $post->update($validated);
 
@@ -167,7 +173,7 @@ class PostController extends Controller
         if ($validated['status'] === 'completed') {
             event(new PostCreated($post));
         }
-        event(new StatusPostCreated($post));
+        event(new StatusPostCreated($post, $request->comment));
 
         return response()->json([
             'message' => 'Post updated successfully',

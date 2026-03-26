@@ -39,7 +39,7 @@ class PostController extends Controller
      */
     public function index(Request $request)
     {
-        $query = QueryBuilder::for(Post::class)
+        $query = QueryBuilder::for(Post::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
             AllowedFilter::exact('id'),

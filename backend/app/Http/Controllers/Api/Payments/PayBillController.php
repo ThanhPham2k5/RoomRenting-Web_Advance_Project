@@ -30,7 +30,7 @@ class PayBillController extends Controller
      */
     public function index(Request $request)
     {
-        $this->authorize('viewAny');
+        $this->authorize('viewAny', PayBill::class);
 
         $query = QueryBuilder::for(PayBill::class)
         ->allowedIncludes($this->allowedIncludes)

@@ -33,7 +33,7 @@ class RechargeBillController extends Controller
      */
     public function index(Request $request)
     {
-        $this->authorize('viewAny');
+        $this->authorize('viewAny', RechargeBill::class);
 
         $query = QueryBuilder::for(RechargeBill::withTrashed())
         ->allowedIncludes($this->allowedIncludes)

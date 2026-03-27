@@ -131,7 +131,7 @@ class RolePermissionSeeder extends Seeder
             Permission::create(['name' => $permission, 'guard_name' => 'api']);
         
         //Roles
-        $admin = Role::create(['name' => 'admin', 'guard_name' => 'api', 'description' => 'Anh Tuấn ảnh bắt tôi thêm decription']);
+        $admin = Role::create(['name' => 'admin', 'guard_name' => 'api', 'description' => 'Administrator']);
         $postManager = Role::create(['name' => 'postManager', 'guard_name' => 'api', 'description' => 'Quản lý các bài post, duyệt bài']);
         $billManager = Role::create(['name' => 'billManager', 'guard_name' => 'api', 'description' => 'Tôi là kế toán kiêm tài chính']);
         $userManager = Role::create(['name' => 'userManager', 'guard_name' => 'api', 'description' => 'Quản lý tài khoản khách hàng và nhân viên']);

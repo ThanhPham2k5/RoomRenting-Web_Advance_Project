@@ -154,7 +154,7 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        $post = QueryBuilder::for(Post::class)
+        $post = QueryBuilder::for(Post::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($post->id);
 

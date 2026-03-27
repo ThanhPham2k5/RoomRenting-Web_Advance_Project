@@ -38,7 +38,7 @@ class FormController extends Controller
      */
     public function index(Request $request)
     {
-        $query = QueryBuilder::for(Form::class)
+        $query = QueryBuilder::for(Form::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
             //generic search
@@ -114,7 +114,7 @@ class FormController extends Controller
     {
         $this->authorize('view', $form);
 
-        $form = QueryBuilder::for(Form::class)
+        $form = QueryBuilder::for(Form::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($form->id);
 

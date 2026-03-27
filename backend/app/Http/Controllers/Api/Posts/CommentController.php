@@ -36,7 +36,7 @@ class CommentController extends Controller
      */
     public function index(Request $request)
     {
-        $query = QueryBuilder::for(Comment::class)
+        $query = QueryBuilder::for(Comment::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
             //generic search
@@ -91,7 +91,7 @@ class CommentController extends Controller
      */
     public function show(Comment $comment)
     {
-        $comment = QueryBuilder::for(Comment::class)
+        $comment = QueryBuilder::for(Comment::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($comment->id);
 

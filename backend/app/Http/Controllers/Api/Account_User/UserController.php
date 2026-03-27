@@ -37,7 +37,7 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $query = QueryBuilder::for(User::class)
+        $query = QueryBuilder::for(User::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
             //generic search
@@ -88,7 +88,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        $user = QueryBuilder::for(User::class)
+        $user = QueryBuilder::for(User::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($user->id);
 

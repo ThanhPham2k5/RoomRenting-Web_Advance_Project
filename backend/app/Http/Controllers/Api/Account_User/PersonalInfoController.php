@@ -43,7 +43,7 @@ class PersonalInfoController extends Controller
      */
     public function index(Request $request)
     {
-        $query = QueryBuilder::for(PersonalInfo::class)
+        $query = QueryBuilder::for(PersonalInfo::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
             //generic search
@@ -100,7 +100,7 @@ class PersonalInfoController extends Controller
     {
         $this->authorize('view', $personalInfo);
 
-        $personalInfo = QueryBuilder::for(PersonalInfo::class)
+        $personalInfo = QueryBuilder::for(PersonalInfo::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($personalInfo->id);
 

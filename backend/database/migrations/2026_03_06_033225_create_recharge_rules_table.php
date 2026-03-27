@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('recharge_rules', function (Blueprint $table) {
             $table->id();
 
-            $table->enum('status', ['active', 'inactive']);
+            // $table->enum('status', ['active', 'inactive']);
             $table->integer('points');
             $table->decimal('money', 12, 0);
             

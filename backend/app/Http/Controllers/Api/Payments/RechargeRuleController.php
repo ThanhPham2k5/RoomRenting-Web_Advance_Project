@@ -31,7 +31,7 @@ class RechargeRuleController extends Controller
      */
     public function index(Request $request)
     {
-        $query = QueryBuilder::for(RechargeRule::class)
+        $query = QueryBuilder::for(RechargeRule::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
             //generic search
@@ -76,8 +76,10 @@ class RechargeRuleController extends Controller
         
         $rechargeRule = RechargeRule::create([
             ...$request->validated(),
-            'status' => 'inactive',
+            // 'status' => 'inactive',
         ]);
+
+        $rechargeRule->delete();
 
         return response()->json([
             'message' => 'Recharge rule created successfully',
@@ -90,7 +92,7 @@ class RechargeRuleController extends Controller
      */
     public function show(RechargeRule $rechargeRule)
     {
-        $rechargeRule = QueryBuilder::for(RechargeRule::class)
+        $rechargeRule = QueryBuilder::for(RechargeRule::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($rechargeRule->id);
 
@@ -110,18 +112,18 @@ class RechargeRuleController extends Controller
      */
     public function update(UpdateRechargeRuleRequest $request, RechargeRule $rechargeRule)
     {
-        $validated = $request->validated();
-        if (isset($validated['status']) && $validated['status'] === 'active') {
-            // Deactivate all other recharge rules
-            RechargeRule::where('id', '!=', $rechargeRule->id)->update(['status' => 'inactive']);
+        // $validated = $request->validated();
+        // if (isset($validated['status']) && $validated['status'] === 'active') {
+        //     // Deactivate all other recharge rules
+        //     RechargeRule::where('id', '!=', $rechargeRule->id)->update(['status' => 'inactive']);
 
-            $rechargeRule->update($validated);
-        }
+        //     $rechargeRule->update($validated);
+        // }
 
-        return response()->json([
-            'message' => 'Recharge rule updated successfully',
-            'rechargeRule' => new RechargeRuleResource($rechargeRule)
-        ]);
+        // return response()->json([
+        //     'message' => 'Recharge rule updated successfully',
+        //     'rechargeRule' => new RechargeRuleResource($rechargeRule)
+        // ]);
     }
 
     /**
@@ -129,21 +131,22 @@ class RechargeRuleController extends Controller
      */
     public function destroy(RechargeRule $rechargeRule)
     {
-        if ($rechargeRule->status === 'active') {
-            return response()->json([
-            'message' => 'Cannot delete while in active status'
-        ]);
-        }
-        $rechargeRule['status'] = 'inactive';
-        $rechargeRule->delete();
+        // if ($rechargeRule->status === 'active') {
+        //     return response()->json([
+        //     'message' => 'Cannot delete while in active status'
+        // ]);
+        // }
+        // $rechargeRule['status'] = 'inactive';
+        // $rechargeRule->delete();
 
-        return response()->json([
-            'message' => 'Recharge rule deleted successfully'
-        ]);
+        // return response()->json([
+        //     'message' => 'Recharge rule deleted successfully'
+        // ]);
     }
 
     public function restore($id) {
 
+        RechargeRule::query()->delete();
         $rechargeRule = RechargeRule::onlyTrashed()->findOrFail($id);
 
         $rechargeRule->restore();

@@ -29,7 +29,7 @@ class PermissionController extends Controller
 
     public function index()
     {
-        $query = QueryBuilder::for(Permission::class)
+        $query = QueryBuilder::for(Permission::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
             //generic search
@@ -49,7 +49,7 @@ class PermissionController extends Controller
 
     public function show(Permission $permission)
     {
-        $permission = QueryBuilder::for(Permission::class)
+        $permission = QueryBuilder::for(Permission::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($permission->id);
 

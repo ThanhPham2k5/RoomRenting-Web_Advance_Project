@@ -38,7 +38,7 @@ class PayBillController extends Controller
     {
         $this->authorize('viewAny', PayBill::class);
 
-        $query = QueryBuilder::for(PayBill::class)
+        $query = QueryBuilder::for(PayBill::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
             //generic search
@@ -104,7 +104,7 @@ class PayBillController extends Controller
     {
         $this->authorize('view', $payBill);
 
-        $payBill = QueryBuilder::for(PayBill::class)
+        $payBill = QueryBuilder::for(PayBill::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($payBill->id);
 

@@ -61,7 +61,7 @@ class AccountController extends Controller
      */
     public function index(Request $request)
     {
-        $query = QueryBuilder::for(Account::class)
+        $query = QueryBuilder::for(Account::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
             //generic search
@@ -113,7 +113,7 @@ class AccountController extends Controller
      */
     public function show(Account $account)
     {
-        $account = QueryBuilder::for(Account::class)
+        $account = QueryBuilder::for(Account::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($account->id);
 

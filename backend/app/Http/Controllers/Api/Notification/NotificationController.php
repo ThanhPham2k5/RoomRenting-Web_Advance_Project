@@ -40,7 +40,7 @@ class NotificationController extends Controller
      */
     public function index(Request $request)
     {
-        $query = QueryBuilder::for(Notification::class)
+        $query = QueryBuilder::for(Notification::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
             //generic search
@@ -114,7 +114,7 @@ class NotificationController extends Controller
     {
         $this->authorize('view', $notification);
 
-        $notification = QueryBuilder::for(Notification::class)
+        $notification = QueryBuilder::for(Notification::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($notification->id);
 

@@ -415,6 +415,8 @@
   border-radius: 12px;
   background-color: #fff;
   width: 100%;
+  text-decoration: none;
+  color: #000;
   cursor: pointer;
 }
 

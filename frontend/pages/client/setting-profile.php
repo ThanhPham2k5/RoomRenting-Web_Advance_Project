@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href='<?php echo BASE_URL . "/css/client/reset.css" ?>'/>
     <link rel="stylesheet" href='<?php echo BASE_URL . "/css/client/main.css" ?>'/>
-    <link rel="stylesheet" href='<?php echo BASE_URL . "/css/client/pages/profile.css" ?>'/>
+    <link rel="stylesheet" href='<?php echo BASE_URL . "/css/client/pages/setting-profile.css" ?>'/>
 
     <link
       rel="icon"
@@ -29,7 +29,7 @@
       href='<?php echo BASE_URL . "/assets/favicon/apple-touch-icon.png"?>'
     />
     <link rel="manifest" href='<?php echo BASE_URL . "/assets/favicon/site.webmanifest" ?>'/>
-    <title>Profile Page | RoomRenting</title>
+    <title>Setting Page | RoomRenting</title>
   </head>
   <body>
     <?php include(__DIR__ . "/components/header.php"); ?>
@@ -51,7 +51,7 @@
                     <div class="profile-setting">
                         <img src='<?php echo BASE_URL . "/assets/img/setting-profile-ico.png"?>' alt="setting-profile-ico.png" class="profile-setting-ico">
 
-                        <div class="profile-setting-text">Hồ sơ cá nhân</div>
+                        <div class="profile-setting-text">Cài đặt tài khoản</div>
 
                         <img src='<?php echo BASE_URL . "/assets/img/arrow_bold.png"?>' alt="arrow.png" class="profile-setting-arrow">
                     </div>

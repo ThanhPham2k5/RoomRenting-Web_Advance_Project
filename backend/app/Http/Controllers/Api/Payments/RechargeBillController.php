@@ -35,7 +35,7 @@ class RechargeBillController extends Controller
     {
         $this->authorize('viewAny');
 
-        $query = QueryBuilder::for(RechargeBill::class)
+        $query = QueryBuilder::for(RechargeBill::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
             AllowedFilter::exact('id'),
@@ -101,7 +101,7 @@ class RechargeBillController extends Controller
     {
         $this->authorize('view', $rechargeBill);
 
-        $rechargeBill = QueryBuilder::for(RechargeBill::class)
+        $rechargeBill = QueryBuilder::for(RechargeBill::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($rechargeBill->id);
 

@@ -27,7 +27,7 @@ class FavoriteController extends Controller
      */
     public function index(Request $request)
     {
-        $query = QueryBuilder::for(Favorite::class)
+        $query = QueryBuilder::for(Favorite::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
             AllowedFilter::exact('id'),
@@ -78,7 +78,7 @@ class FavoriteController extends Controller
     {
         $this->authorize('view', $favorite);
 
-        $favorite = QueryBuilder::for(Favorite::class)
+        $favorite = QueryBuilder::for(Favorite::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($favorite->id);
 

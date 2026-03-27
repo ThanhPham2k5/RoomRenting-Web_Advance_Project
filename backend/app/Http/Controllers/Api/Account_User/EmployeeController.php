@@ -30,7 +30,7 @@ class EmployeeController extends Controller
      */
     public function index(Request $request)
     {
-        $query = QueryBuilder::for(Employee::class)
+        $query = QueryBuilder::for(Employee::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
             AllowedFilter::exact('id'),
@@ -72,7 +72,7 @@ class EmployeeController extends Controller
      */
     public function show(Employee $employee)
     {
-        $employee = QueryBuilder::for(Employee::class)
+        $employee = QueryBuilder::for(Employee::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($employee->id);
 

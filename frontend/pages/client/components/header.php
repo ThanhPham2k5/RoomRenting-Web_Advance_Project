@@ -323,13 +323,13 @@
 
                 <div class="user-other">Khác</div>
 
-                <div class="user-setting">
+                <a href='<?php echo BASE_URL . "/pages/client/profile.php"?>' class="user-setting">
                   <img src='<?php echo BASE_URL . "/assets/img/setting-ico.png"?>' alt="setting-ico.png"  class="user-setting-ico">
 
                   Cài đặt tài khoản
 
                   <img src='<?php echo BASE_URL . "/assets/img/arrow.png"?>' alt="arrow.png" class="user-arrow">
-                </div>
+                </a>
 
                 <div class="user-logout">
                   <img src='<?php echo BASE_URL . "/assets/img/logout-ico.png"?>' alt="logout-ico.png"  class="user-logout-ico">

@@ -20,7 +20,8 @@ class RechargeRuleFactory extends Factory
     public function definition(): array
     {
         return [
-            'status' => 'inactive',
+            // 'status' => 'inactive',
+            'deleted_at' => now(),
             'points' => $this->faker->numberBetween(100, 5000),
             'money' => $this->faker->numberBetween(50000, 500000),
         ];

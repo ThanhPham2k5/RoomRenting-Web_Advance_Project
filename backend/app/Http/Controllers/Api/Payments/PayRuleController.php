@@ -26,7 +26,7 @@ class PayRuleController extends Controller
      */
     public function index(Request $request)
     {
-        $query = QueryBuilder::for(PayRule::class)
+        $query = QueryBuilder::for(PayRule::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
             AllowedFilter::exact('id'),
@@ -63,9 +63,10 @@ class PayRuleController extends Controller
     public function store(StorePayRuleRequest $request)
     {
         $validated = $request->validated();
-        $validated['status'] = 'inactive';
+        // $validated['status'] = 'inactive';
 
         $payRule = PayRule::create($validated);
+        $payRule->delete();
 
         return response()->json([
             'message' => 'Pay rule created successfully',
@@ -78,7 +79,7 @@ class PayRuleController extends Controller
      */
     public function show(PayRule $payRule)
     {
-        $payRule = QueryBuilder::for(PayRule::class)
+        $payRule = QueryBuilder::for(PayRule::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($payRule->id);
 
@@ -98,19 +99,19 @@ class PayRuleController extends Controller
      */
     public function update(UpdatePayRuleRequest $request, PayRule $payRule)
     {
-        $validated = $request->validated();;
-        if (isset($validated['status']) && $validated['status'] === 'active') {
+        // $validated = $request->validated();;
+        // if (isset($validated['status']) && $validated['status'] === 'active') {
             
-            // Deactivate all other pay rules
-            PayRule::where('id', '!=', $payRule->id)->update(['status' => 'inactive']);
-            $payRule->update(['status' => 'active']);
-        }
+        //     // Deactivate all other pay rules
+        //     PayRule::where('id', '!=', $payRule->id)->update(['status' => 'inactive']);
+        //     $payRule->update(['status' => 'active']);
+        // }
         
 
-        return response()->json([
-            'message' => 'Pay rule updated successfully',
-            'payRule' => new PayRuleResource($payRule)
-        ]);
+        // return response()->json([
+        //     'message' => 'Pay rule updated successfully',
+        //     'payRule' => new PayRuleResource($payRule)
+        // ]);
     }
 
     /**
@@ -118,23 +119,24 @@ class PayRuleController extends Controller
      */
     public function destroy(PayRule $payRule)
     {
-        if ($payRule->status == 'active'){
-            return response()->json([
-                'message' => 'Cannot delete while in active status'
-            ]);
-        }
-        $payRule['status'] = 'inactive';
-        $payRule->delete();
+        // if ($payRule->status == 'active'){
+        //     return response()->json([
+        //         'message' => 'Cannot delete while in active status'
+        //     ]);
+        // }
+        // $payRule['status'] = 'inactive';
+        // $payRule->delete();
 
-        return response()->json([
-            'message' => 'Pay rule deleted successfully'
-        ]);
+        // return response()->json([
+        //     'message' => 'Pay rule deleted successfully'
+        // ]);
     }
 
     public function restore($id) {
 
+        PayRule::query()->delete();
         $payRule = PayRule::onlyTrashed()->findOrFail($id);
-
+        
         $payRule->restore();
 
         return response()->json([

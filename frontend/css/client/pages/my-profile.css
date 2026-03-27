@@ -189,6 +189,7 @@
 }
 
 .profile-block {
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -197,6 +198,7 @@
 }
 
 .profile {
+  width: 90%;
   display: flex;
   justify-content: center;
   align-items: start;

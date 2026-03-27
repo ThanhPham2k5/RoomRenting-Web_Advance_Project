@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Filter\AllColumnFilter;
+use App\Filter\DateFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\RoleCollection;
 use App\Http\Resources\RoleResource;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\Enums\FilterOperator;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class RoleController extends Controller
@@ -20,13 +23,22 @@ class RoleController extends Controller
         'id',
     ];
 
+    private $allColFilter = [
+        'name',
+    ];
+
     public function index()
     {
         $query = QueryBuilder::for(Role::class)
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
+            //generic search
+            AllowedFilter::custom('search', new AllColumnFilter($this->allColFilter)),
+
+            //specific filter
             AllowedFilter::partial('name'),
             AllowedFilter::exact('id'),
+            AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
         ])
         ->allowedSorts($this->allowSorts);
 

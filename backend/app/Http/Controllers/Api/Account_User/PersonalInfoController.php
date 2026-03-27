@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\Account_User;
 
+use App\Filter\AllColumnFilter;
+use App\Filter\DateFilter;
 use App\Models\Account_User\PersonalInfo;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePersonalInfoRequest;
@@ -27,6 +29,15 @@ class PersonalInfoController extends Controller
         'employee.account'
     ];
 
+    private $allColFilter = [
+        'gender',
+        'houseNumber' => 'house_number',
+        'ward',
+        'province',
+        'name',
+        'pid',
+    ];
+
     /**
      * Display a listing of the resource.
      */
@@ -35,14 +46,19 @@ class PersonalInfoController extends Controller
         $query = QueryBuilder::for(PersonalInfo::class)
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
+            //generic search
+            AllowedFilter::custom('search', new AllColumnFilter($this->allColFilter)),
+
+            //specific filter
             AllowedFilter::exact('id'),
-            AllowedFilter::operator('dateOfBirth', FilterOperator::DYNAMIC, '', 'date_of_birth'), // =, <>, >, <, >=, <=
             AllowedFilter::operator('gender', FilterOperator::DYNAMIC), // =, <>
             AllowedFilter::partial('houseNumber', 'house_number'),
             AllowedFilter::partial('ward'),
             AllowedFilter::partial('province'),
             AllowedFilter::partial('name'),
             AllowedFilter::partial('pid'),
+            AllowedFilter::custom('dateOfBirth', new DateFilter(), 'date_of_birth'),
+            AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
         ])
         ->allowedSorts([
             'id',

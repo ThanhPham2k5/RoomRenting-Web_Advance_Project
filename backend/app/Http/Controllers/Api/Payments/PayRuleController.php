@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\Payments;
 
+use App\Filter\AllColumnFilter;
+use App\Filter\DateFilter;
 use App\Models\Payments\PayRule;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePayRuleRequest;
@@ -21,6 +23,10 @@ class PayRuleController extends Controller
         'payBills',
     ];
 
+    private $allColFilter = [
+        
+    ];
+
     /**
      * Display a listing of the resource.
      */
@@ -29,8 +35,13 @@ class PayRuleController extends Controller
         $query = QueryBuilder::for(PayRule::class)
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
+            //generic search
+            AllowedFilter::custom('search', new AllColumnFilter($this->allColFilter)),
+
+            //specific filter
             AllowedFilter::exact('id'),
             AllowedFilter::operator('points', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
+            AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
         ])
         ->allowedSorts([
             'id',

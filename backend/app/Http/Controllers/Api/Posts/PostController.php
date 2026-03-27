@@ -18,6 +18,8 @@ use Spatie\QueryBuilder\QueryBuilder;
 use App\Events\PostCreated;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Events\StatusPostCreated;
+use App\Filter\AllColumnFilter;
+use App\Filter\DateFilter;
 use Illuminate\Support\Facades\DB;
 
 class PostController extends Controller
@@ -34,6 +36,16 @@ class PostController extends Controller
         'notifications'
     ];
 
+    private $allColFilter = [
+        'title',
+        'houseNumber' => 'house_number',
+        'ward',
+        'province',
+        'description',
+        'status',
+        'roomType' => 'room_type'
+    ];
+
     /**
      * Display a listing of the resource.
      */
@@ -42,6 +54,10 @@ class PostController extends Controller
         $query = QueryBuilder::for(Post::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
+            //generic search
+            AllowedFilter::custom('search', new AllColumnFilter($this->allColFilter)),
+
+            //specific filter
             AllowedFilter::exact('id'),
             AllowedFilter::partial('title'),
             AllowedFilter::operator('price', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
@@ -55,6 +71,7 @@ class PostController extends Controller
             AllowedFilter::operator('authorized', FilterOperator::DYNAMIC), // =, <>
             AllowedFilter::exact('roomType', 'room_type'),
             AllowedFilter::operator('maxOccupants', FilterOperator::DYNAMIC, '', 'max_occupants'), // =, <>, >, <, >=, <=
+            AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
         ])
         ->allowedSorts([
             'id',

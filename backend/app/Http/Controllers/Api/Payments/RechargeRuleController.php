@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\Payments;
 
+use App\Filter\AllColumnFilter;
+use App\Filter\DateFilter;
 use App\Models\Payments\RechargeRule;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreRechargeRuleRequest;
@@ -20,6 +22,10 @@ class RechargeRuleController extends Controller
         'rechargeBills',
     ];
 
+    private $allColFilter = [
+        
+    ];
+
     /**
      * Display a listing of the resource.
      */
@@ -28,9 +34,14 @@ class RechargeRuleController extends Controller
         $query = QueryBuilder::for(RechargeRule::class)
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
+            //generic search
+            AllowedFilter::custom('search', new AllColumnFilter($this->allColFilter)),
+
+            //specific filter
             AllowedFilter::exact('id'),
             AllowedFilter::operator('points', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
-            AllowedFilter::operator('money', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
+            AllowedFilter::operator('money', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=  
+            AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
         ])
         ->allowedSorts([
             'id',

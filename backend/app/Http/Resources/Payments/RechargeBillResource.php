@@ -22,6 +22,7 @@ class RechargeBillResource extends JsonResource
             'totalMoney' => $this->total_money,
             'vat' => $this->vat,
             'status' => $this->status,
+            'createdAt' => $this -> created_at,
             'account' => AccountResource::make(
                 $this->whenLoaded('account')
             ),

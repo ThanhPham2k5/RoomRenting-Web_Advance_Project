@@ -25,6 +25,7 @@ class AccountResource extends JsonResource
             'role' => $this->role,
             'username' => $this->username,
             'deletedAt' => $this->deleted_at,
+            'createdAt' => $this -> created_at,
             'form' => FormResource::make(
                 $this->whenLoaded('form')
             ),

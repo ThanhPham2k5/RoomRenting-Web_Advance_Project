@@ -20,6 +20,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\AddressController;
+use App\Http\Controllers\StatisticController;
 
 /* API routes for Account_User 
     - AccountController
@@ -332,3 +333,10 @@ Route::get('/address/provinces/{code}/wards', [AddressController::class, 'getWar
 Route::get('/address/wards', [AddressController::class, 'getWards']);
 
 Route::get('/address/wards/{code}', [AddressController::class, 'getWardByCode']);
+
+
+/* API routes for Statistic 
+    - StatisticController
+*/
+Route::middleware(['auth:sanctum'])
+    ->get('/statistic/posts', [StatisticController::class, 'getFullYearStatistics']);

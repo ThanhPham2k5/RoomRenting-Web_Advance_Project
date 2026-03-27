@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Posts;
 
+use App\Filter\DateFilter;
 use App\Models\Posts\Favorite;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreFavoriteRequest;
@@ -31,6 +32,7 @@ class FavoriteController extends Controller
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
             AllowedFilter::exact('id'),
+            AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
         ])
         ->allowedSorts([
             'id',

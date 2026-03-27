@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Filter\AllColumnFilter;
+use App\Filter\DateFilter;
 use App\Http\Resources\Posts\PostResource;
 use App\Models\Form;
 use App\Http\Controllers\Controller;
@@ -25,6 +27,12 @@ class FormController extends Controller
         'account',
     ];
 
+    private $allColFilter = [
+        'ward',
+        'province',
+        'roomType' => 'room_type'
+    ];
+
     /**
      * Display a listing of the resource.
      */
@@ -33,6 +41,10 @@ class FormController extends Controller
         $query = QueryBuilder::for(Form::class)
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
+            //generic search
+            AllowedFilter::custom('search', new AllColumnFilter($this->allColFilter)),
+
+            //specific filter
             AllowedFilter::exact('id'),
             AllowedFilter::operator('priceMax', FilterOperator::DYNAMIC, '', 'price_max'), // =, <>, >, <, >=, <=
             AllowedFilter::operator('priceMin', FilterOperator::DYNAMIC, '', 'price_min'), // =, <>, >, <, >=, <=
@@ -41,6 +53,7 @@ class FormController extends Controller
             AllowedFilter::partial('province'),
             AllowedFilter::exact('roomType', 'room_type'),
             AllowedFilter::operator('maxOccupants', FilterOperator::DYNAMIC, '', 'max_occupants'), // =, <>, >, <, >=, <=
+            AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
         ])
         ->allowedSorts([
             'id',

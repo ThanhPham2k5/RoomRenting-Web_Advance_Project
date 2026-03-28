@@ -155,13 +155,13 @@
                   <img src='<?php echo BASE_URL . "/assets/img/arrow.png"?>' alt="arrow.png" class="user-arrow">
                 </div>
                 
-                <div class="user-transaction">
+                <a href='<?php echo BASE_URL . "/pages/client/history.php"?>' class="user-transaction">
                   <img src='<?php echo BASE_URL . "/assets/img/transaction-ico.png"?>' alt="transaction-ico.png"  class="user-transaction-ico">
 
                   Lịch sử giao dịch
 
                   <img src='<?php echo BASE_URL . "/assets/img/arrow.png"?>' alt="arrow.png" class="user-arrow">
-                </div>
+                </a>
               </div>
 
               <div class="user-other">Khác</div>
@@ -312,13 +312,13 @@
                     <img src='<?php echo BASE_URL . "/assets/img/arrow.png"?>' alt="arrow.png" class="user-arrow">
                   </div>
                   
-                  <div class="user-transaction">
+                  <a href='<?php echo BASE_URL . "/pages/client/history.php"?>' class="user-transaction">
                     <img src='<?php echo BASE_URL . "/assets/img/transaction-ico.png"?>' alt="transaction-ico.png"  class="user-transaction-ico">
 
                     Lịch sử giao dịch
 
                     <img src='<?php echo BASE_URL . "/assets/img/arrow.png"?>' alt="arrow.png" class="user-arrow">
-                  </div>
+                  </a>
                 </div>
 
                 <div class="user-other">Khác</div>

@@ -139,21 +139,21 @@
               <div class="user-extend">Tiện ích</div>
 
               <div class="user-list">
-                <div class="user-favourite">
+                <a href='<?php echo BASE_URL . "/pages/client/favourite.php"?>' class="user-favourite">
                   <img src='<?php echo BASE_URL . "/assets/img/favourite-ico.png"?>' alt="favourite-ico.png" class="user-favourite-ico">
 
                   Bài đăng đã thích
 
                   <img src='<?php echo BASE_URL . "/assets/img/arrow.png"?>' alt="arrow.png" class="user-arrow">
-                </div>
+                </a>
                 
-                <div class="user-suggest">
+                <a href='<?php echo BASE_URL . "/pages/client/suggest.php"?>' class="user-suggest">
                   <img src='<?php echo BASE_URL . "/assets/img/suggest-ico.png"?>' alt="suggest-ico.png"  class="user-suggest-ico">
 
                   Đề xuất của bạn
 
                   <img src='<?php echo BASE_URL . "/assets/img/arrow.png"?>' alt="arrow.png" class="user-arrow">
-                </div>
+                </a>
                 
                 <a href='<?php echo BASE_URL . "/pages/client/history.php"?>' class="user-transaction">
                   <img src='<?php echo BASE_URL . "/assets/img/transaction-ico.png"?>' alt="transaction-ico.png"  class="user-transaction-ico">
@@ -296,21 +296,21 @@
                 <div class="user-extend">Tiện ích</div>
 
                 <div class="user-list">
-                  <div class="user-favourite">
+                  <a href='<?php echo BASE_URL . "/pages/client/favourite.php"?>' class="user-favourite">
                     <img src='<?php echo BASE_URL . "/assets/img/favourite-ico.png"?>' alt="favourite-ico.png" class="user-favourite-ico">
 
                     Bài đăng đã thích
 
                     <img src='<?php echo BASE_URL . "/assets/img/arrow.png"?>' alt="arrow.png" class="user-arrow">
-                  </div>
+                  </a>
                   
-                  <div class="user-suggest">
+                  <a href='<?php echo BASE_URL . "/pages/client/suggest.php"?>' class="user-suggest">
                     <img src='<?php echo BASE_URL . "/assets/img/suggest-ico.png"?>' alt="suggest-ico.png"  class="user-suggest-ico">
 
                     Đề xuất của bạn
 
                     <img src='<?php echo BASE_URL . "/assets/img/arrow.png"?>' alt="arrow.png" class="user-arrow">
-                  </div>
+                  </a>
                   
                   <a href='<?php echo BASE_URL . "/pages/client/history.php"?>' class="user-transaction">
                     <img src='<?php echo BASE_URL . "/assets/img/transaction-ico.png"?>' alt="transaction-ico.png"  class="user-transaction-ico">

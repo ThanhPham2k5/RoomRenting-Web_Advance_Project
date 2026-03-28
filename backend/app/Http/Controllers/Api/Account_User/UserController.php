@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\Account_User;
 
+use App\Filter\AllColumnFilter;
+use App\Filter\DateFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\Account_User\UserCollection;
@@ -24,17 +26,29 @@ class UserController extends Controller
         'posts',
     ];
 
+    private $allColFilter = [
+        'points',
+        'account.username',
+        'account.role',
+    ];
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $query = QueryBuilder::for(User::class)
+        $query = QueryBuilder::for(User::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
+            //generic search
+            AllowedFilter::custom('search', new AllColumnFilter($this->allColFilter)),
+
+            //specific filter
             AllowedFilter::exact('id'),
             AllowedFilter::operator('points', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
+            AllowedFilter::partial('account.username'),
             AllowedFilter::exact('account.role'),
+            AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
         ])
         ->allowedSorts([
             'id',
@@ -74,7 +88,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        $user = QueryBuilder::for(User::class)
+        $user = QueryBuilder::for(User::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($user->id);
 

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\Account_User;
 
+use App\Filter\AllColumnFilter;
+use App\Filter\DateFilter;
 use App\Models\Account_User\Account;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreAccountRequest;
@@ -27,6 +29,8 @@ class AccountController extends Controller
         'form',
         'user',
         'roles',
+        'permissions',
+        'roles.permissions',
         'employee',
         'user.posts',
         'employee.posts',
@@ -36,6 +40,11 @@ class AccountController extends Controller
         'favorites.post',
         'rechargeBills',
         'payBills'
+    ];
+
+    private $allColFilter = [
+        'username',
+        'role'
     ];
 
     private $allowSorts = [
@@ -52,13 +61,18 @@ class AccountController extends Controller
      */
     public function index(Request $request)
     {
-        $query = QueryBuilder::for(Account::class)
+        $query = QueryBuilder::for(Account::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
+            //generic search
+            AllowedFilter::custom('search', new AllColumnFilter($this->allColFilter)),
+
+            //specific filter
             AllowedFilter::partial('username'),
             AllowedFilter::exact('id'),
 
-            AllowedFilter::exact('role')
+            AllowedFilter::exact('role'),
+            AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
         ])
         ->allowedSorts($this->allowSorts);
 
@@ -99,7 +113,7 @@ class AccountController extends Controller
      */
     public function show(Account $account)
     {
-        $account = QueryBuilder::for(Account::class)
+        $account = QueryBuilder::for(Account::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($account->id);
 

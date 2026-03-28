@@ -18,9 +18,11 @@ class StatusPostCreated
      * Create a new event instance.
      */
     public $post;
-    public function __construct($post)
+    public $comment;
+    public function __construct($post, $comment)
     {
         $this->post = $post;
+        $this->comment = $comment;
     }
 
     /**

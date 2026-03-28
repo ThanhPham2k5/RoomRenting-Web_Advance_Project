@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Filter\AllColumnFilter;
+use App\Filter\DateFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PermissionCollection;
 use App\Http\Resources\PermissionResource;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\Enums\FilterOperator;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class PermissionController extends Controller
@@ -20,13 +23,22 @@ class PermissionController extends Controller
         'id',
     ];
 
+    private $allColFilter = [
+        'name',
+    ];
+
     public function index()
     {
-        $query = QueryBuilder::for(Permission::class)
+        $query = QueryBuilder::for(Permission::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
+            //generic search
+            AllowedFilter::custom('search', new AllColumnFilter($this->allColFilter)),
+
+            //specific filter
             AllowedFilter::partial('name'),
             AllowedFilter::exact('id'),
+            AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
         ])
         ->allowedSorts($this->allowSorts);
 
@@ -37,7 +49,7 @@ class PermissionController extends Controller
 
     public function show(Permission $permission)
     {
-        $permission = QueryBuilder::for(Permission::class)
+        $permission = QueryBuilder::for(Permission::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($permission->id);
 

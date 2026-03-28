@@ -10,7 +10,7 @@ class RechargeRule extends Model
 {
     /** @use HasFactory<\Database\Factories\RechargeRuleFactory> */
     use HasFactory, SoftDeletes;
-    protected $fillable = ['points', 'money', 'status'];
+    protected $fillable = ['points', 'money'];
 
     protected static function newFactory()
     {

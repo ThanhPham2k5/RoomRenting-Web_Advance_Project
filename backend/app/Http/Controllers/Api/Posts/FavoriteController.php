@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Posts;
 
+use App\Filter\DateFilter;
 use App\Models\Posts\Favorite;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreFavoriteRequest;
@@ -27,10 +28,11 @@ class FavoriteController extends Controller
      */
     public function index(Request $request)
     {
-        $query = QueryBuilder::for(Favorite::class)
+        $query = QueryBuilder::for(Favorite::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
             AllowedFilter::exact('id'),
+            AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
         ])
         ->allowedSorts([
             'id',
@@ -78,7 +80,7 @@ class FavoriteController extends Controller
     {
         $this->authorize('view', $favorite);
 
-        $favorite = QueryBuilder::for(Favorite::class)
+        $favorite = QueryBuilder::for(Favorite::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($favorite->id);
 

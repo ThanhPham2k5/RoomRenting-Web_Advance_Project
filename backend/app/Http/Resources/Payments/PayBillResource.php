@@ -21,6 +21,7 @@ class PayBillResource extends JsonResource
             'id' => $this->id,
             'points' => $this->points,
             'status' => $this->status,
+            'createdAt' => $this -> created_at,
             'account' => AccountResource::make(
                 $this->whenLoaded('account')
             ),

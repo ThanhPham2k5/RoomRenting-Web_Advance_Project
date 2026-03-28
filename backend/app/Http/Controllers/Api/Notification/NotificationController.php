@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\Notification;
 
+use App\Filter\AllColumnFilter;
+use App\Filter\DateFilter;
 use App\Models\Notification\Notification;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreNotificationRequest;
@@ -25,20 +27,33 @@ class NotificationController extends Controller
         'notifiable'
     ];
 
+    private $allColFilter = [
+        'title',
+        'content',
+        'status',
+        'notificationType' => 'notification_type',
+        'notifiableType' => 'notifiable_type',
+    ];
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $query = QueryBuilder::for(Notification::class)
+        $query = QueryBuilder::for(Notification::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
+            //generic search
+            AllowedFilter::custom('search', new AllColumnFilter($this->allColFilter)),
+
+            //specific filters
             AllowedFilter::exact('id'),
             AllowedFilter::partial('title'),
             AllowedFilter::partial('content'),
             AllowedFilter::operator('status', FilterOperator::DYNAMIC), // =, <>
             AllowedFilter::operator('notificationType', FilterOperator::DYNAMIC, '', 'notification_type'), // =, <>
             AllowedFilter::partial('notifiableType', 'notifiable_type'),
+            AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
         ])
         ->allowedSorts([
             'id',
@@ -99,7 +114,7 @@ class NotificationController extends Controller
     {
         $this->authorize('view', $notification);
 
-        $notification = QueryBuilder::for(Notification::class)
+        $notification = QueryBuilder::for(Notification::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($notification->id);
 

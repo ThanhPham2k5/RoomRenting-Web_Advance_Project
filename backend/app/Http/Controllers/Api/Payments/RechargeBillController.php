@@ -15,6 +15,8 @@ use Spatie\QueryBuilder\AllowedSort;
 use Spatie\QueryBuilder\Enums\FilterOperator;
 use Spatie\QueryBuilder\QueryBuilder;
 use App\Events\RechargeBillCreated;
+use App\Filter\AllColumnFilter;
+use App\Filter\DateFilter;
 use App\Models\Account_User\Account;
 use App\Models\Account_User\User;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -28,21 +30,30 @@ class RechargeBillController extends Controller
         'notifications'
     ];
 
+    private $allColFilter = [
+        'status',
+    ];
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $this->authorize('viewAny');
+        $this->authorize('viewAny', RechargeBill::class);
 
-        $query = QueryBuilder::for(RechargeBill::class)
+        $query = QueryBuilder::for(RechargeBill::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
+            //generic search
+            AllowedFilter::custom('search', new AllColumnFilter($this->allColFilter)),
+
+            //specific filter
             AllowedFilter::exact('id'),
             AllowedFilter::operator('money', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
             AllowedFilter::operator('totalMoney', FilterOperator::DYNAMIC, '', 'total_money'), // =, <>, >, <, >=, <=
             AllowedFilter::operator('vat', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
             AllowedFilter::exact('status'),
+            AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
         ])
         ->allowedSorts([
             'id',
@@ -101,7 +112,7 @@ class RechargeBillController extends Controller
     {
         $this->authorize('view', $rechargeBill);
 
-        $rechargeBill = QueryBuilder::for(RechargeBill::class)
+        $rechargeBill = QueryBuilder::for(RechargeBill::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($rechargeBill->id);
 

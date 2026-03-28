@@ -17,6 +17,7 @@ class EmployeeResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'createdAt' => $this -> created_at,
             'account' => AccountResource::make(
                 $this->whenLoaded('account')
             ),

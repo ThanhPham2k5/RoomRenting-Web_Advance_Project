@@ -26,7 +26,7 @@ class PostImageController extends Controller
      */
     public function index(Request $request)
     {
-        $query = QueryBuilder::for(PostImage::class)
+        $query = QueryBuilder::for(PostImage::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
             AllowedFilter::exact('id'),
@@ -81,7 +81,7 @@ class PostImageController extends Controller
      */
     public function show(PostImage $postImage)
     {
-        $postImage = QueryBuilder::for(PostImage::class)
+        $postImage = QueryBuilder::for(PostImage::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($postImage->id);
 

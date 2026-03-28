@@ -13,6 +13,8 @@ use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\Enums\FilterOperator;
 use Spatie\QueryBuilder\QueryBuilder;
 use App\Events\PayBillCreated;
+use App\Filter\AllColumnFilter;
+use App\Filter\DateFilter;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class PayBillController extends Controller
@@ -25,19 +27,28 @@ class PayBillController extends Controller
         'notifications'
     ];
 
+    private $allColFilter = [
+        'status'
+    ];
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $this->authorize('viewAny');
+        $this->authorize('viewAny', PayBill::class);
 
-        $query = QueryBuilder::for(PayBill::class)
+        $query = QueryBuilder::for(PayBill::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
+            //generic search
+            AllowedFilter::custom('search', new AllColumnFilter($this->allColFilter)),
+
+            //specific filter
             AllowedFilter::exact('id'),
             AllowedFilter::operator('points', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
             AllowedFilter::exact('status'),
+            AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
         ])
         ->allowedSorts([
             'id',
@@ -93,7 +104,7 @@ class PayBillController extends Controller
     {
         $this->authorize('view', $payBill);
 
-        $payBill = QueryBuilder::for(PayBill::class)
+        $payBill = QueryBuilder::for(PayBill::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($payBill->id);
 

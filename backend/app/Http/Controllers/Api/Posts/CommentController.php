@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\Posts;
 
+use App\Filter\AllColumnFilter;
+use App\Filter\DateFilter;
 use App\Models\Posts\Comment;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCommentRequest;
@@ -24,16 +26,26 @@ class CommentController extends Controller
         'post',
     ];
 
+    private $allColFilter = [
+        'content',
+        'account.username',
+    ];
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $query = QueryBuilder::for(Comment::class)
+        $query = QueryBuilder::for(Comment::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
+            //generic search
+            AllowedFilter::custom('search', new AllColumnFilter($this->allColFilter)),
+
+            //specific filter
             AllowedFilter::exact('id'),
-            AllowedFilter::partial('content')
+            AllowedFilter::partial('content'),
+            AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
         ])
         ->allowedSorts([
             'id',
@@ -79,7 +91,7 @@ class CommentController extends Controller
      */
     public function show(Comment $comment)
     {
-        $comment = QueryBuilder::for(Comment::class)
+        $comment = QueryBuilder::for(Comment::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($comment->id);
 

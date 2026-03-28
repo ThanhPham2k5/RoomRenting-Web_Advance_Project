@@ -18,6 +18,8 @@ use Spatie\QueryBuilder\QueryBuilder;
 use App\Events\PostCreated;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Events\StatusPostCreated;
+use App\Filter\AllColumnFilter;
+use App\Filter\DateFilter;
 use Illuminate\Support\Facades\DB;
 
 class PostController extends Controller
@@ -34,14 +36,28 @@ class PostController extends Controller
         'notifications'
     ];
 
+    private $allColFilter = [
+        'title',
+        'houseNumber' => 'house_number',
+        'ward',
+        'province',
+        'description',
+        'status',
+        'roomType' => 'room_type'
+    ];
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $query = QueryBuilder::for(Post::class)
+        $query = QueryBuilder::for(Post::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
+            //generic search
+            AllowedFilter::custom('search', new AllColumnFilter($this->allColFilter)),
+
+            //specific filter
             AllowedFilter::exact('id'),
             AllowedFilter::partial('title'),
             AllowedFilter::operator('price', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
@@ -55,6 +71,7 @@ class PostController extends Controller
             AllowedFilter::operator('authorized', FilterOperator::DYNAMIC), // =, <>
             AllowedFilter::exact('roomType', 'room_type'),
             AllowedFilter::operator('maxOccupants', FilterOperator::DYNAMIC, '', 'max_occupants'), // =, <>, >, <, >=, <=
+            AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
         ])
         ->allowedSorts([
             'id',
@@ -123,7 +140,7 @@ class PostController extends Controller
             }
 
             // Fire create image event
-            event(new StatusPostCreated($post));
+            event(new StatusPostCreated($post, $request->comment));
 
             return response()->json([
                 'message' => 'Post created successfully',
@@ -137,7 +154,7 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        $post = QueryBuilder::for(Post::class)
+        $post = QueryBuilder::for(Post::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($post->id);
 
@@ -160,6 +177,12 @@ class PostController extends Controller
         $this->authorize('update', $post);
 
         $validated = $request->validated();
+        
+        if ($request->status === $post->status) {
+            return response()->json([
+                'message' => 'Can not update post with similiar status'
+            ]);            
+        }
 
         $post->update($validated);
 
@@ -167,7 +190,7 @@ class PostController extends Controller
         if ($validated['status'] === 'completed') {
             event(new PostCreated($post));
         }
-        event(new StatusPostCreated($post));
+        event(new StatusPostCreated($post, $request->comment));
 
         return response()->json([
             'message' => 'Post updated successfully',

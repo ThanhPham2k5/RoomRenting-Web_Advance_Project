@@ -132,10 +132,10 @@
 
               <div class="user-name">Po Pici</div>
 
-              <a href='<?php echo BASE_URL . "/pages/client/setting-profile.php"?>' class="user-link">
-                <img src='<?php echo BASE_URL . "/assets/img/modify.png"?>' alt="modify.png" class="user-link-img">
+              <a href='<?php echo BASE_URL . "/pages/client/setting-profile.php"?>' class="profile-user-link">
+                <img src='<?php echo BASE_URL . "/assets/img/modify.png"?>' alt="modify.png" class="profile-user-link-img">
 
-                <div class="user-link-text">Chỉnh sửa thông tin cá nhân</div>
+                <div class="profile-user-link-text">Chỉnh sửa thông tin cá nhân</div>
               </a>
 
               <div class="user-point-section">

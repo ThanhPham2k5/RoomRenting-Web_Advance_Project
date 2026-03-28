@@ -95,7 +95,7 @@
         </div>
 
         <!-- Manage Posts (Client) -->
-        <a href='<?php echo BASE_URL . "/pages/client/login.php" ?>' class="header-button button-posts">
+        <a href='<?php echo BASE_URL . "/pages/client/manage-post.php" ?>' class="header-button button-posts">
           <img src='<?php echo BASE_URL . "/assets/img/posts-ico.png"?>' alt="posts-ico.png" class="button-posts-ico">
           
           <div class="button-posts-text">Quản lý bài đăng</div>
@@ -260,7 +260,7 @@
               </div>
           </div>
 
-          <a href='<?php echo BASE_URL . "/pages/client/login.php" ?>' class="sidebar-item sidebar-posts">Quản lý bài đăng</a>
+          <a href='<?php echo BASE_URL . "/pages/client/manage-post.php" ?>' class="sidebar-item sidebar-posts">Quản lý bài đăng</a>
 
           <a href='<?php echo BASE_URL . "/pages/client/login.php" ?>' class="sidebar-item sidebar-post">Đăng bài</a>
 

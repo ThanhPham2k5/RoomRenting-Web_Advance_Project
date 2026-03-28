@@ -149,7 +149,7 @@
                   </div>
                 </div>
 
-                <button type="button" class="user-point-btn">Nạp ngay</button>
+                <a href='<?php echo BASE_URL . "/pages/client/recharge.php"?>' class="user-point-btn">Nạp ngay</a>
               </div>
             </div>
 

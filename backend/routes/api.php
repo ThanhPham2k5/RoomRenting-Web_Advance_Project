@@ -339,4 +339,10 @@ Route::get('/address/wards/{code}', [AddressController::class, 'getWardByCode'])
     - StatisticController
 */
 Route::middleware(['auth:sanctum'])
-    ->get('/statistic/posts', [StatisticController::class, 'getFullYearStatistics']);
+    ->get('/statistic/posts/month_data', [StatisticController::class, 'getFullYearStatistics']);
+
+Route::middleware(['auth:sanctum'])
+    ->get('/statistic/posts/ward_data', [StatisticController::class, 'getWardStatistic']);
+
+Route::middleware(['auth:sanctum'])
+    ->get('/statistic/posts/room_data', [StatisticController::class, 'getRoomTypeStatistic']);

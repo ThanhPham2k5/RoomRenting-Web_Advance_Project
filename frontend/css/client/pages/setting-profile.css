@@ -194,7 +194,7 @@
 }
 
 .profile-new-pass {
-  margin: 20px 0;
+  margin: 20px 0 0;
 }
 
 .profile-cur-pass-input,
@@ -223,6 +223,20 @@
   height: 20px;
   top: 16px;
   display: none;
+}
+
+.profile-error {
+  width: 100%;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  color: #fd5454;
+  margin-top: 10px;
+  text-align: justify;
+}
+
+.new-pass-error {
+  margin: 10px 0 20px;
 }
 
 .filter-province,

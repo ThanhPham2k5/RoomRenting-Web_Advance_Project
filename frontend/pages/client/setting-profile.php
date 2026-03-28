@@ -79,15 +79,21 @@
                         <input type="text" name="profile-fullname-input" id="profile-fullname-input" class="profile-fullname-input"
                         placeholder="Nhập vào họ tên">
 
+                        <div class="profile-error fullname-error">Số nhà không hợp lệ</div>
+
                         <label for="profile-phone-input" class="profile-phone">Số điện thoại</label>
 
                         <input type="text" name="profile-phone-input" id="profile-phone-input" class="profile-phone-input"
                         placeholder="Nhập số điện thoại">
 
+                        <div class="profile-error phone-error">Số nhà không hợp lệ</div>
+
                         <label for="profile-address-input" class="profile-address">Địa chỉ</label>
 
                         <input type="text" name="profile-address-input" id="profile-address-input" class="profile-address-input"
                         placeholder="Nhập vào số nhà">
+
+                        <div class="profile-error address-error">Số nhà không hợp lệ</div>
 
                         <div class="filter-province">
                             <input type="checkbox" name="filter-province-cb" id="filter-province-cb" class="filter-province-cb">
@@ -106,6 +112,8 @@
                             </ul>
                         </div>
 
+                        <div class="profile-error province-error">Số nhà không hợp lệ</div>
+
                         <div class="filter-district">
                             <input type="checkbox" name="filter-district-cb" id="filter-district-cb" class="filter-district-cb">
 
@@ -121,6 +129,8 @@
                             </ul>
                         </div>
 
+                        <div class="profile-error district-error">Số nhà không hợp lệ</div>
+
                         <h3 class="profile-privacy">Thông tin bảo mật</h3>
 
                         <div class="profile-line"></div>
@@ -129,6 +139,8 @@
 
                         <input type="text" name="profile-id-card-input" id="profile-id-card-input" class="profile-id-card-input"
                         placeholder="CCCD/ CMND/ Hộ chiếu">
+
+                        <div class="profile-error id-card-error">Số nhà không hợp lệ</div>
 
                         <label for="filter-gender-cb" class="profile-gender">Giới tính</label>
 
@@ -149,10 +161,14 @@
                             </ul>
                         </div>
 
+                        <div class="profile-error gender-error">Số nhà không hợp lệ</div>
+
                         <label for="profile-dob-input" class="profile-dob">Ngày sinh</label>
 
                         <input type="text" name="profile-dob-input" id="profile-dob-input" class="profile-dob-input"
                         placeholder="01/01/2026">
+
+                        <div class="profile-error dob-error">Số nhà không hợp lệ</div>
 
                         <button type="button" class="profile-save">Lưu thay đổi</button>
                     </div>
@@ -169,6 +185,8 @@
                             <img src='<?php echo BASE_URL . "/assets/img/logo-show-ico.png"?>' alt="show.png" class="profile-cur-pass-show">
                         </div>
 
+                        <div class="profile-error cur-pass-error">Số nhà không hợp lệ</div>
+
                         <div class="profile-new-pass">
                             <input type="password" name="profile-new-pass-input" id="profile-new-pass-input" class="profile-new-pass-input"
                             placeholder="Mật khẩu mới">
@@ -178,6 +196,8 @@
                             <img src='<?php echo BASE_URL . "/assets/img/logo-show-ico.png"?>' alt="show.png" class="profile-new-pass-show">
                         </div>
 
+                        <div class="profile-error new-pass-error">Số nhà không hợp lệ</div>
+
                         <div class="profile-re-new-pass">
                             <input type="password" name="profile-re-new-pass-input" id="profile-re-new-pass-input" class="profile-re-new-pass-input"
                             placeholder="Xác nhận mật khẩu mới">
@@ -186,6 +206,8 @@
 
                             <img src='<?php echo BASE_URL . "/assets/img/logo-show-ico.png"?>' alt="show.png" class="profile-re-new-pass-show">
                         </div>
+
+                        <div class="profile-error re-new-pass-error">Số nhà không hợp lệ</div>
 
                         <button type="button" class="profile-pass-save">Lưu thay đổi</button>
                     </div>

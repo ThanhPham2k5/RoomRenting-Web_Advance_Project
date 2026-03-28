@@ -237,11 +237,11 @@
 
                                     <!-- list of button -->
                                     <div class="post-btn-list">
-                                        <button type="button" class="post-btn-modify">
+                                        <a href='<?php echo BASE_URL . "/pages/client/modify-post.php"?>' type="button" class="post-btn-modify">
                                             <img src='<?php echo BASE_URL . "/assets/img/modify-img.png"?>' alt="modify-img.png" class="post-btn-modify-img">
 
                                             Sửa bài
-                                        </button>
+                                        </a>
                                         
                                         <button type="button" class="post-btn-del">
                                             <img src='<?php echo BASE_URL . "/assets/img/del-img.png"?>' alt="del-img.png" class="post-btn-del-img">

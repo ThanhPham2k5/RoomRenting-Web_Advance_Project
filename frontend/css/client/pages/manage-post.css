@@ -250,14 +250,6 @@
   margin: 0;
 }
 
-.user-link:hover {
-  background-color: rgba(0, 0, 0, 0.08);
-}
-
-.user-link-text {
-  color: #000;
-}
-
 .user-point-section {
   display: flex;
   flex-direction: column;
@@ -609,6 +601,7 @@
   align-items: center;
   gap: 10px;
   padding: 10px;
+  text-decoration: none;
   font-family: "Body";
   font-style: inherit;
   font-size: 1rem;

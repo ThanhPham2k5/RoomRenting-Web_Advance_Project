@@ -102,7 +102,7 @@
         </a>
 
         <!-- Post (Client) -->
-        <a href='<?php echo BASE_URL . "/pages/client/signup.php" ?>' class="header-button button-post">Đăng bài</a>
+        <a href='<?php echo BASE_URL . "/pages/client/new-post.php" ?>' class="header-button button-post">Đăng bài</a>
 
         <!-- User -->
         <div class="user-block">
@@ -262,7 +262,7 @@
 
           <a href='<?php echo BASE_URL . "/pages/client/manage-post.php" ?>' class="sidebar-item sidebar-posts">Quản lý bài đăng</a>
 
-          <a href='<?php echo BASE_URL . "/pages/client/login.php" ?>' class="sidebar-item sidebar-post">Đăng bài</a>
+          <a href='<?php echo BASE_URL . "/pages/client/new-post.php" ?>' class="sidebar-item sidebar-post">Đăng bài</a>
 
           <div class="sidebar-user-block">
             <div class="sidebar-item sidebar-user">

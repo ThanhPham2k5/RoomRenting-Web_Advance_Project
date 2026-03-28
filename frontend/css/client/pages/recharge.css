@@ -176,6 +176,7 @@
 }
 
 .recharge-pay {
+  text-decoration: none;
   background-color: #10b981;
   border-radius: 12px;
   border: none;

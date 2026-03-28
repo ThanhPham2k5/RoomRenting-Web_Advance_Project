@@ -139,7 +139,7 @@
           </div>
         </div>
 
-        <button type="button" class="recharge-pay">Thanh toán</button>
+        <a href='<?php echo BASE_URL . "/pages/client/payment.php"?>' type="button" class="recharge-pay">Thanh toán</a>
       </div>
     </div>
 

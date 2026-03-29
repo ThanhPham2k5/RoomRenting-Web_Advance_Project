@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Account_User;
 
 use App\Http\Resources\FormResource;
+use App\Http\Resources\NotificationResource;
 use App\Http\Resources\Payments\PayBillResource;
 use App\Http\Resources\Payments\RechargeBillResource;
 use App\Http\Resources\Posts\CommentResource;
@@ -49,6 +50,9 @@ class AccountResource extends JsonResource
             ),
             'rechargeBills' => RechargeBillResource::collection(
                 $this->whenLoaded('rechargeBills')
+            ),
+            'notifications' => NotificationResource::collection(
+                $this->whenLoaded('notifications')
             ),
             'roles' => $this->whenLoaded('roles', function () {
                 return $this->roles->pluck('name');

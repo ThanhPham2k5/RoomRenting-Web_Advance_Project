@@ -29,8 +29,8 @@ class StoreAccountRequest extends FormRequest
             'phone_number' => [
                 'required',
                 'string',
-                'regex:/^(03|05|07|08|09)[0-9]{8}$/',
-                'unique:personal_infos,phone_number'
+                'unique:personal_infos,phone_number',
+                'regex:/^(03|05|07|08|09)[0-9]{8}$/'
             ],
             'roles' => 'required|array',
             'roles.*' => 'exists:roles,name'

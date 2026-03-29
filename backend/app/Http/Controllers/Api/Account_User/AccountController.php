@@ -39,7 +39,8 @@ class AccountController extends Controller
         'comments',
         'favorites.post',
         'rechargeBills',
-        'payBills'
+        'payBills',
+        'notifications'
     ];
 
     private $allColFilter = [

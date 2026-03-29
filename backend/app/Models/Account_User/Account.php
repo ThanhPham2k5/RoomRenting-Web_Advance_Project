@@ -3,6 +3,7 @@
 namespace App\Models\Account_User;
 
 use App\Models\Form;
+use App\Models\Notification\Notification;
 use App\Models\Payments\PayBill;
 use App\Models\Payments\RechargeBill;
 use App\Models\Posts\Comment;
@@ -55,5 +56,9 @@ class Account extends Authenticatable
 
     public function payBills(){
         return $this->hasMany(PayBill::class);
+    }
+
+    public function notifications(){
+        return $this->hasMany(Notification::class);
     }
 }

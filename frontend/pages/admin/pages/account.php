@@ -1,8 +1,9 @@
-<?php 
+<?php
+    $apiRole = call_api("http://127.0.0.1:8000/api/roles?per_page=all");
+    $roles= $apiRole['data'] ?? [];
     $paginationMeta = $paginationMeta ?? [];
     $currentTable = $_GET['table'] ?? "1";
     $accounts = $accounts ?? [];
-    $accountEditData = $accountEditData ?? [];
     $accountInsertForm = "modal-them-tai-khoan";
     $accountEditForm = "modal-sua-tai-khoan";
     $titleData = ['targetModal' => $accountInsertForm, 'targetModal1' => $accountEditForm, 'titleContent' => "Tài khoản", 'group' => false, 'insert' => true, 'edit' => true, 'delete' => true, 'handle' => false];
@@ -28,7 +29,7 @@
     ?>
             <tr onclick="selectRow(this)" style="cursor: pointer;">
                 <td style="display: none;">
-                    <input type="radio" name="selectedRow" value="<?php echo $user['id']; ?>">
+                    <input type="radio" name="selectedRow" value="<?php echo $user['id']?>">
                 </td>
                 <td><?php echo ($user['id']); ?></td>
                 <td class="user-name"><?php echo ($user['username']); ?></td>
@@ -55,6 +56,52 @@
     $tbodyHtml = ob_get_clean();
 
     $tableData = ['tableTitle' =>"Thông tin tài khoản", 'tableHeader' => $tableHeader, 'time' => false, 'status' => true, 'tbodyHtml' => $tbodyHtml];
+    // Kiểm tra xem người dùng có đang submit form (POST) hay không
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        
+        // Lấy cái "con chip định vị" ra xem nó là hành động gì
+        $action = $_POST['action'] ?? '';
+
+        // Nếu hành động là Thêm Tài Khoản
+        if ($action === 'addAccount') {
+            
+            // 1. Gom toàn bộ dữ liệu từ Form thành một mảng chuẩn y hệt JSON Backend cần
+            $payload = [
+                'username'              => $_POST['username'] ?? '',
+                'password'              => $_POST['password'] ?? '',
+                'password_confirmation' => $_POST['password_confirmation'] ?? '',
+                'role'                  => $_POST['role'] ?? '',
+                'email'                 => $_POST['email'] ?? '',
+                'phone_number'          => $_POST['phone_number'] ?? '',
+                'roles'                 => $_POST['roles'] ?? [] // Mảng roles
+            ];
+
+            // 2. Dùng hàm call_api thần thánh của bạn để bắn dữ liệu qua Backend (Nhớ đổi method thành POST)
+            $apiResponse = call_api("http://127.0.0.1:8000/api/accounts", "POST", $payload);
+
+            // 3. Kiểm tra kết quả
+            // (Tùy vào Backend của bạn trả về cái gì khi thành công, thường là có biến 'data' hoặc 'message')
+            if (!empty($apiResponse)) {
+                // Thành công! Dùng Javascript để báo alert và F5 lại trang
+                echo "<script>
+                    alert('Thêm tài khoản thành công!');
+                    window.location.href = 'index.php?page=account&table=1';
+                </script>";
+                exit(); // Dừng chạy code bên dưới
+            } else {
+                // Thất bại: In ra lỗi để xem Backend chửi gì
+                $errorMsg = json_encode($apiResponse);
+                echo "<script>alert('Lỗi: $errorMsg');</script>";
+            }
+        }
+        
+        // Nếu hành động là Sửa Tài Khoản
+        elseif ($action === 'editAccount') {
+            // Làm tương tự, nhưng dùng hàm call_api với method "PUT" và gắn ID vào URL
+            // $payload = ...
+            // $apiResponse = call_api("http://127.0.0.1:8000/api/accounts/{$id}", "PUT", $payload);
+        }
+    }
 ?>
 
 <div class="account-page">
@@ -76,29 +123,46 @@
         <input type="hidden" name="action" value="addAccount">
     
         <div class="input-group">
+            <label>Số điện thoại</label>
+            <input type="text" name="phone_number" placeholder="Nhập vào số điện thoại">
+        </div>
+        <div class="input-group">
+            <label>Email</label>
+            <input type="email" name="email" placeholder="Nhập vào email">
+        </div>
+        <div class="input-group">
             <label>Tên tài khoản</label>
-            <input type="text" name="name" placeholder="Nhập tên tài khoản...">
+            <input type="text" name="username" placeholder="Nhập vào tên tài khoản">
         </div>
         <div class="input-group">
             <label>Mật khẩu</label>
-            <input type="text" name="name" placeholder="Nhập mật khẩu...">
+            <input type="password" name="password" placeholder="Nhập vào mật khẩu">
+        </div>
+        <div class="input-group">
+            <label>Xác nhận mật khẩu</label>
+            <input type="password" name="password_confirmation" placeholder="Nhập lại mật khẩu">
         </div>
         <div class="input-group">
             <label>Chức vụ</label>
-            <select name="status">
+            <select name="role">
                 <option value="">-- Chọn chức vụ --</option>
-                <option value="">-- Chọn chức vụ --</option>
-                <option value="">-- Chọn chức vụ --</option>
-                <option value="">-- Chọn chức vụ --</option>
+                <option value="employee">Nhân viên</option>
+                <option value="user">Khách hàng</option>
             </select>
-        </div>    
+        </div>
         <div class="input-group">
             <label>Chọn quyền hạn</label>
-            <select name="status">
+            <select name="roles[]">
                 <option value="">-- Chọn quyền hạn --</option>
-                <option value="">-- Chọn quyền hạn --</option>
-                <option value="">-- Chọn quyền hạn --</option>
-                <option value="">-- Chọn quyền hạn --</option>
+                <?php if(empty($roles)){?>
+                    <option value="">Không có dữ liệu hoặc lỗi kết nối máy chủ</option>
+                <?php
+                }else{
+                    foreach ($roles as $role){?>
+                        <option value="<?php echo $role['name'] ?>"><?php echo htmlspecialchars($role['name']) ?></option>
+                    <?php
+                    }
+                }?>
             </select>
         </div>
     <?php 
@@ -108,31 +172,54 @@
     ob_start();
     ?>
         <input type="hidden" name="action" value="editAccount">
-    
+        <input type="hidden" name="id" value="">
+
+        <div class="input-group">
+            <label>Số điện thoại</label>
+            <input type="text" name="phone_number" placeholder="Nhập vào số điện thoại">
+        </div>
+        <div class="input-group">
+            <label>Email</label>
+            <input type="email" name="email" placeholder="Nhập vào email">
+        </div>
         <div class="input-group">
             <label>Tên tài khoản</label>
-            <input type="text" name="name" value="<?php echo $accountEditData['username'] ?? "" ?>">
+            <input type="text" name="username" value="" placeholder="Nhập vào tên tài khoản">
         </div>
+
         <div class="input-group">
-            <label>Mật khẩu</label>
-            <input type="text" name="name" value="demo123">
+            <label>Mật khẩu mới</label>
+            <input type="password" name="password" placeholder="Nhập vào mật khẩu mới">
         </div>
+
+        <div class="input-group">
+            <label>Xác nhận mật khẩu</label>
+            <input type="password" name="password_confirmation" placeholder="Nhập lại mật khẩu mới">
+        </div>
+
         <div class="input-group">
             <label>Chức vụ</label>
-            <select name="status">
+            <select name="role">
                 <option value="">-- Chọn chức vụ --</option>
-                <option value="">-- Chọn chức vụ --</option>
-                <option value="">-- Chọn chức vụ --</option>
-                <option value="">-- Chọn chức vụ --</option>
+                <option value="employee">Nhân viên</option>
+                <option value="user">Khách hàng</option>
             </select>
         </div>
+
         <div class="input-group">
             <label>Chọn quyền hạn</label>
-            <select name="status">
+            <select name="roles[]">
                 <option value="">-- Chọn quyền hạn --</option>
-                <option value="">-- Chọn quyền hạn --</option>
-                <option value="">-- Chọn quyền hạn --</option>
-                <option value="">-- Chọn quyền hạn --</option>
+                <?php 
+                if(empty($roles)){ ?>
+                    <option value="">Không có dữ liệu</option>
+                <?php } else {
+                    foreach ($roles as $role){ ?>
+                        <option value="<?php echo $role['name'] ?>">
+                            <?php echo htmlspecialchars($role['name']) ?>
+                        </option>
+                <?php } 
+                } ?>
             </select>
         </div>
     <?php 
@@ -141,11 +228,3 @@
     <?php renderComponent("form",false,['title' => 'Thêm tài khoản', 'idModal' => $accountInsertForm, 'formData' => $formInsertData]) ?>
     <?php renderComponent("form",false,['title' => 'Sửa tài khoản', 'idModal' => $accountEditForm, 'formData' => $formEditData]) ?>
 </div>
-
-<?php if (isset($autoOpenEditForm) && $autoOpenEditForm === true): ?>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            openModal('<?php echo $accountEditForm; ?>');
-        });
-    </script>
-<?php endif; ?>

@@ -16,12 +16,12 @@ if(!in_array($page, $validPage)){
 switch ($page) {
     case 'account':
         $apiRole = ($currentTable === '1') ? 'user' : 'employee';
-        $apiResult = call_api("http://127.0.0.1:8000/api/accounts?per_page=4&page={$pageNum}&filter[role]={$apiRole}");
+        $apiResult = call_api("http://127.0.0.1:8000/api/accounts?per_page=4&page={$pageNum}&filter[role]={$apiRole}" . $filterQuery);
         $pageData['accounts'] = $apiResult['data'] ?? [];
         $pageData['paginationMeta'] = [
             'current_page' => $apiResult['meta']['current_page'] ?? 1,
             'last_page'    => $apiResult['meta']['last_page'] ?? 1,
-            'base_url'     => "index.php?page=account&table={$currentTable}" 
+            'base_url'     => "index.php?page=account&table={$currentTable}"
         ];
         break;
     case 'comment':
@@ -94,12 +94,12 @@ switch ($page) {
         break;
 }
 
-if ($page === 'account' && isset($_GET['action']) && $_GET['action'] === 'edit') {
-    $editId = $_GET['id'];
-    $accountEditData = call_api("http://127.0.0.1:8000/api/accounts/{$editId}");
-    $pageData['accountEditData'] = $accountEditData['data'];
-    $pageData['autoOpenEditForm'] = true; 
-}
+// if ($page === 'account' && isset($_GET['action']) && $_GET['action'] === 'edit') {
+//     $editId = $_GET['id'];
+//     $accountEditData = call_api("http://127.0.0.1:8000/api/accounts/{$editId}");
+//     $pageData['accountEditData'] = $accountEditData['data'];
+//     $pageData['autoOpenEditForm'] = true; 
+// }
 ?>
 
 <!DOCTYPE html>
@@ -214,16 +214,19 @@ if ($page === 'account' && isset($_GET['action']) && $_GET['action'] === 'edit')
         const startDateInput = document.getElementById('filter-start-date');
         const endDateInput = document.getElementById('filter-end-date');
         
-        startDateInput.addEventListener('change', function() {
-            const selectedStartDate = this.value; 
-            endDateInput.min = selectedStartDate; 
-        });
-
-        endDateInput.addEventListener('change', function() {
-            const selectedEndDate = this.value;
-            startDateInput.max = selectedEndDate;
-        });
+        if(startDateInput){
+            startDateInput.addEventListener('change', function() {
+                const selectedStartDate = this.value; 
+                endDateInput.min = selectedStartDate; 
+            });
+        }
         
+        if(endDateInput){
+            endDateInput.addEventListener('change', function() {
+                const selectedEndDate = this.value;
+                startDateInput.max = selectedEndDate;
+            });
+        }
     });
     function openModal(idModal) {
         document.getElementById(idModal).style.display = 'flex';
@@ -269,17 +272,68 @@ if ($page === 'account' && isset($_GET['action']) && $_GET['action'] === 'edit')
     function handleEdit() {
         const selectedRadio = document.querySelector('input[name="selectedRow"]:checked');
         if (!selectedRadio) {
-            alert("Vui lòng chọn dòng dữ liệu để sửa!"); return;
+            alert("Vui lòng chọn dòng dữ liệu để sửa!"); 
+            return;
         }
-        window.location.href = `index.php?page=<?php echo $page ?>&table=<?php echo $currentTable ?>&action=edit&id=${selectedRadio.value}`;
+
+        const id = selectedRadio.value;
+        const currentTable = '<?php echo $currentTable; ?>';
+        const role = (currentTable === '1') ? 'user' : 'employee';
+        fetch(`http://127.0.0.1:8000/api/accounts/${id}?include=roles,${role}.personalInfo`, {
+            method: 'GET',
+            headers: {
+                "Accept": "application/json",
+                "Authorization": "Bearer 2|6DAtA7EkyWcqnbd9dCnrloVQvboTOPF0RddJCoOJf635df41"
+            }
+        })
+        .then(response => response.json())
+        .then(result => {
+            const data = result.data;
+            
+            // 2. Lấy được data rồi thì dùng JS để nhét vào các ô Input
+            // Giả sử form sửa của bạn có id="form-edit-account"
+            const form = document.getElementById('modal-sua-tai-khoan');
+            
+            form.querySelector('input[name="id"]').value = data.id;
+            form.querySelector('input[name="phone_number"]').value = data.role?.personalInfo?.phoneNumber ?? '';
+            form.querySelector('input[name="email"]').value = data.role?.personalInfo?.email ?? '';
+            form.querySelector('input[name="username"]').value = data.username;
+            form.querySelector('select[name="role"]').value = data.role;
+
+            const rolesSelect = form.querySelector('select[name="roles[]"]');
+            if (rolesSelect) {
+                // Bước 2.1: Xóa toàn bộ các lựa chọn cũ (Cực kỳ quan trọng)
+                // Nếu không làm bước này, mở modal người A xong tắt đi mở người B sẽ bị dính quyền của người A
+                Array.from(rolesSelect.options).forEach(option => {
+                    option.selected = false;
+                });
+
+                // Bước 2.2: Chọn lại đúng quyền dựa theo mảng API trả về
+                if (data.roles && Array.isArray(data.roles)) {
+                    Array.from(rolesSelect.options).forEach(option => {
+                        // Nếu value của thẻ <option> có nằm trong mảng data.roles
+                        if (data.roles.includes(option.value)) {
+                            option.selected = true; // Đánh dấu là đã chọn
+                        }
+                    });
+                }
+            }
+
+            // 3. Mở modal lên một cách êm ái
+            openModal('modal-sua-tai-khoan');
+        })
+        .catch(error => {
+            alert("Có lỗi xảy ra khi lấy dữ liệu!");
+            console.error(error);
+        });
     }
     function handleSearch() {
         const keyword = document.getElementById('searchInput').value.trim();
         const url = new URL(window.location.href);
         if (keyword) {
-            url.searchParams.set('filter[all]', keyword); 
+            url.searchParams.set('filter[search]', keyword); 
         } else {
-            url.searchParams.delete('filter[all]');
+            url.searchParams.delete('filter[search]');
         }
         url.searchParams.delete('p');
         window.location.href = url.toString();

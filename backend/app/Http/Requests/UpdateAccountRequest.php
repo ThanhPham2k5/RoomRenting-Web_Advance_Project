@@ -24,6 +24,7 @@ class UpdateAccountRequest extends FormRequest
         return [
             'username' => 'sometimes|string|min:3|max:30|unique:accounts,username,' . $this->account->id,
             'password' => 'nullable|string|min:8|confirmed',
+            'role' => 'string'
         ];
     }
 }

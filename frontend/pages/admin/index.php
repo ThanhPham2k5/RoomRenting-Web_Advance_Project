@@ -1,23 +1,103 @@
 <?php
 require_once __DIR__ . '/core/function.php';
+$filterQuery = '';
+if (isset($_GET['filter'])) {
+    $filterQuery = '&' . http_build_query(['filter' => $_GET['filter']]);
+}
 $pageData = [];
 $page = $_GET['page'] ?? 'overview';
-$validPage = ['overview', 'account', 'bill', 'comment', 'permission', 'post', 'price', 'sale'];
-$currentTable = $_GET['table'] ?? "1";
+$validPage = ['overview', 'account', 'bill', 'comment', 'permission', 'post', 'price', 'setting'];
+$currentTable = $_GET['table'] ?? '1';
+$pageNum = $_GET['p'] ?? 1;
 
 if(!in_array($page, $validPage)){
     $page = "overview";
 }
 switch ($page) {
     case 'account':
-        $pageData['accounts'] = call_api('http://127.0.0.1:8000/api/accounts?per_page=all');
+        $apiRole = ($currentTable === '1') ? 'user' : 'employee';
+        $apiResult = call_api("http://127.0.0.1:8000/api/accounts?per_page=4&page={$pageNum}&filter[role]={$apiRole}");
+        $pageData['accounts'] = $apiResult['data'] ?? [];
+        $pageData['paginationMeta'] = [
+            'current_page' => $apiResult['meta']['current_page'] ?? 1,
+            'last_page'    => $apiResult['meta']['last_page'] ?? 1,
+            'base_url'     => "index.php?page=account&table={$currentTable}" 
+        ];
+        break;
+    case 'comment':
+        $apiResult = call_api("http://127.0.0.1:8000/api/comments?per_page=4&page={$pageNum}&include=account" . $filterQuery);
+        $pageData['comments'] = $apiResult['data'] ?? [];
+        $pageData['paginationMeta'] = [
+            'current_page' => $apiResult['meta']['current_page'] ?? 1,
+            'last_page'    => $apiResult['meta']['last_page'] ?? 1,
+            'base_url'     => "index.php?page=comment&table={$currentTable}" 
+        ];
+        break;
+    case 'post':
+        $apiSt = match($currentTable) {
+            '1' => 'completed',
+            '2' => 'rejected',
+            '3' => 'pending',
+            '4' => 'expired',
+            '5' => 'failed',
+            default => 'completed'
+        };
+        $apiResult = call_api("http://127.0.0.1:8000/api/posts?per_page=8&page={$pageNum}&include=postImages&filter[status]={$apiSt}");
+        $pageData['posts'] = $apiResult['data'] ?? [];
+        $pageData['paginationMeta'] = [
+            'current_page' => $apiResult['meta']['current_page'] ?? 1,
+            'last_page'    => $apiResult['meta']['last_page'] ?? 1,
+            'base_url'     => "index.php?page=post&table={$currentTable}" 
+        ];
+        break;
+    case 'price':
+        $apiType = match($currentTable) {
+            '1' => 'payRules',
+            '2' => 'rechargeRules',
+            default => 'payRules'
+        };
+        $apiResult = call_api("http://127.0.0.1:8000/api/{$apiType}?per_page=4&page={$pageNum}");
+        $pageData['rules'] = $apiResult['data'] ?? [];
+        $pageData['paginationMeta'] = [
+            'current_page' => $apiResult['meta']['current_page'] ?? 1,
+            'last_page'    => $apiResult['meta']['last_page'] ?? 1,
+            'base_url'     => "index.php?page=price&table={$currentTable}" 
+        ];
+        break;
+    case 'bill':
+        $apiType = match($currentTable) {
+            '1' => 'payBills',
+            '2' => 'rechargeBills',
+            default => 'payBills'
+        };
+        $apiInclude = match($currentTable) {
+            '1' => 'account,post',
+            '2' => 'account',
+            default => 'account,post'
+        };
+        $apiResult = call_api("http://127.0.0.1:8000/api/{$apiType}?per_page=4&page={$pageNum}&include={$apiInclude}");
+        $pageData['bills'] = $apiResult['data'] ?? [];
+        $pageData['paginationMeta'] = [
+            'current_page' => $apiResult['meta']['current_page'] ?? 1,
+            'last_page'    => $apiResult['meta']['last_page'] ?? 1,
+            'base_url'     => "index.php?page=bill&table={$currentTable}" 
+        ];
+        break;
+    case 'permission':
+        $apiResult = call_api("http://127.0.0.1:8000/api/roles?per_page=4&page={$pageNum}");
+        $pageData['permissions'] = $apiResult['data'] ?? [];
+        $pageData['paginationMeta'] = [
+            'current_page' => $apiResult['meta']['current_page'] ?? 1,
+            'last_page'    => $apiResult['meta']['last_page'] ?? 1,
+            'base_url'     => "index.php?page=permission&table={$currentTable}" 
+        ];
         break;
 }
 
 if ($page === 'account' && isset($_GET['action']) && $_GET['action'] === 'edit') {
     $editId = $_GET['id'];
     $accountEditData = call_api("http://127.0.0.1:8000/api/accounts/{$editId}");
-    $pageData['accountEditData'] = $accountEditData;
+    $pageData['accountEditData'] = $accountEditData['data'];
     $pageData['autoOpenEditForm'] = true; 
 }
 ?>
@@ -51,6 +131,8 @@ if ($page === 'account' && isset($_GET['action']) && $_GET['action'] === 'edit')
     <link rel="stylesheet" href="../../css/admin/postcontainer.css" />
     <link rel="stylesheet" href="../../css/admin/post.css" />
     <link rel="stylesheet" href="../../css/admin/form.css" />
+    <link rel="stylesheet" href="../../css/admin/setting.css" />
+    <link rel="stylesheet" href="../../css/admin/postdetail.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -59,7 +141,7 @@ if ($page === 'account' && isset($_GET['action']) && $_GET['action'] === 'edit')
         <div class="nav">
             <?php renderComponent("navigation",false, ['currentPage' => $page]) ?> 
         </div>
-
+        <?php renderComponent("postdetail",false) ?>
         <div class="main-page">
             <?php
             renderComponent($page, true, $pageData);
@@ -68,6 +150,81 @@ if ($page === 'account' && isset($_GET['action']) && $_GET['action'] === 'edit')
     </div>
 </body>
 <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const scrollAction = sessionStorage.getItem('scrollAction');
+    
+        if (scrollAction === 'exact') {
+            const savedPosition = sessionStorage.getItem('scrollPosition');
+            if (savedPosition) {
+                window.scrollTo({
+                    top: parseInt(savedPosition), 
+                    behavior: 'instant' 
+                });
+            }
+        } else if (scrollAction === 'bottom') {
+            window.scrollTo({ 
+                top: document.body.scrollHeight, 
+                behavior: 'instant' 
+            });
+        }
+        sessionStorage.removeItem('scrollAction');
+        sessionStorage.removeItem('scrollPosition');
+        document.addEventListener('click', function(event) {
+            const isDropdownLink = event.target.closest('.dropdown-menu a');
+            const isPaginationLink = event.target.closest('.pagination-component .main-content a');
+
+            if (isDropdownLink) {
+                // Lệnh 1: Bấm Lọc -> Báo hệ thống giữ nguyên vị trí cũ
+                sessionStorage.setItem('scrollAction', 'exact');
+                sessionStorage.setItem('scrollPosition', Math.round(window.scrollY));
+            } else if (isPaginationLink) {
+                // Lệnh 2: Bấm Phân trang -> Báo hệ thống nhảy xuống cuối
+                sessionStorage.setItem('scrollAction', 'bottom');
+            }
+        });
+        
+        // Vẽ biểu đồ
+        const canvasElement = document.getElementById('postsLineChart');
+        if (canvasElement) {
+            drawHardcodedLineChart();
+        }
+
+        // Nút bấm ở table
+        const dropdownBtns = document.querySelectorAll('.dropdown-container .top-btn');
+        dropdownBtns.forEach(btn => {
+            btn.addEventListener('click', function(event) {
+                event.stopPropagation();
+                const currentContainer = this.closest('.dropdown-container');
+                document.querySelectorAll('.dropdown-container.active').forEach(container => {
+                    if (container !== currentContainer) {
+                        container.classList.remove('active');
+                    }
+                });
+                currentContainer.classList.toggle('active');
+            });
+        });
+        document.addEventListener('click', function(event) {
+            if (event.target.closest('.dropdown-menu')) return;
+            document.querySelectorAll('.dropdown-container.active').forEach(container => {
+                container.classList.remove('active');
+            });
+        });
+
+        //Dropdown ngày
+        const startDateInput = document.getElementById('filter-start-date');
+        const endDateInput = document.getElementById('filter-end-date');
+        
+        startDateInput.addEventListener('change', function() {
+            const selectedStartDate = this.value; 
+            endDateInput.min = selectedStartDate; 
+        });
+
+        endDateInput.addEventListener('change', function() {
+            const selectedEndDate = this.value;
+            startDateInput.max = selectedEndDate;
+        });
+        
+    });
     function openModal(idModal) {
         document.getElementById(idModal).style.display = 'flex';
     }
@@ -80,28 +237,6 @@ if ($page === 'account' && isset($_GET['action']) && $_GET['action'] === 'edit')
             window.history.replaceState({}, '', currentUrl.toString());
         }
     }
-    async function loadAccountsIntoTable() {
-        try {
-            const response = await fetch('http://127.0.0.1:8000/api/accounts?per_page=all');
-            const result = await response.json();
-
-            if (result.success === true) {
-                const accounts = result.data;
-            }
-        } catch (error) {
-            console.error("Lỗi khi tải danh sách:", error);
-        }
-    }
-    document.addEventListener("DOMContentLoaded", function() {
-        const tableAccounts = document.getElementById('table-<?php echo $page ?>');
-        if (tableAccounts) {
-            loadAccountsIntoTable();
-        }
-        const canvasElement = document.getElementById('postsLineChart');
-        if (canvasElement) {
-            drawHardcodedLineChart();
-        }
-    });
     function selectRow(trElement) {
         const radio = trElement.querySelector('input[type="radio"]');
         
@@ -139,23 +274,15 @@ if ($page === 'account' && isset($_GET['action']) && $_GET['action'] === 'edit')
         window.location.href = `index.php?page=<?php echo $page ?>&table=<?php echo $currentTable ?>&action=edit&id=${selectedRadio.value}`;
     }
     function handleSearch() {
-        const keyword = document.getElementById('searchInput').value.toLowerCase().trim();
-        const allRows = document.querySelectorAll('.admin-table tbody tr');
-        allRows.forEach(row => {
-            const textInRow = row.textContent.toLowerCase();
-            if (textInRow.includes(keyword)) {
-                row.style.display = ''; 
-            } 
-            else {
-                row.style.display = 'none'; 
-                
-                if (row.classList.contains('row-active')) {
-                    row.classList.remove('row-active');
-                    const radio = row.querySelector('input[type="radio"]');
-                    if (radio) radio.checked = false;
-                }
-            }
-        });
+        const keyword = document.getElementById('searchInput').value.trim();
+        const url = new URL(window.location.href);
+        if (keyword) {
+            url.searchParams.set('filter[all]', keyword); 
+        } else {
+            url.searchParams.delete('filter[all]');
+        }
+        url.searchParams.delete('p');
+        window.location.href = url.toString();
     }
     function drawHardcodedLineChart() {
         // Mảng Trục X: 12 tháng trong năm

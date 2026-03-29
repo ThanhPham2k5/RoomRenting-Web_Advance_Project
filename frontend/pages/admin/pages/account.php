@@ -1,4 +1,5 @@
 <?php 
+    $paginationMeta = $paginationMeta ?? [];
     $currentTable = $_GET['table'] ?? "1";
     $accounts = $accounts ?? [];
     $accountEditData = $accountEditData ?? [];
@@ -13,9 +14,9 @@
     }else{
         foreach ($accounts as $user){
             $isVisible = false; 
-            $roleLower = strtolower($user['role']); 
+            $roleLower = strtolower($user['role'] ?? ""); 
             if ($currentTable === '2') {
-                if (str_contains($roleLower, 'manager')) {
+                if (str_contains($roleLower, 'employee')) {
                     $isVisible = true;
                 }
             } else {
@@ -31,7 +32,7 @@
                 </td>
                 <td><?php echo ($user['id']); ?></td>
                 <td class="user-name"><?php echo ($user['username']); ?></td>
-                <td><?php echo ($user['role']); ?></td>
+                <td><?php echo ($user['role']) ?? ""; ?></td>
                 <td>
                     <?php if (($user['deletedAt']) === null): ?>
                         <span class="badge badge-success">Đang hoạt động</span>
@@ -68,6 +69,7 @@
         </div>
     </div>
     <?php renderComponent("table",false,$tableData) ?>
+    <?php renderComponent("pagination",false, ['paginationMeta' => $paginationMeta]) ?>
     <?php
     ob_start();
     ?>
@@ -123,7 +125,7 @@
                 <option value="">-- Chọn chức vụ --</option>
                 <option value="">-- Chọn chức vụ --</option>
             </select>
-        </div>    
+        </div>
         <div class="input-group">
             <label>Chọn quyền hạn</label>
             <select name="status">

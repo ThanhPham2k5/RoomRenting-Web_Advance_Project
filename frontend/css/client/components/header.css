@@ -449,9 +449,14 @@
   background-color: #e0e3eb;
 }
 
-.button-log-in,
-.button-sign-up,
 .header-menu {
+  display: none;
+}
+
+.header-notify,
+.button-post,
+.button-posts,
+.user-block {
   display: none;
 }
 
@@ -526,11 +531,6 @@
     border-radius: 6px;
   }
 
-  .sidebar-login,
-  .sidebar-signup {
-    display: none;
-  }
-
   .sidebar-notification {
     position: relative;
   }
@@ -576,6 +576,13 @@
     max-height: 400px;
     overflow-y: auto;
     overflow-x: hidden;
+    display: none;
+  }
+
+  .sidebar-notify-block,
+  .sidebar-post,
+  .sidebar-posts,
+  .sidebar-user-block {
     display: none;
   }
 }

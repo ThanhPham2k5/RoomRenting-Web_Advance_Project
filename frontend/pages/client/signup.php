@@ -63,61 +63,61 @@
           class="login-username-error-ico"
         />
 
-        Lỗi username
+        <div class="login-username-error-text">Lỗi username</div> 
       </div>
 
-      <div class="login-password">
+      <div class="login-phone">
         <img
           src='<?php echo BASE_URL . "/assets/img/logo-phone-ico.png"?>'
           alt="login-phone-ico"
-          class="login-username-ico"
+          class="login-phone-ico"
         />
 
         <input
           type="text"
-          name="username"
-          id="username"
-          class="login-username-text"
+          name="phone"
+          id="phone"
+          class="login-phone-text"
           placeholder="Nhập số điện thoại của bạn"
           required
         />
       </div>
 
-      <div class="login-username-error">
+      <div class="login-phone-error">
         <img
           src='<?php echo BASE_URL . "/assets/img/error.png"?>'
           alt="error.png"
-          class="login-username-error-ico"
+          class="login-phone-error-ico"
         />
 
-        Lỗi số điện thoại
+        <div class="login-phone-error-text">Lỗi số điện thoại</div> 
       </div>
 
-      <div class="login-password">
+      <div class="login-email">
         <img
           src='<?php echo BASE_URL . "/assets/img/logo-email-ico.png"?>'
           alt="login-email-ico"
-          class="login-username-ico"
+          class="login-email-ico"
         />
 
         <input
           type="email"
-          name="username"
-          id="username"
-          class="login-username-text"
+          name="email"
+          id="email"
+          class="login-email-text"
           placeholder="Nhập email của bạn"
           required
         />
       </div>
 
-      <div class="login-username-error">
+      <div class="login-email-error">
         <img
           src='<?php echo BASE_URL . "/assets/img/error.png"?>'
           alt="error.png"
-          class="login-username-error-ico"
+          class="login-email-error-ico"
         />
 
-        Lỗi email
+        <div class="login-email-error-text">Lỗi email</div> 
       </div>
 
       <div class="login-password">
@@ -140,7 +140,6 @@
           src='<?php echo BASE_URL . "/assets/img/logo-show-ico.png"?>'
           alt="login-show-ico"
           class="login-show-ico"
-          hidden
         />
 
         <img
@@ -157,21 +156,21 @@
           class="login-password-error-ico"
         />
 
-        Lỗi mật khẩu
+        <div class="login-password-error-text">Lỗi mật khẩu</div> 
       </div>
 
-      <div class="login-password">
+      <div class="login-re-password">
         <img
           src='<?php echo BASE_URL . "/assets/img/logo-password-ico.png"?>'
-          alt="login-password-ico"
-          class="login-password-ico"
+          alt="login-re-password-ico"
+          class="login-re-password-ico"
         />
 
         <input
           type="password"
           name="password"
           id="password"
-          class="login-password-text"
+          class="login-re-password-text"
           placeholder="Nhập lại mật khẩu"
           required
         />
@@ -190,14 +189,14 @@
         />
       </div>
 
-      <div class="login-password-error">
+      <div class="login-re-password-error">
         <img
           src='<?php echo BASE_URL . "/assets/img/error.png"?>'
           alt="error.png"
-          class="login-password-error-ico"
+          class="login-re-password-error-ico"
         />
 
-        Lỗi mật khẩu nhập lại
+        <div class="login-re-password-error-text">Lỗi mật khẩu nhập lại</div> 
       </div>
 
       <input type="submit" value="Đăng ký" class="login-submit" />
@@ -209,4 +208,182 @@
       </div>
     </div>
   </body>
+  <script>
+    // pass button
+    const pass_input = document.querySelector(".login-password-text")
+    const hidden_pass_input = document.querySelector(".login-password .login-hidden-ico")
+    const show_pass_input = document.querySelector(".login-password .login-show-ico")
+
+    hidden_pass_input.addEventListener("click", (e) => {
+      pass_input.setAttribute("type", "text")
+      hidden_pass_input.style.display = "none"
+      show_pass_input.style.display = "block"
+    })
+
+    show_pass_input.addEventListener("click", (e) => {
+      pass_input.setAttribute("type", "password")
+      show_pass_input.style.display = "none"
+      hidden_pass_input.style.display = "block"
+    })
+
+    const re_pass_input = document.querySelector(".login-re-password-text")
+    const hidden_re_pass_input = document.querySelector(".login-re-password .login-hidden-ico")
+    const show_re_pass_input = document.querySelector(".login-re-password .login-show-ico")
+
+    hidden_re_pass_input.addEventListener("click", (e) => {
+      re_pass_input.setAttribute("type", "text")
+      hidden_re_pass_input.style.display = "none"
+      show_re_pass_input.style.display = "block"
+    })
+
+    show_re_pass_input.addEventListener("click", (e) => {
+      re_pass_input.setAttribute("type", "password")
+      show_re_pass_input.style.display = "none"
+      hidden_re_pass_input.style.display = "block"
+    })
+
+    // validation
+    const username_input = document.querySelector(".login-username-text")
+    const phone_input = document.querySelector(".login-phone-text")
+    const email_input = document.querySelector(".login-email-text")
+    const password_input = document.querySelector(".login-password-text")
+    const re_password_input = document.querySelector(".login-re-password-text")
+
+    const username_error = document.querySelector(".login-username-error")
+    const phone_error = document.querySelector(".login-phone-error")
+    const email_error = document.querySelector(".login-email-error")
+    const password_error = document.querySelector(".login-password-error")
+    const re_password_error = document.querySelector(".login-re-password-error")
+
+    const username_error_text = document.querySelector(".login-username-error-text")
+    const phone_error_text = document.querySelector(".login-phone-error-text")
+    const email_error_text = document.querySelector(".login-email-error-text")
+    const password_error_text = document.querySelector(".login-password-error-text")
+    const re_password_error_text = document.querySelector(".login-re-password-error-text")
+
+    const submit_btn = document.querySelector(".login-submit")
+
+    submit_btn.addEventListener("click", async (e) => {
+      var isValid = true;
+
+      var username_regex = /^[a-zA-Z0-9]{3,30}$/
+      const username_value = username_input.value.trim()
+      if(!username_regex.test(username_value)) {
+        isValid = false;
+        username_input.focus()
+        username_error_text.textContent = "Username có độ dài từ 3 đến 30 kí tự, chỉ chứa kí tự chữ và số."
+        username_error.style.display = "flex"
+      } else {
+        username_error.style.display = "none"
+      }
+
+      var phone_regex = /^(03|05|07|08|09)[0-9]{8}$/
+      const phone_value = phone_input.value.trim()
+      if(!phone_regex.test(phone_value)) {
+        if(isValid) 
+          phone_input.focus()
+        isValid = false;
+        phone_error_text.textContent = "Số điện thoại chứa 10 kí số và bắt đầu bằng (03|05|07|08|09)."
+        phone_error.style.display = "flex"
+      } else {
+        phone_error.style.display = "none"
+      }
+
+      var email_regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+      const email_value = email_input.value.trim()
+      if(!email_regex.test(email_value)) {
+        if(isValid) 
+          email_input.focus()
+        isValid = false;
+        email_error_text.textContent = "Email có định dạng không hợp lệ (VD: nva123@gmail.com)."
+        email_error.style.display = "flex"
+      } else {
+        email_error.style.display = "none"
+      }
+
+      var password_regex = /^.{8,255}$/
+      const password_value = password_input.value.trim()
+      if(!password_regex.test(password_value)) {
+        if(isValid) 
+          password_input.focus()
+        isValid = false;
+        password_error_text.textContent = "Mật khẩu từ 8 đến 255 kí tự."
+        password_error.style.display = "flex"
+      } else {
+        password_error.style.display = "none"
+      }
+
+      var re_password_regex = /^.{8,255}$/
+      const re_password_value = re_password_input.value.trim()
+      if(!re_password_regex.test(re_password_value) || re_password_value != password_value) {
+        if(isValid) 
+          re_password_input.focus()
+        isValid = false;
+        re_password_error_text.textContent = "Mật khẩu không đồng nhất."
+        re_password_error.style.display = "flex"
+      } else {
+        re_password_error.style.display = "none"
+      }
+
+      if(isValid) {
+        const response = await fetch("http://127.0.0.1:8000/api/register", {
+          method: "POST",
+          headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            "username": username_value,
+            "password": password_value,
+            "password_confirmation": re_password_value,
+            "role": "user",
+            "email": email_value,
+            "phone_number": phone_value,
+            "roles": ["user"]
+          })
+        })
+
+        const data = await response.json()
+        
+        if(response.ok) {
+          sessionStorage.setItem("token", data.token)
+          alert("Bạn đã đăng ký tài khoản thành công!")
+          window.location.href = '<?php echo BASE_URL . "/pages/client/index.php" ?>'
+        } else {
+          console.log(data)
+          if(data.errors) {
+            if(data.errors.username && data.errors.username[0] == "The username has already been taken.") {
+              isValid = false;
+              username_input.focus()
+              username_error_text.textContent = "Username " + username_value + " đã tồn tại."
+              username_error.style.display = "flex"
+            } else {
+              username_error.style.display = "none"
+            }
+
+            // phone is not unique
+            // if(data.errors.phone && data.errors.phone[0] == "The phone has already been taken.") {
+            //   if(isValid)
+            //     phone_input.focus()
+            //   isValid = false;
+            //   phone_error_text.textContent = "Số điện thoại " + phone_value + " đã được đăng ký."
+            //   phone_error.style.display = "flex"
+            // } else {
+            //   phone_error.style.display = "none"
+            // }
+
+            if(data.errors.email && data.errors.email[0] == "The email has already been taken.") {
+              if(isValid)
+                email_input.focus()
+              isValid = false;
+              email_error_text.textContent = "Email " + email_value + " đã được đăng ký."
+              email_error.style.display = "flex"
+            } else {
+              email_error.style.display = "none"
+            }
+          }
+        }
+      }
+    })
+  </script>
 </html>

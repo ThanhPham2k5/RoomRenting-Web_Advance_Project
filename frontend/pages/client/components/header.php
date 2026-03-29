@@ -406,5 +406,7 @@
         menu_user_block.style.display = "flex";
       }
     });
+
+    // check user token and update header bar
   </script>
 </html>

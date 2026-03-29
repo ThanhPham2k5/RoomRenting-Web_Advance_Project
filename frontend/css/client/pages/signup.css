@@ -25,7 +25,10 @@ body {
 }
 
 .login-username,
-.login-password {
+.login-phone,
+.login-email,
+.login-password,
+.login-re-password {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -34,12 +37,16 @@ body {
   margin-top: 24px;
 }
 
-.login-password {
-  margin-top: 15px;
+.login-password,
+.login-re-password {
+  /* margin-top: 15px; */
 }
 
 .login-username-ico,
-.login-password-ico {
+.login-phone-ico,
+.login-email-ico,
+.login-password-ico,
+.login-re-password-ico {
   position: absolute;
   top: 8px;
   left: 6px;
@@ -56,11 +63,18 @@ body {
 }
 
 .login-show-ico {
+  display: none;
+}
+
+.login-show-ico {
   top: 14px;
 }
 
 .login-username-text,
-.login-password-text {
+.login-phone-text,
+.login-email-text,
+.login-password-text,
+.login-re-password-text {
   width: 100%;
   padding: 10px 60px 10px 34px;
   background-color: #f5f7fa;
@@ -71,12 +85,17 @@ body {
   font-size: 1rem;
 }
 
-.login-username-text {
+.login-username-text,
+.login-phone-text,
+.login-email-text {
   padding-right: 34px;
 }
 
 .login-username-error,
-.login-password-error {
+.login-phone-error,
+.login-email-error,
+.login-password-error,
+.login-re-password-error {
   align-self: start;
   display: flex;
   justify-content: center;
@@ -84,6 +103,7 @@ body {
   gap: 10px;
   margin-top: 4px;
   color: #fd5454;
+  display: none;
 }
 
 .login-option {

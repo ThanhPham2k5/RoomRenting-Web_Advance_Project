@@ -101,11 +101,9 @@ Route::middleware(['auth:sanctum', 'permission:personalInfo.update'])
 
 
 //Post
-Route::middleware(['auth:sanctum','permission:post.get'])
-    ->get('/posts/{post}', [PostController::class, 'show']);
+Route::get('/posts/{post}', [PostController::class, 'show']);
 
-Route::middleware(['auth:sanctum','permission:post.getAll'])
-    ->get('/posts', [PostController::class, 'index']);
+Route::get('/posts', [PostController::class, 'index']);
 
 Route::middleware(['auth:sanctum', 'permission:post.create'])
     ->post('/posts', [PostController::class, 'store']);

@@ -1,0 +1,201 @@
+.recharge-block {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 84px;
+  padding: 20px 0;
+  background-color: #f5f7fa;
+}
+
+.recharge {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 12px;
+}
+
+.recharge-title {
+  width: 100%;
+  color: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin: 10px 0;
+}
+
+.recharge-line {
+  width: 100%;
+  height: 1px;
+  border-radius: 999px;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.recharge-point,
+.recharge-info,
+.recharge-board,
+.payment {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+  margin: 20px 0;
+  gap: 10px;
+}
+
+.recharge-point-lb,
+.recharge-info-title,
+.pament-title {
+  width: 100%;
+  color: #000;
+}
+
+.recharge-point-enter {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.recharge-point-input {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  font-family: "Body";
+  font-style: inherit;
+  font-size: 1rem;
+  color: #000;
+  padding: 10px 40px 10px 20px;
+}
+
+.recharge-point-input::placeholder {
+  font-family: "Body";
+  font-style: inherit;
+  font-size: 1rem;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.recharge-point-ico {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  top: 10px;
+  right: 10px;
+}
+
+.recharge-ratio {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.recharge-coin,
+.recharge-money {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.recharge-board {
+  align-items: center;
+  background-color: #f5f7fa;
+}
+
+.recharge-total,
+.recharge-vat,
+.recharge-sum {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.recharge-sum-value {
+  color: #10b981;
+}
+
+.payment-banking,
+.payment-momo,
+.payment-zalo,
+.payment-interal-bank,
+.payment-global-bank {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  border-radius: 12px;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: all 0.1s linear;
+  user-select: none;
+}
+
+.payment-banking:hover,
+.payment-momo:hover,
+.payment-zalo:hover,
+.payment-interal-bank:hover,
+.payment-global-bank:hover {
+  background-color: #f5f7fa;
+}
+
+.payment-banking-lb,
+.payment-momo-lb,
+.payment-zalo-lb,
+.payment-interal-bank-lb,
+.payment-global-bank-lb {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  /* padding: 10px; */
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: all 0.1s linear;
+}
+
+.recharge-pay {
+  text-decoration: none;
+  background-color: #10b981;
+  border-radius: 12px;
+  border: none;
+  font-family: "Body";
+  font-style: inherit;
+  font-size: 1rem;
+  padding: 20px 30px;
+  margin: 10px 0;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.1s linear;
+}
+
+.recharge-pay:hover {
+  transform: translateY(-1px);
+}
+
+@media (max-width: 768.99px) {
+  .recharge {
+    width: 90%;
+  }
+}

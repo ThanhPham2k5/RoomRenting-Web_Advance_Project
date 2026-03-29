@@ -31,7 +31,7 @@ class AccountService
             ]);
 
             //assign rolePermission
-            $roles = $data['rolePermission'];
+            $roles = $data['roles'];
             foreach($roles as $role){
                 $account->assignRole($role);
             }

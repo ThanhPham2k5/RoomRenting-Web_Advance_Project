@@ -6,6 +6,7 @@ use App\Models\Posts\Post;
 use App\Models\Posts\PostImage;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 
 class PostImageSeeder extends Seeder
@@ -19,7 +20,7 @@ class PostImageSeeder extends Seeder
 
         foreach ($posts as $post) {
 
-            // each post has 5 images
+            // each post has 1 images
             $count = 1;
 
             for ($i = 1; $i <= $count; $i++) {
@@ -51,6 +52,11 @@ class PostImageSeeder extends Seeder
         $filename = "{$order}.jpg";
 
         $path = "posts/{$postId}/images/{$filename}";
+
+        //get random image
+        $response = Http::withoutVerifying()
+        ->withOptions(['allow_redirects' => true]) 
+        ->get("https://picsum.photos/seed/{$postId}/300");
 
         // create dummy file
         Storage::disk('public')->put($path, file_get_contents('https://picsum.photos/300'));

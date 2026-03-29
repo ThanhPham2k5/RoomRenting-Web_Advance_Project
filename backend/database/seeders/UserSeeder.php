@@ -6,6 +6,7 @@ use App\Models\Account_User\Account;
 use App\Models\Account_User\PersonalInfo;
 use App\Models\Account_User\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 
 class UserSeeder extends Seeder
@@ -39,10 +40,16 @@ class UserSeeder extends Seeder
     {   
         // fake image content
         $path = "profiles/{$personalInfo->user->account_id}/avatar.jpg";
+        //get random profile
+        // $response = Http::withoutVerifying()->get('https://picsum.photos/300');
+
+        $response = Http::withoutVerifying()
+        ->withOptions(['allow_redirects' => true]) 
+        ->get("https://picsum.photos/seed/{$personalInfo->user->account_id}/300");
         
 
         // create dummy file
-        Storage::disk('public')->put($path, file_get_contents('https://picsum.photos/300'));
+        Storage::disk('public')->put($path, $response->body());
 
         return $path;
     }

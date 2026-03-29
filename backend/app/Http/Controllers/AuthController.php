@@ -23,11 +23,11 @@ class AuthController extends Controller
 
         $result = $this->accountService->createAccount($validated);
 
-        $token = $result['account']->createToken($validated['username']);
+        // $token = $result['account']->createToken($validated['username']);
 
         return response()->json([
             ...$result,
-            'token' => $token->plainTextToken
+            // 'token' => $token->plainTextToken
         ], 201);
     }
 

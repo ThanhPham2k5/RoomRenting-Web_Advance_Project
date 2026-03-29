@@ -59,7 +59,7 @@ class PostImageSeeder extends Seeder
         ->get("https://picsum.photos/seed/{$postId}/300");
 
         // create dummy file
-        Storage::disk('public')->put($path, file_get_contents('https://picsum.photos/300'));
+        Storage::disk('public')->put($path, $response->body());
 
         return $path;
     }

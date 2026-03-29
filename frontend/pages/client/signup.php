@@ -361,16 +361,15 @@
               username_error.style.display = "none"
             }
 
-            // phone is not unique
-            // if(data.errors.phone && data.errors.phone[0] == "The phone has already been taken.") {
-            //   if(isValid)
-            //     phone_input.focus()
-            //   isValid = false;
-            //   phone_error_text.textContent = "Số điện thoại " + phone_value + " đã được đăng ký."
-            //   phone_error.style.display = "flex"
-            // } else {
-            //   phone_error.style.display = "none"
-            // }
+            if(data.errors.phone_number && data.errors.phone_number[0] == "The phone number has already been taken.") {
+              if(isValid)
+                phone_input.focus()
+              isValid = false;
+              phone_error_text.textContent = "Số điện thoại " + phone_value + " đã được đăng ký."
+              phone_error.style.display = "flex"
+            } else {
+              phone_error.style.display = "none"
+            }
 
             if(data.errors.email && data.errors.email[0] == "The email has already been taken.") {
               if(isValid)

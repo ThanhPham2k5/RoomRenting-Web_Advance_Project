@@ -93,13 +93,6 @@ switch ($page) {
         ];
         break;
 }
-
-// if ($page === 'account' && isset($_GET['action']) && $_GET['action'] === 'edit') {
-//     $editId = $_GET['id'];
-//     $accountEditData = call_api("http://127.0.0.1:8000/api/accounts/{$editId}");
-//     $pageData['accountEditData'] = $accountEditData['data'];
-//     $pageData['autoOpenEditForm'] = true; 
-// }
 ?>
 
 <!DOCTYPE html>
@@ -227,6 +220,35 @@ switch ($page) {
                 startDateInput.max = selectedEndDate;
             });
         }
+
+
+        const formSua = document.getElementById('form-modal-sua-tai-khoan');
+        if (formSua) {
+            formSua.addEventListener('submit', function(event) {
+                const passwordInput = formSua.querySelector('input[name="password"]');
+                const passwordConfirmInput = formSua.querySelector('input[name="password_confirmation"]');
+                
+                const password = passwordInput ? passwordInput.value : '';
+                const passwordConfirm = passwordConfirmInput ? passwordConfirmInput.value : '';
+
+                if (password.trim() !== '') {
+                    
+                    if (passwordConfirm.trim() === '') {
+                        event.preventDefault();
+                        alert('Vui lòng nhập lại mật khẩu xác nhận!');
+                        if (passwordConfirmInput) passwordConfirmInput.focus();
+                        return;
+                    }
+                    
+                    if (password !== passwordConfirm) {
+                        event.preventDefault();
+                        alert('Mật khẩu xác nhận không khớp với mật khẩu mới!');
+                        if (passwordConfirmInput) passwordConfirmInput.focus();
+                        return;
+                    }
+                }
+            });
+        }
     });
     function openModal(idModal) {
         document.getElementById(idModal).style.display = 'flex';
@@ -269,7 +291,7 @@ switch ($page) {
             }
         }
     });
-    function handleEdit() {
+    function handleEdit(targetModel1) {
         const selectedRadio = document.querySelector('input[name="selectedRow"]:checked');
         if (!selectedRadio) {
             alert("Vui lòng chọn dòng dữ liệu để sửa!"); 
@@ -277,50 +299,60 @@ switch ($page) {
         }
 
         const id = selectedRadio.value;
-        const currentTable = '<?php echo $currentTable; ?>';
-        const role = (currentTable === '1') ? 'user' : 'employee';
-        fetch(`http://127.0.0.1:8000/api/accounts/${id}?include=roles,${role}.personalInfo`, {
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentPage = urlParams.get('page');
+        const apiConfigs = {
+            'account': { 
+                endpoint: 'accounts', 
+                query: '?include=roles'
+            },
+            'post': { 
+                endpoint: 'posts'
+            }
+        };
+        const config = apiConfigs[currentPage];
+        const apiUrl = `http://127.0.0.1:8000/api/${config.endpoint}/${id}${config.query}`;
+        fetch(apiUrl, {
             method: 'GET',
             headers: {
                 "Accept": "application/json",
-                "Authorization": "Bearer 2|6DAtA7EkyWcqnbd9dCnrloVQvboTOPF0RddJCoOJf635df41"
+                "Authorization": "Bearer 1|doBptP22fIl2zcgGI4I92REMuVhYXRJlyOt2Aa987a263743"
             }
         })
         .then(response => response.json())
         .then(result => {
             const data = result.data;
+            const form = document.getElementById(targetModel1);
             
-            // 2. Lấy được data rồi thì dùng JS để nhét vào các ô Input
-            // Giả sử form sửa của bạn có id="form-edit-account"
-            const form = document.getElementById('modal-sua-tai-khoan');
-            
-            form.querySelector('input[name="id"]').value = data.id;
-            form.querySelector('input[name="phone_number"]').value = data.role?.personalInfo?.phoneNumber ?? '';
-            form.querySelector('input[name="email"]').value = data.role?.personalInfo?.email ?? '';
-            form.querySelector('input[name="username"]').value = data.username;
-            form.querySelector('select[name="role"]').value = data.role;
-
+            const idInput = form.querySelector('input[name="id"]');
+            if (idInput) idInput.value = data.id;
+            const usernameInput = form.querySelector('input[name="username"]');
+            if (usernameInput) usernameInput.value = data.username;
+            const roleInput = form.querySelector('select[name="role"]');
+            if (roleInput) roleInput.value = data.role;
+            const statusSelect = form.querySelector('select[name="status"]');
+            if (statusSelect) {
+                if (data.deletedAt === null) {
+                    statusSelect.value = 'active';
+                } else {
+                    statusSelect.value = 'inactive';
+                }
+            }
             const rolesSelect = form.querySelector('select[name="roles[]"]');
             if (rolesSelect) {
-                // Bước 2.1: Xóa toàn bộ các lựa chọn cũ (Cực kỳ quan trọng)
-                // Nếu không làm bước này, mở modal người A xong tắt đi mở người B sẽ bị dính quyền của người A
                 Array.from(rolesSelect.options).forEach(option => {
                     option.selected = false;
                 });
 
-                // Bước 2.2: Chọn lại đúng quyền dựa theo mảng API trả về
                 if (data.roles && Array.isArray(data.roles)) {
                     Array.from(rolesSelect.options).forEach(option => {
-                        // Nếu value của thẻ <option> có nằm trong mảng data.roles
                         if (data.roles.includes(option.value)) {
-                            option.selected = true; // Đánh dấu là đã chọn
+                            option.selected = true;
                         }
                     });
                 }
             }
-
-            // 3. Mở modal lên một cách êm ái
-            openModal('modal-sua-tai-khoan');
+            openModal(targetModel1);
         })
         .catch(error => {
             alert("Có lỗi xảy ra khi lấy dữ liệu!");

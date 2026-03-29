@@ -9,7 +9,7 @@
         <div class="modal-header">
             <p><?php echo $title; ?></p>
         </div>
-        <form action="" method="POST">
+        <form action="" method="POST" id="form-<?php echo $idModal; ?>">
             
             <div class="modal-body">
                 <?php echo $formData; ?>   

@@ -56,16 +56,9 @@
     $tbodyHtml = ob_get_clean();
 
     $tableData = ['tableTitle' =>"Thông tin tài khoản", 'tableHeader' => $tableHeader, 'time' => false, 'status' => true, 'tbodyHtml' => $tbodyHtml];
-    // Kiểm tra xem người dùng có đang submit form (POST) hay không
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        
-        // Lấy cái "con chip định vị" ra xem nó là hành động gì
         $action = $_POST['action'] ?? '';
-
-        // Nếu hành động là Thêm Tài Khoản
         if ($action === 'addAccount') {
-            
-            // 1. Gom toàn bộ dữ liệu từ Form thành một mảng chuẩn y hệt JSON Backend cần
             $payload = [
                 'username'              => $_POST['username'] ?? '',
                 'password'              => $_POST['password'] ?? '',
@@ -73,33 +66,53 @@
                 'role'                  => $_POST['role'] ?? '',
                 'email'                 => $_POST['email'] ?? '',
                 'phone_number'          => $_POST['phone_number'] ?? '',
-                'roles'                 => $_POST['roles'] ?? [] // Mảng roles
+                'roles'                 => $_POST['roles'] ?? []
             ];
-
-            // 2. Dùng hàm call_api thần thánh của bạn để bắn dữ liệu qua Backend (Nhớ đổi method thành POST)
             $apiResponse = call_api("http://127.0.0.1:8000/api/accounts", "POST", $payload);
-
-            // 3. Kiểm tra kết quả
-            // (Tùy vào Backend của bạn trả về cái gì khi thành công, thường là có biến 'data' hoặc 'message')
-            if (!empty($apiResponse)) {
-                // Thành công! Dùng Javascript để báo alert và F5 lại trang
+            if (!empty($apiResponse['errors'])) {
+                $errorMsg = json_encode($apiResponse['errors']);
+                echo "<script>alert('Lỗi: $errorMsg');</script>";
+            } else {
                 echo "<script>
                     alert('Thêm tài khoản thành công!');
                     window.location.href = 'index.php?page=account&table=1';
                 </script>";
-                exit(); // Dừng chạy code bên dưới
-            } else {
-                // Thất bại: In ra lỗi để xem Backend chửi gì
-                $errorMsg = json_encode($apiResponse);
-                echo "<script>alert('Lỗi: $errorMsg');</script>";
+                exit();
             }
         }
-        
-        // Nếu hành động là Sửa Tài Khoản
+
         elseif ($action === 'editAccount') {
-            // Làm tương tự, nhưng dùng hàm call_api với method "PUT" và gắn ID vào URL
-            // $payload = ...
-            // $apiResponse = call_api("http://127.0.0.1:8000/api/accounts/{$id}", "PUT", $payload);
+            $id = $_POST['id'] ?? null;
+            
+            if (!$id) {
+                echo "<script>alert('Lỗi: Không tìm thấy ID tài khoản!');</script>";
+                exit;
+            }
+            $status = $_POST['status'] ?? '';
+            if ($status === 'active') {
+                call_api("http://127.0.0.1:8000/api/accounts/{$id}/restore", "POST", []);
+            } 
+            elseif ($status === 'inactive') {
+                call_api("http://127.0.0.1:8000/api/accounts/{$id}", "DELETE", []);
+            }
+            $payload = [
+                'username' => $_POST['username'] ?? '',
+                'roles'    => $_POST['roles'] ?? []
+            ];
+            $apiResponse = call_api("http://127.0.0.1:8000/api/accounts/{$id}", "PUT", $payload);
+            if (isset($apiResponse['original']) || isset($apiResponse['original']['message'])) {
+                echo "<script>
+                    alert('Cập nhật tài khoản thành công!');
+                    window.history.back();
+                </script>";
+                exit();
+            } else {
+                $errorMsg = json_encode($apiResponse['errors']);
+                echo "<script>
+                    alert('Lỗi cập nhật thông tin: $errorMsg');
+                    window.history.back();
+                </script>";
+            }
         }
     }
 ?>
@@ -175,37 +188,32 @@
         <input type="hidden" name="id" value="">
 
         <div class="input-group">
-            <label>Số điện thoại</label>
-            <input type="text" name="phone_number" placeholder="Nhập vào số điện thoại">
-        </div>
-        <div class="input-group">
-            <label>Email</label>
-            <input type="email" name="email" placeholder="Nhập vào email">
-        </div>
-        <div class="input-group">
             <label>Tên tài khoản</label>
             <input type="text" name="username" value="" placeholder="Nhập vào tên tài khoản">
         </div>
-
         <div class="input-group">
             <label>Mật khẩu mới</label>
             <input type="password" name="password" placeholder="Nhập vào mật khẩu mới">
         </div>
-
         <div class="input-group">
             <label>Xác nhận mật khẩu</label>
             <input type="password" name="password_confirmation" placeholder="Nhập lại mật khẩu mới">
         </div>
-
+        <div class="input-group">
+            <label>Tình trạng</label>
+            <select name="status">
+                <option value="active">Đang hoạt động</option>
+                <option value="inactive">Dừng hoạt động</option>
+            </select>
+        </div>
         <div class="input-group">
             <label>Chức vụ</label>
-            <select name="role">
+            <select name="role" disabled style="background-color: #e9ecef;">
                 <option value="">-- Chọn chức vụ --</option>
                 <option value="employee">Nhân viên</option>
                 <option value="user">Khách hàng</option>
             </select>
         </div>
-
         <div class="input-group">
             <label>Chọn quyền hạn</label>
             <select name="roles[]">

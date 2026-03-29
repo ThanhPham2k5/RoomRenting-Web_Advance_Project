@@ -30,7 +30,8 @@ use App\Http\Controllers\StatisticController;
 
 //Account
 Route::middleware(['auth:sanctum', 'permission:account.get'])
-    ->get('/accounts/{account}', [AccountController::class, 'show']);
+    ->get('/accounts/{account}', [AccountController::class, 'show'])
+    ->withTrashed();
 
 Route::middleware(['auth:sanctum', 'permission:account.getAll'])
     ->get('/accounts', [AccountController::class, 'index']);
@@ -39,7 +40,8 @@ Route::middleware(['auth:sanctum', 'permission:account.create'])
     ->post('/accounts', [AccountController::class, 'store']);
 
 Route::middleware(['auth:sanctum', 'permission:account.update'])
-    ->put('/accounts/{account}', [AccountController::class, 'update']);
+    ->put('/accounts/{account}', [AccountController::class, 'update'])
+    ->withTrashed();
 
 Route::middleware(['auth:sanctum', 'permission:account.delete'])
     ->delete('/accounts/{account}', [AccountController::class, 'destroy']);

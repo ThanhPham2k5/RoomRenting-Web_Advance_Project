@@ -84,6 +84,7 @@ body {
   gap: 10px;
   margin-top: 4px;
   color: #fd5454;
+  display: none;
 }
 
 .login-option {

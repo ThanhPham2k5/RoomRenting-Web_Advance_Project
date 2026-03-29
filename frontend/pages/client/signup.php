@@ -347,8 +347,12 @@
         
         if(response.ok) {
           sessionStorage.setItem("token", data.token)
+          sessionStorage.setItem("account", data.account)
+          sessionStorage.setItem("profile", data.profile)
+          sessionStorage.setItem("personalInfo", data.personalInfo)
+          sessionStorage.setItem("form", data.form)
           alert("Bạn đã đăng ký tài khoản thành công!")
-          window.location.href = '<?php echo BASE_URL . "/pages/client/index.php" ?>'
+          window.location.href = '<?php echo BASE_URL . "/pages/client/login.php" ?>'
         } else {
           console.log(data)
           if(data.errors) {

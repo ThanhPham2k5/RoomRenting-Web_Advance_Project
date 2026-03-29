@@ -15,5 +15,8 @@ class PayRuleSeeder extends Seeder
     public function run(): void
     {
         PayRuleFactory::new()->count(5)->create();
+        $payRule = PayRule::withTrashed()->inRandomOrder()->first();
+        $payRule->restore();
+        // $payRule->update(['status' => 'active']);
     }
 }

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->foreignId('post_id')->constrained()->cascadeOnDelete();
             $table->foreignId('pay_rule_id')->constrained()->cascadeOnDelete();
 
+            $table->softDeletes();
             $table->timestamps();
         });
     }

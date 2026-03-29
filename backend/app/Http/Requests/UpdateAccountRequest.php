@@ -11,7 +11,7 @@ class UpdateAccountRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,8 @@ class UpdateAccountRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'username' => 'sometimes|string|min:3|max:30|unique:accounts,username,' . $this->account->id,
+            'password' => 'nullable|string|min:8|confirmed',
         ];
     }
 }

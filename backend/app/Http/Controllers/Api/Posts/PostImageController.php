@@ -8,6 +8,7 @@ use App\Http\Requests\StorePostImageRequest;
 use App\Http\Requests\UpdatePostImageRequest;
 use App\Http\Resources\Posts\PostImageCollection;
 use App\Http\Resources\Posts\PostImageResource;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\Enums\FilterOperator;
@@ -15,7 +16,7 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 class PostImageController extends Controller
 {
-
+    use AuthorizesRequests;
     private $allowedIncludes = [
         'post',
     ];
@@ -25,7 +26,7 @@ class PostImageController extends Controller
      */
     public function index(Request $request)
     {
-        $query = QueryBuilder::for(PostImage::class)
+        $query = QueryBuilder::for(PostImage::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
             AllowedFilter::exact('id'),
@@ -62,14 +63,17 @@ class PostImageController extends Controller
      */
     public function store(StorePostImageRequest $request)
     {
-        $validated = $request->validated();
+        // Will be remove
 
-        $postImage = PostImage::create($validated);
+        // $validated = $request->validated();
 
-        return response()->json([
-            'message' => 'Post image created successfully',
-            'post_image' => new PostImageResource($postImage)
-        ], 201);
+        // $postImage = PostImage::create($validated);
+
+        // return response()->json([
+        //     'message' => 'Post image created successfully',
+        //     'post_image' => new PostImageResource($postImage)
+        // ], 201);
+        
     }
 
     /**
@@ -77,7 +81,7 @@ class PostImageController extends Controller
      */
     public function show(PostImage $postImage)
     {
-        $postImage = QueryBuilder::for(PostImage::class)
+        $postImage = QueryBuilder::for(PostImage::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($postImage->id);
 
@@ -97,14 +101,18 @@ class PostImageController extends Controller
      */
     public function update(UpdatePostImageRequest $request, PostImage $postImage)
     {
-        $validated = $request->validated();
+        // Will be remove
 
-        $postImage->update($validated);
+        // $this->authorize('update', $postImage);
 
-        return response()->json([
-            'message' => 'Post image updated successfully',
-            'post_image' => new PostImageResource($postImage)
-        ]);
+        // $validated = $request->validated();
+
+        // $postImage->update($validated);
+
+        // return response()->json([
+        //     'message' => 'Post image updated successfully',
+        //     'post_image' => new PostImageResource($postImage)
+        // ]);
     }
 
     /**
@@ -112,10 +120,13 @@ class PostImageController extends Controller
      */
     public function destroy(PostImage $postImage)
     {
-        $postImage->delete();
+        // Will be remove
 
-        return response()->json([
-            'message' => 'Post image deleted successfully'
-        ]);
+        // $this->authorize('delete', $postImage);
+        // $postImage->delete();
+
+        // return response()->json([
+        //     'message' => 'Post image deleted successfully'
+        // ]);
     }
 }

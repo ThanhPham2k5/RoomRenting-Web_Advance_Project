@@ -2,49 +2,77 @@
 
 namespace App\Http\Controllers\Api\Account_User;
 
-use App\Filter\AccountFilter;
+use App\Filter\AllColumnFilter;
+use App\Filter\DateFilter;
 use App\Models\Account_User\Account;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreAccountRequest;
 use App\Http\Requests\UpdateAccountRequest;
 use App\Http\Resources\Account_User\AccountCollection;
 use App\Http\Resources\Account_User\AccountResource;
+use App\Services\AccountService;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\Enums\FilterOperator;
 use Spatie\QueryBuilder\QueryBuilder;
+use App\Models\Form;
+use Illuminate\Support\Facades\DB;
 
 class AccountController extends Controller
-{
+{   
+    use AuthorizesRequests;
+
+    private AccountService $accountService;
 
     private $allowedIncludes = [
         'form',
         'user',
+        'roles',
+        'permissions',
+        'roles.permissions',
         'employee',
         'user.posts',
         'employee.posts',
+        'user.personalInfo',
+        'employee.personalInfo',
         'comments',
         'favorites.post',
         'rechargeBills',
         'payBills'
     ];
 
+    private $allColFilter = [
+        'username',
+        'role'
+    ];
+
     private $allowSorts = [
         'id',
     ];
+
+    public function __construct(AccountService $accountService)
+    {
+        $this->accountService = $accountService;
+    }
 
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $query = QueryBuilder::for(Account::class)
+        $query = QueryBuilder::for(Account::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
+            //generic search
+            AllowedFilter::custom('search', new AllColumnFilter($this->allColFilter)),
+
+            //specific filter
             AllowedFilter::partial('username'),
             AllowedFilter::exact('id'),
 
-            AllowedFilter::exact('role')
+            AllowedFilter::exact('role'),
+            AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
         ])
         ->allowedSorts($this->allowSorts);
 
@@ -75,18 +103,9 @@ class AccountController extends Controller
     {
         $validated = $request->validated();
         
-        $account = Account::create([
-            'username' => $validated['username'],
-            'password' => bcrypt($validated['password']),
-            'role' => $validated['role'],
-        ]);
+        $result = $this->accountService->createAccount($validated);
 
-        $token = $account->createToken($validated['username']);
-
-        return response()->json([
-            'account' => new AccountResource($account),
-            'token' => $token->plainTextToken
-        ], 201);
+        return response()->json($result, 201);
     }
 
     /**
@@ -94,7 +113,7 @@ class AccountController extends Controller
      */
     public function show(Account $account)
     {
-        $account = QueryBuilder::for(Account::class)
+        $account = QueryBuilder::for(Account::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($account->id);
 
@@ -114,7 +133,13 @@ class AccountController extends Controller
      */
     public function update(UpdateAccountRequest $request, Account $account)
     {
-        //
+        $this->authorize('update', $account);
+
+        $validated = $request->validated();
+
+        $result = $this->accountService->updateAccount($account, $validated);
+
+        return response()->json($result);
     }
 
     /**
@@ -122,6 +147,63 @@ class AccountController extends Controller
      */
     public function destroy(Account $account)
     {
-        //
+        if($account->hasRole('admin'))
+            return response()->json([
+                'message' => 'Cannot delete this account'
+            ]);
+        $this->authorize('delete', $account);
+
+        $result = $this->accountService->deleteAccount($account);
+
+        return response()->json($result);
+    }
+
+    public function restore($id) {
+        $account = Account::onlyTrashed()->findOrFail($id);
+        $result = $this->accountService->restoreAccount($account);
+
+        return response()->json($result);
+    }
+
+    public function assignRoles(Request $request, Account $account)
+    {
+        $request->validate([
+            'roles' => 'required|array',
+            'roles.*' => 'exists:roles,name'
+        ]);
+
+        $account->assignRole($request->roles);
+        
+        return response()->json([
+            'message' => 'Roles assigned'
+        ]);
+    }
+
+    public function syncRoles(Request $request, Account $account)
+    {
+        $request->validate([
+            'roles' => 'required|array',
+            'roles.*' => 'exists:roles,name'
+        ]);
+
+        $account->syncRoles($request->roles);
+
+        return response()->json([
+            'message' => 'Roles synced'
+        ]);
+    }
+
+    public function assignPermissions(Request $request, Account $account)
+    {
+        $request->validate([
+            'permissions' => 'required|array',
+            'permissions.*' => 'exists:permissions,name'
+        ]);
+
+        $account->givePermissionTo($request->permissions);
+
+        return response()->json([
+            'message' => 'Permissions assigned'
+        ]);
     }
 }

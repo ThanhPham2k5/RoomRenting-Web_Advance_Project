@@ -24,6 +24,7 @@ class FormResource extends JsonResource
             'province' => $this->province,
             'roomType' => $this->room_type,
             'maxOccupants' => $this->max_occupants,
+            'createdAt' => $this -> created_at,
             'account' => AccountResource::make(
                 $this->whenLoaded('account')
             ),

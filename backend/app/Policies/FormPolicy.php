@@ -2,16 +2,23 @@
 
 namespace App\Policies;
 
+use App\Models\Account_User\Account;
 use Illuminate\Auth\Access\Response;
 use App\Models\Form;
 use App\Models\User;
 
 class FormPolicy
 {
+    public function before(Account $account, $ability)
+    {
+        if ($account->hasRole('admin')) {
+            return true;
+        }
+    }
     /**
      * Determine whether the user can view any models.
      */
-    public function viewAny(User $user): bool
+    public function viewAny(Account $account): bool
     {
         return false;
     }
@@ -19,15 +26,16 @@ class FormPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Form $form): bool
+    public function view(Account $account, Form $form): bool
     {
-        return false;
+        // Owner
+        return $account->id === $form->account_id;
     }
 
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user): bool
+    public function create(Account $account): bool
     {
         return false;
     }
@@ -35,15 +43,16 @@ class FormPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Form $form): bool
+    public function update(Account $account, Form $form): bool
     {
-        return false;
+        // Owner
+        return $account->id === $form->account_id;
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Form $form): bool
+    public function delete(Account $account, Form $form): bool
     {
         return false;
     }
@@ -51,7 +60,7 @@ class FormPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Form $form): bool
+    public function restore(Account $account, Form $form): bool
     {
         return false;
     }
@@ -59,7 +68,7 @@ class FormPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Form $form): bool
+    public function forceDelete(Account $account, Form $form): bool
     {
         return false;
     }

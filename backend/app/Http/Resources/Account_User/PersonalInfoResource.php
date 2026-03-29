@@ -4,6 +4,7 @@ namespace App\Http\Resources\Account_User;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 class PersonalInfoResource extends JsonResource
 {
@@ -22,9 +23,18 @@ class PersonalInfoResource extends JsonResource
             'ward' => $this->ward,
             'province' => $this->province,
             'phoneNumber' => $this->phone_number,
-            'profileUrl' => $this->profile_url,
+            'profileUrl' => $this->profile_url
+                ? url(Storage::url($this->profile_url))
+                : null,
             'name' => $this->name,
             'pid' => $this->pid,
+            'createdAt' => $this -> created_at,
+            'user' => UserResource::make(
+                $this->whenLoaded('user')
+            ),
+            'employee' => EmployeeResource::make(
+                $this->whenLoaded('employee')
+            )
         ];
     }
 }

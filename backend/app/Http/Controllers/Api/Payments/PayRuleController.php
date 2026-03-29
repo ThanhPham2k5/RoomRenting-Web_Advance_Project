@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\Api\Payments;
 
-use App\Filter\PayRuleFilter;
+use App\Filter\AllColumnFilter;
+use App\Filter\DateFilter;
 use App\Models\Payments\PayRule;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePayRuleRequest;
@@ -13,11 +14,17 @@ use Illuminate\Http\Request;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\Enums\FilterOperator;
 use Spatie\QueryBuilder\QueryBuilder;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class PayRuleController extends Controller
 {
+    use AuthorizesRequests;
     private $allowedIncludes = [
         'payBills',
+    ];
+
+    private $allColFilter = [
+        
     ];
 
     /**
@@ -25,11 +32,16 @@ class PayRuleController extends Controller
      */
     public function index(Request $request)
     {
-        $query = QueryBuilder::for(PayRule::class)
+        $query = QueryBuilder::for(PayRule::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
+            //generic search
+            AllowedFilter::custom('search', new AllColumnFilter($this->allColFilter)),
+
+            //specific filter
             AllowedFilter::exact('id'),
             AllowedFilter::operator('points', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
+            AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
         ])
         ->allowedSorts([
             'id',
@@ -62,12 +74,14 @@ class PayRuleController extends Controller
     public function store(StorePayRuleRequest $request)
     {
         $validated = $request->validated();
-        
+        // $validated['status'] = 'inactive';
+
         $payRule = PayRule::create($validated);
+        $payRule->delete();
 
         return response()->json([
             'message' => 'Pay rule created successfully',
-            'payRule' => new PayRuleResource($payRule)
+            'payRule' => new PayRuleResource($payRule),
         ], 201);
     }
 
@@ -76,7 +90,7 @@ class PayRuleController extends Controller
      */
     public function show(PayRule $payRule)
     {
-        $payRule = QueryBuilder::for(PayRule::class)
+        $payRule = QueryBuilder::for(PayRule::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($payRule->id);
 
@@ -96,14 +110,19 @@ class PayRuleController extends Controller
      */
     public function update(UpdatePayRuleRequest $request, PayRule $payRule)
     {
-        $validated = $request->validated();
+        // $validated = $request->validated();;
+        // if (isset($validated['status']) && $validated['status'] === 'active') {
+            
+        //     // Deactivate all other pay rules
+        //     PayRule::where('id', '!=', $payRule->id)->update(['status' => 'inactive']);
+        //     $payRule->update(['status' => 'active']);
+        // }
         
-        $payRule->update($validated);
 
-        return response()->json([
-            'message' => 'Pay rule updated successfully',
-            'payRule' => new PayRuleResource($payRule)
-        ]);
+        // return response()->json([
+        //     'message' => 'Pay rule updated successfully',
+        //     'payRule' => new PayRuleResource($payRule)
+        // ]);
     }
 
     /**
@@ -111,10 +130,28 @@ class PayRuleController extends Controller
      */
     public function destroy(PayRule $payRule)
     {
-        $payRule->delete();
+        // if ($payRule->status == 'active'){
+        //     return response()->json([
+        //         'message' => 'Cannot delete while in active status'
+        //     ]);
+        // }
+        // $payRule['status'] = 'inactive';
+        // $payRule->delete();
+
+        // return response()->json([
+        //     'message' => 'Pay rule deleted successfully'
+        // ]);
+    }
+
+    public function restore($id) {
+
+        PayRule::query()->delete();
+        $payRule = PayRule::onlyTrashed()->findOrFail($id);
+        
+        $payRule->restore();
 
         return response()->json([
-            'message' => 'Pay rule deleted successfully'
+            'message' => 'PayRule restored successfully'
         ]);
     }
 }

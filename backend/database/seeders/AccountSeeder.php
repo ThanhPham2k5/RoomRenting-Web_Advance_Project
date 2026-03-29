@@ -32,6 +32,11 @@ class AccountSeeder extends Seeder
                 'role' => 'postManager'
             ],
             [
+                'username' => 'comment_manager',
+                'password' => bcrypt('Comment@123456'),
+                'role' => 'commentManager'
+            ],
+            [
                 'username' => 'bill_manager',
                 'password' => bcrypt('Bill@123456'),
                 'role' => 'billManager'
@@ -42,72 +47,72 @@ class AccountSeeder extends Seeder
                 'role' => 'userManager'
             ],
             [
-                'username' => 'an.nguyen',
+                'username' => 'annguyen',
                 'password' => bcrypt('An@123456'),
                 'role' => 'user'
             ],
             [
-                'username' => 'binh.tran',
+                'username' => 'binhtran',
                 'password' => bcrypt('Binh@123456'),
                 'role' => 'user'
             ],
             [
-                'username' => 'hoang.le',
+                'username' => 'hoangle',
                 'password' => bcrypt('Hoang@123456'),
                 'role' => 'user'
             ],
             [
-                'username' => 'lan.pham',
+                'username' => 'lanpham',
                 'password' => bcrypt('Lan@123456'),
                 'role' => 'user'
             ],
             [
-                'username' => 'huy.le',
+                'username' => 'huyle',
                 'password' => bcrypt('Huy@123456'),
                 'role' => 'user'
             ],
             [
-                'username' => 'lananh.le',
+                'username' => 'lananhle',
                 'password' => bcrypt('LanAnh@123456'),
                 'role' => 'user'
             ],
             [
-                'username' => 'bao.nguyen',
+                'username' => 'baonguyen',
                 'password' => bcrypt('Bao@123456'),
                 'role' => 'user'
             ],
             [
-                'username' => 'linh.dang',
+                'username' => 'linhdang',
                 'password' => bcrypt('Linh@123456'),
                 'role' => 'user'
             ],
             [
-                'username' => 'tung.phan',
+                'username' => 'tungphan',
                 'password' => bcrypt('Tung@123456'),
                 'role' => 'user'
             ],
             [
-                'username' => 'mai.bui',
+                'username' => 'maibui',
                 'password' => bcrypt('Mai@123456'),
                 'role' => 'user'
             ],
             [
-                'username' => 'tuan.vo',
+                'username' => 'tuanvo',
                 'password' => bcrypt('Tuan@123456'),
                 'role' => 'user'
             ],
             [
-                'username' => 'ha.nguyen',
+                'username' => 'hanguyen',
                 'password' => bcrypt('Ha@123456'),
                 'role' => 'user'
             ],
             [
-                'username' => 'hung.truong',
+                'username' => 'hungtruong',
                 'password' => bcrypt('Hung@123456'),
                 'role' => 'user'
             ],
             [
-                'username' => 'chi.hoang',
+                'username' => 'chihoang',
                 'password' => bcrypt('Chi@123456'),
                 'role' => 'user'
             ],
@@ -115,6 +120,7 @@ class AccountSeeder extends Seeder
 
         foreach ($accounts as $data) {
             $account = Account::create([
+                'role' => $data['role'] == 'user' ? 'user' : 'employee',
                 'username' => $data['username'],
                 'password' => $data['password'],
             ]);

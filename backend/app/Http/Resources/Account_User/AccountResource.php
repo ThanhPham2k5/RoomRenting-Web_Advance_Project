@@ -22,8 +22,10 @@ class AccountResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'role' => $this->role,
             'username' => $this->username,
             'deletedAt' => $this->deleted_at,
+            'createdAt' => $this -> created_at,
             'form' => FormResource::make(
                 $this->whenLoaded('form')
             ),
@@ -47,7 +49,10 @@ class AccountResource extends JsonResource
             ),
             'rechargeBills' => RechargeBillResource::collection(
                 $this->whenLoaded('rechargeBills')
-            )
+            ),
+            'roles' => $this->whenLoaded('roles', function () {
+                return $this->roles->pluck('name');
+            }),
         ];
     }
 }

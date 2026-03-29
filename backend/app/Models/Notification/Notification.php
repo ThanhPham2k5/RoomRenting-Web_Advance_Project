@@ -5,11 +5,12 @@ namespace App\Models\Notification;
 use App\Models\Account_User\Account;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Notification extends Model
 {
     /** @use HasFactory<\Database\Factories\NotificationFactory> */
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = ['title', 'content', 'notification_type', 'account_id', 'notifiable_type', 'notifiable_id', 'status'];
 

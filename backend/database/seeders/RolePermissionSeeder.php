@@ -25,6 +25,14 @@ class RolePermissionSeeder extends Seeder
             'post.delete',
             'post.get',
             'post.getAll',
+            'post.restore',
+
+            //PostImages
+            'postImage.create',
+            'postImage.update',
+            'postImage.delete',
+            'postImage.get',
+            'postImage.getAll',
 
             //Comment
             'comment.create',
@@ -32,6 +40,7 @@ class RolePermissionSeeder extends Seeder
             'comment.delete',
             'comment.get',
             'comment.getAll',
+            'comment.restore',
 
             //Favorite
             'favorite.create',
@@ -50,6 +59,8 @@ class RolePermissionSeeder extends Seeder
             'payBill.getAll',
             'payRule.get',
             'payRule.getAll',
+            'payBill.restore',
+            'payRule.restore',
 
             //Recharge
             'rechargeBill.create',
@@ -62,6 +73,8 @@ class RolePermissionSeeder extends Seeder
             'rechargeBill.getAll',
             'rechargeRule.get',
             'rechargeRule.getAll',
+            'rechargeBill.restore',
+            'rechargeRule.restore',
 
             //Form
             'form.create',
@@ -76,6 +89,7 @@ class RolePermissionSeeder extends Seeder
             'notification.get',
             'notification.delete',
             'notification.getAll',
+            'notification.restore',
 
             //Account
             'account.create',
@@ -83,6 +97,7 @@ class RolePermissionSeeder extends Seeder
             'account.delete',
             'account.get',
             'account.getAll',
+            'account.restore',
 
             //User
             'user.create',
@@ -104,6 +119,11 @@ class RolePermissionSeeder extends Seeder
             'personalInfo.delete',
             'personalInfo.get',
             'personalInfo.getAll',
+
+            //Assign
+            'account.assignRoles',
+            'account.assignPermissions',
+            'account.syncRoles'
         ];
 
 
@@ -111,21 +131,40 @@ class RolePermissionSeeder extends Seeder
             Permission::create(['name' => $permission, 'guard_name' => 'api']);
         
         //Roles
-        $admin = Role::create(['name' => 'admin', 'guard_name' => 'api']);
-        $postManager = Role::create(['name' => 'postManager', 'guard_name' => 'api']);
-        $billManager = Role::create(['name' => 'billManager', 'guard_name' => 'api']);
-        $userManager = Role::create(['name' => 'userManager', 'guard_name' => 'api']);
-        $user = Role::create(['name' => 'user', 'guard_name' => 'api']);
+        $admin = Role::create(['name' => 'admin', 'guard_name' => 'api', 'description' => 'Administrator']);
+        $postManager = Role::create(['name' => 'postManager', 'guard_name' => 'api', 'description' => 'Quản lý các bài post, duyệt bài']);
+        $billManager = Role::create(['name' => 'billManager', 'guard_name' => 'api', 'description' => 'Tôi là kế toán kiêm tài chính']);
+        $userManager = Role::create(['name' => 'userManager', 'guard_name' => 'api', 'description' => 'Quản lý tài khoản khách hàng và nhân viên']);
+        $commentManager = Role::create(['name' => 'commentManager', 'guard_name' => 'api', 'description' => 'Quản lý comment']);
+        $user = Role::create(['name' => 'user', 'guard_name' => 'api', 'description' => 'Tôi là người dùng']);
 
         
         //Assign Roles
         $admin->givePermissionTo(Permission::all());
         $postManager->givePermissionTo([
+            //Post
             'post.create',
             'post.update',
             'post.delete',
             'post.get',
-            'post.getAll'
+            'post.getAll',
+            'post.restore',
+
+            //PostImage
+            'postImage.create',
+            'postImage.update',
+            'postImage.delete',
+            'postImage.get',
+            'postImage.getAll',
+        ]);
+        $commentManager->givePermissionTo([
+            //Comment
+            'comment.create',
+            'comment.update',
+            'comment.delete',
+            'comment.get',
+            'comment.getAll',
+            'comment.restore',
         ]);
         $billManager->givePermissionTo([
             //Bill
@@ -138,6 +177,8 @@ class RolePermissionSeeder extends Seeder
             'payBill.getAll',
             'payRule.get',
             'payRule.getAll',
+            'payRule.restore',
+            'payBill.restore',
 
             //Recharge
             'rechargeRule.create',
@@ -149,6 +190,8 @@ class RolePermissionSeeder extends Seeder
             'rechargeBill.getAll',
             'rechargeRule.get',
             'rechargeRule.getAll',
+            'rechargeRule.restore',
+            'rechargeBill.restore',
         ]);
         $userManager->givePermissionTo([
             //Account
@@ -157,6 +200,7 @@ class RolePermissionSeeder extends Seeder
             'account.delete',
             'account.get',
             'account.getAll',
+            'account.restore',
 
             //User
             'user.create',
@@ -178,14 +222,20 @@ class RolePermissionSeeder extends Seeder
             'personalInfo.delete',
             'personalInfo.get',
             'personalInfo.getAll',
+
+            //Assign
+            'account.assignRoles',
+            'account.assignPermissions',
+            'account.syncRoles'
         ]);
         $user->givePermissionTo([
             //Account
             'account.create',
+            'account.update',
             'account.get',
         
             //User
-            'user.create',
+            'user.update',
             'user.get',
 
             //PersonalInfo
@@ -193,7 +243,7 @@ class RolePermissionSeeder extends Seeder
             'personalInfo.update',
             'personalInfo.get',
 
-            //RecchargeBill
+            //RechargeBill
             'rechargeBill.create',
             'rechargeBill.get',
 
@@ -203,8 +253,17 @@ class RolePermissionSeeder extends Seeder
 
             //Post
             'post.create',
+            'post.update',
+            'post.delete',
             'post.get',
             'post.getAll',
+
+            //PostImage
+            'postImage.create',
+            'postImage.update',
+            'postImage.delete',
+            'postImage.get',
+            'postImage.getAll',
 
             //Comment
             'comment.create',

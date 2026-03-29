@@ -22,7 +22,7 @@ class StorePayRuleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'points' => 'required|integer|min:1',
+            'points' => 'required|integer|min:1|unique:pay_rules,points',
         ];
     }
 }

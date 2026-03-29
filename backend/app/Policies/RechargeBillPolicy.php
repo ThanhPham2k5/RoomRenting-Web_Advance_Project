@@ -2,32 +2,42 @@
 
 namespace App\Policies;
 
+use App\Models\Account_User\Account;
+use App\Models\Payments\RechargeBill;
 use Illuminate\Auth\Access\Response;
-use App\Models\RechargeBill;
-use App\Models\User;
+
 
 class RechargeBillPolicy
 {
+    public function before(Account $account, $ability)
+    {
+        if ($account->hasRole('admin')) {
+            return true;
+        }
+    }
     /**
      * Determine whether the user can view any models.
      */
-    public function viewAny(User $user): bool
+    public function viewAny(Account $account): bool
     {
-        return false;
+        // Owner
+        return $account->hasRole('billManager');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, RechargeBill $rechargeBill): bool
+    public function view(Account $account, RechargeBill $rechargeBill): bool
     {
-        return false;
+        // Owner
+        return $account->id === $rechargeBill->account_id
+            || $account->hasRole('billManager');
     }
 
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user): bool
+    public function create(Account $account): bool
     {
         return false;
     }
@@ -35,7 +45,7 @@ class RechargeBillPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, RechargeBill $rechargeBill): bool
+    public function update(Account $account, RechargeBill $rechargeBill): bool
     {
         return false;
     }
@@ -43,7 +53,7 @@ class RechargeBillPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, RechargeBill $rechargeBill): bool
+    public function delete(Account $account, RechargeBill $rechargeBill): bool
     {
         return false;
     }
@@ -51,7 +61,7 @@ class RechargeBillPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, RechargeBill $rechargeBill): bool
+    public function restore(Account $account, RechargeBill $rechargeBill): bool
     {
         return false;
     }
@@ -59,7 +69,7 @@ class RechargeBillPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, RechargeBill $rechargeBill): bool
+    public function forceDelete(Account $account, RechargeBill $rechargeBill): bool
     {
         return false;
     }

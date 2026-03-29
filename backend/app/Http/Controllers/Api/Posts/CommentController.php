@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers\Api\Posts;
 
-use App\Filter\CommentFilter;
+use App\Filter\AllColumnFilter;
+use App\Filter\DateFilter;
 use App\Models\Posts\Comment;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCommentRequest;
 use App\Http\Requests\UpdateCommentRequest;
 use App\Http\Resources\Posts\CommentCollection;
 use App\Http\Resources\Posts\CommentResource;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\Enums\FilterOperator;
@@ -17,9 +19,16 @@ use Spatie\QueryBuilder\QueryBuilder;
 class CommentController extends Controller
 {
 
+    use AuthorizesRequests;
+
     private $allowedIncludes = [
         'account',
         'post',
+    ];
+
+    private $allColFilter = [
+        'content',
+        'account.username',
     ];
 
     /**
@@ -27,11 +36,16 @@ class CommentController extends Controller
      */
     public function index(Request $request)
     {
-        $query = QueryBuilder::for(Comment::class)
+        $query = QueryBuilder::for(Comment::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
+            //generic search
+            AllowedFilter::custom('search', new AllColumnFilter($this->allColFilter)),
+
+            //specific filter
             AllowedFilter::exact('id'),
-            AllowedFilter::partial('content')
+            AllowedFilter::partial('content'),
+            AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
         ])
         ->allowedSorts([
             'id',
@@ -77,7 +91,7 @@ class CommentController extends Controller
      */
     public function show(Comment $comment)
     {
-        $comment = QueryBuilder::for(Comment::class)
+        $comment = QueryBuilder::for(Comment::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($comment->id);
 
@@ -97,6 +111,8 @@ class CommentController extends Controller
      */
     public function update(UpdateCommentRequest $request, Comment $comment)
     {
+        $this->authorize('update', $comment);
+
         $validated = $request->validated();
 
         $comment->update($validated);
@@ -111,11 +127,24 @@ class CommentController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy(Comment $comment)
-    {
+    {   
+        $this->authorize('delete', $comment);
+
         $comment->delete();
 
         return response()->json([
             'message' => 'Comment deleted successfully'
+        ]);
+    }
+    public function restore($id)
+    {
+        $comment = Comment::onlyTrashed()->findOrFail($id);
+ 
+        $comment->restore();
+ 
+        return response()->json([
+            'message' => 'Comment restored successfully',
+            'comment'    => new CommentResource($comment),
         ]);
     }
 }

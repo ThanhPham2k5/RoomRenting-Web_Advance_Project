@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Filter\FormFilter;
+use App\Filter\AllColumnFilter;
+use App\Filter\DateFilter;
 use App\Http\Resources\Posts\PostResource;
 use App\Models\Form;
 use App\Http\Controllers\Controller;
@@ -17,12 +18,19 @@ use Spatie\QueryBuilder\Enums\FilterOperator;
 use Spatie\QueryBuilder\QueryBuilder;
 use App\Models\Posts\Post;
 use App\Http\Resources\Posts\PostCollection;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class FormController extends Controller
 {
-
+    use AuthorizesRequests;
     private $allowedIncludes = [
         'account',
+    ];
+
+    private $allColFilter = [
+        'ward',
+        'province',
+        'roomType' => 'room_type'
     ];
 
     /**
@@ -30,9 +38,13 @@ class FormController extends Controller
      */
     public function index(Request $request)
     {
-        $query = QueryBuilder::for(Form::class)
+        $query = QueryBuilder::for(Form::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
+            //generic search
+            AllowedFilter::custom('search', new AllColumnFilter($this->allColFilter)),
+
+            //specific filter
             AllowedFilter::exact('id'),
             AllowedFilter::operator('priceMax', FilterOperator::DYNAMIC, '', 'price_max'), // =, <>, >, <, >=, <=
             AllowedFilter::operator('priceMin', FilterOperator::DYNAMIC, '', 'price_min'), // =, <>, >, <, >=, <=
@@ -41,6 +53,7 @@ class FormController extends Controller
             AllowedFilter::partial('province'),
             AllowedFilter::exact('roomType', 'room_type'),
             AllowedFilter::operator('maxOccupants', FilterOperator::DYNAMIC, '', 'max_occupants'), // =, <>, >, <, >=, <=
+            AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
         ])
         ->allowedSorts([
             'id',
@@ -99,7 +112,9 @@ class FormController extends Controller
      */
     public function show(Form $form)
     {
-        $form = QueryBuilder::for(Form::class)
+        $this->authorize('view', $form);
+
+        $form = QueryBuilder::for(Form::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($form->id);
 
@@ -119,6 +134,8 @@ class FormController extends Controller
      */
     public function update(UpdateFormRequest $request, Form $form)
     {
+        $this->authorize('update', $form);
+
         $validated = $request->validated();
 
         $form->update($validated);

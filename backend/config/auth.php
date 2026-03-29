@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Account_User\Account;
+
 return [
 
     /*
@@ -38,7 +40,11 @@ return [
     'guards' => [
         'web' => [
             'driver' => 'session',
-            'provider' => 'users',
+            'provider' => 'accounts',
+        ],
+        'api' => [
+            'driver' => 'sanctum',
+            'provider' => 'accounts',
         ],
     ],
 
@@ -60,9 +66,9 @@ return [
     */
 
     'providers' => [
-        'users' => [
+        'accounts' => [
             'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', App\Models\User::class),
+            'model' => env('AUTH_MODEL', Account::class),
         ],
 
         // 'users' => [

@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\Api\Notification;
 
-use App\Filter\NotificationFilter;
+use App\Filter\AllColumnFilter;
+use App\Filter\DateFilter;
 use App\Models\Notification\Notification;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreNotificationRequest;
@@ -13,16 +14,25 @@ use Illuminate\Http\Request;
 use App\Models\Posts\Post;
 use App\Models\Payments\Paybill;
 use App\Models\Payments\Rechargebill;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\Enums\FilterOperator;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class NotificationController extends Controller
 {
-
+    use AuthorizesRequests;
     private $allowedIncludes = [
         'account',
         'notifiable'
+    ];
+
+    private $allColFilter = [
+        'title',
+        'content',
+        'status',
+        'notificationType' => 'notification_type',
+        'notifiableType' => 'notifiable_type',
     ];
 
     /**
@@ -30,15 +40,20 @@ class NotificationController extends Controller
      */
     public function index(Request $request)
     {
-        $query = QueryBuilder::for(Notification::class)
+        $query = QueryBuilder::for(Notification::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
+            //generic search
+            AllowedFilter::custom('search', new AllColumnFilter($this->allColFilter)),
+
+            //specific filters
             AllowedFilter::exact('id'),
             AllowedFilter::partial('title'),
             AllowedFilter::partial('content'),
             AllowedFilter::operator('status', FilterOperator::DYNAMIC), // =, <>
             AllowedFilter::operator('notificationType', FilterOperator::DYNAMIC, '', 'notification_type'), // =, <>
             AllowedFilter::partial('notifiableType', 'notifiable_type'),
+            AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
         ])
         ->allowedSorts([
             'id',
@@ -97,7 +112,9 @@ class NotificationController extends Controller
      */
     public function show(Notification $notification)
     {
-        $notification = QueryBuilder::for(Notification::class)
+        $this->authorize('view', $notification);
+
+        $notification = QueryBuilder::for(Notification::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($notification->id);
 
@@ -117,7 +134,9 @@ class NotificationController extends Controller
      */
     public function update(UpdateNotificationRequest $request, Notification $notification)
     {
-         $validated = $request->validated();
+        $this->authorize('update', $notification);
+
+        $validated = $request->validated();
 
         // nếu có post_id thì cập nhật quan hệ polymorphic
         if ($request->post_id) {
@@ -138,6 +157,8 @@ class NotificationController extends Controller
      */
     public function destroy(Notification $notification)
     {
+        $this->authorize('delete', $notification);
+
         $notification->delete();
 
         return response()->json([
@@ -152,6 +173,18 @@ class NotificationController extends Controller
         return response()->json([
             'message' => 'Notification marked as read',
             'notification' => new NotificationResource($notification)
+        ]);
+    }
+
+    public function restore($id) {
+
+        $noti = Notification::onlyTrashed()->findOrFail($id);
+
+        $noti->restore();
+
+        return response()->json([
+            'message' => 'Notification restored successfully',
+            'notification'    => new NotificationResource($noti),
         ]);
     }
 }

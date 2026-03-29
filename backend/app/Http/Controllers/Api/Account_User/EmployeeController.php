@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\Api\Account_User;
 
-use App\Filter\EmployeeFilter;
+use App\Filter\AllColumnFilter;
+use App\Filter\DateFilter;
 use App\Models\Account_User\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreEmployeeRequest;
@@ -22,6 +23,11 @@ class EmployeeController extends Controller
         'posts',
     ];
 
+    private $allColFilter = [
+        'account.username',
+        'account.role'
+    ];
+
     private $allowSorts = [
         'id',
     ];
@@ -31,12 +37,17 @@ class EmployeeController extends Controller
      */
     public function index(Request $request)
     {
-        $query = QueryBuilder::for(Employee::class)
+        $query = QueryBuilder::for(Employee::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
+            //generic search
+            AllowedFilter::custom('search', new AllColumnFilter($this->allColFilter)),
+
+            //specific filter
             AllowedFilter::exact('id'),
             AllowedFilter::partial('account.username'),
             AllowedFilter::exact('account.role'),
+            AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
         ])
         ->allowedSorts($this->allowSorts);
 
@@ -73,7 +84,7 @@ class EmployeeController extends Controller
      */
     public function show(Employee $employee)
     {
-        $employee = QueryBuilder::for(Employee::class)
+        $employee = QueryBuilder::for(Employee::withTrashed())
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($employee->id);
 

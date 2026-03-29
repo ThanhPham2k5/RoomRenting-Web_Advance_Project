@@ -29,6 +29,7 @@ class NotificationResource extends JsonResource
             ),
             'notifiableType' => $this->notifiable_type,
             'notifiable' => $this->notifiable,
+            'createdAt' => $this -> created_at,
         ];
     }
 }

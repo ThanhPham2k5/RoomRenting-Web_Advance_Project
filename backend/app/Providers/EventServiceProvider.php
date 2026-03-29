@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Listeners\SendStatusPostNotification;
 use App\Models\Payments\PayBill;
 use App\Models\Payments\RechargeBill;
 use Illuminate\Support\ServiceProvider;
@@ -21,6 +22,9 @@ class EventServiceProvider extends ServiceProvider
         RechargeBill::class => [
             SendRechargeNotification::class,
         ],
+        Post::class => [
+            SendStatusPostNotification::class,
+        ]
     ];
     /**
      * Register services.

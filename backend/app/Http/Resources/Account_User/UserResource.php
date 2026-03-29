@@ -18,6 +18,7 @@ class UserResource extends JsonResource
         return [
             'id' => $this->id,
             'points' => $this->points,
+            'createdAt' => $this -> created_at,
             'account' => AccountResource::make(
                 $this->whenLoaded('account')
             ),

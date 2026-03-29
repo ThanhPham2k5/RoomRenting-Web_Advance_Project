@@ -6,11 +6,12 @@ use App\Models\Notification\Notification;
 use App\Models\Posts\Post;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Model
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
 
     protected static function newFactory()
@@ -33,4 +34,10 @@ class User extends Model
     public function notifications(){
         return $this->hasMany(Notification::class);
     }
+
+    protected $fillable = [
+        'points',
+        'account_id',
+        'personal_info_id'
+    ];
 }

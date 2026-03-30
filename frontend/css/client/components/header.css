@@ -453,6 +453,8 @@
   display: none;
 }
 
+.button-log-in,
+.button-sign-up,
 .header-notify,
 .button-post,
 .button-posts,
@@ -579,6 +581,8 @@
     display: none;
   }
 
+  .sidebar-login,
+  .sidebar-signup,
   .sidebar-notify-block,
   .sidebar-post,
   .sidebar-posts,

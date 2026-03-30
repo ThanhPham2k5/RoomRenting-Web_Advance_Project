@@ -204,12 +204,8 @@
         const data = await response.json()
         
         if(response.ok) {
-          sessionStorage.setItem("token", data.token)
-          sessionStorage.setItem("account_id", data.account.id)
-          console.log(data)
-          console.log(data.token)
-          console.log(data.account)
-          console.log(data.account.id)
+          localStorage.setItem("token", data.token)
+          localStorage.setItem("account_id", data.account.id)
           alert("Bạn đã đăng nhập thành công!")
           window.location.href = '<?php echo BASE_URL . "/pages/client/index.php" ?>'
         } else {

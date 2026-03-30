@@ -116,9 +116,9 @@
             <div class="user-panel">
               <img src='<?php echo BASE_URL . "/assets/img/avatar-test.png"?>' alt="avatar.png" class="user-avatar">
 
-              <div class="user-name">Po Pici</div>
+              <div class="user-name">Người dùng</div>
 
-              <div class="user-id">Mã KH: 36363636</div>
+              <div class="user-id">Mã KH: xxxx</div>
 
               <a href='<?php echo BASE_URL . "/pages/client/my-profile.php"?>' class="user-link">Đi tới trang cá nhân</a>
 
@@ -127,7 +127,7 @@
                   Điểm
 
                   <div class="user-point-value">
-                    100.000
+                    0
 
                     <img src='<?php echo BASE_URL . "/assets/img/point.png"?>' alt="point.png" class="user-point-img">
                   </div>
@@ -273,9 +273,9 @@
               <div class="menu-user-panel">
                 <img src='<?php echo BASE_URL . "/assets/img/avatar-test.png"?>' alt="avatar.png" class="user-avatar">
 
-                <div class="user-name">Po Pici</div>
+                <div class="user-name">Người dùng</div>
 
-                <div class="user-id">Mã KH: 36363636</div>
+                <div class="user-id">Mã KH: xxxx</div>
 
                 <a href='<?php echo BASE_URL . "/pages/client/my-profile.php"?>' class="user-link">Đi tới trang cá nhân</a>
 
@@ -284,7 +284,7 @@
                     Điểm
 
                     <div class="user-point-value">
-                      100.000
+                      0
 
                       <img src='<?php echo BASE_URL . "/assets/img/point.png"?>' alt="point.png" class="user-point-img">
                     </div>
@@ -342,7 +342,6 @@
       </div>
     </div>
   </body>
-
   <script>
     // menu button script
     const header_menu_button = document.querySelector(".header-menu-button");
@@ -408,5 +407,167 @@
     });
 
     // check user token and update header bar
+    async function getPersonalInfo(account_id, token) {
+      const response = await fetch("http://127.0.0.1:8000/api/accounts/" + account_id + "?include=user.personalInfo", {
+        method: "GET",
+        headers: {
+          "Accept": "application/json",
+          "Authorization": "Bearer " + token
+        }
+      })
+
+      const data = await response.json()
+      if(response.ok) {
+        if(data.data.user.personalInfo.profileUrl) {
+          document.querySelector(".button-user-ico").setAttribute("src", data.data.user.personalInfo.profileUrl)
+        }
+        
+        if(data.data.user.personalInfo.profileUrl) {
+          document.querySelectorAll(".user-avatar").forEach(item => {
+            item.setAttribute("src", data.data.user.personalInfo.profileUrl)
+          })
+        }
+
+        if(data.data.username) {
+          document.querySelectorAll(".user-name").forEach(item => {
+            item.textContent = data.data.username
+          })
+        }
+        
+        if(data.data.id) {
+          document.querySelectorAll(".user-id").forEach(item => {
+            item.textContent = "Mã KH: " + data.data.id
+          })
+        }
+        
+        if(data.data.user.points) {
+          document.querySelectorAll(".user-point-value").forEach(item => {
+            item.textContent = data.data.user.points
+          })
+        }
+      } else {
+        console.log(data)
+      }
+    }
+
+    async function getNotification(account_id, token) {
+      const response = await fetch("http://127.0.0.1:8000/api/accounts/" + account_id + "?include=user.personalInfo", {
+        method: "GET",
+        headers: {
+          "Accept": "application/json",
+          "Authorization": "Bearer " + token
+        }
+      })
+
+      const data = await response.json()
+      if(response.ok) {
+        if(data.data.user.personalInfo.profileUrl) {
+          document.querySelector(".button-user-ico").setAttribute("src", data.data.user.personalInfo.profileUrl)
+        }
+        
+        if(data.data.user.personalInfo.profileUrl) {
+          document.querySelectorAll(".user-avatar").forEach(item => {
+            item.setAttribute("src", data.data.user.personalInfo.profileUrl)
+          })
+        }
+
+        if(data.data.username) {
+          document.querySelectorAll(".user-name").forEach(item => {
+            item.textContent = data.data.username
+          })
+        }
+        
+        if(data.data.id) {
+          document.querySelectorAll(".user-id").forEach(item => {
+            item.textContent = "Mã KH: " + data.data.id
+          })
+        }
+        
+        if(data.data.user.points) {
+          document.querySelectorAll(".user-point-value").forEach(item => {
+            item.textContent = data.data.user.points
+          })
+        }
+      } else {
+        console.log(data)
+      }
+    }
+
+    async function updateHeader() {
+      var account_id = localStorage.getItem("account_id")
+      var token = localStorage.getItem("token")
+
+      if (account_id != null && token != null) {
+        const response = await fetch("http://127.0.0.1:8000/api/accounts/" + account_id, {
+          method: "GET",
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer " + token
+          }
+        })
+
+        const data = await response.json()
+        if(response.ok) {
+          // update user info
+          getPersonalInfo(account_id, token)
+
+          // update notification
+          getNotification(account_id, token)
+
+          // update header buttons
+          document.querySelector(".button-sign-up").style.display = "none"
+          document.querySelector(".button-log-in").style.display = "none"
+
+          document.querySelector(".header-notify").style.display = "flex"
+          document.querySelector(".button-post").style.display = "flex"
+          document.querySelector(".button-posts").style.display = "flex"
+          document.querySelector(".user-block").style.display = "flex"
+
+          document.querySelector(".sidebar-signup").style.display = "none"
+          document.querySelector(".sidebar-login").style.display = "none"
+
+          document.querySelector(".sidebar-notify-block").style.display = "flex"
+          document.querySelector(".sidebar-post").style.display = "flex"
+          document.querySelector(".sidebar-posts").style.display = "flex"
+          document.querySelector(".sidebar-user-block").style.display = "flex"
+        } else {
+          console.log(data)
+        }
+      } else {
+        document.querySelector(".button-sign-up").style.display = "flex"
+        document.querySelector(".button-log-in").style.display = "flex"
+      }
+    }
+
+    // run once time every reload or load page
+    document.addEventListener("DOMContentLoaded", async (e) => {
+      await updateHeader()
+    })
+
+    // log out button
+    document.querySelector(".user-logout").addEventListener("click", async (e) => {
+      const token = localStorage.getItem("token")
+
+      const response = await fetch("http://127.0.0.1:8000/api/logout", {
+        method: "POST",
+        headers: {
+          "Accept": "application/json",
+          "Authorization": "Bearer " + token
+        }
+      })
+
+      const data = await response.json()
+      if(response.ok) {
+        console.log(data.message)
+        localStorage.removeItem("account_id")
+        localStorage.removeItem("token")
+        if(data.message == "Logged out successfully") {
+          alert("Bạn đã đăng xuất. Hẹn gặp lại!")
+        }
+        window.location.reload()
+      } else {
+        console.log(data)
+      }
+    })
   </script>
 </html>

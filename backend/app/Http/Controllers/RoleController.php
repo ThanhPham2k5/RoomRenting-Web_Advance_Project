@@ -29,7 +29,7 @@ class RoleController extends Controller
 
     public function index()
     {
-        $query = QueryBuilder::for(Role::withTrashed())
+        $query = QueryBuilder::for(Role::class)
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
             //generic search
@@ -64,7 +64,7 @@ class RoleController extends Controller
 
     public function show(Role $role)
     {
-        $role = QueryBuilder::for(Role::withTrashed())
+        $role = QueryBuilder::for(Role::class)
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($role->id);
 

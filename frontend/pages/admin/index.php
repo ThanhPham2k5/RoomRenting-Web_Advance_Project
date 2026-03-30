@@ -16,12 +16,12 @@ if(!in_array($page, $validPage)){
 switch ($page) {
     case 'account':
         $apiRole = ($currentTable === '1') ? 'user' : 'employee';
-        $apiResult = call_api("http://127.0.0.1:8000/api/accounts?per_page=4&page={$pageNum}&filter[role]={$apiRole}");
+        $apiResult = call_api("http://127.0.0.1:8000/api/accounts?per_page=4&page={$pageNum}&filter[role]={$apiRole}" . $filterQuery);
         $pageData['accounts'] = $apiResult['data'] ?? [];
         $pageData['paginationMeta'] = [
             'current_page' => $apiResult['meta']['current_page'] ?? 1,
             'last_page'    => $apiResult['meta']['last_page'] ?? 1,
-            'base_url'     => "index.php?page=account&table={$currentTable}" 
+            'base_url'     => "index.php?page=account&table={$currentTable}"
         ];
         break;
     case 'comment':
@@ -92,13 +92,6 @@ switch ($page) {
             'base_url'     => "index.php?page=permission&table={$currentTable}" 
         ];
         break;
-}
-
-if ($page === 'account' && isset($_GET['action']) && $_GET['action'] === 'edit') {
-    $editId = $_GET['id'];
-    $accountEditData = call_api("http://127.0.0.1:8000/api/accounts/{$editId}");
-    $pageData['accountEditData'] = $accountEditData['data'];
-    $pageData['autoOpenEditForm'] = true; 
 }
 ?>
 
@@ -214,16 +207,48 @@ if ($page === 'account' && isset($_GET['action']) && $_GET['action'] === 'edit')
         const startDateInput = document.getElementById('filter-start-date');
         const endDateInput = document.getElementById('filter-end-date');
         
-        startDateInput.addEventListener('change', function() {
-            const selectedStartDate = this.value; 
-            endDateInput.min = selectedStartDate; 
-        });
-
-        endDateInput.addEventListener('change', function() {
-            const selectedEndDate = this.value;
-            startDateInput.max = selectedEndDate;
-        });
+        if(startDateInput){
+            startDateInput.addEventListener('change', function() {
+                const selectedStartDate = this.value; 
+                endDateInput.min = selectedStartDate; 
+            });
+        }
         
+        if(endDateInput){
+            endDateInput.addEventListener('change', function() {
+                const selectedEndDate = this.value;
+                startDateInput.max = selectedEndDate;
+            });
+        }
+
+
+        const formSua = document.getElementById('form-modal-sua-tai-khoan');
+        if (formSua) {
+            formSua.addEventListener('submit', function(event) {
+                const passwordInput = formSua.querySelector('input[name="password"]');
+                const passwordConfirmInput = formSua.querySelector('input[name="password_confirmation"]');
+                
+                const password = passwordInput ? passwordInput.value : '';
+                const passwordConfirm = passwordConfirmInput ? passwordConfirmInput.value : '';
+
+                if (password.trim() !== '') {
+                    
+                    if (passwordConfirm.trim() === '') {
+                        event.preventDefault();
+                        alert('Vui lòng nhập lại mật khẩu xác nhận!');
+                        if (passwordConfirmInput) passwordConfirmInput.focus();
+                        return;
+                    }
+                    
+                    if (password !== passwordConfirm) {
+                        event.preventDefault();
+                        alert('Mật khẩu xác nhận không khớp với mật khẩu mới!');
+                        if (passwordConfirmInput) passwordConfirmInput.focus();
+                        return;
+                    }
+                }
+            });
+        }
     });
     function openModal(idModal) {
         document.getElementById(idModal).style.display = 'flex';
@@ -266,20 +291,81 @@ if ($page === 'account' && isset($_GET['action']) && $_GET['action'] === 'edit')
             }
         }
     });
-    function handleEdit() {
+    function handleEdit(targetModel1) {
         const selectedRadio = document.querySelector('input[name="selectedRow"]:checked');
         if (!selectedRadio) {
-            alert("Vui lòng chọn dòng dữ liệu để sửa!"); return;
+            alert("Vui lòng chọn dòng dữ liệu để sửa!"); 
+            return;
         }
-        window.location.href = `index.php?page=<?php echo $page ?>&table=<?php echo $currentTable ?>&action=edit&id=${selectedRadio.value}`;
+
+        const id = selectedRadio.value;
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentPage = urlParams.get('page');
+        const apiConfigs = {
+            'account': { 
+                endpoint: 'accounts', 
+                query: '?include=roles'
+            },
+            'post': { 
+                endpoint: 'posts'
+            }
+        };
+        const config = apiConfigs[currentPage];
+        const apiUrl = `http://127.0.0.1:8000/api/${config.endpoint}/${id}${config.query}`;
+        fetch(apiUrl, {
+            method: 'GET',
+            headers: {
+                "Accept": "application/json",
+                "Authorization": "Bearer 1|doBptP22fIl2zcgGI4I92REMuVhYXRJlyOt2Aa987a263743"
+            }
+        })
+        .then(response => response.json())
+        .then(result => {
+            const data = result.data;
+            const form = document.getElementById(targetModel1);
+            
+            const idInput = form.querySelector('input[name="id"]');
+            if (idInput) idInput.value = data.id;
+            const usernameInput = form.querySelector('input[name="username"]');
+            if (usernameInput) usernameInput.value = data.username;
+            const roleInput = form.querySelector('select[name="role"]');
+            if (roleInput) roleInput.value = data.role;
+            const statusSelect = form.querySelector('select[name="status"]');
+            if (statusSelect) {
+                if (data.deletedAt === null) {
+                    statusSelect.value = 'active';
+                } else {
+                    statusSelect.value = 'inactive';
+                }
+            }
+            const rolesSelect = form.querySelector('select[name="roles[]"]');
+            if (rolesSelect) {
+                Array.from(rolesSelect.options).forEach(option => {
+                    option.selected = false;
+                });
+
+                if (data.roles && Array.isArray(data.roles)) {
+                    Array.from(rolesSelect.options).forEach(option => {
+                        if (data.roles.includes(option.value)) {
+                            option.selected = true;
+                        }
+                    });
+                }
+            }
+            openModal(targetModel1);
+        })
+        .catch(error => {
+            alert("Có lỗi xảy ra khi lấy dữ liệu!");
+            console.error(error);
+        });
     }
     function handleSearch() {
         const keyword = document.getElementById('searchInput').value.trim();
         const url = new URL(window.location.href);
         if (keyword) {
-            url.searchParams.set('filter[all]', keyword); 
+            url.searchParams.set('filter[search]', keyword); 
         } else {
-            url.searchParams.delete('filter[all]');
+            url.searchParams.delete('filter[search]');
         }
         url.searchParams.delete('p');
         window.location.href = url.toString();

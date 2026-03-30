@@ -24,7 +24,7 @@ function call_api($url, $method = 'GET', $data = []) {
         CURLOPT_HTTPHEADER => [
             "Accept: application/json",
             "Content-Type: application/json",
-            "Authorization: Bearer 1|gqInRUccPLWCLDVs2HfKevBsZcICH3Vn2yGsK1W99c9bbb9c"
+            "Authorization: Bearer 1|doBptP22fIl2zcgGI4I92REMuVhYXRJlyOt2Aa987a263743"
         ],
     ];
 

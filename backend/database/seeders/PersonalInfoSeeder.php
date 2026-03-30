@@ -150,20 +150,6 @@ class PersonalInfoSeeder extends Seeder
                 'email' => 'huongdo@example.com',
                 'profile_url' => 'https://testingbot.com/free-online-tools/random-avatar/200?u=huongdo',
             ],
-            [
-                'name' => 'Nguyễn Trung Kiên',
-                'gender' => 'male',
-                'dob' => '2003-09-11',
-                'email' => 'kiennguyen@example.com',
-                'profile_url' => 'https://testingbot.com/free-online-tools/random-avatar/200?u=kiennguyen',
-            ],
-            [
-                'name' => 'Trần Ngọc Bích',
-                'gender' => 'female',
-                'dob' => '2001-12-19',
-                'email' => 'bichtran@example.com',
-                'profile_url' => 'https://testingbot.com/free-online-tools/random-avatar/200?u=bichtran',
-            ],
         ];
 
         foreach ($people as $person) {

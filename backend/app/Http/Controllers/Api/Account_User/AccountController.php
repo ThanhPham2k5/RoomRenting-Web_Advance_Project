@@ -75,6 +75,8 @@ class AccountController extends Controller
      */
     public function show(Account $account)
     {
+        $this->authorize('view', $account);
+
         $account = $this->accountService->getAccount($account);
         return new AccountResource($account);
     }

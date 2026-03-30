@@ -27,7 +27,8 @@ class AccountPolicy
      */
     public function view(Account $account, Account $viewAccount): bool
     {
-        return $account->id === $viewAccount->id || $account->hasRole('userManager');
+        return $account->id === $viewAccount->id 
+            || $account->hasRole('userManager');
     }
 
     /**

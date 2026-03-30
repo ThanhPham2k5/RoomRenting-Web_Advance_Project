@@ -16,7 +16,6 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory()->count(20)->create();
 
         $accounts = Account::role('user')->get();
         $personalInfo = PersonalInfo::all();

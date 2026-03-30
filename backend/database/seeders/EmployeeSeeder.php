@@ -21,7 +21,7 @@ class EmployeeSeeder extends Seeder
     {
 
 
-        $roles = ['admin', 'postManager', 'billManager', 'userManager'];
+        $roles = ['admin', 'postManager', 'billManager', 'userManager', 'commentManager'];
 
         // Get all used personal_info_ids
         $usedIds = collect()

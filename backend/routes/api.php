@@ -64,16 +64,25 @@ Route::middleware(['auth:sanctum', 'permission:account.assignPermissions'])
 Route::middleware(['auth:sanctum', 'permission:user.get'])
     ->get('/users/{user}', [UserController::class, 'show']);
 
+Route::middleware(['auth:sanctum', 'permission:user.get'])
+    ->get('/users/byAccount/{account}', [UserController::class, 'showByAccountId']);
+
 Route::middleware(['auth:sanctum', 'permission:user.getAll'])
     ->get('/users', [UserController::class, 'index']);
 
 Route::middleware(['auth:sanctum', 'permission:user.update'])
-    ->put('/users', [UserController::class, 'update']);
+    ->put('/users/{user}', [UserController::class, 'update']);
+
+Route::middleware(['auth:sanctum', 'permission:user.update'])
+    ->put('/users/byAccount/{account}', [UserController::class, 'updateByAccountId']);
 
 
 //Employee
 Route::middleware(['auth:sanctum', 'permission:employee.get'])
     ->get('/employees/{employee}', [EmployeeController::class, 'show']);
+
+Route::middleware(['auth:sanctum', 'permission:employee.get'])
+    ->get('/employees/byAccount/{account}', [EmployeeController::class, 'showByAccountId']);
 
     
 Route::middleware(['auth:sanctum', 'permission:employee.getAll'])
@@ -84,11 +93,17 @@ Route::middleware(['auth:sanctum', 'permission:employee.getAll'])
 Route::middleware(['auth:sanctum', 'permission:personalInfo.get'])
     ->get('/personalInfos/{personalInfo}', [PersonalInfoController::class, 'show']);
 
+Route::middleware(['auth:sanctum', 'permission:personalInfo.get'])
+    ->get('/personalInfos/byAccount/{account}', [PersonalInfoController::class, 'showByAccountId']);
+
 Route::middleware(['auth:sanctum', 'permission:personalInfo.getAll'])
     ->get('/personalInfos', [PersonalInfoController::class, 'index']);
 
 Route::middleware(['auth:sanctum', 'permission:personalInfo.update'])
     ->put('/personalInfos/{personalInfo}', [PersonalInfoController::class, 'update']);
+
+Route::middleware(['auth:sanctum', 'permission:personalInfo.update'])
+    ->put('/personalInfos/byAccount/{account}', [PersonalInfoController::class, 'updateByAccountId']);
 
     
 
@@ -162,11 +177,17 @@ Route::middleware(['auth:sanctum', 'permission:favorite.delete'])
 Route::middleware(['auth:sanctum', 'permission:form.get'])
     ->get('/forms/{form}', [FormController::class, 'show']);
 
+Route::middleware(['auth:sanctum', 'permission:form.get'])
+    ->get('/forms/byAccount/{account}', [FormController::class, 'showByAccountId']);
+
 Route::middleware(['auth:sanctum', 'permission:form.getAll'])
     ->get('/forms', [FormController::class, 'index']);
 
 Route::middleware(['auth:sanctum', 'permission:form.update'])
     ->put('/forms/{form}', [FormController::class, 'update']);
+
+Route::middleware(['auth:sanctum', 'permission:form.update'])
+    ->put('/forms/byAccount/{account}', [FormController::class, 'updateByAccountId']);
 
 Route::middleware(['auth:sanctum', 'permission:form.getRecommendation'])
     ->get('/forms/recommendations', [FormController::class, 'getRecommendedPosts']);
@@ -179,19 +200,19 @@ Route::middleware(['auth:sanctum', 'permission:form.getRecommendation'])
 */
 //Notification
 Route::middleware(['auth:sanctum', 'permission:notification.get'])
-->get('/notifications/{notification}', [NotificationController::class, 'show']);
+    ->get('/notifications/{notification}', [NotificationController::class, 'show']);
     
 Route::middleware(['auth:sanctum', 'permission:notification.getAll'])
-->get('/notifications', [NotificationController::class, 'index']);
+    ->get('/notifications', [NotificationController::class, 'index']);
 
 Route::middleware(['auth:sanctum', 'permission:notification.create'])
-->post('/notifications', [NotificationController::class, 'store']);
+    ->post('/notifications', [NotificationController::class, 'store']);
 
 Route::middleware(['auth:sanctum', 'permission:notification.update'])
-->put('/notifications/{notification}', [NotificationController::class, 'update']);
+    ->put('/notifications/{notification}', [NotificationController::class, 'update']);
 
 Route::middleware(['auth:sanctum', 'permission:notification.delete'])
-->delete('/notifications/{notification}', [NotificationController::class, 'destroy']);
+    ->delete('/notifications/{notification}', [NotificationController::class, 'destroy']);
 
 Route::middleware(['auth:sanctum', 'permission:notification.restore'])
     ->post('/notifications/{notification}/restore', [NotificationController::class, 'restore'])

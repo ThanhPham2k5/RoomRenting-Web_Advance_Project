@@ -10,54 +10,31 @@ use App\Http\Requests\StoreNotificationRequest;
 use App\Http\Requests\UpdateNotificationRequest;
 use App\Http\Resources\NotificationCollection;
 use App\Http\Resources\NotificationResource;
+use App\Models\Account_User\Account;
 use Illuminate\Http\Request;
 use App\Models\Posts\Post;
 use App\Models\Payments\Paybill;
 use App\Models\Payments\Rechargebill;
+use App\Services\NotificationService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Spatie\QueryBuilder\AllowedFilter;
-use Spatie\QueryBuilder\Enums\FilterOperator;
-use Spatie\QueryBuilder\QueryBuilder;
 
 class NotificationController extends Controller
 {
     use AuthorizesRequests;
-    private $allowedIncludes = [
-        'account',
-        'notifiable'
-    ];
 
-    private $allColFilter = [
-        'title',
-        'content',
-        'status',
-        'notificationType' => 'notification_type',
-        'notifiableType' => 'notifiable_type',
-    ];
+    private NotificationService $notificationService;
+
+    public function __construct(NotificationService $notificationService)
+    {
+        $this->notificationService = $notificationService;
+    }
 
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $query = QueryBuilder::for(Notification::withTrashed())
-        ->allowedIncludes($this->allowedIncludes)
-        ->allowedFilters([
-            //generic search
-            AllowedFilter::custom('search', new AllColumnFilter($this->allColFilter)),
-
-            //specific filters
-            AllowedFilter::exact('id'),
-            AllowedFilter::partial('title'),
-            AllowedFilter::partial('content'),
-            AllowedFilter::operator('status', FilterOperator::DYNAMIC), // =, <>
-            AllowedFilter::operator('notificationType', FilterOperator::DYNAMIC, '', 'notification_type'), // =, <>
-            AllowedFilter::partial('notifiableType', 'notifiable_type'),
-            AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
-        ])
-        ->allowedSorts([
-            'id',
-        ]);
+        $query = $this->notificationService->buildGetAllQuery();
 
         $perPage = $request->per_page ?? 15;
 
@@ -85,6 +62,7 @@ class NotificationController extends Controller
     public function store(StoreNotificationRequest $request)
     {
         $validated = $request->validated();
+
         // Based on the input variable to determine
         if (!empty($request['post_id'])) {
             $model = Post::findOrFail($request['post_id']);
@@ -95,16 +73,10 @@ class NotificationController extends Controller
         } else {
             return response()->json(['message' => 'Missing target'], 400);
         }
-        $validated['status'] = 'unread';
-        $notification = new Notification($validated);
-        $notification->notifiable()->associate($model);
 
-        $notification->save();
+        $result = $this->notificationService->createNotification($validated, $model);
 
-        return response()->json([
-            'message' => 'Notification created successfully',
-            'notification' => new NotificationResource($notification)
-        ]);
+        return response()->json($result);
     }
 
     /**
@@ -114,13 +86,11 @@ class NotificationController extends Controller
     {
         $this->authorize('view', $notification);
 
-        $notification = QueryBuilder::for(Notification::withTrashed())
-        ->allowedIncludes($this->allowedIncludes)
-        ->findOrFail($notification->id);
+        $notification = $this->notificationService->getNotification($notification);
 
         return new NotificationResource($notification);
     }
-
+    
     /**
      * Show the form for editing the specified resource.
      */
@@ -144,12 +114,9 @@ class NotificationController extends Controller
             $notification->notifiable()->associate($post);
         }
 
-        $notification->update($validated);
+        $result = $this->notificationService->updateNotification($validated, $notification);
 
-        return response()->json([
-            'message' => 'Notification updated successfully',
-            'notification' => new NotificationResource($notification)
-        ]);
+        return response()->json($result);
     }
 
     /**
@@ -159,32 +126,15 @@ class NotificationController extends Controller
     {
         $this->authorize('delete', $notification);
 
-        $notification->delete();
+        $result = $this->notificationService->deleteNotification($notification);
 
-        return response()->json([
-            'message' => 'Notification deleted successfully'
-        ]);
-    }
-
-    public function markAsRead(Notification $notification)
-    {
-        $notification->update(['status' => 'read']);
-
-        return response()->json([
-            'message' => 'Notification marked as read',
-            'notification' => new NotificationResource($notification)
-        ]);
+        return response()->json($result);
     }
 
     public function restore($id) {
 
-        $noti = Notification::onlyTrashed()->findOrFail($id);
+        $result = $this->notificationService->restoreNotification($id);
 
-        $noti->restore();
-
-        return response()->json([
-            'message' => 'Notification restored successfully',
-            'notification'    => new NotificationResource($noti),
-        ]);
+        return response()->json($result);
     }
 }

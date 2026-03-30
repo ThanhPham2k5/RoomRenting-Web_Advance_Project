@@ -18,39 +18,13 @@ use Spatie\QueryBuilder\Enums\FilterOperator;
 use Spatie\QueryBuilder\QueryBuilder;
 use App\Models\Form;
 use Illuminate\Support\Facades\DB;
+use Spatie\QueryBuilder\AllowedSort;
 
 class AccountController extends Controller
 {   
     use AuthorizesRequests;
 
     private AccountService $accountService;
-
-    private $allowedIncludes = [
-        'form',
-        'user',
-        'roles',
-        'permissions',
-        'roles.permissions',
-        'employee',
-        'user.posts',
-        'employee.posts',
-        'user.personalInfo',
-        'employee.personalInfo',
-        'comments',
-        'favorites.post',
-        'rechargeBills',
-        'payBills',
-        'notifications'
-    ];
-
-    private $allColFilter = [
-        'username',
-        'role'
-    ];
-
-    private $allowSorts = [
-        'id',
-    ];
 
     public function __construct(AccountService $accountService)
     {
@@ -62,20 +36,7 @@ class AccountController extends Controller
      */
     public function index(Request $request)
     {
-        $query = QueryBuilder::for(Account::withTrashed())
-        ->allowedIncludes($this->allowedIncludes)
-        ->allowedFilters([
-            //generic search
-            AllowedFilter::custom('search', new AllColumnFilter($this->allColFilter)),
-
-            //specific filter
-            AllowedFilter::partial('username'),
-            AllowedFilter::exact('id'),
-
-            AllowedFilter::exact('role'),
-            AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
-        ])
-        ->allowedSorts($this->allowSorts);
+        $query = $this->accountService->buildGetAllQuery();
 
         $perPage = $request->per_page ?? 15;
 
@@ -114,10 +75,7 @@ class AccountController extends Controller
      */
     public function show(Account $account)
     {
-        $account = QueryBuilder::for(Account::withTrashed())
-        ->allowedIncludes($this->allowedIncludes)
-        ->findOrFail($account->id);
-
+        $account = $this->accountService->getAccount($account);
         return new AccountResource($account);
     }
 

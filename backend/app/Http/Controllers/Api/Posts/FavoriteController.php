@@ -9,34 +9,31 @@ use App\Http\Requests\StoreFavoriteRequest;
 use App\Http\Requests\UpdateFavoriteRequest;
 use App\Http\Resources\Posts\FavoriteCollection;
 use App\Http\Resources\Posts\FavoriteResource;
+use App\Services\FavoriteService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\AllowedSort;
 use Spatie\QueryBuilder\Enums\FilterOperator;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class FavoriteController extends Controller
 {
     use AuthorizesRequests;
-    private $allowedIncludes = [
-        'account',
-        'post',
-    ];
+
+    private FavoriteService $favoriteService;
+
+    public function __construct(FavoriteService $favoriteService)
+    {
+        $this->favoriteService = $favoriteService;
+    }
 
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $query = QueryBuilder::for(Favorite::withTrashed())
-        ->allowedIncludes($this->allowedIncludes)
-        ->allowedFilters([
-            AllowedFilter::exact('id'),
-            AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
-        ])
-        ->allowedSorts([
-            'id',
-        ]);
+        $query = $this->favoriteService->buildGetAllQuery();
 
         $perPage = $request->per_page ?? 15;
 
@@ -65,12 +62,9 @@ class FavoriteController extends Controller
     {
         $validated = $request->validated();
 
-        $favorite = Favorite::create($validated);
+        $result = $this->favoriteService->createFavorite($validated);
 
-        return response()->json([
-            'message' => 'Favorite created successfully',
-            'favorite' => new FavoriteResource($favorite)
-        ], 201);
+        return response()->json($result);
     }
 
     /**
@@ -80,9 +74,7 @@ class FavoriteController extends Controller
     {
         $this->authorize('view', $favorite);
 
-        $favorite = QueryBuilder::for(Favorite::withTrashed())
-        ->allowedIncludes($this->allowedIncludes)
-        ->findOrFail($favorite->id);
+        $favorite = $this->favoriteService->getFavorite($favorite);
 
         return new FavoriteResource($favorite);
     }
@@ -104,12 +96,9 @@ class FavoriteController extends Controller
 
         $validated = $request->validated();
 
-        $favorite->update($validated);
+        $result = $this->favoriteService->updateFavorite($favorite, $validated);
 
-        return response()->json([
-            'message' => 'Favorite updated successfully',
-            'favorite' => new FavoriteResource($favorite)
-        ]);
+        return response()->json($result);
     }
 
     /**
@@ -119,10 +108,8 @@ class FavoriteController extends Controller
     {
         $this->authorize('delete', $favorite);
 
-        $favorite->delete();
+        $result = $this->favoriteService->deleteFavorite($favorite);
 
-        return response()->json([
-            'message' => 'Favorite deleted successfully'
-        ]);
+        return response()->json($result);
     }
 }

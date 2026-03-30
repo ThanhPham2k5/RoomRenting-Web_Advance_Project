@@ -7,40 +7,27 @@ use App\Filter\DateFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\RoleCollection;
 use App\Http\Resources\RoleResource;
+use App\Services\RoleService;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\AllowedSort;
 use Spatie\QueryBuilder\Enums\FilterOperator;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class RoleController extends Controller
 {
-    private $allowedIncludes = [
-        'permissions',
-    ];
+    
+    private RoleService $roleService;
 
-    private $allowSorts = [
-        'id',
-    ];
-
-    private $allColFilter = [
-        'name',
-    ];
+    public function __construct(RoleService $roleService)
+    {
+        $this->roleService = $roleService;
+    }
 
     public function index()
     {
-        $query = QueryBuilder::for(Role::withTrashed())
-        ->allowedIncludes($this->allowedIncludes)
-        ->allowedFilters([
-            //generic search
-            AllowedFilter::custom('search', new AllColumnFilter($this->allColFilter)),
-
-            //specific filter
-            AllowedFilter::partial('name'),
-            AllowedFilter::exact('id'),
-            AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
-        ])
-        ->allowedSorts($this->allowSorts);
+        $query = $this->roleService->buildGetAllQuery();
 
         $roles = $query->get();
 
@@ -54,19 +41,14 @@ class RoleController extends Controller
             'description' => 'nullable|string'
         ]);
 
-        $role = Role::create($validate);
+        $result = $this->roleService->createRole($validate);
 
-        return response()->json([
-            'message' => 'Role created successfully',
-            'role' => $role
-        ], 201);
+        return response()->json($result);
     }
 
     public function show(Role $role)
     {
-        $role = QueryBuilder::for(Role::withTrashed())
-        ->allowedIncludes($this->allowedIncludes)
-        ->findOrFail($role->id);
+        $role = $this->roleService->getRole($role);
 
         return new RoleResource($role);
     }
@@ -78,21 +60,16 @@ class RoleController extends Controller
             'description' => 'sometimes|string'
         ]);
 
-        $role->update($validate);
+        $result = $this->roleService->updateRole($role, $validate);
 
-        return response()->json([
-            'message' => 'Role updated successfully',
-            'role' => $role
-        ]);
+        return response()->json($result);
     }
 
     public function destroy(Role $role)
     {
-        $role->delete();
+        $result = $this->roleService->deleteRole($role);
 
-        return response()->json([
-            'message' => 'Role deleted successfully'
-        ]);
+        return response()->json($result);
     }
 
     public function assignPermissionsToRole(Request $request, Role $role)

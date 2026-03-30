@@ -7,7 +7,7 @@ use App\Models\Account_User\PersonalInfo;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
 
-class PersonalInfoSeeder extends Seeder
+class PersonalInfoSeeder extends Seeder //UNUSED
 {
     /**
      * Run the database seeds.

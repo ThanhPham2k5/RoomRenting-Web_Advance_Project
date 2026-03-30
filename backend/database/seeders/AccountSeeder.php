@@ -2,7 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Helpers\VietnamAddress;
 use App\Models\Account_User\Account;
+use App\Models\Account_User\PersonalInfo;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -13,11 +15,123 @@ class AccountSeeder extends Seeder
      */
     public function run(): void
     {
-        // Account::create([ //create a useable admin
-        //     'username' => 'admin',
-        //     'password' => Hash::make('admin123'),
-        //     'role' => 'admin'
-        // ]);
+
+        $people = [
+            [
+                'name' => 'Nguyễn Văn An',
+                'gender' => 'male',
+                'dob' => '2000-05-10',
+                'email' => 'annguyen@example.com',
+            ],
+            [
+                'name' => 'Nguyễn Thanh Bình',
+                'gender' => 'male',
+                'dob' => '1997-02-08',
+                'email' => 'thanhbinh@example.com',
+            ],
+            [
+                'name' => 'Trần Thị Bình',
+                'gender' => 'female',
+                'dob' => '1999-08-21',
+                'email' => 'binhtran@example.com',
+            ],
+            [
+                'name' => 'Lê Minh Hoàng',
+                'gender' => 'male',
+                'dob' => '2001-01-15',
+                'email' => 'hoangle@example.com',
+            ],
+            [
+                'name' => 'Phạm Thị Lan',
+                'gender' => 'female',
+                'dob' => '2002-11-30',
+                'email' => 'lanpham@example.com',
+            ],
+            [
+                'name' => 'Lê Nhật Huy',
+                'gender' => 'male',
+                'dob' => '2004-01-15',
+                'email' => 'huyle@example.com',
+            ],
+            [
+                'name' => 'Lê Thị Lan Anh',
+                'gender' => 'female',
+                'dob' => '1995-11-30',
+                'email' => 'lananhle@example.com',
+            ],
+            [
+                'name' => 'Nguyễn Quốc Bảo',
+                'gender' => 'male',
+                'dob' => '1998-03-12',
+                'email' => 'baonguyen@example.com',
+            ],
+            [
+                'name' => 'Đặng Thị Mỹ Linh',
+                'gender' => 'female',
+                'dob' => '2000-09-05',
+                'email' => 'linhdang@example.com',
+            ],
+            [
+                'name' => 'Phan Thanh Tùng',
+                'gender' => 'male',
+                'dob' => '1997-07-19',
+                'email' => 'tungphan@example.com',
+            ],
+            [
+                'name' => 'Bùi Thị Ngọc Mai',
+                'gender' => 'female',
+                'dob' => '2003-02-25',
+                'email' => 'maibui@example.com',
+            ],
+            [
+                'name' => 'Võ Minh Tuấn',
+                'gender' => 'male',
+                'dob' => '1996-12-01',
+                'email' => 'tuanvo@example.com',
+            ],
+            [
+                'name' => 'Nguyễn Thị Thu Hà',
+                'gender' => 'female',
+                'dob' => '1994-06-14',
+                'email' => 'hanguyen@example.com',
+            ],
+            [
+                'name' => 'Trương Gia Hưng',
+                'gender' => 'male',
+                'dob' => '2001-10-08',
+                'email' => 'hungtruong@example.com',
+            ],
+            [
+                'name' => 'Hoàng Thị Kim Chi',
+                'gender' => 'female',
+                'dob' => '1999-04-17',
+                'email' => 'chihoang@example.com',
+            ],
+            [
+                'name' => 'Ngô Quang Vinh',
+                'gender' => 'male',
+                'dob' => '2002-08-29',
+                'email' => 'vinhngo@example.com',
+            ],
+            [
+                'name' => 'Phạm Ngọc Ánh',
+                'gender' => 'female',
+                'dob' => '2000-01-03',
+                'email' => 'anhpham@example.com',
+            ],
+            [
+                'name' => 'Lý Hoàng Nam',
+                'gender' => 'male',
+                'dob' => '1998-11-22',
+                'email' => 'namly@example.com',
+            ],
+            [
+                'name' => 'Đỗ Thị Thanh Hương',
+                'gender' => 'female',
+                'dob' => '1997-05-27',
+                'email' => 'huongdo@example.com',
+            ],
+        ];
 
 
         $accounts = [
@@ -118,7 +232,7 @@ class AccountSeeder extends Seeder
             ],
         ];
 
-        foreach ($accounts as $data) {
+        foreach ($accounts as $index => $data) {
             $account = Account::create([
                 'role' => $data['role'] == 'user' ? 'user' : 'employee',
                 'username' => $data['username'],
@@ -127,6 +241,43 @@ class AccountSeeder extends Seeder
 
             // assign Spatie role
             $account->assignRole($data['role']);
+
+            //create personalInfo
+
+            $person = $people[$index]; // Lấy dữ liệu người tương ứng theo index
+            
+            $province = VietnamAddress::randomProvince();
+            $ward = VietnamAddress::randomWard($province['province_code']);
+
+            PersonalInfo::create([
+                'id'           => $account->id,
+                'name'         => $person['name'],
+                'gender'       => $person['gender'],
+                'date_of_birth'=> $person['dob'],
+                'email'        => $person['email'],
+                'house_number' => $this->houseNumber(),
+                'ward'         => $ward['name'],
+                'province'     => $province['name'],
+                'phone_number' => $this->phone(),
+                'pid'          => $this->pid(),
+            ]);
         }
+    }
+
+    private function houseNumber()
+    {
+        return collect([
+            '12/5', '45A', '102B', '7/12/3', '88'
+        ])->random();
+    }
+
+    private function phone()
+    {
+        return '0' . rand(300000000, 999999999);
+    }
+
+    private function pid()
+    {
+        return '0' . rand(100000000000, 999999999999);
     }
 }

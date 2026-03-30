@@ -7,6 +7,7 @@ use App\Models\Account_User\Employee;
 use App\Models\Account_User\PersonalInfo;
 use App\Models\Account_User\User;
 use Database\Factories\AccountFactory;
+use Exception;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Http;
@@ -19,33 +20,18 @@ class EmployeeSeeder extends Seeder
      */
     public function run(): void
     {
-
-
         $roles = ['admin', 'postManager', 'billManager', 'userManager', 'commentManager'];
-
-        // Get all used personal_info_ids
-        $usedIds = collect()
-            ->merge(User::pluck('personal_info_id'))
-            ->merge(Employee::pluck('personal_info_id'));
-
-        // Get available personal infos
-        $availablePersonalInfos = PersonalInfo::whereNotIn('id', $usedIds)->get();
 
         foreach ($roles as $role) {
             $accounts = Account::role($role)->get();
 
             foreach ($accounts as $account) {
-
-                if ($availablePersonalInfos->isEmpty()) {
-                    throw new \Exception('Not enough PersonalInfo records!');
-                }
-
-                $personalInfo = $availablePersonalInfos->shift(); // take 1 and remove
-
                 Employee::create([
                     'account_id' => $account->id,
-                    'personal_info_id' => $personalInfo->id,
+                    'personal_info_id' => $account->id,
                 ]);
+
+                $personalInfo = PersonalInfo::where('id', $account->id)->first();
 
                 //update profile
                 $personalInfo->update([
@@ -59,15 +45,20 @@ class EmployeeSeeder extends Seeder
     private function profile($personalInfo)
     {   
         // fake image content
-        $path = "profiles/{$personalInfo->employee->account_id}/avatar.jpg";
+        $path = "profiles/{$personalInfo->id}/avatar.jpg";
 
-        //get random profile
-        $response = Http::withoutVerifying()
-        ->withOptions(['allow_redirects' => true]) 
-        ->get("https://picsum.photos/seed/{$personalInfo->employee->account_id}/300");
+        try{
+            //get random profile
+            $response = Http::withoutVerifying()
+            ->withOptions(['allow_redirects' => true]) 
+            ->get("https://picsum.photos/seed/{$personalInfo->id}/300");
+            
+            // create dummy file
+            Storage::disk('public')->put($path, $response->body());
+        }catch(Exception $e){
+
+        }
         
-        // create dummy file
-        Storage::disk('public')->put($path, $response->body());
 
         return $path;
     }

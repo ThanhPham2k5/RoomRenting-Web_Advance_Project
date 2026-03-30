@@ -56,6 +56,7 @@ class AccountService
 
             // Create PersonalInfo
             $personalInfo = PersonalInfo::create([
+                'id' => $account->id,
                 'email' => $data['email'],
                 'phone_number' => $data['phone_number'],
             ]);

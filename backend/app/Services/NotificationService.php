@@ -38,7 +38,8 @@ class NotificationService{
             AllowedFilter::partial('title'),
             AllowedFilter::partial('content'),
             AllowedFilter::operator('status', FilterOperator::DYNAMIC), // =, <>
-            AllowedFilter::operator('notificationType', FilterOperator::DYNAMIC, '', 'notification_type'), // =, <>
+            AllowedFilter::exact('notificationType', 'notification_type'),
+            // AllowedFilter::operator('notificationType', FilterOperator::DYNAMIC, 'notification_type'), // =, <>
             AllowedFilter::partial('notifiableType', 'notifiable_type'),
             AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
         ])

@@ -19,20 +19,19 @@ use App\Filter\AllColumnFilter;
 use App\Filter\DateFilter;
 use App\Models\Account_User\Account;
 use App\Models\Account_User\User;
+use App\Services\RechargeBillService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class RechargeBillController extends Controller
 {
     use AuthorizesRequests;
-    private $allowedIncludes = [
-        'account',
-        'rechargeRule',
-        'notifications'
-    ];
+    
+    private RechargeBillService $rechargeService;
 
-    private $allColFilter = [
-        'status',
-    ];
+    public function __construct(RechargeBillService $rechargeService)
+    {
+        $this->rechargeService = $rechargeService;
+    }
 
     /**
      * Display a listing of the resource.
@@ -41,25 +40,7 @@ class RechargeBillController extends Controller
     {
         $this->authorize('viewAny', RechargeBill::class);
 
-        $query = QueryBuilder::for(RechargeBill::withTrashed())
-        ->allowedIncludes($this->allowedIncludes)
-        ->allowedFilters([
-            //generic search
-            AllowedFilter::custom('search', new AllColumnFilter($this->allColFilter)),
-
-            //specific filter
-            AllowedFilter::exact('id'),
-            AllowedFilter::operator('money', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
-            AllowedFilter::operator('totalMoney', FilterOperator::DYNAMIC, '', 'total_money'), // =, <>, >, <, >=, <=
-            AllowedFilter::operator('vat', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
-            AllowedFilter::exact('status'),
-            AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
-        ])
-        ->allowedSorts([
-            'id',
-            'money',
-            AllowedSort::field('totalMoney', 'total_money')
-        ]);
+        $query = $this->rechargeService->buildGetAllQuery();
 
         $perPage = $request->per_page ?? 15;
 
@@ -88,21 +69,9 @@ class RechargeBillController extends Controller
     {
         $validated = $request->validated();
         
-        $rechargeBill = RechargeBill::create($validated);
+        $result = $this->rechargeService->createRechargeBill($validated);
 
-        // Increment user points
-        $point = $rechargeBill->rechargeRule->points;
-        $account = $rechargeBill->account;
-        $user = User::where('account_id', $account->id)->first();
-        
-        $user->increment('points', $point);
-        
-        event(new RechargeBillCreated($rechargeBill));
-
-        return response()->json([
-            'message' => 'Recharge bill created successfully',
-            'rechargeBill' => new RechargeBillResource($rechargeBill)
-        ], 201);
+        return response()->json($result);
     }
 
     /**
@@ -112,9 +81,7 @@ class RechargeBillController extends Controller
     {
         $this->authorize('view', $rechargeBill);
 
-        $rechargeBill = QueryBuilder::for(RechargeBill::withTrashed())
-        ->allowedIncludes($this->allowedIncludes)
-        ->findOrFail($rechargeBill->id);
+        $rechargeBill = $this->rechargeService->getRechargeBill($rechargeBill);
 
         return new RechargeBillResource($rechargeBill);
     }
@@ -134,12 +101,9 @@ class RechargeBillController extends Controller
     {
         $validated = $request->validated();
         
-        $rechargeBill->update($validated);
+        $result = $this->rechargeService->updateRechargeBill($rechargeBill, $validated);
 
-        return response()->json([
-            'message' => 'Recharge bill updated successfully',
-            'rechargeBill' => new RechargeBillResource($rechargeBill)
-        ]);
+        return response()->json($result);
     }
 
     /**
@@ -147,21 +111,15 @@ class RechargeBillController extends Controller
      */
     public function destroy(RechargeBill $rechargeBill)
     {
-        $rechargeBill->delete();
+        $result = $this->rechargeService->deleteRechargeBill($rechargeBill);
 
-        return response()->json([
-            'message' => 'Recharge bill deleted successfully'
-        ]);
+        return response()->json($result);
     }
 
     public function restore($id) {
 
-        $rechargeBill = RechargeBill::onlyTrashed()->findOrFail($id);
+        $result = $this->rechargeService->restoreRechargeBill($id);
 
-        $rechargeBill->restore();
-
-        return response()->json([
-            'message' => 'RehargeBill restored successfully',
-        ]);
+        return response()->json($result);
     }
 }

@@ -10,46 +10,29 @@ use App\Http\Requests\StoreEmployeeRequest;
 use App\Http\Requests\UpdateEmployeeRequest;
 use App\Http\Resources\Account_User\EmployeeCollection;
 use App\Http\Resources\Account_User\EmployeeResource;
+use App\Models\Account_User\Account;
+use App\Services\EmployeeService;
 use Illuminate\Http\Request;
 use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\AllowedSort;
 use Spatie\QueryBuilder\Enums\FilterOperator;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class EmployeeController extends Controller
 {
-    private $allowedIncludes = [
-        'account',
-        'personalInfo',
-        'posts',
-    ];
+    private EmployeeService $employeeService;
 
-    private $allColFilter = [
-        'account.username',
-        'account.role'
-    ];
-
-    private $allowSorts = [
-        'id',
-    ];
+    public function __construct(EmployeeService $employeeService)
+    {
+        $this->employeeService = $employeeService;
+    }
 
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $query = QueryBuilder::for(Employee::withTrashed())
-        ->allowedIncludes($this->allowedIncludes)
-        ->allowedFilters([
-            //generic search
-            AllowedFilter::custom('search', new AllColumnFilter($this->allColFilter)),
-
-            //specific filter
-            AllowedFilter::exact('id'),
-            AllowedFilter::partial('account.username'),
-            AllowedFilter::exact('account.role'),
-            AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
-        ])
-        ->allowedSorts($this->allowSorts);
+        $query = $this->employeeService->buildGetAllQuery();     
 
         $perPage = $request->per_page ?? 15;
 
@@ -84,9 +67,17 @@ class EmployeeController extends Controller
      */
     public function show(Employee $employee)
     {
-        $employee = QueryBuilder::for(Employee::withTrashed())
-        ->allowedIncludes($this->allowedIncludes)
-        ->findOrFail($employee->id);
+        $employee = $this->employeeService->getEmployee($employee);
+
+        return new EmployeeResource($employee);
+    }
+
+    // via account_id
+    public function showByAccountId(Account $account)
+    {
+        $employee = $account->employee;
+
+        $employee = $this->employeeService->getEmployee($employee);
 
         return new EmployeeResource($employee);
     }

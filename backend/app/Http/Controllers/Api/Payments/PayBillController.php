@@ -15,21 +15,21 @@ use Spatie\QueryBuilder\QueryBuilder;
 use App\Events\PayBillCreated;
 use App\Filter\AllColumnFilter;
 use App\Filter\DateFilter;
+use App\Services\PayBillService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Spatie\QueryBuilder\AllowedSort;
 
 class PayBillController extends Controller
 {
     use AuthorizesRequests;
-    private $allowedIncludes = [
-        'account',
-        'payRule',
-        'post',
-        'notifications'
-    ];
+    
+    private PayBillService $payBillService;
 
-    private $allColFilter = [
-        'status'
-    ];
+    public function __construct(PayBillService $payBillService)
+    {
+        $this->payBillService = $payBillService;
+    }
+
 
     /**
      * Display a listing of the resource.
@@ -38,22 +38,7 @@ class PayBillController extends Controller
     {
         $this->authorize('viewAny', PayBill::class);
 
-        $query = QueryBuilder::for(PayBill::withTrashed())
-        ->allowedIncludes($this->allowedIncludes)
-        ->allowedFilters([
-            //generic search
-            AllowedFilter::custom('search', new AllColumnFilter($this->allColFilter)),
-
-            //specific filter
-            AllowedFilter::exact('id'),
-            AllowedFilter::operator('points', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
-            AllowedFilter::exact('status'),
-            AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
-        ])
-        ->allowedSorts([
-            'id',
-            'points',
-        ]);
+        $query = $this->payBillService->buildGetAllQuery();
 
         $perPage = $request->per_page ?? 15;
 
@@ -81,20 +66,6 @@ class PayBillController extends Controller
     public function store(StorePayBillRequest $request)
     {
         // The payment for the post will be handled by a scheduled job, so we don't need to create a pay bill here
-
-        // $validated = $request->validated();
-        
-        // $payBill = PayBill::create($validated);
-
-        // event(new PayBillCreated($payBill));
-
-        // return response()->json([
-        //     'message' => 'Pay bill created successfully',
-        //     'payBill' => new PayBillResource($payBill)
-        // ], 201);
-        return response()->json([
-            'message' => 'Pay bill auto create, no need to create manually',
-        ], 201);
     }
 
     /**
@@ -104,9 +75,7 @@ class PayBillController extends Controller
     {
         $this->authorize('view', $payBill);
 
-        $payBill = QueryBuilder::for(PayBill::withTrashed())
-        ->allowedIncludes($this->allowedIncludes)
-        ->findOrFail($payBill->id);
+        $payBill = $this->payBillService->getPayBill($payBill);
 
         return new PayBillResource($payBill);
     }
@@ -126,12 +95,9 @@ class PayBillController extends Controller
     {
         $validated = $request->validated();
         
-        $payBill->update($validated);
+        $result = $this->payBillService->updatePayBill($payBill, $validated);
 
-        return response()->json([
-            'message' => 'Pay bill updated successfully',
-            'payBill' => new PayBillResource($payBill)
-        ]);
+        return response()->json($result);
     }
 
     /**
@@ -139,22 +105,16 @@ class PayBillController extends Controller
      */
     public function destroy(PayBill $payBill)
     {
-        $payBill->delete();
+        $result = $this->payBillService->deletePayBill($payBill);
 
-        return response()->json([
-            'message' => 'Pay bill deleted successfully'
-        ]);
+        return response()->json($result);
     }
 
 
     public function restore($id) {
 
-        $payBill = PayBill::onlyTrashed()->findOrFail($id);
+        $result = $this->payBillService->restorePayBill($id);
 
-        $payBill->restore();
-
-        return response()->json([
-            'message' => 'PayBill restored successfully'
-        ]);
+        return response()->json($result);
     }
 }

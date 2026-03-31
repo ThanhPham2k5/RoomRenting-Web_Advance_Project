@@ -10,6 +10,8 @@ use App\Http\Requests\StorePersonalInfoRequest;
 use App\Http\Requests\UpdatePersonalInfoRequest;
 use App\Http\Resources\Account_User\PersonalInfoCollection;
 use App\Http\Resources\Account_User\PersonalInfoResource;
+use App\Models\Account_User\Account;
+use App\Services\PersonalInfoService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -22,48 +24,19 @@ class PersonalInfoController extends Controller
 {
     use AuthorizesRequests;
 
-    private $allowedIncludes = [
-        'user',
-        'employee',
-        'user.account',
-        'employee.account'
-    ];
+    private PersonalInfoService $personalInfoService;
 
-    private $allColFilter = [
-        'gender',
-        'houseNumber' => 'house_number',
-        'ward',
-        'province',
-        'name',
-        'pid',
-    ];
+    public function __construct(PersonalInfoService $personalInfoService)
+    {
+        $this->personalInfoService = $personalInfoService;
+    }
 
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $query = QueryBuilder::for(PersonalInfo::withTrashed())
-        ->allowedIncludes($this->allowedIncludes)
-        ->allowedFilters([
-            //generic search
-            AllowedFilter::custom('search', new AllColumnFilter($this->allColFilter)),
-
-            //specific filter
-            AllowedFilter::exact('id'),
-            AllowedFilter::operator('gender', FilterOperator::DYNAMIC), // =, <>
-            AllowedFilter::partial('houseNumber', 'house_number'),
-            AllowedFilter::partial('ward'),
-            AllowedFilter::partial('province'),
-            AllowedFilter::partial('name'),
-            AllowedFilter::partial('pid'),
-            AllowedFilter::custom('dateOfBirth', new DateFilter(), 'date_of_birth'),
-            AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
-        ])
-        ->allowedSorts([
-            'id',
-            AllowedSort::field('dateOfBirth', 'date_of_birth'),
-        ]);
+        $query = $this->personalInfoService->buildGetAllQuery();
 
         $perPage = $request->per_page ?? 15;
 
@@ -100,10 +73,24 @@ class PersonalInfoController extends Controller
     {
         $this->authorize('view', $personalInfo);
 
-        $personalInfo = QueryBuilder::for(PersonalInfo::withTrashed())
-        ->allowedIncludes($this->allowedIncludes)
-        ->findOrFail($personalInfo->id);
+        $personalInfo = $this->personalInfoService->getPersonalInfo($personalInfo);
 
+        return new PersonalInfoResource($personalInfo);
+    }
+
+    //via account_id
+    public function showByAccountId(Account $account)
+    {
+        if($account->user){
+            $personalInfo = $account->user->personalInfo;
+        } else if($account->employee){
+            $personalInfo = $account->employee->personalInfo;
+        }
+
+        $this->authorize('view', $personalInfo);
+
+        $personalInfo = $this->personalInfoService->getPersonalInfo($personalInfo);
+        
         return new PersonalInfoResource($personalInfo);
     }
 
@@ -120,11 +107,46 @@ class PersonalInfoController extends Controller
      */
     public function update(UpdatePersonalInfoRequest $request, PersonalInfo $personalInfo)
     {
-        
         $this->authorize('update', $personalInfo);
 
         $validated = $request->validated();
 
+        $this->getProfileFromRequest($request, $personalInfo);
+
+        $result = $this->personalInfoService->updatePersonalInfo($personalInfo, $validated);
+
+        return response()->json($result);
+    }
+
+    // via account_id
+    public function updateByAccountId(UpdatePersonalInfoRequest $request, Account $account)
+    {
+        if($account->user){
+            $personalInfo = $account->user->personalInfo;
+        } else if($account->employee){
+            $personalInfo = $account->employee->personalInfo;
+        }
+
+        $this->authorize('update', $personalInfo);
+
+        $validated = $request->validated();
+
+        $this->getProfileFromRequest($request, $personalInfo);
+
+        $result = $this->personalInfoService->updatePersonalInfo($personalInfo, $validated);
+
+        return response()->json($result);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(PersonalInfo $personalInfo)
+    {
+        //
+    }
+
+    private function getProfileFromRequest($request, $personalInfo){
         // Handle profile image upload
         if ($request->hasFile('profile_url')) {
 
@@ -156,21 +178,5 @@ class PersonalInfoController extends Controller
 
             $validated['profile_url'] = $path;
         }
-
-
-        $personalInfo->update($validated);
-
-        return response()->json([
-            'message' => 'Personal Info update successfully',
-            'personalInfo' => new PersonalInfoResource($personalInfo)
-        ]);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(PersonalInfo $personalInfo)
-    {
-        //
     }
 }

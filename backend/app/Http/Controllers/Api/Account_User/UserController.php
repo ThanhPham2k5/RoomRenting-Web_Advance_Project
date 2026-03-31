@@ -8,7 +8,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\Account_User\UserCollection;
 use App\Http\Resources\Account_User\UserResource;
+use App\Models\Account_User\Account;
 use App\Models\Account_User\User;
+use App\Services\UserService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Spatie\QueryBuilder\AllowedFilter;
@@ -20,40 +22,20 @@ class UserController extends Controller
 {
     use AuthorizesRequests;
 
-    private $allowedIncludes = [
-        'account',
-        'personalInfo',
-        'posts',
-    ];
+    private UserService $userService;
 
-    private $allColFilter = [
-        'points',
-        'account.username',
-        'account.role',
-    ];
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
+    }
+
 
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $query = QueryBuilder::for(User::withTrashed())
-        ->allowedIncludes($this->allowedIncludes)
-        ->allowedFilters([
-            //generic search
-            AllowedFilter::custom('search', new AllColumnFilter($this->allColFilter)),
-
-            //specific filter
-            AllowedFilter::exact('id'),
-            AllowedFilter::operator('points', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
-            AllowedFilter::partial('account.username'),
-            AllowedFilter::exact('account.role'),
-            AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
-        ])
-        ->allowedSorts([
-            'id',
-            'points',
-        ]);
+        $query = $this->userService->buildGetAllQuery();
 
         $perPage = $request->per_page ?? 15;
 
@@ -88,9 +70,16 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        $user = QueryBuilder::for(User::withTrashed())
-        ->allowedIncludes($this->allowedIncludes)
-        ->findOrFail($user->id);
+        $user = $this->userService->getUser($user);
+
+        return new UserResource($user);
+    }
+
+    public function showByAccountId(Account $account)
+    {
+        $user = $account->user;
+        
+        $user = $this->userService->getUser($user);
 
         return new UserResource($user);
     }
@@ -111,11 +100,23 @@ class UserController extends Controller
         $this->authorize('update', $user);
 
         $validated = $request->validated();
-        $user->update($validated);
-        return response()->json([
-            'message' => 'User updated successfully',
-            'user' => $user
-        ]);
+        
+        $result = $this->userService->updateUser($user, $validated);
+
+        return response()->json($result);
+    }
+
+    public function updateByAccountId(UpdateUserRequest $request, Account $account)
+    {
+        $user = $account->user;
+
+        $this->authorize('update', $user);
+
+        $validated = $request->validated();
+
+        $result = $this->userService->updateUser($user, $validated);
+
+        return response()->json($result);
     }
 
     /**

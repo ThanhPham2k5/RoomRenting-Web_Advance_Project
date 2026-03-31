@@ -7,51 +7,35 @@ use App\Filter\DateFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PermissionCollection;
 use App\Http\Resources\PermissionResource;
+use App\Services\PermissionService;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\AllowedSort;
 use Spatie\QueryBuilder\Enums\FilterOperator;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class PermissionController extends Controller
 {
-    private $allowedIncludes = [
-        'roles',
-    ];
+    private PermissionService $permissionService;
 
-    private $allowSorts = [
-        'id',
-    ];
-
-    private $allColFilter = [
-        'name',
-    ];
+    public function __construct(PermissionService $permissionService)
+    {
+        $this->permissionService = $permissionService;
+    }
 
     public function index()
     {
-        $query = QueryBuilder::for(Permission::withTrashed())
-        ->allowedIncludes($this->allowedIncludes)
-        ->allowedFilters([
-            //generic search
-            AllowedFilter::custom('search', new AllColumnFilter($this->allColFilter)),
+        $query = $this->permissionService->buildGetAllQuery();
 
-            //specific filter
-            AllowedFilter::partial('name'),
-            AllowedFilter::exact('id'),
-            AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
-        ])
-        ->allowedSorts($this->allowSorts);
+        $permissions = $query->get();
 
-        $roles = $query->get();
-
-        return new PermissionCollection($roles);
+        return new PermissionCollection($permissions);
     }
 
     public function show(Permission $permission)
     {
-        $permission = QueryBuilder::for(Permission::withTrashed())
-        ->allowedIncludes($this->allowedIncludes)
-        ->findOrFail($permission->id);
+        $permission = $this->permissionService->getPermission($permission);
 
         return new PermissionResource($permission);
     }

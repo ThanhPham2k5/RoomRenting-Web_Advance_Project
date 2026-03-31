@@ -10,43 +10,31 @@ use App\Http\Requests\StoreRechargeRuleRequest;
 use App\Http\Requests\UpdateRechargeRuleRequest;
 use App\Http\Resources\Payments\RechargeRuleCollection;
 use App\Http\Resources\Payments\RechargeRuleResource;
+use App\Services\RechargeRuleService;
 use Illuminate\Http\Request;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\Enums\FilterOperator;
 use Spatie\QueryBuilder\QueryBuilder;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Spatie\QueryBuilder\AllowedSort;
+
 class RechargeRuleController extends Controller
 {
     use AuthorizesRequests;    
-    private $allowedIncludes = [
-        'rechargeBills',
-    ];
+    
+    private RechargeRuleService $rechargeRuleService;
 
-    private $allColFilter = [
-        
-    ];
+    public function __construct(RechargeRuleService $rechargeRuleService)
+    {
+        $this->rechargeRuleService = $rechargeRuleService;
+    }
 
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $query = QueryBuilder::for(RechargeRule::withTrashed())
-        ->allowedIncludes($this->allowedIncludes)
-        ->allowedFilters([
-            //generic search
-            AllowedFilter::custom('search', new AllColumnFilter($this->allColFilter)),
-
-            //specific filter
-            AllowedFilter::exact('id'),
-            AllowedFilter::operator('points', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
-            AllowedFilter::operator('money', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=  
-            AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
-        ])
-        ->allowedSorts([
-            'id',
-            'points',
-        ]);
+        $query = $this->rechargeRuleService->buildGetAllQuery();
 
         $perPage = $request->per_page ?? 15;
 
@@ -73,18 +61,11 @@ class RechargeRuleController extends Controller
      */
     public function store(StoreRechargeRuleRequest $request)
     {
-        
-        $rechargeRule = RechargeRule::create([
-            ...$request->validated(),
-            // 'status' => 'inactive',
-        ]);
+        $validated = $request->validated();
 
-        $rechargeRule->delete();
+        $result = $this->rechargeRuleService->createRechargeRule($validated);
 
-        return response()->json([
-            'message' => 'Recharge rule created successfully',
-            'rechargeRule' => new RechargeRuleResource($rechargeRule)
-        ], 201);
+        return response()->json($result);
     }
 
     /**
@@ -92,9 +73,7 @@ class RechargeRuleController extends Controller
      */
     public function show(RechargeRule $rechargeRule)
     {
-        $rechargeRule = QueryBuilder::for(RechargeRule::withTrashed())
-        ->allowedIncludes($this->allowedIncludes)
-        ->findOrFail($rechargeRule->id);
+        $rechargeRule = $this->rechargeRuleService->getRechargeRule($rechargeRule);
 
         return new RechargeRuleResource($rechargeRule);
     }
@@ -146,13 +125,8 @@ class RechargeRuleController extends Controller
 
     public function restore($id) {
 
-        RechargeRule::query()->delete();
-        $rechargeRule = RechargeRule::onlyTrashed()->findOrFail($id);
+        $result = $this->rechargeRuleService->restoreRechargeRule($id);
 
-        $rechargeRule->restore();
-
-        return response()->json([
-            'message' => 'RechargeRule restored successfully'
-        ]);
+        return response()->json($result);
     }
 }

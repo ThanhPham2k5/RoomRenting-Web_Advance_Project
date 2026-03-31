@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Filter\AllColumnFilter;
+use App\Filter\DateFilter;
 use App\Http\Resources\Account_User\AccountResource;
 use App\Http\Resources\Account_User\PersonalInfoResource;
 use App\Http\Resources\FormResource;
@@ -11,23 +13,52 @@ use App\Models\Account_User\PersonalInfo;
 use App\Models\Account_User\User;
 use App\Models\Form;
 use Illuminate\Support\Facades\DB;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\AllowedSort;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class AccountService
 {
+
+    private $allowedIncludes = [
+        'form',
+        'user',
+        'roles',
+        'permissions',
+        'roles.permissions',
+        'employee',
+        'user.posts',
+        'employee.posts',
+        'user.personalInfo',
+        'employee.personalInfo',
+        'comments',
+        'favorites.post',
+        'rechargeBills',
+        'payBills',
+        'notifications'
+    ];
+
+    private $allColFilter = [
+        'username',
+        'role'
+    ];
+
     public function createAccount($data)
     {
         return DB::transaction(function() use ($data){
-            // Create PersonalInfo
-            $personalInfo = PersonalInfo::create([
-                'email' => $data['email'],
-                'phone_number' => $data['phone_number'],
-            ]);
-
+        
             // Create Account
             $account = Account::create([
                 'username' => $data['username'],
                 'password' => bcrypt($data['password']),
                 'role' => $data['role'],
+            ]);
+
+            // Create PersonalInfo
+            $personalInfo = PersonalInfo::create([
+                'id' => $account->id,
+                'email' => $data['email'],
+                'phone_number' => $data['phone_number'],
             ]);
 
             //assign rolePermission
@@ -82,10 +113,10 @@ class AccountService
             'role' => $data['role'] ?? $account->role,
         ]);
 
-        return response()->json([
+        return [
             'message' => 'Account updated successfully',
             'post' => new AccountResource($account)
-        ]);
+        ];
     }
 
     public function deleteAccount($account)
@@ -139,6 +170,36 @@ class AccountService
                 'message' => 'Account restored successfully'
             ];
         });
+    }
+
+    public function getAccount($account){
+        $account = QueryBuilder::for(Account::withTrashed())
+        ->allowedIncludes($this->allowedIncludes)
+        ->findOrFail($account->id);
+
+        return $account;
+    }
+
+    public function buildGetAllQuery(){
+        $query = QueryBuilder::for(Account::withTrashed())
+        ->allowedIncludes($this->allowedIncludes)
+        ->allowedFilters([
+            //generic search
+            AllowedFilter::custom('search', new AllColumnFilter($this->allColFilter)),
+
+            //specific filter
+            AllowedFilter::partial('username'),
+            AllowedFilter::exact('id'),
+
+            AllowedFilter::exact('role'),
+            AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
+        ])
+        ->allowedSorts([
+            'id',
+            AllowedSort::field('createdAt', 'created_at'),
+        ]);
+
+        return $query;
     }
 }
 ?>

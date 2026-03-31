@@ -20,66 +20,26 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Events\StatusPostCreated;
 use App\Filter\AllColumnFilter;
 use App\Filter\DateFilter;
+use App\Services\PostService;
 use Illuminate\Support\Facades\DB;
 
 class PostController extends Controller
 {
     use AuthorizesRequests;
-    private $allowedIncludes = [
-        'user',
-        'employee',
-        'postImages',
-        'comments',
-        'comments.account',
-        'payBills',
-        'favorites.account',
-        'notifications'
-    ];
+    
+    private PostService $postService;
 
-    private $allColFilter = [
-        'title',
-        'houseNumber' => 'house_number',
-        'ward',
-        'province',
-        'description',
-        'status',
-        'roomType' => 'room_type'
-    ];
+    public function __construct(PostService $postService)
+    {
+        $this->postService = $postService;
+    }
 
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $query = QueryBuilder::for(Post::withTrashed())
-        ->allowedIncludes($this->allowedIncludes)
-        ->allowedFilters([
-            //generic search
-            AllowedFilter::custom('search', new AllColumnFilter($this->allColFilter)),
-
-            //specific filter
-            AllowedFilter::exact('id'),
-            AllowedFilter::partial('title'),
-            AllowedFilter::operator('price', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
-            AllowedFilter::operator('area', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
-            AllowedFilter::partial('houseNumber', 'house_number'),
-            AllowedFilter::partial('ward'),
-            AllowedFilter::partial('province'),
-            AllowedFilter::partial('description'),
-            AllowedFilter::operator('deposit', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
-            AllowedFilter::exact('status'),
-            AllowedFilter::operator('authorized', FilterOperator::DYNAMIC), // =, <>
-            AllowedFilter::exact('roomType', 'room_type'),
-            AllowedFilter::operator('maxOccupants', FilterOperator::DYNAMIC, '', 'max_occupants'), // =, <>, >, <, >=, <=
-            AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
-        ])
-        ->allowedSorts([
-            'id',
-            'price',
-            'area',
-            'deposit',
-            AllowedSort::field('maxOccupants','max_occupants')
-        ]);
+        $query = $this->postService->buildGetAllQuery();
 
         $perPage = $request->per_page ?? 15;
 
@@ -154,9 +114,7 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        $post = QueryBuilder::for(Post::withTrashed())
-        ->allowedIncludes($this->allowedIncludes)
-        ->findOrFail($post->id);
+        $post = $this->postService->getPost($post);
 
         return new PostResource($post);
     }
@@ -184,12 +142,8 @@ class PostController extends Controller
             ]);            
         }
 
-        $post->update($validated);
-
-        // If status changed to 'completed', fire PostCreated event
-        if ($validated['status'] === 'completed') {
-            event(new PostCreated($post));
-        }
+        $post = $this->postService->updatePost($post, $validated);
+        
         event(new StatusPostCreated($post, $request->comment));
 
         return response()->json([
@@ -203,33 +157,18 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        return DB::transaction(function () use ($post) {
-            $this->authorize('delete', $post);
-            
-            $post->postImages()->delete();
-            $post->comments()->delete();
-            $post->favorites()->delete();
-            $post->delete();
+        $this->authorize('delete', $post);
 
-            return response()->json([
-                'message' => 'Post deleted successfully'
-            ]);
-        });   
+        $result = $this->postService->deletePost($post);
+
+        return response()->json($result);   
     }
 
     public function restore($id)
     {
-        $post = Post::onlyTrashed()->findOrFail($id);
+        $result = $this->postService->restorePost($id);
  
-        $post->postImages()->restore();
-        $post->comments()->restore();
-        $post->favorites()->restore();
-        $post->restore();
- 
-        return response()->json([
-            'message' => 'Post restored successfully',
-            'post'    => new PostResource($post->load('postImages')),
-        ]);
+        return response()->json($result);
     }
 
 

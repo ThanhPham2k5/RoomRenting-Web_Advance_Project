@@ -11,6 +11,8 @@ class PersonalInfo extends Model
     /** @use HasFactory<\Database\Factories\PersonalInfoFactory> */
     use HasFactory, SoftDeletes;
 
+    public $incrementing = false;
+
     protected static function newFactory()
     {
         return \Database\Factories\PersonalInfoFactory::new();

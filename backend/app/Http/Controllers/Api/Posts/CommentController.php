@@ -10,46 +10,31 @@ use App\Http\Requests\StoreCommentRequest;
 use App\Http\Requests\UpdateCommentRequest;
 use App\Http\Resources\Posts\CommentCollection;
 use App\Http\Resources\Posts\CommentResource;
+use App\Services\CommentService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\AllowedSort;
 use Spatie\QueryBuilder\Enums\FilterOperator;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class CommentController extends Controller
 {
-
     use AuthorizesRequests;
 
-    private $allowedIncludes = [
-        'account',
-        'post',
-    ];
+    private CommentService $commentService;
 
-    private $allColFilter = [
-        'content',
-        'account.username',
-    ];
+    public function __construct(CommentService $commentService)
+    {
+        $this->commentService = $commentService;
+    }
 
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $query = QueryBuilder::for(Comment::withTrashed())
-        ->allowedIncludes($this->allowedIncludes)
-        ->allowedFilters([
-            //generic search
-            AllowedFilter::custom('search', new AllColumnFilter($this->allColFilter)),
-
-            //specific filter
-            AllowedFilter::exact('id'),
-            AllowedFilter::partial('content'),
-            AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
-        ])
-        ->allowedSorts([
-            'id',
-        ]);
+        $query = $this->commentService->buildGetAllQuery();
 
         $perPage = $request->per_page ?? 15;
 
@@ -78,12 +63,9 @@ class CommentController extends Controller
     {
         $validated = $request->validated();
 
-        $comment = Comment::create($validated);
+        $result = $this->commentService->createComment($validated);
 
-        return response()->json([
-            'message' => 'Comment created successfully',
-            'comment' => new CommentResource($comment)
-        ], 201);
+        return response()->json($result);
     }
 
     /**
@@ -91,9 +73,7 @@ class CommentController extends Controller
      */
     public function show(Comment $comment)
     {
-        $comment = QueryBuilder::for(Comment::withTrashed())
-        ->allowedIncludes($this->allowedIncludes)
-        ->findOrFail($comment->id);
+        $comment = $this->commentService->getComment($comment);
 
         return new CommentResource($comment);
     }
@@ -115,12 +95,9 @@ class CommentController extends Controller
 
         $validated = $request->validated();
 
-        $comment->update($validated);
+        $result = $this->commentService->updateComment($comment, $validated);
 
-        return response()->json([
-            'message' => 'Comment updated successfully',
-            'comment' => new CommentResource($comment)
-        ]);
+        return response()->json($result);
     }
 
     /**
@@ -130,21 +107,14 @@ class CommentController extends Controller
     {   
         $this->authorize('delete', $comment);
 
-        $comment->delete();
+        $result = $this->commentService->deleteComment($comment);
 
-        return response()->json([
-            'message' => 'Comment deleted successfully'
-        ]);
+        return response()->json($result);
     }
     public function restore($id)
     {
-        $comment = Comment::onlyTrashed()->findOrFail($id);
- 
-        $comment->restore();
- 
-        return response()->json([
-            'message' => 'Comment restored successfully',
-            'comment'    => new CommentResource($comment),
-        ]);
+        $result = $this->commentService->restoreComment($id);
+
+        return response()->json($result);
     }
 }

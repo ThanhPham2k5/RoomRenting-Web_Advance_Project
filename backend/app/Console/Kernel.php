@@ -12,14 +12,17 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         \App\Console\Commands\DeductMonthlyPostFee::class,
+        \App\Console\Commands\DeleteNotificationsEveryWeek::class,
     ];
 
     /**
      * Scheduler
      */
     protected function schedule(Schedule $schedule)
-    {
-        $schedule->command('deduct:monthly-post-fee')->daily();
+    {   
+        // set every minute for testting
+        $schedule->command('app:deduct-monthly-post-fee')->everyMinute();
+        $schedule->command('app:delete-notifications-every-week')->everyMinute();
     }
 
     /**

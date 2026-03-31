@@ -8,35 +8,31 @@ use App\Http\Requests\StorePostImageRequest;
 use App\Http\Requests\UpdatePostImageRequest;
 use App\Http\Resources\Posts\PostImageCollection;
 use App\Http\Resources\Posts\PostImageResource;
+use App\Services\PostImageService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\AllowedSort;
 use Spatie\QueryBuilder\Enums\FilterOperator;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class PostImageController extends Controller
 {
     use AuthorizesRequests;
-    private $allowedIncludes = [
-        'post',
-    ];
+    
+    private PostImageService $postImageService;
+
+    public function __construct(PostImageService $postImageService)
+    {
+        $this->postImageService = $postImageService;
+    }
 
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $query = QueryBuilder::for(PostImage::withTrashed())
-        ->allowedIncludes($this->allowedIncludes)
-        ->allowedFilters([
-            AllowedFilter::exact('id'),
-            AllowedFilter::operator('order', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
-            AllowedFilter::operator('post.id', FilterOperator::DYNAMIC) // =, <>, >, <, >=, <=
-        ])
-        ->allowedSorts([
-            'id',
-            'order'
-        ]);
+        $query = $this->postImageService->buildGetAllQuery();
 
         $perPage = $request->per_page ?? 15;
 
@@ -81,9 +77,7 @@ class PostImageController extends Controller
      */
     public function show(PostImage $postImage)
     {
-        $postImage = QueryBuilder::for(PostImage::withTrashed())
-        ->allowedIncludes($this->allowedIncludes)
-        ->findOrFail($postImage->id);
+        $postImage = $this->postImageService->getPostImage($postImage);
 
         return new PostImageResource($postImage);
     }

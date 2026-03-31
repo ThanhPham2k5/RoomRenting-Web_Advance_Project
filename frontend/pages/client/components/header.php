@@ -52,43 +52,7 @@
               Thông báo tin tức gần đây
             </div>
 
-            <div class="notify-list">
-              <!-- an example item -->
-              <a href="" class="notify-item notify-item-unread">
-                <img src='<?php echo BASE_URL . "/assets/img/left-img.png"?>' alt="item-img.png" class="notify-item-img">
-
-                <div class="notify-content">
-                  <div class="notify-info">Căn nhà giá 5 tỷ, đường Trương Phước Phan, phường Bình Trị Đông, quận Bình Tân</div>
-
-                  <!-- using for transaction -->
-                  <div class="notify-value"></div>
-                </div>
-              </a>
-
-              <a href="" class="notify-item">
-                <img src='<?php echo BASE_URL . "/assets/img/left-img.png"?>' alt="item-img.png" class="notify-item-img">
-
-                <div class="notify-content">
-                  <div class="notify-info">Thêm điểm vào tài khoản thành công</div>
-
-                  <!-- using for transaction -->
-                  <div class="notify-value value-add">+999 Điểm ( Nạp thêm điểm thành công )</div>
-                </div>
-              </a>
-
-              <?php for ($i = 1; $i <= 10; $i++) { ?>
-              <a href="" class="notify-item">
-                <img src='<?php echo BASE_URL . "/assets/img/left-img.png"?>' alt="item-img.png" class="notify-item-img">
-
-                <div class="notify-content">
-                  <div class="notify-info">Thêm điểm vào tài khoản thành công</div>
-
-                  <!-- using for transaction -->
-                  <div class="notify-value value-subtract">-100 Điểm ( Phí sử dụng dịch vụ )</div>
-                </div>
-              </a>
-              <?php } ?>
-            </div>
+            <div class="notify-list"></div>
           </div>
 
           <div class="notify-alert"></div>
@@ -220,43 +184,7 @@
                   Thông báo tin tức gần đây
                 </div>
 
-                <div class="notify-list">
-                  <!-- an example item -->
-                  <a href="" class="notify-item notify-item-unread">
-                    <img src='<?php echo BASE_URL . "/assets/img/left-img.png"?>' alt="item-img.png" class="notify-item-img">
-
-                    <div class="notify-content">
-                      <div class="notify-info">Căn nhà giá 5 tỷ, đường Trương Phước Phan, phường Bình Trị Đông, quận Bình Tân</div>
-
-                      <!-- using for transaction -->
-                      <div class="notify-value"></div>
-                    </div>
-                  </a>
-
-                  <a href="" class="notify-item">
-                    <img src='<?php echo BASE_URL . "/assets/img/left-img.png"?>' alt="item-img.png" class="notify-item-img">
-
-                    <div class="notify-content">
-                      <div class="notify-info">Thêm điểm vào tài khoản thành công</div>
-
-                      <!-- using for transaction -->
-                      <div class="notify-value value-add">+999 Điểm ( Nạp thêm điểm thành công )</div>
-                    </div>
-                  </a>
-
-                  <?php for ($i = 1; $i <= 10; $i++) { ?>
-                  <a href="" class="notify-item">
-                    <img src='<?php echo BASE_URL . "/assets/img/left-img.png"?>' alt="item-img.png" class="notify-item-img">
-
-                    <div class="notify-content">
-                      <div class="notify-info">Thêm điểm vào tài khoản thành công</div>
-
-                      <!-- using for transaction -->
-                      <div class="notify-value value-subtract">-100 Điểm ( Phí sử dụng dịch vụ )</div>
-                    </div>
-                  </a>
-                  <?php } ?>
-                </div>
+                <div class="notify-list"></div>
               </div>
           </div>
 
@@ -456,13 +384,14 @@
       var isTransaction = true  
 
       // news notification
-      if(document.querySelector(".notify-news").classList.contains(".notify-selected")) {  
+      if(document.querySelector(".notify-news").classList.contains("notify-selected")) {  
         var isUnread = true
         var isRead = true
-        var notifyList = null
+        var unread_notifyList = []
+        var read_notifyList = []
 
         // get unread notify in news
-        const response_unread = await fetch("http://127.0.0.1:8000/api/accounts/" + account_id + "?include=notifications", {
+        const response_unread = await fetch("http://127.0.0.1:8000/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=unread&filter[notificationType]=news", {
           method: "GET",
           headers: {
             "Accept": "application/json",
@@ -472,17 +401,19 @@
 
         const data_unread = await response_unread.json()
         if(response_unread.ok) {
-          if(data_unread) {
+          if(data_unread.data && data_unread.data.length > 0) {
             // get list and append into array
+            unread_notifyList = data_unread.data
+            // console.log(data_unread.data)
           } else {
             isUnread = false // the unread array is empty
           }
         } else {
-          console.log(data_unread)
+          // console.log(data_unread)
         }
 
         // get read notify in news
-        const response_read = await fetch("http://127.0.0.1:8000/api/accounts/" + account_id + "?include=notifications", {
+        const response_read = await fetch("http://127.0.0.1:8000/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=read&filter[notificationType]=news", {
           method: "GET",
           headers: {
             "Accept": "application/json",
@@ -492,13 +423,15 @@
 
         const data_read = await response_read.json()
         if(response_read.ok) {
-          if(data_read) {
+          if(data_read.data && data_read.data.length > 0) {
             // get list and append into array
+            read_notifyList = data_read.data
+            // console.log(data_read.data)
           } else {
             isRead = false // the unread array is empty
           }
         } else {
-          console.log(data_read)
+          // console.log(data_read)
         }
 
         // no news notification
@@ -508,19 +441,100 @@
         } else {
           // news notification
           // insert all item in array to notify-list with css format
-          // remember to reset notify-list before insert
           isNews = true
+          let html = ""
+
+          if(isUnread) {
+            unread_notifyList.forEach(notify => {
+              html += `
+                <a href='<?php echo BASE_URL ?>/pages/client/detail-post.php?post_id=${notify.notifiable.id}' class="notify-item notify-item-unread notify-id-${notify.id}">
+                  <img src='<?php echo BASE_URL . "/assets/img/left-img.png"?>' alt="item-img.png" class="notify-item-img">
+
+                  <div class="notify-content">
+                    <div class="notify-info">${notify.title}</div>
+
+                    <!-- using for transaction -->
+                    <div class="notify-value">${notify.content}</div>
+                  </div>
+                </a>
+              `
+            })
+          }
+
+          if(isRead) {
+            read_notifyList.forEach(notify => {
+              html += `
+                <a href='<?php echo BASE_URL ?>/pages/client/detail-post.php?post_id=${notify.notifiable.id}' class="notify-item notify-id-${notify.id}">
+                  <img src='<?php echo BASE_URL . "/assets/img/left-img.png"?>' alt="item-img.png" class="notify-item-img">
+
+                  <div class="notify-content">
+                    <div class="notify-info">${notify.title}</div>
+
+                    <!-- using for transaction -->
+                    <div class="notify-value">${notify.content}</div>
+                  </div>
+                </a>
+              `
+            })
+          }
+
+          document.querySelectorAll(".notify-list").forEach(item => {
+            item.innerHTML = html
+          })
+
+          // Mark as read after click an unread notification
+          document.querySelectorAll(".notify-item").forEach(item => {
+            item.addEventListener("click", async (e) => {
+              e.preventDefault()
+
+              if(item.classList.contains("notify-item-unread")) {
+                item.classList.remove("notify-item-unread")
+                const notify_id = item.classList.item(1).replace("notify-id-", "")
+
+                const token = localStorage.getItem("token")
+                const account_id = localStorage.getItem("account_id")
+
+                var notification_type = document.querySelector(".notify-news").classList.contains("notify-selected") ? "news" : "transaction"
+
+                const response = await fetch("http://127.0.0.1:8000/api/notifications/" + notify_id, {
+                  method: "PUT",
+                  headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                  },
+                  body: JSON.stringify({
+                    "title": document.querySelector(".notify-info").textContent,
+                    "content": document.querySelector(".notify-value").textContent,
+                    "notification_type": notification_type,
+                    "account_id": account_id,
+                    "status": "read"
+                  })
+                })
+
+                const data = await response.json()
+                if(response.ok) {
+                  // console.log(data)
+                } else {
+                  // console.log(data)
+                }
+              }
+
+              window.location.href = item.getAttribute("href")
+            })
+          })
         }
       }
 
       // transaction notification
-      if(document.querySelector(".notify-transaction").classList.contains(".notify-selected")) {  
+      if(document.querySelector(".notify-transaction").classList.contains("notify-selected")) {  
         var isUnread = true
         var isRead = true
-        var notifyList = null
+        var unread_notifyList = []
+        var read_notifyList = []
 
         // get unread notify in transaction
-        const response_unread = await fetch("http://127.0.0.1:8000/api/accounts/" + account_id + "?include=notifications", {
+        const response_unread = await fetch("http://127.0.0.1:8000/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=unread&filter[notificationType]=transaction", {
           method: "GET",
           headers: {
             "Accept": "application/json",
@@ -530,17 +544,19 @@
 
         const data_unread = await response_unread.json()
         if(response_unread.ok) {
-          if(data_unread) {
+          if(data_unread.data && data_unread.data.length > 0) {
             // get list and append into array
+            unread_notifyList = data_unread.data
+            // console.log(data_unread.data)
           } else {
             isUnread = false // the unread array is empty
           }
         } else {
-          console.log(data_unread)
+          // console.log(data_unread)
         }
 
         // get read notify in transaction
-        const response_read = await fetch("http://127.0.0.1:8000/api/accounts/" + account_id + "?include=notifications", {
+        const response_read = await fetch("http://127.0.0.1:8000/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=read&filter[notificationType]=transaction", {
           method: "GET",
           headers: {
             "Accept": "application/json",
@@ -550,13 +566,15 @@
 
         const data_read = await response_read.json()
         if(response_read.ok) {
-          if(data_read) {
+          if(data_read.data && data_read.data.length > 0) {
             // get list and append into array
+            read_notifyList = data_read.data
+            // console.log(data_read.data)
           } else {
             isRead = false // the unread array is empty
           }
         } else {
-          console.log(data_read)
+          // console.log(data_read)
         }
 
         // no transaction notification
@@ -566,8 +584,88 @@
         } else {
           // transaction notification
           // insert all item in array to notify-list with css format
-          // remember reset notify-list before insert
           isTransaction = true
+          let html = ""
+
+          if(isUnread) {
+            unread_notifyList.forEach(notify => {
+              html += `
+                <a href='<?php echo BASE_URL ?>/pages/client/detail-post.php?post_id=${notify.notifiable.id}' class="notify-item notify-item-unread notify-id-${notify.id}">
+                  <img src='<?php echo BASE_URL . "/assets/img/left-img.png"?>' alt="item-img.png" class="notify-item-img">
+
+                  <div class="notify-content">
+                    <div class="notify-info">${notify.title}</div>
+
+                    <!-- using for transaction -->
+                    <div class="notify-value">${notify.content}</div>
+                  </div>
+                </a>
+              `
+            })
+          }
+
+          if(isRead) {
+            read_notifyList.forEach(notify => {
+              html += `
+                <a href='<?php echo BASE_URL ?>/pages/client/detail-post.php?post_id=${notify.notifiable.id}' class="notify-item notify-id-${notify.id}">
+                  <img src='<?php echo BASE_URL . "/assets/img/left-img.png"?>' alt="item-img.png" class="notify-item-img">
+
+                  <div class="notify-content">
+                    <div class="notify-info">${notify.title}</div>
+
+                    <!-- using for transaction -->
+                    <div class="notify-value value-add">${notify.content}</div>
+                  </div>
+                </a>
+              `
+            })
+          }
+
+          document.querySelectorAll(".notify-list").forEach(item => {
+            item.innerHTML = html
+          })
+
+          // Mark as read after click an unread notification
+          document.querySelectorAll(".notify-item").forEach(item => {
+            item.addEventListener("click", async (e) => {
+              e.preventDefault()
+
+              if(item.classList.contains("notify-item-unread")) {
+                item.classList.remove("notify-item-unread")
+                const notify_id = item.classList.item(1).replace("notify-id-", "")
+
+                const token = localStorage.getItem("token")
+                const account_id = localStorage.getItem("account_id")
+
+                var notification_type = document.querySelector(".notify-news").classList.contains("notify-selected") ? "news" : "transaction"
+
+                const response = await fetch("http://127.0.0.1:8000/api/notifications/" + notify_id, {
+                  method: "PUT",
+                  headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                  },
+                  body: JSON.stringify({
+                    "title": document.querySelector(".notify-info").textContent,
+                    "content": document.querySelector(".notify-value").textContent,
+                    "notification_type": notification_type,
+                    "account_id": account_id,
+                    "status": "read"
+                  })
+                })
+
+                const data = await response.json()
+                if(response.ok) {
+                  // console.log(data)
+                } else {
+                  // console.log(data)
+                }
+              }
+
+              window.location.href = item.getAttribute("href")
+            })
+          })
         }
       }
 
@@ -628,6 +726,33 @@
     // run once time every reload or load page
     document.addEventListener("DOMContentLoaded", async (e) => {
       await updateHeader()
+    })
+
+    // Notification button
+    document.querySelector(".notify-news").addEventListener("click", async (e) => {
+      if (!document.querySelector(".notify-news").classList.contains("notify-selected")) {
+        document.querySelector(".notify-list").style.display = "none"
+        document.querySelector(".notify-news").classList.add("notify-selected")
+        document.querySelector(".notify-transaction").classList.remove("notify-selected")
+
+        const account_id = localStorage.getItem("account_id")
+        const token = localStorage.getItem("token")
+        await getNotification(account_id, token)
+        document.querySelector(".notify-list").style.display = "flex"
+      }
+    })
+
+    document.querySelector(".notify-transaction").addEventListener("click", async (e) => {
+      if (!document.querySelector(".notify-transaction").classList.contains("notify-selected")) {
+        document.querySelector(".notify-list").style.display = "none"
+        document.querySelector(".notify-transaction").classList.add("notify-selected")
+        document.querySelector(".notify-news").classList.remove("notify-selected")
+
+        const account_id = localStorage.getItem("account_id")
+        const token = localStorage.getItem("token")
+        await getNotification(account_id, token)
+        document.querySelector(".notify-list").style.display = "flex"
+      }
     })
 
     // log out button

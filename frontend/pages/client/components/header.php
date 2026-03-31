@@ -43,7 +43,7 @@
               
               <button type="button" class="notify-transaction">Giao dịch</button>
 
-              <button type="button" class="notify-action">Hoạt động</button>
+              <!-- <button type="button" class="notify-action">Hoạt động</button> -->
             </div>
 
             <div class="notify-line"></div>
@@ -211,7 +211,7 @@
                   
                   <button type="button" class="notify-transaction">Giao dịch</button>
 
-                  <button type="button" class="notify-action">Hoạt động</button>
+                  <!-- <button type="button" class="notify-action">Hoạt động</button> -->
                 </div>
 
                 <div class="notify-line"></div>
@@ -420,9 +420,7 @@
       if(response.ok) {
         if(data.data.user.personalInfo.profileUrl) {
           document.querySelector(".button-user-ico").setAttribute("src", data.data.user.personalInfo.profileUrl)
-        }
-        
-        if(data.data.user.personalInfo.profileUrl) {
+          
           document.querySelectorAll(".user-avatar").forEach(item => {
             item.setAttribute("src", data.data.user.personalInfo.profileUrl)
           })
@@ -454,8 +452,8 @@
     }
 
     async function getNotification(account_id, token) {
-      isNews = true
-      isTransaction = true  
+      var isNews = true
+      var isTransaction = true  
 
       // news notification
       if(document.querySelector(".notify-news").classList.contains(".notify-selected")) {  
@@ -505,6 +503,7 @@
 
         // no news notification
         if(!isRead && !isUnread) {
+          isNews = false
           document.querySelector(".notify-list").textContent = "Không có thông báo nào gần đây."
         } else {
           // news notification
@@ -562,6 +561,7 @@
 
         // no transaction notification
         if(!isRead && !isUnread) {
+          isTransaction = false
           document.querySelector(".notify-list").textContent = "Không có thông báo nào gần đây."
         } else {
           // transaction notification
@@ -617,7 +617,7 @@
           document.querySelector(".sidebar-posts").style.display = "flex"
           document.querySelector(".sidebar-user-block").style.display = "flex"
         } else {
-          console.log(data)
+          // console.log(data)
         }
       } else {
         document.querySelector(".button-sign-up").style.display = "flex"
@@ -652,7 +652,7 @@
         }
         window.location.reload()
       } else {
-        console.log(data)
+        // console.log(data)
       }
     })
   </script>

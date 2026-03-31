@@ -167,6 +167,50 @@
   </body>
   <script>
     // get all posts to posts section (do not require token)
-    const response = await fetch("http://127.0.0.1:8000/api/posts", {})
+    async function getNewPost() {
+      const response = await fetch("http://127.0.0.1:8000/api/posts?per_page=5", {
+        method: "GET",
+        headers: {
+          "Accept": "application/json"
+        }
+      })
+
+      const data = await response.json()
+      if(response.ok) {
+        if(data.data)
+          return data.data
+        else {
+          console.log(data.data)
+        }
+      } else {
+        console.log(data)
+      }
+    }
+
+    // get suggest posts to suggest posts section (require token)
+    async function getSuggestPost(account_id, token) {
+      
+    }
+
+    // check user login or not and update post section
+    async function updateHomePage() {
+      var account_id = localStorage.getItem("account_id")
+      var token = localStorage.getItem("token")
+
+      // not login yet
+      if (account_id != null && token != null) {
+        // update post section (not require -> do not have favour button)
+        var posts = await getNewPost()
+      } else {
+        // logined
+        // update post section (require -> must have favour button)
+        var posts = await getNewPost()
+      }
+    }
+
+    // run once time every reload or load page
+    document.addEventListener("DOMContentLoaded", async (e) => {
+      await updateHomePage()
+    })
   </script>
 </html>

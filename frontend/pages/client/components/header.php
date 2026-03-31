@@ -142,7 +142,7 @@
                 <a href='<?php echo BASE_URL . "/pages/client/favourite.php"?>' class="user-favourite">
                   <img src='<?php echo BASE_URL . "/assets/img/favourite-ico.png"?>' alt="favourite-ico.png" class="user-favourite-ico">
 
-                  Bài đăng đã thích
+                  <span>Bài đăng đã thích</span>
 
                   <img src='<?php echo BASE_URL . "/assets/img/arrow.png"?>' alt="arrow.png" class="user-arrow">
                 </a>
@@ -150,7 +150,7 @@
                 <a href='<?php echo BASE_URL . "/pages/client/suggest.php"?>' class="user-suggest">
                   <img src='<?php echo BASE_URL . "/assets/img/suggest-ico.png"?>' alt="suggest-ico.png"  class="user-suggest-ico">
 
-                  Đề xuất của bạn
+                  <span>Đề xuất của bạn</span>
 
                   <img src='<?php echo BASE_URL . "/assets/img/arrow.png"?>' alt="arrow.png" class="user-arrow">
                 </a>
@@ -158,7 +158,7 @@
                 <a href='<?php echo BASE_URL . "/pages/client/history.php"?>' class="user-transaction">
                   <img src='<?php echo BASE_URL . "/assets/img/transaction-ico.png"?>' alt="transaction-ico.png"  class="user-transaction-ico">
 
-                  Lịch sử giao dịch
+                  <span>Lịch sử giao dịch</span>
 
                   <img src='<?php echo BASE_URL . "/assets/img/arrow.png"?>' alt="arrow.png" class="user-arrow">
                 </a>
@@ -442,7 +442,10 @@
         
         if(data.data.user.points) {
           document.querySelectorAll(".user-point-value").forEach(item => {
-            item.textContent = data.data.user.points
+            var point_value = data.data.user.points
+
+            // beautify number
+            item.textContent = point_value.toLocaleString("vi-VN")
           })
         }
       } else {
@@ -451,45 +454,128 @@
     }
 
     async function getNotification(account_id, token) {
-      const response = await fetch("http://127.0.0.1:8000/api/accounts/" + account_id + "?include=user.personalInfo", {
-        method: "GET",
-        headers: {
-          "Accept": "application/json",
-          "Authorization": "Bearer " + token
-        }
-      })
+      isNews = true
+      isTransaction = true  
 
-      const data = await response.json()
-      if(response.ok) {
-        if(data.data.user.personalInfo.profileUrl) {
-          document.querySelector(".button-user-ico").setAttribute("src", data.data.user.personalInfo.profileUrl)
-        }
-        
-        if(data.data.user.personalInfo.profileUrl) {
-          document.querySelectorAll(".user-avatar").forEach(item => {
-            item.setAttribute("src", data.data.user.personalInfo.profileUrl)
-          })
+      // news notification
+      if(document.querySelector(".notify-news").classList.contains(".notify-selected")) {  
+        var isUnread = true
+        var isRead = true
+        var notifyList = null
+
+        // get unread notify in news
+        const response_unread = await fetch("http://127.0.0.1:8000/api/accounts/" + account_id + "?include=notifications", {
+          method: "GET",
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer " + token
+          }
+        })
+
+        const data_unread = await response_unread.json()
+        if(response_unread.ok) {
+          if(data_unread) {
+            // get list and append into array
+          } else {
+            isUnread = false // the unread array is empty
+          }
+        } else {
+          console.log(data_unread)
         }
 
-        if(data.data.username) {
-          document.querySelectorAll(".user-name").forEach(item => {
-            item.textContent = data.data.username
-          })
+        // get read notify in news
+        const response_read = await fetch("http://127.0.0.1:8000/api/accounts/" + account_id + "?include=notifications", {
+          method: "GET",
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer " + token
+          }
+        })
+
+        const data_read = await response_read.json()
+        if(response_read.ok) {
+          if(data_read) {
+            // get list and append into array
+          } else {
+            isRead = false // the unread array is empty
+          }
+        } else {
+          console.log(data_read)
         }
-        
-        if(data.data.id) {
-          document.querySelectorAll(".user-id").forEach(item => {
-            item.textContent = "Mã KH: " + data.data.id
-          })
+
+        // no news notification
+        if(!isRead && !isUnread) {
+          document.querySelector(".notify-list").textContent = "Không có thông báo nào gần đây."
+        } else {
+          // news notification
+          // insert all item in array to notify-list with css format
+          // remember to reset notify-list before insert
+          isNews = true
         }
-        
-        if(data.data.user.points) {
-          document.querySelectorAll(".user-point-value").forEach(item => {
-            item.textContent = data.data.user.points
-          })
+      }
+
+      // transaction notification
+      if(document.querySelector(".notify-transaction").classList.contains(".notify-selected")) {  
+        var isUnread = true
+        var isRead = true
+        var notifyList = null
+
+        // get unread notify in transaction
+        const response_unread = await fetch("http://127.0.0.1:8000/api/accounts/" + account_id + "?include=notifications", {
+          method: "GET",
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer " + token
+          }
+        })
+
+        const data_unread = await response_unread.json()
+        if(response_unread.ok) {
+          if(data_unread) {
+            // get list and append into array
+          } else {
+            isUnread = false // the unread array is empty
+          }
+        } else {
+          console.log(data_unread)
         }
+
+        // get read notify in transaction
+        const response_read = await fetch("http://127.0.0.1:8000/api/accounts/" + account_id + "?include=notifications", {
+          method: "GET",
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer " + token
+          }
+        })
+
+        const data_read = await response_read.json()
+        if(response_read.ok) {
+          if(data_read) {
+            // get list and append into array
+          } else {
+            isRead = false // the unread array is empty
+          }
+        } else {
+          console.log(data_read)
+        }
+
+        // no transaction notification
+        if(!isRead && !isUnread) {
+          document.querySelector(".notify-list").textContent = "Không có thông báo nào gần đây."
+        } else {
+          // transaction notification
+          // insert all item in array to notify-list with css format
+          // remember reset notify-list before insert
+          isTransaction = true
+        }
+      }
+
+      // update notify button
+      if(!isNews && !isTransaction) {
+        document.querySelector(".notify-alert").style.display = "none"
       } else {
-        console.log(data)
+        document.querySelector(".notify-alert").style.display = "block"
       }
     }
 
@@ -507,7 +593,7 @@
         })
 
         const data = await response.json()
-        if(response.ok) {
+        if(response.ok && account_id == data.data.id) {
           // update user info
           getPersonalInfo(account_id, token)
 

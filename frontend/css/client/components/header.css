@@ -414,6 +414,13 @@
   cursor: pointer;
 }
 
+.user-favourite span,
+.user-suggest span,
+.user-transaction span {
+  flex: 1;
+  white-space: nowrap;
+}
+
 .user-setting,
 .user-logout {
   display: flex;

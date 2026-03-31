@@ -23,7 +23,7 @@
             <td><?php echo ($rule['id']); ?></td>
             <?php if(isset($rule['money'])) echo "<td>" . ($rule['money']) . "</td>"; ?>
             <td><?php echo ($rule['points']); ?></td>
-            <td><?php echo date('d/m/Y', strtotime($rule['created_at'])); ?></td>
+            <td><?php echo date('d/m/Y', strtotime($rule['createdAt'])); ?></td>
             <td>
                     <?php if (($rule['deletedAt']) === null): ?>
                         <span class="badge badge-success">Đang hoạt động</span>

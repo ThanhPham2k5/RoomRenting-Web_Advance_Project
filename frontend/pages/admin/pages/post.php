@@ -23,4 +23,5 @@ $titleData = ['titleContent' => "Bài đăng", 'group' => false, 'insert' => fal
         <?php renderComponent("postcontainer",false,['posts' => $posts]) ?>
         <?php renderComponent("pagination",false,['paginationMeta' => $paginationMeta]) ?>
     </div>
+    <?php renderComponent("postdetail",false) ?>
 </div>

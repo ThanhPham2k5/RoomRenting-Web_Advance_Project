@@ -18,7 +18,7 @@
             <td class="user-name"><?php echo ($comment['account']['username']); ?></td>
             <td><?php echo ($comment['content']); ?></td>
             <td><?php echo ($comment['account']['id']); ?></td>
-            <td><?php echo date('d/m/Y', strtotime($comment['created_at'])); ?></td>
+            <td><?php echo date('d/m/Y', strtotime($comment['createdAt'])); ?></td>
             <td>
                 <button class="table-btn" title="Xem chi tiết">
                     <svg width="20" height="10" viewBox="0 0 20 10" fill="none" xmlns="http://www.w3.org/2000/svg">

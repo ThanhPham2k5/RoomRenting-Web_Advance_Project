@@ -18,7 +18,7 @@ if (!empty($cardData['postImages']) && is_array($cardData['postImages'])) {
 }
 ?>
 
-<div class="card">
+<div class="card" onclick="showDetail('<?php echo $id ?>')">
     <img class="post-img" src="<?php echo "http://127.0.0.1:8000" . htmlspecialchars($thumbnailUrl); ?>" alt="">
     <p class="title"><?php echo htmlspecialchars($title); ?></p>
     <div class="location">
@@ -35,21 +35,21 @@ if (!empty($cardData['postImages']) && is_array($cardData['postImages'])) {
         <?php 
             if($status === "pending"){
         ?>
-            <button class="green">Duyệt bài</button>
-            <button class="yellow">Từ chối</button>
+            <button class="green" onclick="event.stopPropagation()">Duyệt bài</button>
+            <button class="yellow" onclick="event.stopPropagation()">Từ chối</button>
         <?php 
             }else if($status === "rejected"){
         ?>
-            <button class="blue">Xem lý do</button>
-            <button class="red">Gỡ bài</button>
+            <button class="blue" onclick="event.stopPropagation()">Xem lý do</button>
+            <button class="red" onclick="event.stopPropagation()">Gỡ bài</button>
         <?php
-            }else if($status === "active"){
+            }else if($status === "completed"){
         ?>    
-            <button class="red">Gỡ bài</button>
+            <button class="red" onclick="event.stopPropagation()">Gỡ bài</button>
         <?php 
             }else if($status === "failed"){
         ?>
-            <button class="blue">Xem lý do</button>
+            <button class="blue" onclick="event.stopPropagation()">Xem lý do</button>
         <?php
             } 
         ?>

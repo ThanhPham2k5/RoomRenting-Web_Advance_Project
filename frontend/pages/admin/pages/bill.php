@@ -21,7 +21,7 @@
             <?php if(isset($bill['totalMoney'])) echo "<td>" . ($bill['totalMoney']) . "</td>"; ?>
             <?php if(isset($bill['post'])) echo "<td>" . ($bill['post']['id']) . "</td>"; ?>
             <?php if(isset($bill['points'])) echo "<td>" . ($bill['points']) . "</td>"; ?>
-            <td><?php echo date('d/m/Y', strtotime($bill['created_at'])); ?></td>
+            <td><?php echo date('d/m/Y', strtotime($bill['createdAt'])); ?></td>
             <td>
                 <?php if ($bill['status'] === 'completed'): ?>
                     <span class="badge badge-success">Đang hoạt động</span>

@@ -221,7 +221,7 @@ switch ($page) {
             });
         }
 
-
+        //Valid tai khoan
         const formSua = document.getElementById('form-modal-sua-tai-khoan');
         if (formSua) {
             formSua.addEventListener('submit', function(event) {
@@ -246,6 +246,16 @@ switch ($page) {
                         if (passwordConfirmInput) passwordConfirmInput.focus();
                         return;
                     }
+                }
+            });
+        }
+
+        //Tat chi tiet
+        const modal = document.getElementById('post-detail-modal');
+        if(modal) {
+            modal.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    closePostDetail();
                 }
             });
         }
@@ -291,6 +301,15 @@ switch ($page) {
             }
         }
     });
+    const apiConfigs = {
+        'account': { 
+            endpoint: 'accounts', 
+            query: '?include=roles'
+        },
+        'post': { 
+            endpoint: 'posts'
+        }
+    };
     function handleEdit(targetModel1) {
         const selectedRadio = document.querySelector('input[name="selectedRow"]:checked');
         if (!selectedRadio) {
@@ -301,15 +320,6 @@ switch ($page) {
         const id = selectedRadio.value;
         const urlParams = new URLSearchParams(window.location.search);
         const currentPage = urlParams.get('page');
-        const apiConfigs = {
-            'account': { 
-                endpoint: 'accounts', 
-                query: '?include=roles'
-            },
-            'post': { 
-                endpoint: 'posts'
-            }
-        };
         const config = apiConfigs[currentPage];
         const apiUrl = `http://127.0.0.1:8000/api/${config.endpoint}/${id}${config.query}`;
         fetch(apiUrl, {
@@ -359,6 +369,102 @@ switch ($page) {
             console.error(error);
         });
     }
+    function handleDelete() {
+        const selectedRadio = document.querySelector('input[name="selectedRow"]:checked');
+        if (!selectedRadio) {
+            alert("Vui lòng chọn dòng dữ liệu để xóa!"); 
+            return;
+        }
+
+        const id = selectedRadio.value;
+        if (!confirm("Bạn có chắc chắn muốn xóa dữ liệu này không? Hành động này không thể hoàn tác!")) {
+            return;
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentPage = urlParams.get('page');
+        const config = apiConfigs[currentPage];
+        const apiUrl = `http://127.0.0.1:8000/api/${config.endpoint}/${id}`; 
+        fetch(apiUrl, {
+            method: 'DELETE',
+            headers: {
+                "Accept": "application/json",
+                "Authorization": "Bearer 1|doBptP22fIl2zcgGI4I92REMuVhYXRJlyOt2Aa987a263743"
+            }
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.message) {
+                alert("Xóa thành công!");
+                window.location.reload();
+            } else {
+                return result.json().then(err => { throw err; });
+            }
+        })
+        .catch(error => {
+            console.error("Lỗi xóa:", error);
+            alert(error.message || "Có lỗi xảy ra! Không thể xóa dữ liệu này.");
+        });
+    }
+    function handleView(targetModel) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentPage = urlParams.get('page');
+        const config = apiConfigs[currentPage];
+        const apiUrl = `http://127.0.0.1:8000/api/${config.endpoint}/7${config.query}`;
+
+        fetch(apiUrl, {
+            method: 'GET',
+            headers: {
+                "Accept": "application/json",
+                "Authorization": "Bearer 1|doBptP22fIl2zcgGI4I92REMuVhYXRJlyOt2Aa987a263743"
+            }
+        })
+        .then(response => response.json())
+        .then(result => {
+            const data = result.data;
+            document.getElementById('view-username').textContent = data.username || 'Không xác định';
+            document.getElementById('view-avatar-text').textContent = (data.username || 'A').charAt(0);
+            document.getElementById('view-role').textContent = data.role === 'employee' ? 'Nhân viên' : 'Khách hàng';
+            
+            // Cập nhật Grid Thông tin
+            document.getElementById('view-id').textContent = data.id;
+            
+            // Trạng thái (Phân loại màu nhãn)
+            const statusEl = document.getElementById('view-status');
+            if (data.deletedAt === null) {
+                statusEl.innerHTML = '<span class="badge-detail badge-active">Đang hoạt động</span>';
+            } else {
+                statusEl.innerHTML = '<span class="badge-detail badge-inactive">Đã khóa / Xóa</span>';
+            }
+
+            // Lấy thông tin cá nhân (An toàn với Optional Chaining)
+            const profileInfo = data.employee || data.user;
+            document.getElementById('view-phone').textContent = profileInfo?.personalInfo?.phoneNumber || 'Chưa cập nhật';
+            document.getElementById('view-email').textContent = profileInfo?.personalInfo?.email || 'Chưa cập nhật';
+
+            // Cập nhật danh sách quyền (Roles)
+            const rolesContainer = document.getElementById('view-roles-container');
+            rolesContainer.innerHTML = ''; // Xóa dữ liệu cũ
+            
+            if (data.roles && data.roles.length > 0) {
+                data.roles.forEach(role => {
+                    const badge = document.createElement('span');
+                    badge.className = 'badge-detail badge-permission';
+                    badge.textContent = role; // Hoặc role.name tùy cấu trúc API trả về
+                    rolesContainer.appendChild(badge);
+                });
+            } else {
+                rolesContainer.innerHTML = '<span class="info-value" style="font-style: italic; color: #999;">Không có quyền đặc biệt</span>';
+            }
+
+            // Mở Modal
+            openModal(targetModel);
+        })
+        .catch(error => {
+            alert("Lỗi tải chi tiết!");
+            console.error(error);
+        });
+    }
     function handleSearch() {
         const keyword = document.getElementById('searchInput').value.trim();
         const url = new URL(window.location.href);
@@ -369,6 +475,63 @@ switch ($page) {
         }
         url.searchParams.delete('p');
         window.location.href = url.toString();
+    }
+    function showDetail(postId) {
+        const modal = document.getElementById('post-detail-modal');
+        if (modal) {
+            document.body.style.cursor = 'wait';
+            fetch(`http://127.0.0.1:8000/api/posts/${postId}?include=postImages,user,employee`, {
+                method: 'GET',
+                headers: {
+                    "Accept": "application/json",
+                    "Authorization": "Bearer 1|doBptP22fIl2zcgGI4I92REMuVhYXRJlyOt2Aa987a263743"
+                }
+            })
+            .then(response => response.json())
+            .then(result => {
+                const data = result.data;
+                document.getElementById('detail-id').textContent = "ID bài đăng: " + data.id;
+                document.getElementById('detail-title').textContent = data.title;
+                const locationParts = [data.ward, data.province];
+                const locationString = locationParts.filter(Boolean).join(", ");
+                document.getElementById('detail-location').textContent = locationString;
+                document.getElementById('detail-price').textContent = data.price + " VNĐ/ tháng";
+                document.getElementById('detail-area').textContent = data.area + " m²";
+                document.getElementById('detail-deposit').textContent = "Số tiền cọc: " + data.deposit;
+                document.getElementById('detail-description').textContent = data.description;
+                if (data.postImages) {
+                    document.getElementById('detail-main-img').src = "http://127.0.0.1:8000" + data.postImages[0].imagePostUrl;
+                }
+
+                document.getElementById('detail-user-id').textContent = "ID người đăng bài: " + (data.user.id || 'Trống');
+                document.getElementById('detail-employee-id').textContent = "ID nhân viên duyệt: " + (data.employee.id || 'Chưa có');
+                modal.style.display = 'flex';
+            })
+            .catch(error => {
+                console.error("Lỗi lấy chi tiết bài viết:", error);
+                alert("Không thể tải chi tiết bài viết lúc này!");
+            })
+            .finally(() => {
+                document.body.style.cursor = 'default';
+            });
+        }
+    }
+    function switchToEdit() {
+        const modal = document.getElementById('post-detail-modal');
+        modal.classList.remove('view-mode');
+        modal.classList.add('edit-mode');
+    }
+    function switchToView() {
+        const modal = document.getElementById('post-detail-modal');
+        modal.classList.remove('edit-mode');
+        modal.classList.add('view-mode');
+    }
+    function closePostDetail() {
+        const modal = document.getElementById('post-detail-modal');
+        if (modal) {
+            modal.style.display = 'none';
+            switchToView();
+        }
     }
     function drawHardcodedLineChart() {
         // Mảng Trục X: 12 tháng trong năm

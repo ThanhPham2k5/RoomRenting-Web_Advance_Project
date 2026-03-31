@@ -365,3 +365,6 @@ Route::middleware(['auth:sanctum'])
 
 Route::middleware(['auth:sanctum'])
     ->get('/statistic/posts/room_data', [StatisticController::class, 'getRoomTypeStatistic']);
+
+Route::middleware(['auth:sanctum'])
+    ->get('/statistic/revenue', [StatisticController::class, 'getRevenueStatistic']);

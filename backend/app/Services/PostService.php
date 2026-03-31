@@ -90,8 +90,17 @@ class PostService{
         $post->update($data);
 
         // If status changed to 'completed', fire PostCreated event
-        if ($data['status'] === 'completed') {
+        if (isset($data['status']) && $data['status'] === 'completed') {
             event(new PostCreated($post));
+        }
+
+        if (isset($data['postImages'])) {
+            foreach ($data['postImages'] as $imgData) {
+                $post->postImages()->updateOrCreate(
+                    ['order' => $imgData['order']], // Tìm theo order
+                    ['image_post_url' => $imgData['image_post_url']] // Cập nhật URL mới
+                );
+            }
         }
 
         return $post;

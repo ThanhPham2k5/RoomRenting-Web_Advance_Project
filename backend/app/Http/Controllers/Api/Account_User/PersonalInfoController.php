@@ -14,6 +14,7 @@ use App\Models\Account_User\Account;
 use App\Services\PersonalInfoService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedSort;
@@ -111,11 +112,13 @@ class PersonalInfoController extends Controller
 
         $validated = $request->validated();
 
-        $this->getProfileFromRequest($request, $personalInfo);
+        return DB::transaction(function () use ($request, $personalInfo, $validated) {
+            $this->getProfileFromRequest($request, $personalInfo);
 
-        $result = $this->personalInfoService->updatePersonalInfo($personalInfo, $validated);
+            $result = $this->personalInfoService->updatePersonalInfo($personalInfo, $validated);
 
-        return response()->json($result);
+            return response()->json($result);
+        });
     }
 
     // via account_id
@@ -131,11 +134,13 @@ class PersonalInfoController extends Controller
 
         $validated = $request->validated();
 
-        $this->getProfileFromRequest($request, $personalInfo);
+        return DB::transaction(function () use ($request, $personalInfo, $validated) {
+            $this->getProfileFromRequest($request, $personalInfo);
 
-        $result = $this->personalInfoService->updatePersonalInfo($personalInfo, $validated);
+            $result = $this->personalInfoService->updatePersonalInfo($personalInfo, $validated);
 
-        return response()->json($result);
+            return response()->json($result);
+        });
     }
 
     /**

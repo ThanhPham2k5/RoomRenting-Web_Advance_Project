@@ -46,6 +46,7 @@ class PostService{
             AllowedFilter::exact('id'),
             AllowedFilter::exact('user.account_id'),
             AllowedFilter::exact('employee.account_id'),
+            AllowedFilter::exact('favoritedBy', 'favorites.account_id'),
             AllowedFilter::partial('title'),
             AllowedFilter::operator('price', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
             AllowedFilter::operator('area', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=

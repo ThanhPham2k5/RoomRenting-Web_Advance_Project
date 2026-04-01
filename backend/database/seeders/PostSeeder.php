@@ -28,8 +28,8 @@ class PostSeeder extends Seeder
 
         foreach ($usersWithPosts as $user) {
 
-            // each user has 2–5 posts
-            $posts = Post::factory(rand(2, 5))->make();
+            // each user has 7–10 posts
+            $posts = Post::factory(rand(7, 10))->make();
 
             foreach ($posts as $post) {
 

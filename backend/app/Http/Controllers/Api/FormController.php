@@ -157,13 +157,25 @@ class FormController extends Controller
     /*
      * Get recommended posts based on user's form criteria
     */
-    public function getRecommendedPosts(Request $request)
-    {
-        $user = $request->user();
+    // public function getRecommendedPosts(Request $request, Account $account)
+    // {
+    //     // $user = $request->user();
 
-        $result = $this->formService->getRecommendedPosts($user);
+    //     // $result = $this->formService->getRecommendedPosts();
 
-        return response()->json($result);
-    }
+    //     // return response()->json($result);
+
+    //     $query = $this->formService->getRecommendedPosts($account);
+    //     $perPage = $request->per_page ?? 15;
+
+    //     if ($perPage === 'all') {
+    //         $posts = $query->get();
+    //     } else {
+    //         $posts = $query->paginate((int) $perPage)
+    //             ->appends($request->query());
+    //     }
+
+    //     return new PostCollection($posts);
+    // }
 
 }

@@ -6,6 +6,7 @@ use App\Events\PostCreated;
 use App\Filter\AllColumnFilter;
 use App\Filter\DateFilter;
 use App\Http\Resources\Posts\PostResource;
+use App\Models\Form;
 use App\Models\Posts\Post;
 use Illuminate\Support\Facades\DB;
 use Spatie\QueryBuilder\AllowedFilter;
@@ -133,6 +134,51 @@ class PostService{
                 'post'    => new PostResource($post->load('postImages')),
             ];
         }); 
+    }
+
+    public function getQueryRecommendedPosts($form, $account){
+        
+        $baseQuery = Post::withTrashed()
+            ->where('user_id', '!=', $account->user->id)
+            ->matchWithForm($form) // scope in Post model to filter posts matching form criteria
+            ->where('status', 'completed'); // Only recommend completed posts
+
+        // build query from query builder
+        $query = QueryBuilder::for($baseQuery)
+        ->allowedIncludes($this->allowedIncludes)
+        ->allowedFilters([
+            //generic search
+            AllowedFilter::custom('search', new AllColumnFilter($this->allColFilter)),
+
+            //specific filter
+            AllowedFilter::exact('id'),
+            AllowedFilter::exact('user.account_id'),
+            AllowedFilter::exact('employee.account_id'),
+            AllowedFilter::exact('favoritedBy', 'favorites.account_id'),
+            AllowedFilter::partial('title'),
+            AllowedFilter::operator('price', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
+            AllowedFilter::operator('area', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
+            AllowedFilter::partial('houseNumber', 'house_number'),
+            AllowedFilter::partial('ward'),
+            AllowedFilter::partial('province'),
+            AllowedFilter::partial('description'),
+            AllowedFilter::operator('deposit', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
+            AllowedFilter::exact('status'),
+            AllowedFilter::operator('authorized', FilterOperator::DYNAMIC), // =, <>
+            AllowedFilter::exact('roomType', 'room_type'),
+            AllowedFilter::operator('maxOccupants', FilterOperator::DYNAMIC, '', 'max_occupants'), // =, <>, >, <, >=, <=
+            AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
+        ])
+        ->allowedSorts([
+            'id',
+            'price',
+            'area',
+            'deposit',
+            AllowedSort::field('maxOccupants','max_occupants'),
+            AllowedSort::field('createdAt', 'created_at'),
+        ]);
+
+        return $query;
     }
 }
 ?>

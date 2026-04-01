@@ -125,7 +125,10 @@ class AccountService
             if ($account->user) {
                 $account->form->delete();
                 $account->user->personalInfo->delete();
+                $account->user->posts()->delete();
                 $account->user->delete();
+                $account->comments()->delete();
+                $account->favorites()->delete();
             }
 
             if ($account->employee) {
@@ -148,9 +151,22 @@ class AccountService
             // Restore User
             if ($account->user()->withTrashed()->exists()) {
                 $user = $account->user()->withTrashed()->first();
-                
-                $user->personalInfo()->withTrashed()->restore();
                 $user->restore();
+
+                if ($user->posts()->withTrashed()){
+                    $user->posts()->withTrashed()->restore();
+                }
+
+                $user->personalInfo()->withTrashed()->restore();
+
+                if ($account->comments()->withTrashed()){
+                    $account->comments()->withTrashed()->restore();
+                }
+
+                if ($account->favorites()->withTrashed()){
+                    $account->favorites()->withTrashed()->restore();
+                }
+                
                 $account->form()->withTrashed()->restore();
             }
 

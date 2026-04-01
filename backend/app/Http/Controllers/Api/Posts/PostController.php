@@ -115,7 +115,7 @@ class PostController extends Controller
             }
 
             // Fire create post event
-            event(new StatusPostCreated($post, $request->comment));
+            event(new StatusPostCreated($post, $request['content'], $request['title']));
 
             return response()->json([
                 'message' => 'Post created successfully',
@@ -210,7 +210,7 @@ class PostController extends Controller
 
             $post = $this->postService->updatePost($post, $validated);
 
-            event(new StatusPostCreated($post, $request->comment));
+            event(new StatusPostCreated($post, $request['content'], $request['title']));
 
             return response()->json([
                 'message' => 'Post updated successfully',

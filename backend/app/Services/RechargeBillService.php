@@ -40,6 +40,8 @@ class RechargeBillService{
             AllowedFilter::operator('vat', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
             AllowedFilter::exact('status'),
             AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
+            // Tuấn thêm
+            AllowedFilter::trashed(),
         ])
         ->allowedSorts([
             'id',

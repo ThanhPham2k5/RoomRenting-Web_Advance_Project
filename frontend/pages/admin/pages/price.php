@@ -23,7 +23,7 @@
             <td><?php echo ($rule['id']); ?></td>
             <?php if(isset($rule['money'])) echo "<td>" . ($rule['money']) . "</td>"; ?>
             <td><?php echo ($rule['points']); ?></td>
-            <td><?php echo date('d/m/Y', strtotime($rule['created_at'])); ?></td>
+            <td><?php echo date('d/m/Y', strtotime($rule['createdAt'])); ?></td>
             <td>
                     <?php if (($rule['deletedAt']) === null): ?>
                         <span class="badge badge-success">Đang hoạt động</span>
@@ -44,8 +44,8 @@
     } 
     $tbodyHtml = ob_get_clean();
 
-    $tableData = ['tableTitle' =>"Thông tin giá đăng bài", 'tableHeader' => $tableHeader, 'time' => true, 'status' => true, 'tbodyHtml' => $tbodyHtml];
-    $tableData1 = ['tableTitle' =>"Thông tin giá trị quy đổi", 'tableHeader' => $tableHeader1, 'time' => true, 'status' => true, 'tbodyHtml' => $tbodyHtml];
+    $tableData = ['tableTitle' =>"Thông tin giá đăng bài", 'tableHeader' => $tableHeader, 'time' => true, 'status' => true, 'tbodyHtml' => $tbodyHtml, 'paginationMeta' => $paginationMeta];
+    $tableData1 = ['tableTitle' =>"Thông tin giá trị quy đổi", 'tableHeader' => $tableHeader1, 'time' => true, 'status' => true, 'tbodyHtml' => $tbodyHtml, 'paginationMeta' => $paginationMeta];
 ?>
 
 <div class="price-page">

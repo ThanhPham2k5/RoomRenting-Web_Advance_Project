@@ -1,159 +1,268 @@
 .post-detail-component-overlay {
     position: fixed;
-    top: 0;
+    top: 0; 
     left: 0;
-    width: 100vw;
+    width: 100vw; 
     height: 100vh;
     background-color: rgba(17, 24, 39, 0.6);
-    display: flex;
+    display: none;
     justify-content: center;
     align-items: center;
     z-index: 9999;
     backdrop-filter: blur(3px);
-    display: none;
 }
+
 .post-detail-component-content {
     width: 1000px;
     max-width: 95vw;
-    max-height: 90vh; 
+    height: 90vh;
     background-color: #FFFFFF;
     border-radius: 16px;
     padding: 20px;
     display: flex;
     gap: 40px; 
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-    overflow-y: auto; 
+    overflow: hidden;
 }
 .post-detail-component-content .post-img {
     width: 50%;
+    height: 100%;
     display: flex;
     flex-direction: column;
-    gap: 16px;
 }
 .post-detail-component-content .main-image-wrapper {
     position: relative;
     width: 100%;
+    flex: 1;
+    min-height: 200px;
 }
 .post-detail-component-content .main-image-wrapper img {
     width: 100%;
-    height: 380px;
+    height: 100%;
     object-fit: cover;
     border-radius: 12px;
     border: 2px solid #E0E3EB;
     transition: all 0.2s ease;
 }
 .post-detail-component-content .sub-post-img {
+    flex: 0 0 auto; 
+    width: 100%;
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr)); 
+    grid-template-columns: repeat(3, 1fr);
     gap: 12px;
+    align-content: start;
+    margin-top: 16px;
 }
 .post-detail-component-content .sub-post-img .image-wrapper {
     position: relative;
-    width: 100%;
-    aspect-ratio: 1 / 1; 
+    height: 120px;
 }
 .post-detail-component-content .sub-post-img .image-wrapper img {
-    width: 100%;
-    height: 100%;
+    width: 100%; 
+    height: 100%; 
     object-fit: cover;
-    border-radius: 8px;
-    border: 2px solid transparent;
+    border-radius: 8px; 
+    border: 2px solid transparent; 
     transition: all 0.2s ease;
 }
-.post-detail-component-content .main-image-wrapper .btn-delete-img,
-.post-detail-component-content .sub-post-img .btn-delete-img {
+.post-detail-component-content .btn-delete-img {
     position: absolute; 
     top: -6px; 
     right: -6px; 
-    width: 26px;
+    width: 26px; 
     height: 26px;
     background-color: #EF4444; 
     color: white;
-    border: none;
+    border: none; 
     border-radius: 50%;
-    font-size: 1.6rem;
+    font-size: 1.6rem; 
     font-weight: bold;
-    display: flex;
-    justify-content: center;
+    display: flex; 
+    justify-content: center; 
     align-items: center;
-    cursor: pointer;
-    opacity: 0;
+    cursor: pointer; 
+    opacity: 0; 
     transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2); 
     padding-bottom: 2px;
 }
 .post-detail-component-content .main-image-wrapper:hover .btn-delete-img,
-.post-detail-component-content .sub-post-img .image-wrapper:hover .btn-delete-img { 
-    opacity: 1; 
-}
-.post-detail-component-content .main-image-wrapper .btn-delete-img:hover,
-.post-detail-component-content .sub-post-img .btn-delete-img:hover {
-    background-color: #DC2626; 
-    transform: scale(1.15);
-}
+.post-detail-component-content .sub-post-img .image-wrapper:hover .btn-delete-img { opacity: 1; }
+.post-detail-component-content .btn-delete-img:hover { background-color: #DC2626; transform: scale(1.15); }
 .post-detail-component-content .main-image-wrapper:has(.btn-delete-img:hover) img,
 .post-detail-component-content .sub-post-img .image-wrapper:has(.btn-delete-img:hover) img {
-    border-color: #EF4444;
-    opacity: 0.85;
+    border-color: #EF4444; opacity: 0.85;
 }
-.post-detail-component-content .sub-post-img label {
-    grid-column: 1 / -1; 
-    display: flex;
-    justify-content: center;
+.post-detail-component-content .sub-post-img label.btn-upload-img {
+    grid-column: 1 / -1;
+    display: flex; 
+    justify-content: center; 
     align-items: center;
-    padding: 12px;
-    background-color: #EEF2FF;
+    padding: 12px; 
+    background-color: #EEF2FF; 
     color: #2563EB;
     border: 1px dashed #2563EB; 
     border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s ease;
+    cursor: pointer; 
+    transition: all 0.2s ease; 
     margin-top: 4px;
 }
-.post-detail-component-content .sub-post-img label:hover { background-color: #E0E7FF; }
-.post-detail-component-content .sub-post-img input { display: none; }
 .post-detail-component-content .post-info {
     width: 50%;
-    display: flex;
-    flex-direction: column;
+    height: 100%;
+    display: flex; 
+    flex-direction: column; 
     justify-content: space-between;
+    overflow-y: auto;
+    padding-right: 5px;
 }
-.post-detail-component-content .location { 
-    display: flex; 
-    align-items: center; 
-    gap: 8px; 
-    color: #626687; 
-}
-.post-detail-component-content .price {
-    display: flex; 
-    align-items: center; 
-    gap: 24px; 
-}
-.post-detail-component-content .price .main {
-    font-size: 2.4rem; 
-    line-height: 3.2rem;
-    font-weight: 600;
-    color: #F97316; 
-}
-.post-detail-component-content .price .area { 
-    color: #626687;
-}
-.post-detail-component-content .post-info .detail {
-    white-space: pre-line; 
-    color: #626687;
-}
-.post-detail-component-content .post-info button {
-    width: 100%;
+.post-detail-component-content .location { display: flex; align-items: center; gap: 8px; color: #626687; }
+.post-detail-component-content .roomtype, .post-detail-component-content .occupants { display: flex; align-items: center; gap: 8px; }
+.post-detail-component-content .price { display: flex; align-items: center; gap: 24px; }
+.post-detail-component-content .price .main { font-size: 2.4rem; line-height: 3.2rem; font-weight: 600; color: #F97316; }
+.post-detail-component-content .price .area { color: #626687; }
+.post-detail-component-content .post-info .detail { white-space: pre-line; color: #626687; }
+.post-detail-component-content .post-info-btn { display: flex; justify-content: center; align-items: center; gap: 20px; }
+.post-detail-component-content .post-info .handle {
+    width: 100%; 
     height: 50px;
-    background-color: #10B981;
+    background-color: #10B981; 
     color: white;
-    font-size: 1.6rem;
-    line-height: 2.4rem;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
+    font-size: 1.6rem; 
+    line-height: 2.4rem; 
+    font-family: 'Roboto', sans-serif;
+    border: none; 
+    border-radius: 8px; 
+    cursor: pointer; 
     transition: background-color 0.2s;
 }
-.post-detail-component-content .post-info button:hover {
-    background-color: #059669;
+.post-detail-component-content .post-info .handle:hover { filter: brightness(0.9); }
+.post-detail-component-content .post-edit {
+    width: 50%; 
+    height: 100%; 
+    display: flex; 
+    flex-direction: column;
+}
+.post-detail-component-content .post-edit form {
+    display: flex; 
+    flex-direction: column; 
+    width: 100%; 
+    height: 100%;
+}
+.post-detail-component-content .post-edit .post-edit-body {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 15px; 
+    padding-right: 8px;
+}
+.post-detail-component-content .post-edit .post-edit-body .input-group {
+    display: flex; 
+    justify-content: center; 
+    align-items: flex-start;
+    flex-direction: column; 
+    gap: 10px; 
+    margin-top: 20px;
+}
+.post-detail-component-content .post-edit .post-edit-body .input-group label {
+    font-size: 1.6rem;
+    line-height: 2.4rem; 
+    font-weight: 500; 
+    width: 100%;
+}
+.post-detail-component-content .post-edit .post-edit-body .input-group input,
+.post-detail-component-content .post-edit .post-edit-body .input-group select {
+    border: #E0E3EB solid 1px; 
+    background-color: transparent;
+    font-size: 1.6rem; 
+    line-height: 2.4rem; 
+    font-weight: 500; 
+    color: #333;
+    height: 50px;
+    width: 100%; 
+    border-radius: 12px;
+    padding: 10px 16px;
+}
+.post-detail-component-content .post-edit .post-edit-body .input-group select {
+    appearance: none;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%231F2937%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+    background-repeat: no-repeat; 
+    background-size: 10px; 
+    background-position: right 16px center;
+}
+.post-detail-component-content .post-edit .modal-footer {
+    flex: 0 0 auto;
+    padding: 15px 0 0 0;
+    border-top: 1px solid #E0E3EB;
+    display: flex; 
+    justify-content: space-around; 
+    align-items: center;
+}
+.post-detail-component-content .post-edit .modal-footer .btn-form-edit {
+    width: 127px; 
+    height: 50px;
+    border: none; 
+    background-color: transparent;
+    font-size: 1.6rem; 
+    font-family: 'Roboto', sans-serif; 
+    font-weight: 500; 
+    line-height: 2.4rem;
+    color: #FFF; 
+    border-radius: 12px; 
+    cursor: pointer; 
+    transition: filter 0.2s;
+}
+.post-detail-component-content .post-edit .modal-footer .btn-form-edit:hover { filter: brightness(0.9); }
+.post-detail-component-content .post-edit .modal-footer .cancel { background-color: #626687; }
+.post-detail-component-content .post-edit .modal-footer .submit { background-color: #F97316; }
+.view-mode .btn-delete-img{
+    display: none !important;
+}
+.right-column-slider {
+    width: 50%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+}
+.slider-track {
+    display: flex;
+    width: 200%;
+    height: 100%;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateX(0);
+}
+.slider-track .post-info,
+.slider-track .post-edit {
+    width: 50%; 
+    flex: 0 0 50%;
+    height: 100%;
+}
+.edit-mode .slider-track {
+    transform: translateX(-50%);
+}
+.post-detail-component-content .post-img label.btn-upload-img {
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    border-radius: 8px;
+    cursor: pointer; 
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.view-mode .post-img label.btn-upload-img {
+    max-height: 0; 
+    padding: 0; 
+    margin: 0; 
+    border-width: 0; 
+    opacity: 0; 
+    transform: translateY(20px); 
+    pointer-events: none;
+}
+.edit-mode .post-img label.btn-upload-img {
+    max-height: 50px; 
+    padding: 12px; 
+    margin-top: 16px; 
+    border-width: 1px; 
+    opacity: 1; 
+    transform: translateY(0); 
+    pointer-events: auto;
 }

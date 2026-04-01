@@ -10,6 +10,7 @@
         echo '<tr><td colspan="5" style="text-align:center;">Không có dữ liệu hoặc lỗi kết nối máy chủ</td></tr>';
     }else{
         foreach ($comments as $comment){
+            if(!isset($comment['deletedAt'])){
     ?>
         <tr onclick="selectRow(this)" style="cursor: pointer;">
             <td style="display: none;">
@@ -18,7 +19,7 @@
             <td class="user-name"><?php echo ($comment['account']['username']); ?></td>
             <td><?php echo ($comment['content']); ?></td>
             <td><?php echo ($comment['account']['id']); ?></td>
-            <td><?php echo date('d/m/Y', strtotime($comment['created_at'])); ?></td>
+            <td><?php echo date('d/m/Y', strtotime($comment['createdAt'])); ?></td>
             <td>
                 <button class="table-btn" title="Xem chi tiết">
                     <svg width="20" height="10" viewBox="0 0 20 10" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -28,6 +29,7 @@
             </td>
         </tr>
     <?php 
+            }
         }
     }
     $tbodyHtml = ob_get_clean();

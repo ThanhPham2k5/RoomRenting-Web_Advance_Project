@@ -545,10 +545,6 @@
                     "Authorization": "Bearer " + token
                   },
                   body: JSON.stringify({
-                    "title": document.querySelector(".notify-info").textContent,
-                    "content": document.querySelector(".notify-value").textContent,
-                    "notification_type": notification_type,
-                    "account_id": account_id,
                     "status": "read"
                   })
                 })
@@ -720,10 +716,6 @@
                     "Authorization": "Bearer " + token
                   },
                   body: JSON.stringify({
-                    "title": document.querySelector(".notify-info").textContent,
-                    "content": document.querySelector(".notify-value").textContent,
-                    "notification_type": notification_type,
-                    "account_id": account_id,
                     "status": "read"
                   })
                 })
@@ -744,7 +736,7 @@
       }
 
       // update notify button
-      checkUnreadNotification(account_id, token)
+      await checkUnreadNotification(account_id, token)
     }
 
     async function updateHeader() {
@@ -752,11 +744,10 @@
       var token = localStorage.getItem("token")
 
       if(account_id && token) {
-        // update user info
-        getPersonalInfo(account_id, token)
-
-        // update notification
-        checkUnreadNotification(account_id, token)
+        await Promise.all([
+          getPersonalInfo(account_id, token),
+          checkUnreadNotification(account_id, token)
+        ])
 
         // update header buttons
         document.querySelector(".button-sign-up").style.display = "none"

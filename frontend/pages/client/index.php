@@ -210,20 +210,22 @@
 
           // check isFav or not
           var isFav = false
-          post.favorites.forEach(account => {
-            // console.log(account)
-            if(account.id == account_id) {
+          var favId = ""
+          post.favorites.forEach(favorite => {
+            // console.log(favorite)
+            if(favorite.account.id == account_id) {
               isFav = true
+              favId = favorite.id
             }
           })
 
-          var favIco = isFav ? "favour.png" : "unfavour.png"
+          var favIco = isFav ? "favour" : "unfavour"
 
           html += `
             <div class="post">
-              <div class="post-favour post-id-${post.id}">
+              <div class="post-favour post-id-${post.id} favourite-id-${favId} ${favIco}">
                 <img
-                  src='<?php echo BASE_URL ?>/assets/img/${favIco}'
+                  src='<?php echo BASE_URL ?>/assets/img/${favIco}.png'
                   alt="favour.png"
                   class="post-favour-ico"
                 />
@@ -261,13 +263,71 @@
         });
         
         // update post section (must have favour button)
-        document.querySelectorAll(".newpost-postlist").forEach(item => {
-          item.innerHTML = html
-        })
+        document.querySelectorAll(".newpost-postlist")[0].innerHTML = html
 
         // update favorite post when client clicked
-        document.querySelectorAll(".post-favour").forEach(item => {
-          
+        document.querySelectorAll(".newpost-postlist")[0].querySelectorAll(".post-favour").forEach(item => {
+          item.addEventListener("click", async (e) => { 
+            // console.log(item.classList)
+            var favIco = item.classList.contains("favour")
+            const postClass = [...item.classList].find(c => c.startsWith("post-id-"))
+            var post_id = postClass.replace("post-id-", "")
+
+            // create new favorite
+            if(!favIco) {
+              item.classList.remove("unfavour")
+              item.classList.add("favour")
+              item.querySelector(".post-favour-ico").setAttribute("src", '<?php echo BASE_URL ?>/assets/img/favour.png')
+
+              const response = await fetch("http://127.0.0.1:8000/api/favorites", {
+                method: "POST",
+                headers: {
+                  "Accept": "application/json",
+                  "Content-Type": "application/json",
+                  "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify({
+                  "account_id": account_id,
+                  "post_id": post_id
+                })
+              })
+
+              const data = await response.json()
+              if(response.ok) {
+                // console.log(data)
+                if(data) {
+                  const favClass = [...item.classList].find(c => c.startsWith("favourite-id-"))
+                  if(favClass) {
+                    item.classList.remove(favClass)
+                    item.classList.add("favourite-id-" + data.favorite.id)
+                  }
+                }
+              }
+            }
+
+            // delete favorite
+            if(favIco) {
+              item.classList.remove("favour")
+              item.classList.add("unfavour")
+              item.querySelector(".post-favour-ico").setAttribute("src", '<?php echo BASE_URL ?>/assets/img/unfavour.png')
+              const favClass = [...item.classList].find(c => c.startsWith("favourite-id-"))
+              var fav_id = favClass.replace("favourite-id-", "")
+
+              const response = await fetch("http://127.0.0.1:8000/api/favorites/" + fav_id, {
+                method: "DELETE",
+                headers: {
+                  "Accept": "application/json",
+                  "Content-Type": "application/json",
+                  "Authorization": "Bearer " + token
+                }
+              })
+
+              const data = await response.json()
+              if(response.ok) {
+                // console.log(data)
+              }
+            }
+          })
         })
       } else {
         // not login yet

@@ -3,8 +3,6 @@
 namespace App\Listeners;
 
 use App\Models\Payments\RechargeRule;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 use App\Events\RechargeBillCreated;
 use App\Models\Payments\RechargeBill;
 use App\Models\Notification\Notification;
@@ -30,11 +28,9 @@ class SendRechargeBillNotification
             return;
         }
 
-        $rechargeRule = RechargeRule::where('id', $rechargeBill->recharge_rule_id)->first();
-
         Notification::create([
-            'title' => 'Thanh toán hoá đơn',
-            'content' => 'Hoá đơn thanh toán #' . $rechargeBill->id . ' đã được tạo. Số điểm: ' . $rechargeRule->points . ', trạng thái: ' . $rechargeBill->status . '.',
+            'title' => 'Hoá đơn nạp điểm',
+            'content' => 'Đã nạp: ' . $rechargeBill->points . ' điểm với số tiền:'. number_format($rechargeBill->total_money, 0, ',', '.') .'VND cho tài khoản của bạn.',
             'notification_type' => 'transaction',
             'status' => 'unread',
             'account_id' => $rechargeBill->account_id,

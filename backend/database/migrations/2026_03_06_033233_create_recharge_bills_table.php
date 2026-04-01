@@ -16,6 +16,7 @@ return new class extends Migration
 
             $table->decimal('money', 12, 0);
             $table->decimal('total_money', 12, 0);
+            $table->integer('points');
             $table->decimal('vat', 8, 2);
             $table->enum('status', ['completed', 'pending', 'failed']);
 

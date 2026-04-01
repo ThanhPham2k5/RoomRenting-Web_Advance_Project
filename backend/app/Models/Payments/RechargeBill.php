@@ -12,7 +12,7 @@ class RechargeBill extends Model
 {
     /** @use HasFactory<\Database\Factories\RechargeBillFactory> */
     use HasFactory, SoftDeletes;
-    protected $fillable = ['money', 'total_money', 'vat', 'status', 'recharge_rule_id', 'account_id'];
+    protected $fillable = ['money', 'total_money', 'vat', 'status', 'recharge_rule_id', 'account_id', 'points'];
 
     protected static function newFactory()
     {

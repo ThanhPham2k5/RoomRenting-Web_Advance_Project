@@ -44,8 +44,8 @@
     } 
     $tbodyHtml = ob_get_clean();
 
-    $tableData = ['tableTitle' =>"Thông tin hóa đơn thanh toán", 'tableHeader' => $tableHeader, 'time' => true, 'status' => true, 'tbodyHtml' => $tbodyHtml];
-    $tableData1 = ['tableTitle' =>"Thông tin hóa đơn nạp tiền", 'tableHeader' => $tableHeader1, 'time' => true, 'status' => true, 'tbodyHtml' => $tbodyHtml];
+    $tableData = ['tableTitle' =>"Thông tin hóa đơn thanh toán", 'tableHeader' => $tableHeader, 'time' => true, 'status' => true, 'tbodyHtml' => $tbodyHtml, 'paginationMeta' => $paginationMeta];
+    $tableData1 = ['tableTitle' =>"Thông tin hóa đơn nạp tiền", 'tableHeader' => $tableHeader1, 'time' => true, 'status' => true, 'tbodyHtml' => $tbodyHtml, 'paginationMeta' => $paginationMeta];
 ?>
 
 <div class="bill-page">

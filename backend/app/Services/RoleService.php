@@ -20,7 +20,7 @@ class RoleService{
     ];
 
     public function buildGetAllQuery(){
-        $query = QueryBuilder::for(Role::withTrashed())
+        $query = QueryBuilder::for(Role::class)
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
             //generic search

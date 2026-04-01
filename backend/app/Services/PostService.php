@@ -89,9 +89,9 @@ class PostService{
         $post->update($data);
 
         // If status changed to 'completed', fire PostCreated event
-        if ($data['status'] === 'completed') {
-            event(new PostCreated($post));
-        }
+        // if ($data['status'] === 'completed') {
+        //     event(new PostCreated($post));
+        // }
 
         return $post;
     }

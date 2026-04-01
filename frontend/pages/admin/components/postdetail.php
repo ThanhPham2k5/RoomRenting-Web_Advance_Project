@@ -1,26 +1,29 @@
 <div class="post-detail-component-overlay view-mode" id="post-detail-modal">
     <div class="post-detail-component-content">
         <div class="post-img">
-            <div class="main-image-wrapper">
-                <img id="detail-main-img" src="../../assets/admin/images/post_img.png" alt="Ảnh chính">
-                <button class="btn-delete-img" title="Xóa ảnh chính">×</button>
+            <div class="main-image-wrapper image-slot" data-slot="main" style="cursor: pointer;" title="Bấm để thay đổi ảnh">
+                <img id="img-main" src="../../assets/admin/images/post_img.png" alt="Ảnh chính">
+                <input type="hidden" name="existing_images[main]" value="url_anh_chinh_cu.jpg">
             </div>
+
             <div class="sub-post-img" id="detail-sub-imgs">
-                <div class="image-wrapper">
-                    <img src="../../assets/admin/images/post_img.png" alt="">
-                    <button class="btn-delete-img" title="Xóa ảnh này">×</button>
+                <div class="image-wrapper image-slot" data-slot="sub_1" style="cursor: pointer;" title="Bấm để thay đổi ảnh">
+                    <img id="img-sub_1" src="../../assets/admin/images/post_img.png" alt="Ảnh phụ 1">
+                    <input type="hidden" name="existing_images[sub_1]" value="url_anh_phu_1_cu.jpg">
                 </div>
-                <div class="image-wrapper">
-                    <img src="../../assets/admin/images/post_img.png" alt="">
-                    <button class="btn-delete-img" title="Xóa ảnh này">×</button>
+                
+                <div class="image-wrapper image-slot" data-slot="sub_2" style="cursor: pointer;" title="Bấm để thay đổi ảnh">
+                    <img id="img-sub_2" src="../../assets/admin/images/post_img.png" alt="Ảnh phụ 2">
+                    <input type="hidden" name="existing_images[sub_2]" value="url_anh_phu_2_cu.jpg">
                 </div>
-                <div class="image-wrapper">
-                    <img src="../../assets/admin/images/post_img.png" alt="">
-                    <button class="btn-delete-img" title="Xóa ảnh này">×</button>
+                
+                <div class="image-wrapper image-slot" data-slot="sub_3" style="cursor: pointer;" title="Bấm để thay đổi ảnh">
+                    <img id="img-sub_3" src="../../assets/admin/images/post_img.png" alt="Ảnh phụ 3">
+                    <input type="hidden" name="existing_images[sub_3]" value="url_anh_phu_3_cu.jpg">
                 </div>
             </div>
-            <label class="btn-upload-img" for="">Tải ảnh lên</label>
-            <input type="text" style="display: none;">
+            <label class="btn-upload-img">Nhấn vào ảnh để sửa</label>
+            <input type="file" id="hidden-file-input" accept="image/*" style="display: none;">
         </div>
 
         <div class="right-column-slider">
@@ -39,6 +42,18 @@
                         <p class="area" id="detail-area">57.5 m²</p>
                     </div>
                     <p id="detail-deposit">Số tiền cọc: 3 tỷ</p>
+                    <div class="roomtype">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M6 19H13V16H6V19ZM15 19H18V16H15V19ZM6 14H9V11.025H6V14ZM11 14H18V11.025H11V14ZM7.3 9.025H16.7L12 5.5L7.3 9.025ZM6 21C5.45 21 4.97933 20.8043 4.588 20.413C4.19667 20.0217 4.00067 19.5507 4 19V10C4 9.68333 4.071 9.38333 4.213 9.1C4.355 8.81667 4.55067 8.58333 4.8 8.4L10.8 3.9C10.9833 3.76667 11.175 3.66667 11.375 3.6C11.575 3.53333 11.7833 3.5 12 3.5C12.2167 3.5 12.425 3.53333 12.625 3.6C12.825 3.66667 13.0167 3.76667 13.2 3.9L19.2 8.4C19.45 8.58333 19.646 8.81667 19.788 9.1C19.93 9.38333 20.0007 9.68333 20 10V19C20 19.55 19.804 20.021 19.412 20.413C19.02 20.805 18.5493 21.0007 18 21H6Z" fill="currentColor"/>
+                        </svg>
+                        <p id="room-type">Phường Bình Trị Đông, Tp Hồ Chí Minh</p>
+                    </div>
+                    <div class="occupants">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M16 11C17.66 11 18.99 9.66 18.99 8C18.99 6.34 17.66 5 16 5C14.34 5 13 6.34 13 8C13 9.66 14.34 11 16 11ZM8 11C9.66 11 10.99 9.66 10.99 8C10.99 6.34 9.66 5 8 5C6.34 5 5 6.34 5 8C5 9.66 6.34 11 8 11ZM8 13C5.67 13 1 14.17 1 16.5V18C1 18.55 1.45 19 2 19H14C14.55 19 15 18.55 15 18V16.5C15 14.17 10.33 13 8 13ZM16 13C15.71 13 15.38 13.02 15.03 13.05C15.05 13.06 15.06 13.08 15.07 13.09C16.21 13.92 17 15.03 17 16.5V18C17 18.35 16.93 18.69 16.82 19H22C22.55 19 23 18.55 23 18V16.5C23 14.17 18.33 13 16 13Z" fill="#1F2937"/>
+                        </svg>
+                        <p id="occupants-data">Phường Bình Trị Đông, Tp Hồ Chí Minh</p>
+                    </div>
                     <p>Mô tả chi tiết</p>
                     <p class="detail" id="detail-description">Địa chỉ: Đường Tân Nhất 13 , Phường Tân Thới Nhất , Quận 12  
                         Phòng ngay trục đường Trường Chinh QUẬN 12 , thuận tiện di chuyển qua Tân Bình , Gv, ...Cách trường HUFLIT Hốc Môn 4km  
@@ -55,48 +70,64 @@
                 </div>
 
                 <div class="post-edit" id="info-edit">
-                    <form action="" method="POST" id="form-">
+                    <form onsubmit="handleSave(event, this)" method="POST" id="form-edit-post" action="">
                         <div class="post-edit-body">
-                            <input type="hidden" name="action" value="editPost">
                             <input type="hidden" name="id" value="">
 
                             <div class="input-group">
-                                <label>Tên tài khoản</label>
-                                <input type="text" name="username" value="" placeholder="Nhập vào tên tài khoản">
+                                <label>Tiêu đề bài đăng</label>
+                                <input type="text" name="title" value="" placeholder="Ví dụ: Cho thuê phòng trọ khép kín mới xây...">
                             </div>
+                            
                             <div class="input-group">
-                                <label>Mật khẩu mới</label>
-                                <input type="password" name="password" placeholder="Nhập vào mật khẩu mới">
+                                <label>Giá thuê (VNĐ/tháng)</label>
+                                <input type="number" name="price" value="" placeholder="Ví dụ: 3000000" min="0">
                             </div>
+                            
                             <div class="input-group">
-                                <label>Xác nhận mật khẩu</label>
-                                <input type="password" name="password_confirmation" placeholder="Nhập lại mật khẩu mới">
+                                <label>Tiền đặt cọc (VNĐ)</label>
+                                <input type="number" name="deposit" value="" placeholder="Ví dụ: 1000000" min="0">
                             </div>
+                            
                             <div class="input-group">
-                                <label>Tình trạng</label>
-                                <select name="status">
-                                    <option value="active">Đang hoạt động</option>
-                                    <option value="inactive">Dừng hoạt động</option>
+                                <label>Diện tích (m²)</label>
+                                <input type="number" name="area" value="" placeholder="Ví dụ: 25" min="1" step="0.1">
+                            </div>
+                            
+                            <div class="input-group">
+                                <label>Tỉnh, Thành Phố</label>
+                                <select name="city_id" id="city-select">
+                                    <option value="">-- Chọn Tỉnh/Thành phố --</option>
+                                    </select>
+                            </div>
+
+                            <div class="input-group">
+                                <label>Quận, Huyện, Phường, Xã</label>
+                                <select name="ward_id" id="ward-select">
+                                    <option value="">-- Chọn Phường/Xã --</option>
+                                    </select>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label>Kiểu phòng</label>
+                                <select name="room_type">
+                                    <option value="">-- Chọn kiểu phòng --</option>
+                                    <option value="tro_khep_kin">Phòng trọ khép kín</option>
+                                    <option value="Chung_cu_mini">Chung cư mini</option>
+                                    <option value="nha_nguyen_can">Nhà nguyên căn</option>
                                 </select>
                             </div>
+                            
                             <div class="input-group">
-                                <label>Chức vụ</label>
-                                <select name="role" disabled style="background-color: #e9ecef;">
-                                    <option value="">-- Chọn chức vụ --</option>
-                                    <option value="employee">Nhân viên</option>
-                                    <option value="user">Khách hàng</option>
-                                </select>
+                                <label>Số người ở tối đa</label>
+                                <input type="number" name="max_occupants" value="" placeholder="Ví dụ: 2" min="1">
                             </div>
-                            <div class="input-group">
-                                <label>Chọn quyền hạn</label>
-                                <select name="roles[]">
-                                    <option value="">-- Chọn quyền hạn --</option>
-                                    <option value="">-- Chọn quyền hạn --</option>
-                                    <option value="">-- Chọn quyền hạn --</option>
-                                </select>
+                            
+                            <div class="input-group" style="grid-column: 1 / -1;"> <label>Mô tả chi tiết</label>
+                                <textarea name="description" placeholder="Mô tả về tiện ích, an ninh, điện nước..." rows="5"></textarea>
                             </div>
                         </div>
-
+                        
                         <div class="modal-footer">
                             <button class="submit btn-form-edit" type="submit">Xác nhận</button>
                             <button class="cancel btn-form-edit" type="button" onclick="switchToView()">Quay lại</button>                

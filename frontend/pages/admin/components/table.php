@@ -1,6 +1,8 @@
 <?php
 $tableTitle = $tableTitle ?? "";
 $tableHeader = $tableHeader ?? [];
+$paginationMeta = $paginationMeta ?? [];
+$baseUrl = $paginationMeta['base_url'] ?? '#';
 $time = $time ?? false;
 $status = $status ?? false;
 $tbodyHtml = $tbodyHtml ?? '';
@@ -43,6 +45,26 @@ $currentTable = $_GET['table'] ?? '1';
                 ?>
                 <?php
                     if($status){
+                        $currentParams = $_GET;
+                        unset($currentParams['p']);
+                        $filterOptions = [];
+                        if ($currentPage === 'bill') {
+                            $filterKey = 'status';
+                            $filterOptions = [
+                                'completed'    => 'Đã thanh toán',
+                                'failed'  => 'Chưa thanh toán',
+                                'pending' => 'Đang xử lý'
+                            ];
+                        } else {
+                            $filterKey = 'trashed';
+                            $filterOptions = [
+                                'without' => 'Đang hoạt động',
+                                'only'    => 'Dừng hoạt động'
+                            ];
+                        }
+                        $paramsAll = $currentParams;
+                        unset($paramsAll['filter'][$filterKey]);
+                        $linkAll = '?' . http_build_query($paramsAll);
                 ?>
                     <div class="dropdown-container">
                         <button class="top-btn">
@@ -54,11 +76,18 @@ $currentTable = $_GET['table'] ?? '1';
                             <path d="M8.45 0.850013L4.825 4.47501C4.74167 4.55835 4.65833 4.61668 4.575 4.65001C4.49167 4.68335 4.4 4.70001 4.3 4.70001C4.2 4.70001 4.10833 4.68335 4.025 4.65001C3.94167 4.61668 3.85833 4.55835 3.775 4.47501L0.15 0.850013C0.1 0.800013 0.0626668 0.745679 0.0380001 0.687013C0.0133334 0.628346 0.000666667 0.566012 0 0.500012C0 0.366679 0.046 0.250012 0.138 0.150012C0.23 0.0500121 0.350667 1.23978e-05 0.5 1.23978e-05H8.1C8.25 1.23978e-05 8.371 0.0500121 8.463 0.150012C8.555 0.250012 8.60067 0.366679 8.6 0.500012C8.6 0.533346 8.55 0.650013 8.45 0.850013Z" fill="currentColor"/>
                             </svg>
                         </button>
+                        
                         <ul class="dropdown-menu">
-                            <li><a href="index.php?page=<?php echo $currentPage ?>&table=<?php echo $currentTable ?>">Tất cả</a></li>
-                            <li><a href="index.php?page=<?php echo $currentPage ?>&table=<?php echo $currentTable ?>">Đang hoạt động</a></li>
-                            <li><a href="index.php?page=<?php echo $currentPage ?>&table=<?php echo $currentTable ?>">Chờ duyệt</a></li>
-                            <li><a href="index.php?page=<?php echo $currentPage ?>&table=<?php echo $currentTable ?>">Đã khóa</a></li>
+                            <li><a href="<?php echo $linkAll; ?>">Tất cả</a></li>
+                            <?php foreach ($filterOptions as $value => $label): 
+                                $params = $currentParams;
+                                $params['filter'][$filterKey] = $value;
+                                $link = '?' . http_build_query($params);
+                            ?>
+                                <li>
+                                    <a href="<?php echo $link; ?>"><?php echo $label; ?></a>
+                                </li>
+                            <?php endforeach; ?>
                         </ul>
                     </div>
                 <?php

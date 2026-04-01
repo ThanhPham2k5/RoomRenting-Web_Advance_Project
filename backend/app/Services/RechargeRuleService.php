@@ -31,6 +31,7 @@ class RechargeRuleService{
             AllowedFilter::operator('points', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
             AllowedFilter::operator('money', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=  
             AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
+            AllowedFilter::trashed(),
         ])
         ->allowedSorts([
             'id',

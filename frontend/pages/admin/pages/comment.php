@@ -10,6 +10,7 @@
         echo '<tr><td colspan="5" style="text-align:center;">Không có dữ liệu hoặc lỗi kết nối máy chủ</td></tr>';
     }else{
         foreach ($comments as $comment){
+            if(!isset($comment['deletedAt'])){
     ?>
         <tr onclick="selectRow(this)" style="cursor: pointer;">
             <td style="display: none;">
@@ -28,6 +29,7 @@
             </td>
         </tr>
     <?php 
+            }
         }
     }
     $tbodyHtml = ob_get_clean();

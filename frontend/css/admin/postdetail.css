@@ -117,6 +117,7 @@
     padding-right: 5px;
 }
 .post-detail-component-content .location { display: flex; align-items: center; gap: 8px; color: #626687; }
+.post-detail-component-content .roomtype, .post-detail-component-content .occupants { display: flex; align-items: center; gap: 8px; }
 .post-detail-component-content .price { display: flex; align-items: center; gap: 24px; }
 .post-detail-component-content .price .main { font-size: 2.4rem; line-height: 3.2rem; font-weight: 600; color: #F97316; }
 .post-detail-component-content .price .area { color: #626687; }
@@ -242,17 +243,10 @@
     display: flex; 
     justify-content: center; 
     align-items: center;
-    background-color: #EEF2FF; 
-    color: #2563EB;
-    border-style: dashed; 
-    border-color: #2563EB; 
     border-radius: 8px;
     cursor: pointer; 
     overflow: hidden;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.post-detail-component-content .post-img label.btn-upload-img:hover { 
-    background-color: #E0E7FF; 
 }
 .view-mode .post-img label.btn-upload-img {
     max-height: 0; 

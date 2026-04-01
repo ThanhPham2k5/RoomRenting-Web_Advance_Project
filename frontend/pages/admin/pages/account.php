@@ -7,7 +7,7 @@
     $accountInsertForm = "modal-them-tai-khoan";
     $accountEditForm = "modal-sua-tai-khoan";
     $accountDetailForm = "modal-chi-tiet-tai-khoan";
-    $titleData = ['targetModal' => $accountInsertForm, 'targetModal1' => $accountEditForm, 'titleContent' => "Tài khoản", 'group' => false, 'insert' => true, 'edit' => true, 'delete' => true, 'handle' => false];
+    $titleData = ['targetModal' => $accountInsertForm, 'targetModal1' => $accountEditForm, 'titleContent' => "Tài khoản", 'group' => false, 'insert' => true, 'edit' => true, 'delete' => true, 'handle' => false, 'restore' => true];
     $tableHeader = ['Id', 'Tên tài khoản', 'Chức vụ', 'Tình trạng', 'Chi tiết'];
     $type = ['type' => "1"];
     ob_start(); 
@@ -15,19 +15,7 @@
         echo '<tr><td colspan="5" style="text-align:center;">Không có dữ liệu hoặc lỗi kết nối máy chủ</td></tr>';
     }else{
         foreach ($accounts as $user){
-            $isVisible = false; 
-            $roleLower = strtolower($user['role'] ?? ""); 
-            if ($currentTable === '2') {
-                if (str_contains($roleLower, 'employee')) {
-                    $isVisible = true;
-                }
-            } else {
-                if ($roleLower === 'user') { 
-                    $isVisible = true;
-                }
-            }
-            if ($isVisible) {
-    ?>
+        ?>
             <tr onclick="selectRow(this)" style="cursor: pointer;">
                 <td style="display: none;">
                     <input type="radio" name="selectedRow" value="<?php echo $user['id']?>">
@@ -50,72 +38,11 @@
                     </button>
                 </td>
             </tr>
-    <?php 
-            }
+        <?php 
         }
     }
     $tbodyHtml = ob_get_clean();
-
-    $tableData = ['tableTitle' =>"Thông tin tài khoản", 'tableHeader' => $tableHeader, 'time' => false, 'status' => true, 'tbodyHtml' => $tbodyHtml];
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $action = $_POST['action'] ?? '';
-        if ($action === 'addAccount') {
-            $payload = [
-                'username'              => $_POST['username'] ?? '',
-                'password'              => $_POST['password'] ?? '',
-                'password_confirmation' => $_POST['password_confirmation'] ?? '',
-                'role'                  => $_POST['role'] ?? '',
-                'email'                 => $_POST['email'] ?? '',
-                'phone_number'          => $_POST['phone_number'] ?? '',
-                'roles'                 => $_POST['roles'] ?? []
-            ];
-            $apiResponse = call_api("http://127.0.0.1:8000/api/accounts", "POST", $payload);
-            if (!empty($apiResponse['errors'])) {
-                $errorMsg = json_encode($apiResponse['errors']);
-                echo "<script>alert('Lỗi: $errorMsg');</script>";
-            } else {
-                echo "<script>
-                    alert('Thêm tài khoản thành công!');
-                    window.location.href = 'index.php?page=account&table=1';
-                </script>";
-                exit();
-            }
-        }
-
-        elseif ($action === 'editAccount') {
-            $id = $_POST['id'] ?? null;
-            
-            if (!$id) {
-                echo "<script>alert('Lỗi: Không tìm thấy ID tài khoản!');</script>";
-                exit;
-            }
-            $status = $_POST['status'] ?? '';
-            if ($status === 'active') {
-                call_api("http://127.0.0.1:8000/api/accounts/{$id}/restore", "POST", []);
-            } 
-            elseif ($status === 'inactive') {
-                call_api("http://127.0.0.1:8000/api/accounts/{$id}", "DELETE", []);
-            }
-            $payload = [
-                'username' => $_POST['username'] ?? '',
-                'roles'    => $_POST['roles'] ?? []
-            ];
-            $apiResponse = call_api("http://127.0.0.1:8000/api/accounts/{$id}", "PUT", $payload);
-            if (isset($apiResponse['original']) || isset($apiResponse['original']['message'])) {
-                echo "<script>
-                    alert('Cập nhật tài khoản thành công!');
-                    window.history.back();
-                </script>";
-                exit();
-            } else {
-                $errorMsg = json_encode($apiResponse['errors']);
-                echo "<script>
-                    alert('Lỗi cập nhật thông tin: $errorMsg');
-                    window.history.back();
-                </script>";
-            }
-        }
-    }
+    $tableData = ['tableTitle' =>"Thông tin tài khoản", 'tableHeader' => $tableHeader, 'time' => false, 'status' => true, 'tbodyHtml' => $tbodyHtml, 'paginationMeta' => $paginationMeta];
 ?>
 
 <div class="account-page">
@@ -199,13 +126,6 @@
         <div class="input-group">
             <label>Xác nhận mật khẩu</label>
             <input type="password" name="password_confirmation" placeholder="Nhập lại mật khẩu mới">
-        </div>
-        <div class="input-group">
-            <label>Tình trạng</label>
-            <select name="status">
-                <option value="active">Đang hoạt động</option>
-                <option value="inactive">Dừng hoạt động</option>
-            </select>
         </div>
         <div class="input-group">
             <label>Chức vụ</label>

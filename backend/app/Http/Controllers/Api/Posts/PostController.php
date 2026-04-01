@@ -144,7 +144,7 @@ class PostController extends Controller
 
         $post = $this->postService->updatePost($post, $validated);
         
-        event(new StatusPostCreated($post, $request->comment));
+        // event(new StatusPostCreated($post, $request->comment));
 
         return response()->json([
             'message' => 'Post updated successfully',

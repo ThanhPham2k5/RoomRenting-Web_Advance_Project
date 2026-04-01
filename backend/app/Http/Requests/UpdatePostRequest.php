@@ -22,21 +22,25 @@ class UpdatePostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // 'title' => 'required|string|max:255',
-            // 'price' => 'required|numeric|min:0',
-            // 'area' => 'required|numeric|min:0',
-            // 'house_number' => 'required|string|max:255',
-            // 'ward' => 'required|string|max:255',
-            // 'province' => 'required|string|max:255',
-            // 'description' => 'required|string',
-            // 'deposit' => 'required|numeric|min:0',
-            // 'status' => 'required|string|in:rejected,expired,completed,failed',
-            // 'room_type' => 'required|string|in:room,apartment,dorm',
-            // 'max_occupants' => 'required|integer|min:1',
-            // 'user_id' => 'required|exists:users,id',
-            // 'employee_id' => 'nullable|exists:employees,id',
-            // 'authorized' => 'required|boolean',
-            // 'next_payment_date' => 'nullable|date',
+            'title' => 'sometimes|string|max:255',
+            'price' => 'sometimes|numeric|min:0',
+            'area' => 'sometimes|numeric|min:0',
+            'house_number' => 'sometimes|string|max:255',
+            'ward' => 'sometimes|string|max:255',
+            'province' => 'sometimes|string|max:255',
+            'description' => 'sometimes|string',
+            'deposit' => 'sometimes|numeric|min:0',
+            'status' => 'sometimes|string|in:rejected,expired,completed,failed',
+            'room_type' => 'sometimes|string|in:room,apartment,dorm',
+            'max_occupants' => 'sometimes|integer|min:1',
+            'user_id' => 'sometimes|exists:users,id',
+            'employee_id' => 'nullable|exists:employees,id',
+            'authorized' => 'sometimes|boolean',
+            'next_payment_date' => 'nullable|date',
+            'images' => 'sometimes|array',
+            'images.*' => 'image|mimes:jpg,jpeg,png|max:2048',
+            'orders' => 'required_with:images|array', // Bắt buộc phải có orders nếu có images
+            'orders.*' => 'integer|min:1'
         ];
     }
 }

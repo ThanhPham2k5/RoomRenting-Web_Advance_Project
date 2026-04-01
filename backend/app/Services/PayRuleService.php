@@ -30,6 +30,7 @@ class PayRuleService{
             AllowedFilter::exact('id'),
             AllowedFilter::operator('points', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
             AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
+            // Tuấn thêm
             AllowedFilter::trashed(),
         ])
         ->allowedSorts([

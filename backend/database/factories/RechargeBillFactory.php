@@ -22,16 +22,18 @@ class RechargeBillFactory extends Factory
     public function definition(): array
     {
         $rule = RechargeRule::all()->random(); // get random rule
-        $money = $rule->money;
+        $money = $this->faker->randomFloat(2, 50000, 500000);
         $vatRate = 0.1;
         $vat = round($money * $vatRate, 2);
         $totalMoney = $money + $vat;
+        $points = $totalMoney * $rule->points / $rule->money;
 
         return [
             'money' => $money,
             'total_money' => $totalMoney,
             'vat' => $vat,
-            'status' => $this->faker->randomElement(['completed', 'pending', 'failed']),
+            'points' => $points,
+            'status' => $this->faker->randomElement(['completed','completed','completed','completed', 'pending', 'failed']), // bias towards completed for better stats
             'recharge_rule_id' =>$rule->id
         ];
     }

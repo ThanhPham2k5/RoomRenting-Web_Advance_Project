@@ -22,7 +22,7 @@ class PayBillResource extends JsonResource
             'points' => $this->points,
             'status' => $this->status,
             'createdAt' => $this -> created_at,
-            'deletedAt' => $this -> deleted_at,
+            'deletedAt' => $this -> deleted_at, // Tuan thêm
             'account' => AccountResource::make(
                 $this->whenLoaded('account')
             ),

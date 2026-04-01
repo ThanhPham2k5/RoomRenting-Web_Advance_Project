@@ -22,6 +22,7 @@ use App\Filter\AllColumnFilter;
 use App\Filter\DateFilter;
 use App\Services\PostService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -70,22 +71,36 @@ class PostController extends Controller
 
             $validated = $request->validated();
 
-            // Remove images from post data
-            $images = $request->file('images');
+            // get images from post data
+            $files = $request->file('images');
+            $orders = $request->input('orders');
 
+            // combine files and orders into one array
+            $images = collect($files)->map(function ($file, $key) use ($orders) {
+                return [
+                    'file' => $file,
+                    'order' => $orders[$key]
+                ];
+            })->toArray();
+
+            // remove images from validated data to prevent mass assignment error
             unset($validated['images']);
+            unset($validated['orders']);
 
             // Create post
             $post = Post::create($validated);
 
             // Store images
             if ($images) {
-                foreach ($images as $index => $image) {
+                foreach ($images as $imageData) {
+                    $file = $imageData['file'];
+                    $order = $imageData['order'];
+
                     // Rename to order
-                    $filename = ($index + 1) . '.' . $image->getClientOriginalExtension();
+                    $filename = $order . '.' . $file->getClientOriginalExtension();
 
                     // Save file
-                    $path = $image->storeAs(
+                    $path = $file->storeAs(
                         "posts/{$post->id}/images",
                         $filename,
                         "public"
@@ -94,13 +109,13 @@ class PostController extends Controller
                     // Save DB
                     $post->postImages()->create([
                         'image_post_url' => $path,
-                        'order' => $index + 1,
+                        'order' => $order,
                     ]);
                 }
             }
 
-            // Fire create image event
-            event(new StatusPostCreated($post, $request->comment));
+            // Fire create post event
+            event(new StatusPostCreated($post, $request['content'], $request['title']));
 
             return response()->json([
                 'message' => 'Post created successfully',
@@ -136,20 +151,72 @@ class PostController extends Controller
 
         $validated = $request->validated();
         
-        if ($request->status === $post->status) {
+        // if ($request->status === $post->status) {
+        //     return response()->json([
+        //         'message' => 'Can not update post with similiar status'
+        //     ]);            
+        // }
+
+        return DB::transaction(function () use ($request, $post, $validated) {
+
+            // process images if exist
+            if ($request->hasFile('images')) {
+                // get images & orders from request
+                $files = $request->file('images');
+                $orders = $request->input('orders');
+
+                // combine files and orders into one array
+                $images = collect($files)->map(function ($file, $key) use ($orders) {
+                    return [
+                        'file' => $file,
+                        'order' => $orders[$key]
+                    ];
+                })->toArray();
+
+                //delete old images if exist
+                foreach($post->postImages as $postImage){
+                    if(in_array($postImage->order, $orders)){ // if order in request, delete file and db record of said order
+                        // delete file
+                        Storage::disk('public')->delete($postImage->image_post_url);
+                        // // delete db record
+                        // $postImage->delete();
+                    }
+                }
+                
+                // store new images
+                foreach($images as $imageData){
+                    $file = $imageData['file'];
+                    $order = $imageData['order'];
+                 
+                    // rename to order
+                    $filename = $order . '.' . $file->getClientOriginalExtension();
+
+                    // save file
+                    $path = $file->storeAs(
+                        "posts/{$post->id}/images",
+                        $filename,
+                        "public"
+                    );
+
+                    $newImages[] = [
+                        'image_post_url' => $path,
+                        'order' => $order,
+                    ];
+                }
+
+                $validated['postImages'] = $newImages; // add new images to validated data for post update
+
+            }
+
+            $post = $this->postService->updatePost($post, $validated);
+
+            event(new StatusPostCreated($post, $request['content'], $request['title']));
+
             return response()->json([
-                'message' => 'Can not update post with similiar status'
-            ]);            
-        }
-
-        $post = $this->postService->updatePost($post, $validated);
-        
-        // event(new StatusPostCreated($post, $request->comment));
-
-        return response()->json([
-            'message' => 'Post updated successfully',
-            'post' => new PostResource($post)
-        ]);
+                'message' => 'Post updated successfully',
+                'post' => new PostResource($post)
+            ]);
+        });     
     }
 
     /**

@@ -36,6 +36,7 @@ class PayBillService{
             AllowedFilter::operator('points', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
             AllowedFilter::exact('status'),
             AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
+            // Tuấn thêm
             AllowedFilter::trashed(),
         ])
         ->allowedSorts([

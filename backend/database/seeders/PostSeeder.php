@@ -7,6 +7,7 @@ use App\Models\Account_User\User;
 use App\Models\Posts\Post;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Carbon;
 
 class PostSeeder extends Seeder
 {
@@ -27,12 +28,19 @@ class PostSeeder extends Seeder
 
         foreach ($usersWithPosts as $user) {
 
-            // each user has 1–3 posts
-            $posts = Post::factory(rand(1, 3))->make();
+            // each user has 2–5 posts
+            $posts = Post::factory(rand(2, 5))->make();
 
             foreach ($posts as $post) {
 
                 $post->user_id = $user->id;
+
+                $randomDate = Carbon::now()
+                    ->subMonths(rand(0, 24)) 
+                    ->subDays(rand(0, 28))
+                    ->addHours(rand(0, 23));
+
+                $post->created_at = $randomDate;
 
                 if ($post->status === 'completed') {
                     $post->employee_id = $employees->random()->id;

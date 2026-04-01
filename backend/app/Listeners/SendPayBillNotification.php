@@ -32,8 +32,8 @@ class SendPayBillNotification
 
         if ($payBill->status === 'failed') {
                 Notification::create([
-                    'title' => 'Thanh toán hoá đơn thất bại',
-                    'content' => 'Hoá đơn thanh toán #' . $payBill->id . ' đã thất bại. Số điểm: ' . $payBill->points . '. Vui lòng kiểm tra lại số điểm của bạn.',
+                    'title' => 'Thanh toán chi phí duy trì bài đăng',
+                    'content' => 'Đã trừ: ' . $payBill->points . ' điểm. Vui lòng kiểm tra lại số điểm của bạn.',
                     'notification_type' => 'transaction',
                     'status' => 'unread',
                     'account_id' => $payBill->account_id,
@@ -45,8 +45,8 @@ class SendPayBillNotification
         } 
         
         Notification::create([
-            'title' => 'Thanh toán hoá đơn',
-            'content' => 'Hoá đơn thanh toán #' . $payBill->id . ' đã được tạo. Số điểm: ' . $payBill->points . ', trạng thái: ' . $payBill->status . '.',
+            'title' => 'Thanh toán chi phí duy trì bài đăng',
+            'content' => 'Đã trừ: ' . $payBill->points . 'điểm.',
             'notification_type' => 'transaction',
             'status' => 'unread',
             'account_id' => $payBill->account_id,

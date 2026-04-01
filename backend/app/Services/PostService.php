@@ -46,6 +46,7 @@ class PostService{
             AllowedFilter::exact('id'),
             AllowedFilter::exact('user.account_id'),
             AllowedFilter::exact('employee.account_id'),
+            AllowedFilter::exact('favoritedBy', 'favorites.account_id'),
             AllowedFilter::partial('title'),
             AllowedFilter::operator('price', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
             AllowedFilter::operator('area', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
@@ -89,9 +90,18 @@ class PostService{
         $post->update($data);
 
         // If status changed to 'completed', fire PostCreated event
-        // if ($data['status'] === 'completed') {
-        //     event(new PostCreated($post));
-        // }
+        if (isset($data['status']) && $data['status'] === 'completed') {
+            event(new PostCreated($post));
+        }
+
+        if (isset($data['postImages'])) {
+            foreach ($data['postImages'] as $imgData) {
+                $post->postImages()->updateOrCreate(
+                    ['order' => $imgData['order']], // Tìm theo order
+                    ['image_post_url' => $imgData['image_post_url']] // Cập nhật URL mới
+                );
+            }
+        }
 
         return $post;
     }

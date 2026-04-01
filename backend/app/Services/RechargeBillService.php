@@ -8,6 +8,7 @@ use App\Filter\DateFilter;
 use App\Http\Resources\Payments\RechargeBillResource;
 use App\Models\Account_User\User;
 use App\Models\Payments\RechargeBill;
+use App\Models\Payments\RechargeRule;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedSort;
 use Spatie\QueryBuilder\Enums\FilterOperator;
@@ -39,6 +40,7 @@ class RechargeBillService{
             AllowedFilter::operator('vat', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
             AllowedFilter::exact('status'),
             AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
+            // Tuấn thêm
             AllowedFilter::trashed(),
         ])
         ->allowedSorts([
@@ -60,20 +62,25 @@ class RechargeBillService{
     }
 
     public function createRechargeBill($data){
-        $rechargeBill = RechargeBill::create($data);
+        $rechargeRule = RechargeRule::where('id', $data['recharge_rule_id'])->first();
 
+        $points_after_exchange = (int)($data['total_money'] * $rechargeRule->points / $rechargeRule->money);
+
+        $rechargeBill = RechargeBill::create([
+            ...$data,
+            'points' => $points_after_exchange]);
+        
         // Increment user points
-        $point = $rechargeBill->rechargeRule->points;
         $account = $rechargeBill->account;
         $user = User::where('account_id', $account->id)->first();
         
-        $user->increment('points', $point);
+        $user->increment('points', $points_after_exchange);
         
         event(new RechargeBillCreated($rechargeBill));
 
         return [
             'message' => 'Recharge bill created successfully',
-            'rechargeBill' => new RechargeBillResource($rechargeBill)
+            'rechargeBill' => new RechargeBillResource  ($rechargeBill)
         ];
     }
 

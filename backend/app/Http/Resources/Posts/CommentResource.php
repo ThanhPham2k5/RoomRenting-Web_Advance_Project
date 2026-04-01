@@ -19,7 +19,7 @@ class CommentResource extends JsonResource
             'id' => $this->id,
             'content' => $this->content,
             'createdAt' => $this -> created_at,
-            'deletedAt' => $this -> deleted_at,
+            'deletedAt' => $this -> deleted_at, // Tuan thêm
             'account' => AccountResource::make(
                 $this->whenLoaded('account')
             ),

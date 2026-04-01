@@ -14,7 +14,6 @@ use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedSort;
 use Spatie\QueryBuilder\Enums\FilterOperator;
 use Spatie\QueryBuilder\QueryBuilder;
-use App\Events\RechargeBillCreated;
 use App\Filter\AllColumnFilter;
 use App\Filter\DateFilter;
 use App\Models\Account_User\Account;

@@ -6,6 +6,7 @@ use App\Models\Account_User\Account;
 use App\Models\Payments\RechargeBill;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Carbon;
 
 class RechargeBillSeeder extends Seeder
 {
@@ -19,24 +20,23 @@ class RechargeBillSeeder extends Seeder
         $accounts = Account::role('user')->get();
 
         foreach($accounts as $account){
-            if($account->user->points > 0){
-
-                $cycles = rand(1, 3);
+            $cycles = rand(5, 10); // each account has 5–10 recharge bills
 
             for ($i = 0; $i < $cycles; $i++) {
+                $billData = RechargeBill::factory()->make()->toArray();
 
-                $bill = RechargeBill::factory()
-                    ->make([
-                        'account_id' => $account->id,
-                    ]);
+                // create random created_at within the last 3 years
+                $randomDate = Carbon::now()
+                    ->subMonths(rand(0, 36)) // 36 months = 3 years
+                    ->subDays(rand(0, 28));
 
-                // create record
-                $bill = RechargeBill::create([
-                    ...$bill->toArray(),
+                RechargeBill::create([
+                    ...$billData,
                     'account_id' => $account->id,
-                    'created_at' => now()->subDays(rand(0, 30)),
+                    'status' => $billData['status'],
+                    'created_at' => $randomDate,
+                    'updated_at' => $randomDate,
                 ]);
-            }
             }
         }
     }

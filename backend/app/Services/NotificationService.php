@@ -5,6 +5,8 @@ use App\Filter\AllColumnFilter;
 use App\Filter\DateFilter;
 use App\Http\Resources\NotificationResource;
 use App\Models\Notification\Notification;
+use App\Models\Posts\Post;
+use PhpParser\Node\Expr\AssignOp\Pow;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedSort;
 use Spatie\QueryBuilder\Enums\FilterOperator;
@@ -14,7 +16,6 @@ use Symfony\Component\HttpFoundation\Request;
 class NotificationService{
     private $allowedIncludes = [
         'account',
-        'notifiable'
     ];
 
     private $allColFilter = [
@@ -27,6 +28,12 @@ class NotificationService{
 
     public function buildGetAllQuery(){
         $query = QueryBuilder::for(Notification::withTrashed())
+        //load notifiable relationship with morphTo and morphWith to eager load the related models based on the notifiable_type
+        ->with(['notifiable' => function ($morphTo) { 
+            $morphTo->morphWith([
+                Post::class => ['postImages'],
+            ]);
+        }])
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
             //generic search
@@ -38,7 +45,7 @@ class NotificationService{
             AllowedFilter::partial('title'),
             AllowedFilter::partial('content'),
             AllowedFilter::operator('status', FilterOperator::DYNAMIC), // =, <>
-            AllowedFilter::operator('notificationType', FilterOperator::DYNAMIC, '', 'notification_type'), // =, <>
+            AllowedFilter::exact('notificationType', 'notification_type'),
             AllowedFilter::partial('notifiableType', 'notifiable_type'),
             AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
         ])
@@ -52,6 +59,11 @@ class NotificationService{
 
     public function getNotification($notification){
         $notification = QueryBuilder::for(Notification::withTrashed())
+        ->with(['notifiable' => function ($morphTo) { 
+            $morphTo->morphWith([
+                Post::class => ['postImages'],
+            ]);
+        }])
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($notification->id);
 

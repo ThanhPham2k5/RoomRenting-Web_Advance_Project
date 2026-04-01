@@ -379,9 +379,26 @@
       }
     }
 
+    async function checkUnreadNotification(account_id, token) {
+      const [res_news, res_transaction] = await Promise.all([
+        fetch("http://127.0.0.1:8000/api/notifications?filter[account.id]=" + account_id + "&filter[status]=unread&filter[notificationType]=news", {
+            headers: { "Accept": "application/json", "Authorization": "Bearer " + token }
+        }),
+        fetch("http://127.0.0.1:8000/api/notifications?filter[account.id]=" + account_id + "&filter[status]=unread&filter[notificationType]=transaction", {
+            headers: { "Accept": "application/json", "Authorization": "Bearer " + token }
+        })
+      ])
+
+      const data_news = await res_news.json()
+      const data_transaction = await res_transaction.json()
+
+      const hasUnread = (data_news.data?.length > 0) || (data_transaction.data?.length > 0)
+      document.querySelector(".notify-alert").style.display = hasUnread ? "block" : "none"
+    }
+
     async function getNotification(account_id, token) {
-      var isNews = true
-      var isTransaction = true  
+      var isNews = false
+      var isTransaction = false   
 
       // news notification
       if(document.querySelector(".notify-news").classList.contains("notify-selected")) {  
@@ -589,6 +606,11 @@
 
           if(isUnread) {
             unread_notifyList.forEach(notify => {
+              var notifyValue = ""
+              var notifyContent = notify.content
+              if (notifyContent.includes("successfully")) notifyValue = "value-add"
+              if (notifyContent.includes("failed")) notifyValue = "value-subtract"
+              if (notifyContent.includes("being processed")) notifyValue = "value-pending"
               html += `
                 <a href='<?php echo BASE_URL ?>/pages/client/detail-post.php?post_id=${notify.notifiable.id}' class="notify-item notify-item-unread notify-id-${notify.id}">
                   <img src='<?php echo BASE_URL . "/assets/img/left-img.png"?>' alt="item-img.png" class="notify-item-img">
@@ -597,7 +619,7 @@
                     <div class="notify-info">${notify.title}</div>
 
                     <!-- using for transaction -->
-                    <div class="notify-value">${notify.content}</div>
+                    <div class="notify-value ${notifyValue}">${notify.content}</div>
                   </div>
                 </a>
               `
@@ -606,6 +628,11 @@
 
           if(isRead) {
             read_notifyList.forEach(notify => {
+              var notifyValue = ""
+              var notifyContent = notify.content
+              if (notifyContent.includes("successfully")) notifyValue = "value-add"
+              if (notifyContent.includes("failed")) notifyValue = "value-subtract"
+              if (notifyContent.includes("being processed")) notifyValue = "value-pending"
               html += `
                 <a href='<?php echo BASE_URL ?>/pages/client/detail-post.php?post_id=${notify.notifiable.id}' class="notify-item notify-id-${notify.id}">
                   <img src='<?php echo BASE_URL . "/assets/img/left-img.png"?>' alt="item-img.png" class="notify-item-img">
@@ -614,7 +641,7 @@
                     <div class="notify-info">${notify.title}</div>
 
                     <!-- using for transaction -->
-                    <div class="notify-value value-add">${notify.content}</div>
+                    <div class="notify-value ${notifyValue}">${notify.content}</div>
                   </div>
                 </a>
               `
@@ -670,54 +697,38 @@
       }
 
       // update notify button
-      if(!isNews && !isTransaction) {
-        document.querySelector(".notify-alert").style.display = "none"
-      } else {
-        document.querySelector(".notify-alert").style.display = "block"
-      }
+      await checkUnreadNotification(account_id, token)
     }
 
     async function updateHeader() {
       var account_id = localStorage.getItem("account_id")
       var token = localStorage.getItem("token")
 
-      if (account_id != null && token != null) {
-        const response = await fetch("http://127.0.0.1:8000/api/accounts/" + account_id, {
-          method: "GET",
-          headers: {
-            "Accept": "application/json",
-            "Authorization": "Bearer " + token
-          }
-        })
+      if(account_id && token) {
+        // update user info
+        getPersonalInfo(account_id, token)
 
-        const data = await response.json()
-        if(response.ok && account_id == data.data.id) {
-          // update user info
-          getPersonalInfo(account_id, token)
+        // update notification
+        getNotification(account_id, token)
 
-          // update notification
-          getNotification(account_id, token)
+        // update header buttons
+        document.querySelector(".button-sign-up").style.display = "none"
+        document.querySelector(".button-log-in").style.display = "none"
 
-          // update header buttons
-          document.querySelector(".button-sign-up").style.display = "none"
-          document.querySelector(".button-log-in").style.display = "none"
+        document.querySelector(".header-notify").style.display = "flex"
+        document.querySelector(".button-post").style.display = "flex"
+        document.querySelector(".button-posts").style.display = "flex"
+        document.querySelector(".user-block").style.display = "flex"
 
-          document.querySelector(".header-notify").style.display = "flex"
-          document.querySelector(".button-post").style.display = "flex"
-          document.querySelector(".button-posts").style.display = "flex"
-          document.querySelector(".user-block").style.display = "flex"
+        document.querySelector(".sidebar-signup").style.display = "none"
+        document.querySelector(".sidebar-login").style.display = "none"
 
-          document.querySelector(".sidebar-signup").style.display = "none"
-          document.querySelector(".sidebar-login").style.display = "none"
-
-          document.querySelector(".sidebar-notify-block").style.display = "flex"
-          document.querySelector(".sidebar-post").style.display = "flex"
-          document.querySelector(".sidebar-posts").style.display = "flex"
-          document.querySelector(".sidebar-user-block").style.display = "flex"
-        } else {
-          // console.log(data)
-        }
+        document.querySelector(".sidebar-notify-block").style.display = "flex"
+        document.querySelector(".sidebar-post").style.display = "flex"
+        document.querySelector(".sidebar-posts").style.display = "flex"
+        document.querySelector(".sidebar-user-block").style.display = "flex"
       } else {
+        // console.log(data)
         document.querySelector(".button-sign-up").style.display = "flex"
         document.querySelector(".button-log-in").style.display = "flex"
       }

@@ -220,6 +220,10 @@
   color: #fd5454;
 }
 
+.value-pending {
+  color: #fff312;
+}
+
 .notify-item-unread {
   background-color: rgba(250, 117, 22, 0.2);
   border-color: rgba(250, 117, 22, 0.6);
@@ -241,6 +245,7 @@
   position: absolute;
   top: 0;
   right: 0;
+  display: none;
 }
 
 .button-posts {

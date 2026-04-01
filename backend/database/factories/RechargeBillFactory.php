@@ -31,7 +31,7 @@ class RechargeBillFactory extends Factory
             'money' => $money,
             'total_money' => $totalMoney,
             'vat' => $vat,
-            'status' => $this->faker->randomElement(['completed', 'pending', 'failed']),
+            'status' => $this->faker->randomElement(['completed','completed','completed','completed', 'pending', 'failed']), // bias towards completed for better stats
             'recharge_rule_id' =>$rule->id
         ];
     }

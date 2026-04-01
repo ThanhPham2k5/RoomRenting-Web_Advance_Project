@@ -29,6 +29,7 @@ class PersonalInfo extends Model
     }
 
     protected $fillable = [
+        'id',
         'name',
         'date_of_birth',
         'gender',

@@ -39,6 +39,8 @@ class StorePostRequest extends FormRequest
             'next_payment_date' => 'nullable|date',
             'images' => 'required|array',
             'images.*' => 'image|mimes:jpg,jpeg,png|max:2048',
+            'orders' => 'required|array',
+            'orders.*' => 'integer|min:1'
         ];
     }
 }

@@ -29,7 +29,7 @@ class SendStatusPostNotification
         if ($post['status'] === 'rejected') {
             Notification::create([
                 'title' => 'Bài đăng bị từ chối',
-                'content' => $event->comment,
+                'content' => $event->comment ?? "Bài đăng của bạn đã bị từ chối.",
                 'notification_type' => 'news',
                 'status' => 'unread',
                 'account_id' => $account->id,
@@ -39,7 +39,7 @@ class SendStatusPostNotification
         } else if ($post['status'] === 'completed') {
             Notification::create([
                 'title' => 'Bài đăng đã được duyệt',
-                'content' => $event->comment,
+                'content' => $event->comment ?? "Bài đăng của bạn đã được duyệt.",
                 'notification_type' => 'news',
                 'status' => 'unread',
                 'account_id' => $account->id,
@@ -49,7 +49,7 @@ class SendStatusPostNotification
         } else {
             Notification::create([
                 'title' => 'Bài đăng đang được xét duyệt.',
-                'content' => 'Bài đăng #' . $event->post->id . ' đang được duyệt.',
+                'content' => $event->comment ?? 'Bài đăng #' . $event->post->id . ' đang được duyệt.',
                 'notification_type' => 'news',
                 'status' => 'unread',
                 'account_id' => $account->id,

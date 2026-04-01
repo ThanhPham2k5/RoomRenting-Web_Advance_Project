@@ -4,13 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Helpers\VietnamAddress;
 use App\Http\Controllers\Controller;
+use App\Models\Payments\RechargeBill;
 use App\Models\Posts\Post;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use VietnamAddressDatabase\VietnamAddressDatabase;
-
-use function Symfony\Component\Clock\now;
 
 class StatisticController extends Controller
 {
@@ -136,5 +135,67 @@ class StatisticController extends Controller
         ]);
     }
 
+    public function getRevenueStatistic(Request $request){
+        $year = $request->input('year', Carbon::now()->year);
+        $withTaxes = $request->input('with_taxes', false);
+        $compareYear = $request->input('compare_year', null);
+
+        if($compareYear){ // if there's a compare year, we need to get its data as well
+            $compareData = $this->getRechargeBillDataByYear($compareYear, $withTaxes);
+
+            $compareYearlyTotal = 0;
+            for ($m = 1; $m <= 12; $m++) {
+                $monthRevenue = $compareData[$m] ?? 0;
+                $compareYearlyTotal += $monthRevenue;
+            }
+        }
+
+        $data = $this->getRechargeBillDataByYear($year, $withTaxes);
+
+        $fullStats = [];
+        $yearlyTotal = 0;
+        for ($m = 1; $m <= 12; $m++) {
+            $monthRevenue = $data[$m] ?? 0;
+            $yearlyTotal += $monthRevenue;
+            $fullStats[] = [
+                'month' => $m,
+                'totalRevenue' => $monthRevenue
+            ];
+        }
+
+        return response()->json([
+            'year' => $year,
+            'yearlyRevenue' => $yearlyTotal,
+            'compareYear' => $compareYear,
+            'compareYearlyRevenue' => $compareYear ? $compareYearlyTotal : null,
+            'revenueDifference' => $compareYear ? round(((($yearlyTotal - $compareYearlyTotal) / $compareYearlyTotal) * 100), 2) : null, // give percentage difference if compareYear exists
+            'monthlyRevenueDetails' => $fullStats 
+        ]);
+    }
     
+    private function getRechargeBillDataByYear($year, $withTaxes = false){
+        if ($withTaxes) {
+            return RechargeBill::select(
+                DB::raw('MONTH(created_at) as month'), 
+                DB::raw('SUM(total_money) as totalRevenue') // include VAT
+            )
+            ->where('status', 'completed') // only count completed bills
+            ->whereYear('created_at', $year)
+            ->groupBy('month')
+            ->get()
+            ->pluck('totalRevenue', 'month')
+            ->toArray();
+        } else {
+            return RechargeBill::select(
+                DB::raw('MONTH(created_at) as month'), 
+                DB::raw('SUM(money) as totalRevenue')
+            )
+            ->where('status', 'completed') // only count completed bills
+            ->whereYear('created_at', $year)
+            ->groupBy('month')
+            ->get()
+            ->pluck('totalRevenue', 'month') // chỉ lấy 2 cột này
+            ->toArray();
+        }
+    }
 }

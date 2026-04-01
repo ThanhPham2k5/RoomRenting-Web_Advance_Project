@@ -168,24 +168,25 @@
   <script>
     // get all posts to posts section (do not require token)
     async function getNewPost() {
-      const response = await fetch("http://127.0.0.1:8000/api/posts?per_page=5&filter[status]=completed&include=postImages,favorites.account&sort=createdAt", {
-        method: "GET",
-        headers: {
-          "Accept": "application/json"
-        }
-      })
+      try {
+        const response = await fetch("http://127.0.0.1:8000/api/posts?per_page=5&filter[status]=completed&include=postImages,favorites.account&sort=createdAt", {
+          method: "GET",
+          headers: {
+            "Accept": "application/json"
+          }
+        })
 
-      const data = await response.json()
-      if(response.ok) {
-        if(data.data) {
-          // console.log(data.data)
-          return data.data
+        const data = await response.json()
+        if(response.ok) {
+          if(data.data) {
+            // console.log(data.data)
+            return data.data
+          }
+        } else {
+          console.error(data)
         }
-        else {
-          // console.log(data.data)
-        }
-      } else {
-        // console.log(data)
+      } catch (err) {
+        console.error(err)
       }
     }
 
@@ -279,29 +280,35 @@
               item.classList.add("favour")
               item.querySelector(".post-favour-ico").setAttribute("src", '<?php echo BASE_URL ?>/assets/img/favour.png')
 
-              const response = await fetch("http://127.0.0.1:8000/api/favorites", {
-                method: "POST",
-                headers: {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-                  "Authorization": "Bearer " + token
-                },
-                body: JSON.stringify({
-                  "account_id": account_id,
-                  "post_id": post_id
+              try {
+                const response = await fetch("http://127.0.0.1:8000/api/favorites", {
+                  method: "POST",
+                  headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                  },
+                  body: JSON.stringify({
+                    "account_id": account_id,
+                    "post_id": post_id
+                  })
                 })
-              })
 
-              const data = await response.json()
-              if(response.ok) {
-                // console.log(data)
-                if(data) {
-                  const favClass = [...item.classList].find(c => c.startsWith("favourite-id-"))
-                  if(favClass) {
-                    item.classList.remove(favClass)
-                    item.classList.add("favourite-id-" + data.favorite.id)
+                const data = await response.json()
+                if(response.ok) {
+                  // console.log(data)
+                  if(data) {
+                    const favClass = [...item.classList].find(c => c.startsWith("favourite-id-"))
+                    if(favClass) {
+                      item.classList.remove(favClass)
+                      item.classList.add("favourite-id-" + data.favorite.id)
+                    }
                   }
+                } else {
+                  console.error(err)
                 }
+              } catch (err) {
+                console.error(err)
               }
             }
 
@@ -313,18 +320,24 @@
               const favClass = [...item.classList].find(c => c.startsWith("favourite-id-"))
               var fav_id = favClass.replace("favourite-id-", "")
 
-              const response = await fetch("http://127.0.0.1:8000/api/favorites/" + fav_id, {
-                method: "DELETE",
-                headers: {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-                  "Authorization": "Bearer " + token
-                }
-              })
+              try {
+                const response = await fetch("http://127.0.0.1:8000/api/favorites/" + fav_id, {
+                  method: "DELETE",
+                  headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                  }
+                })
 
-              const data = await response.json()
-              if(response.ok) {
-                // console.log(data)
+                const data = await response.json()
+                if(response.ok) {
+                  // console.log(data)
+                } else {
+                  console.error(err)
+                }
+              } catch (err) {
+                console.error(err)
               }
             }
           })

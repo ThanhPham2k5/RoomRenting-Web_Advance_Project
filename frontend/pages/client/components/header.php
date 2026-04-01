@@ -336,69 +336,90 @@
 
     // check user token and update header bar
     async function getPersonalInfo(account_id, token) {
-      const response = await fetch("http://127.0.0.1:8000/api/accounts/" + account_id + "?include=user.personalInfo", {
-        method: "GET",
-        headers: {
-          "Accept": "application/json",
-          "Authorization": "Bearer " + token
-        }
-      })
+      try {
+        const response = await fetch("http://127.0.0.1:8000/api/accounts/" + account_id + "?include=user.personalInfo", {
+          method: "GET",
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer " + token
+          }
+        })
 
-      const data = await response.json()
-      if(response.ok) {
-        if(data.data.user.personalInfo.profileUrl) {
-          document.querySelector(".button-user-ico").setAttribute("src", data.data.user.personalInfo.profileUrl)
+        const data = await response.json()
+        if(response.ok) {
+          if(data.data.user.personalInfo.profileUrl) {
+            document.querySelector(".button-user-ico").setAttribute("src", data.data.user.personalInfo.profileUrl)
+            
+            document.querySelectorAll(".user-avatar").forEach(item => {
+              item.setAttribute("src", data.data.user.personalInfo.profileUrl)
+            })
+          }
+
+          if(data.data.username) {
+            document.querySelectorAll(".user-name").forEach(item => {
+              item.textContent = data.data.username
+            })
+          }
           
-          document.querySelectorAll(".user-avatar").forEach(item => {
-            item.setAttribute("src", data.data.user.personalInfo.profileUrl)
-          })
-        }
+          if(data.data.id) {
+            document.querySelectorAll(".user-id").forEach(item => {
+              item.textContent = "Mã KH: " + data.data.id
+            })
+          }
+          
+          if(data.data.user.points) {
+            document.querySelectorAll(".user-point-value").forEach(item => {
+              var point_value = data.data.user.points
 
-        if(data.data.username) {
-          document.querySelectorAll(".user-name").forEach(item => {
-            item.textContent = data.data.username
-          })
+              // beautify number
+              item.textContent = point_value.toLocaleString("vi-VN")
+            })
+          }
+        } else {
+          console.error(data)
         }
-        
-        if(data.data.id) {
-          document.querySelectorAll(".user-id").forEach(item => {
-            item.textContent = "Mã KH: " + data.data.id
-          })
-        }
-        
-        if(data.data.user.points) {
-          document.querySelectorAll(".user-point-value").forEach(item => {
-            var point_value = data.data.user.points
-
-            // beautify number
-            item.textContent = point_value.toLocaleString("vi-VN")
-          })
-        }
-      } else {
-        console.log(data)
+      } catch (err) {
+        console.error(err)
       }
     }
 
     var notifyCache = {
       news: null,
-      transaction: null
+      transaction: null,
+    newsExpiredAt: null,
+    transactionExpiredAt: null
     }
 
+    const CACHE_TTL = 30 * 1000
+
     async function checkUnreadNotification(account_id, token) {
-      const [res_news, res_transaction] = await Promise.all([
-        fetch("http://127.0.0.1:8000/api/notifications?filter[account.id]=" + account_id + "&filter[status]=unread&filter[notificationType]=news", {
-            headers: { "Accept": "application/json", "Authorization": "Bearer " + token }
-        }),
-        fetch("http://127.0.0.1:8000/api/notifications?filter[account.id]=" + account_id + "&filter[status]=unread&filter[notificationType]=transaction", {
-            headers: { "Accept": "application/json", "Authorization": "Bearer " + token }
-        })
-      ])
+      const newsUnread = notifyCache.news?.unread?.length > 0
+      const transactionUnread = notifyCache.transaction?.unread?.length > 0
 
-      const data_news = await res_news.json()
-      const data_transaction = await res_transaction.json()
+      if (notifyCache.news !== null && notifyCache.transaction !== null) {
+          const hasUnread = newsUnread || transactionUnread
+          document.querySelector(".notify-alert").style.display = hasUnread ? "block" : "none"
+          return
+      }
 
-      const hasUnread = (data_news.data?.length > 0) || (data_transaction.data?.length > 0)
-      document.querySelector(".notify-alert").style.display = hasUnread ? "block" : "none"
+      try {
+        const [res_news, res_transaction] = await Promise.all([
+          fetch("http://127.0.0.1:8000/api/notifications?filter[account.id]=" + account_id + "&filter[status]=unread&filter[notificationType]=news", {
+              headers: { "Accept": "application/json", "Authorization": "Bearer " + token }
+          }),
+          fetch("http://127.0.0.1:8000/api/notifications?filter[account.id]=" + account_id + "&filter[status]=unread&filter[notificationType]=transaction", {
+              headers: { "Accept": "application/json", "Authorization": "Bearer " + token }
+          })
+        ])
+
+        const data_news = await res_news.json()
+        const data_transaction = await res_transaction.json()
+
+        const hasUnread = (data_news.data?.length > 0) || (data_transaction.data?.length > 0)
+        document.querySelector(".notify-alert").style.display = hasUnread ? "block" : "none"
+      } catch (err) {
+        console.error(err)
+      }
     }
 
     async function getNotification(account_id, token) {
@@ -412,52 +433,58 @@
         var unread_notifyList = []
         var read_notifyList = []
 
-        if(!notifyCache.news) {
-          // get unread & read notify in news
-          const [response_unread, response_read] = await Promise.all([fetch("http://127.0.0.1:8000/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=unread&filter[notificationType]=news", {
-            method: "GET",
-            headers: {
-              "Accept": "application/json",
-              "Authorization": "Bearer " + token
-            }
-          }),fetch("http://127.0.0.1:8000/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=read&filter[notificationType]=news", {
-            method: "GET",
-            headers: {
-              "Accept": "application/json",
-              "Authorization": "Bearer " + token
-            }
-          })])
+        if(!notifyCache.news || Date.now() > notifyCache.newsExpiredAt) {
+          try {
+            // get unread & read notify in news
+            const [response_unread, response_read] = await Promise.all([fetch("http://127.0.0.1:8000/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=unread&filter[notificationType]=news", {
+              method: "GET",
+              headers: {
+                "Accept": "application/json",
+                "Authorization": "Bearer " + token
+              }
+            }),fetch("http://127.0.0.1:8000/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=read&filter[notificationType]=news", {
+              method: "GET",
+              headers: {
+                "Accept": "application/json",
+                "Authorization": "Bearer " + token
+              }
+            })])
 
-          const [data_unread, data_read] = await Promise.all([response_unread.json(), response_read.json()])
+            const [data_unread, data_read] = await Promise.all([response_unread.json(), response_read.json()])
 
-          if(response_unread.ok) {
-            if(data_unread.data && data_unread.data.length > 0) {
-              // get list and append into array
-              unread_notifyList = data_unread.data
-              // console.log(data_unread.data)
+            if(response_unread.ok) {
+              if(data_unread.data && data_unread.data.length > 0) {
+                // get list and append into array
+                unread_notifyList = data_unread.data
+                // console.log(data_unread.data)
+              } else {
+                isUnread = false // the unread array is empty
+              }
             } else {
-              isUnread = false // the unread array is empty
+              console.error(data_unread)
             }
-          } else {
-            // console.log(data_unread)
-          }
 
-          if(response_read.ok) {
-            if(data_read.data && data_read.data.length > 0) {
-              // get list and append into array
-              read_notifyList = data_read.data
-              // console.log(data_read.data)
+            if(response_read.ok) {
+              if(data_read.data && data_read.data.length > 0) {
+                // get list and append into array
+                read_notifyList = data_read.data
+                // console.log(data_read.data)
+              } else {
+                isRead = false // the unread array is empty
+              }
             } else {
-              isRead = false // the unread array is empty
+              console.error(data_read)
             }
-          } else {
-            // console.log(data_read)
-          }
           
-          // store in cache for next using
-          notifyCache.news = {
-            unread: data_unread.data?.length > 0 ? data_unread.data : [],
-            read: data_read.data?.length > 0 ? data_read.data : []
+            // store in cache for next using
+            notifyCache.news = {
+              unread: data_unread.data?.length > 0 ? data_unread.data : [],
+              read: data_read.data?.length > 0 ? data_read.data : []
+            }
+            // expired time for the next fetch
+            notifyCache.newsExpiredAt = Date.now() + CACHE_TTL
+          } catch (err) {
+            console.error(err)
           }
         } else {
           if(notifyCache.news.unread) {
@@ -537,26 +564,30 @@
 
                 var notification_type = document.querySelector(".notify-news").classList.contains("notify-selected") ? "news" : "transaction"
 
-                const response = await fetch("http://127.0.0.1:8000/api/notifications/" + notify_id, {
-                  method: "PUT",
-                  headers: {
-                    "Accept": "application/json",
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + token
-                  },
-                  body: JSON.stringify({
-                    "status": "read"
+                try {
+                  const response = await fetch("http://127.0.0.1:8000/api/notifications/" + notify_id, {
+                    method: "PUT",
+                    headers: {
+                      "Accept": "application/json",
+                      "Content-Type": "application/json",
+                      "Authorization": "Bearer " + token
+                    },
+                    body: JSON.stringify({
+                      "status": "read"
+                    })
                   })
-                })
 
-                const data = await response.json()
-                if(response.ok) {
-                  // console.log(data)
+                  const data = await response.json()
+                  if(response.ok) {
+                    // console.log(data)
 
-                  // reset cache
-                  notifyCache.news = null
-                } else {
-                  // console.log(data)
+                    // reset cache
+                    notifyCache.news = null
+                  } else {
+                    console.error(data)
+                  }
+                } catch (err) {
+                  console.error(err)
                 }
               }
 
@@ -573,52 +604,58 @@
         var unread_notifyList = []
         var read_notifyList = []
 
-        if(!notifyCache.transaction) {
-          // get unread & read notify in transaction
-          const [response_unread, response_read] = await Promise.all([fetch("http://127.0.0.1:8000/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=unread&filter[notificationType]=transaction", {
-            method: "GET",
-            headers: {
-              "Accept": "application/json",
-              "Authorization": "Bearer " + token
-            }
-          }),fetch("http://127.0.0.1:8000/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=read&filter[notificationType]=transaction", {
-            method: "GET",
-            headers: {
-              "Accept": "application/json",
-              "Authorization": "Bearer " + token
-            }
-          })])
+        if(!notifyCache.transaction || Date.now() > notifyCache.transactionExpiredAt) {
+          try {
+            // get unread & read notify in transaction
+            const [response_unread, response_read] = await Promise.all([fetch("http://127.0.0.1:8000/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=unread&filter[notificationType]=transaction", {
+              method: "GET",
+              headers: {
+                "Accept": "application/json",
+                "Authorization": "Bearer " + token
+              }
+            }),fetch("http://127.0.0.1:8000/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=read&filter[notificationType]=transaction", {
+              method: "GET",
+              headers: {
+                "Accept": "application/json",
+                "Authorization": "Bearer " + token
+              }
+            })])
 
-          const [data_unread, data_read] = await Promise.all([response_unread.json(), response_read.json()])
+            const [data_unread, data_read] = await Promise.all([response_unread.json(), response_read.json()])
 
-          if(response_unread.ok) {
-            if(data_unread.data && data_unread.data.length > 0) {
-              // get list and append into array
-              unread_notifyList = data_unread.data
-              // console.log(data_unread.data)
+            if(response_unread.ok) {
+              if(data_unread.data && data_unread.data.length > 0) {
+                // get list and append into array
+                unread_notifyList = data_unread.data
+                // console.log(data_unread.data)
+              } else {
+                isUnread = false // the unread array is empty
+              }
             } else {
-              isUnread = false // the unread array is empty
+              console.error(data_unread)
             }
-          } else {
-            // console.log(data_unread)
-          }
 
-          if(response_read.ok) {
-            if(data_read.data && data_read.data.length > 0) {
-              // get list and append into array
-              read_notifyList = data_read.data
-              // console.log(data_read.data)
+            if(response_read.ok) {
+              if(data_read.data && data_read.data.length > 0) {
+                // get list and append into array
+                read_notifyList = data_read.data
+                // console.log(data_read.data)
+              } else {
+                isRead = false // the unread array is empty
+              }
             } else {
-              isRead = false // the unread array is empty
+              console.error(data_read)
             }
-          } else {
-            // console.log(data_read)
-          }
 
-          // store in cache for next using
-          notifyCache.transaction = {
-              unread: data_unread.data?.length > 0 ? data_unread.data : [],
-              read: data_read.data?.length > 0 ? data_read.data : []
+            // store in cache for next using
+            notifyCache.transaction = {
+                unread: data_unread.data?.length > 0 ? data_unread.data : [],
+                read: data_read.data?.length > 0 ? data_read.data : []
+            }
+            // expired time for the next fetch
+            notifyCache.transactionExpiredAt = Date.now() + CACHE_TTL
+          } catch (err) {
+            console.error(err)
           }
         } else {
           if(notifyCache.transaction.unread) {
@@ -708,24 +745,28 @@
 
                 var notification_type = document.querySelector(".notify-news").classList.contains("notify-selected") ? "news" : "transaction"
 
-                const response = await fetch("http://127.0.0.1:8000/api/notifications/" + notify_id, {
-                  method: "PUT",
-                  headers: {
-                    "Accept": "application/json",
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + token
-                  },
-                  body: JSON.stringify({
-                    "status": "read"
+                try {
+                  const response = await fetch("http://127.0.0.1:8000/api/notifications/" + notify_id, {
+                    method: "PUT",
+                    headers: {
+                      "Accept": "application/json",
+                      "Content-Type": "application/json",
+                      "Authorization": "Bearer " + token
+                    },
+                    body: JSON.stringify({
+                      "status": "read"
+                    })
                   })
-                })
 
-                const data = await response.json()
-                if(response.ok) {
-                  // console.log(data)
-                  notifyCache.transaction = null
-                } else {
-                  // console.log(data)
+                  const data = await response.json()
+                  if(response.ok) {
+                    // console.log(data)
+                    notifyCache.transaction = null
+                  } else {
+                    console.error(data)
+                  }
+                } catch (err) {
+                  console.error(err)
                 }
               }
 
@@ -780,8 +821,8 @@
     // Notification button
     document.querySelector(".header-notify").addEventListener("click", async (e) => {
       // reset cache
-      notifyCache.news = null
-      notifyCache.transaction = null
+      // notifyCache.news = null
+      // notifyCache.transaction = null
 
       const account_id = localStorage.getItem("account_id")
       const token = localStorage.getItem("token")
@@ -832,25 +873,29 @@
     document.querySelector(".user-logout").addEventListener("click", async (e) => {
       const token = localStorage.getItem("token")
 
-      const response = await fetch("http://127.0.0.1:8000/api/logout", {
-        method: "POST",
-        headers: {
-          "Accept": "application/json",
-          "Authorization": "Bearer " + token
-        }
-      })
+      try {
+        const response = await fetch("http://127.0.0.1:8000/api/logout", {
+          method: "POST",
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer " + token
+          }
+        })
 
-      const data = await response.json()
-      if(response.ok) {
-        console.log(data.message)
-        localStorage.removeItem("account_id")
-        localStorage.removeItem("token")
-        if(data.message == "Logged out successfully") {
-          alert("Bạn đã đăng xuất. Hẹn gặp lại!")
+        const data = await response.json()
+        if(response.ok) {
+          console.log(data.message)
+          localStorage.removeItem("account_id")
+          localStorage.removeItem("token")
+          if(data.message == "Logged out successfully") {
+            alert("Bạn đã đăng xuất. Hẹn gặp lại!")
+          }
+          window.location.reload()
+        } else {
+          console.error(data)
         }
-        window.location.reload()
-      } else {
-        // console.log(data)
+      } catch (err) {
+        console.error(err)
       }
     })
   </script>

@@ -326,60 +326,64 @@
       }
 
       if(isValid) {
-        const response = await fetch("http://127.0.0.1:8000/api/register", {
-          method: "POST",
-          headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            "username": username_value,
-            "password": password_value,
-            "password_confirmation": re_password_value,
-            "role": "user",
-            "email": email_value,
-            "phone_number": phone_value,
-            "roles": ["user"]
+        try {
+          const response = await fetch("http://127.0.0.1:8000/api/register", {
+            method: "POST",
+            headers: {
+              "Accept": "application/json",
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              "username": username_value,
+              "password": password_value,
+              "password_confirmation": re_password_value,
+              "role": "user",
+              "email": email_value,
+              "phone_number": phone_value,
+              "roles": ["user"]
+            })
           })
-        })
 
-        const data = await response.json()
-        
-        if(response.ok) {
-          alert("Bạn đã đăng ký tài khoản thành công!")
-          window.location.href = '<?php echo BASE_URL . "/pages/client/login.php" ?>'
-        } else {
-          console.log(data)
-          if(data.errors) {
-            if(data.errors.username && data.errors.username[0] == "The username has already been taken.") {
-              isValid = false;
-              username_input.focus()
-              username_error_text.textContent = "Username " + username_value + " đã tồn tại."
-              username_error.style.display = "flex"
-            } else {
-              username_error.style.display = "none"
-            }
+          const data = await response.json()
+          
+          if(response.ok) {
+            alert("Bạn đã đăng ký tài khoản thành công!")
+            window.location.href = '<?php echo BASE_URL . "/pages/client/login.php" ?>'
+          } else {
+            console.log(data)
+            if(data.errors) {
+              if(data.errors.username && data.errors.username[0] == "The username has already been taken.") {
+                isValid = false;
+                username_input.focus()
+                username_error_text.textContent = "Username " + username_value + " đã tồn tại."
+                username_error.style.display = "flex"
+              } else {
+                username_error.style.display = "none"
+              }
 
-            if(data.errors.phone_number && data.errors.phone_number[0] == "The phone number has already been taken.") {
-              if(isValid)
-                phone_input.focus()
-              isValid = false;
-              phone_error_text.textContent = "Số điện thoại " + phone_value + " đã được đăng ký."
-              phone_error.style.display = "flex"
-            } else {
-              phone_error.style.display = "none"
-            }
+              if(data.errors.phone_number && data.errors.phone_number[0] == "The phone number has already been taken.") {
+                if(isValid)
+                  phone_input.focus()
+                isValid = false;
+                phone_error_text.textContent = "Số điện thoại " + phone_value + " đã được đăng ký."
+                phone_error.style.display = "flex"
+              } else {
+                phone_error.style.display = "none"
+              }
 
-            if(data.errors.email && data.errors.email[0] == "The email has already been taken.") {
-              if(isValid)
-                email_input.focus()
-              isValid = false;
-              email_error_text.textContent = "Email " + email_value + " đã được đăng ký."
-              email_error.style.display = "flex"
-            } else {
-              email_error.style.display = "none"
+              if(data.errors.email && data.errors.email[0] == "The email has already been taken.") {
+                if(isValid)
+                  email_input.focus()
+                isValid = false;
+                email_error_text.textContent = "Email " + email_value + " đã được đăng ký."
+                email_error.style.display = "flex"
+              } else {
+                email_error.style.display = "none"
+              }
             }
           }
+        } catch (err) {
+          console.error(err)
         }
       }
     })

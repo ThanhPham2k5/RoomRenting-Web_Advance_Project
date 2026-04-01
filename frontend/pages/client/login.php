@@ -189,40 +189,44 @@
       }
 
       if(isValid) {
-        const response = await fetch("http://127.0.0.1:8000/api/login", {
-          method: "POST",
-          headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            "username": username_value,
-            "password": password_value
+        try {
+          const response = await fetch("http://127.0.0.1:8000/api/login", {
+            method: "POST",
+            headers: {
+              "Accept": "application/json",
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              "username": username_value,
+              "password": password_value
+            })
           })
-        })
 
-        const data = await response.json()
-        
-        if(response.ok) {
-          localStorage.setItem("token", data.token)
-          localStorage.setItem("account_id", data.account.id)
-          alert("Bạn đã đăng nhập thành công!")
-          window.location.href = '<?php echo BASE_URL . "/pages/client/index.php" ?>'
-        } else {
-          console.log(data)
-          if(data.message) {
-              isValid = false;
-
-              username_input.focus()
-              username_error_text.textContent = "Username " + username_value + " không chính xác."
-              username_error.style.display = "flex"
-
-              password_error_text.textContent = "Mất khẩu không chính xác."
-              password_error.style.display = "flex"
+          const data = await response.json()
+          
+          if(response.ok) {
+            localStorage.setItem("token", data.token)
+            localStorage.setItem("account_id", data.account.id)
+            alert("Bạn đã đăng nhập thành công!")
+            window.location.href = '<?php echo BASE_URL . "/pages/client/index.php" ?>'
           } else {
-              username_error.style.display = "none"
-              password_error.style.display = "none"
+            console.log(data)
+            if(data.message) {
+                isValid = false;
+
+                username_input.focus()
+                username_error_text.textContent = "Username " + username_value + " không chính xác."
+                username_error.style.display = "flex"
+
+                password_error_text.textContent = "Mất khẩu không chính xác."
+                password_error.style.display = "flex"
+            } else {
+                username_error.style.display = "none"
+                password_error.style.display = "none"
+            }
           }
+        } catch (error) {
+          console.error(error)
         }
       }
     })

@@ -175,36 +175,48 @@ class PostController extends Controller
                     ];
                 })->toArray();
 
-                //delete old images if exist
-                foreach($post->postImages as $postImage){
-                    if(in_array($postImage->order, $orders)){ // if order in request, delete file of said order
-                        // delete file
-                        Storage::disk('public')->delete($postImage->image_post_url);
-                    }
-                }
+                // delete old images if exist
+                // foreach($post->postImages as $postImage){
+                //     if(in_array($postImage->order, $orders)){ // if order in request, delete file of said order
+                //         // delete file
+                //         Storage::disk('public')->delete($postImage->image_post_url);
+
+                //         // delete DB record
+                //         $postImage->delete();
+                //     }
+                // }
                 
                 // store new images
-                foreach($images as $imageData){
-                    $file = $imageData['file'];
-                    $order = $imageData['order'];
+                // foreach($images as $imageData){
+                //     $file = $imageData['file'];
+                //     $order = $imageData['order'];
                  
-                    // rename to order
-                    $filename = $order . '.' . $file->getClientOriginalExtension();
+                //     // rename to order
+                //     $filename = $order . '.' . $file->getClientOriginalExtension();
 
-                    // save file
-                    $path = $file->storeAs(
-                        "posts/{$post->id}/images",
-                        $filename,
-                        "public"
-                    );
+                //     // save file
+                //     $path = $file->storeAs(
+                //         "posts/{$post->id}/images",
+                //         $filename,
+                //         "public"
+                //     );
 
+                //     $newImages[] = [
+                //         'image_post_url' => $path,
+                //         'order' => $order,
+                //     ];
+                // }
+
+                $newImages = [];
+                foreach ($files as $key => $file) {
                     $newImages[] = [
-                        'image_post_url' => $path,
-                        'order' => $order,
+                        'file' => $file, // Truyền trực tiếp đối tượng UploadedFile
+                        'order' => $orders[$key]
                     ];
                 }
-
-                $validated['postImages'] = $newImages; // add new images to validated data for post update
+                
+                $validated['postImages'] = $newImages;
+                $validated['deleted_orders'] = $request->input('deleted_orders', []); // get orders to delete from request
 
             }
 

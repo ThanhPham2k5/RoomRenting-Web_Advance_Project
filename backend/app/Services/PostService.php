@@ -9,6 +9,7 @@ use App\Http\Resources\Posts\PostResource;
 use App\Models\Form;
 use App\Models\Posts\Post;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedSort;
 use Spatie\QueryBuilder\Enums\FilterOperator;
@@ -90,6 +91,17 @@ class PostService{
     public function updatePost($post, $data){
         $post->update($data);
 
+        // delete specified orders and files
+        if (!empty($data['deleted_orders'])) {
+            foreach ($data['deleted_orders'] as $orderToDelete) {
+                $image = $post->postImages()->where('order', $orderToDelete)->first();
+                if ($image) {
+                    Storage::disk('public')->delete($image->image_post_url);
+                    $image->delete();
+                }
+            }
+        }
+
         // If status changed to 'completed', fire PostCreated event
         if (isset($data['status']) && $data['status'] === 'completed') {
             event(new PostCreated($post));
@@ -97,14 +109,34 @@ class PostService{
 
         if (isset($data['postImages'])) {
             foreach ($data['postImages'] as $imgData) {
-                $post->postImages()->updateOrCreate(
-                    ['order' => $imgData['order']], // Tìm theo order
-                    ['image_post_url' => $imgData['image_post_url']] // Cập nhật URL mới
-                );
+                $file = $imgData['file'];
+                $order = $imgData['order'];
+
+                // Tìm ảnh cũ tại order này (nếu có)
+                $oldImage = $post->postImages()->where('order', $order)->first();
+
+                if ($oldImage) {
+                    // Nếu đã có ảnh ở order này, xóa file cũ trước khi cập nhật URL mới
+                    Storage::disk('public')->delete($oldImage->image_post_url);
+                } 
+
+                $filename = $order . '.' . $file->getClientOriginalExtension();
+                $path = $file->storeAs("posts/{$post->id}/images", $filename, "public");
+                
+                if($oldImage){
+                    // Cập nhật URL mới cho ảnh cũ
+                    $oldImage->update(['image_post_url' => $path]);
+                }else {
+                    // Nếu chưa có, tạo mới
+                    $post->postImages()->create([
+                        'order' => $order,
+                        'image_post_url' => $path
+                    ]);
+                }
             }
         }
 
-        return $post;
+        return $post->load('postImages');
     }
 
     public function deletePost($post){

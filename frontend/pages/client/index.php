@@ -168,7 +168,7 @@
   <script>
     // get all posts to posts section (do not require token)
     async function getNewPost() {
-      const response = await fetch("http://127.0.0.1:8000/api/posts?per_page=5&filter[status]=completed&include=postImages&sort=createdAt", {
+      const response = await fetch("http://127.0.0.1:8000/api/posts?per_page=5&filter[status]=completed&include=postImages,favorites.account&sort=createdAt", {
         method: "GET",
         headers: {
           "Accept": "application/json"
@@ -191,7 +191,6 @@
 
     // get suggest posts to suggest posts section (require token)
     async function getSuggestPost(account_id, token) {
-      
     }
 
     // check user login or not and update post section
@@ -210,12 +209,21 @@
           var money = Number(post.price).toLocaleString("vi-VN")
 
           // check isFav or not
+          var isFav = false
+          post.favorites.forEach(account => {
+            // console.log(account)
+            if(account.id == account_id) {
+              isFav = true
+            }
+          })
+
+          var favIco = isFav ? "favour.png" : "unfavour.png"
 
           html += `
             <div class="post">
-              <div class="post-favour">
+              <div class="post-favour post-id-${post.id}">
                 <img
-                  src='<?php echo BASE_URL . "/assets/img/favour.png" ?>'
+                  src='<?php echo BASE_URL ?>/assets/img/${favIco}'
                   alt="favour.png"
                   class="post-favour-ico"
                 />
@@ -252,9 +260,14 @@
           `
         });
         
-        // update post section (not require -> do not have favour button)
+        // update post section (must have favour button)
         document.querySelectorAll(".newpost-postlist").forEach(item => {
           item.innerHTML = html
+        })
+
+        // update favorite post when client clicked
+        document.querySelectorAll(".post-favour").forEach(item => {
+          
         })
       } else {
         // not login yet

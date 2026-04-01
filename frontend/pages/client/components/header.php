@@ -379,6 +379,11 @@
       }
     }
 
+    var notifyCache = {
+      news: null,
+      transaction: null
+    }
+
     async function checkUnreadNotification(account_id, token) {
       const [res_news, res_transaction] = await Promise.all([
         fetch("http://127.0.0.1:8000/api/notifications?filter[account.id]=" + account_id + "&filter[status]=unread&filter[notificationType]=news", {
@@ -407,48 +412,67 @@
         var unread_notifyList = []
         var read_notifyList = []
 
-        // get unread notify in news
-        const response_unread = await fetch("http://127.0.0.1:8000/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=unread&filter[notificationType]=news", {
-          method: "GET",
-          headers: {
-            "Accept": "application/json",
-            "Authorization": "Bearer " + token
-          }
-        })
+        if(!notifyCache.news) {
+          // get unread & read notify in news
+          const [response_unread, response_read] = await Promise.all([fetch("http://127.0.0.1:8000/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=unread&filter[notificationType]=news", {
+            method: "GET",
+            headers: {
+              "Accept": "application/json",
+              "Authorization": "Bearer " + token
+            }
+          }),fetch("http://127.0.0.1:8000/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=read&filter[notificationType]=news", {
+            method: "GET",
+            headers: {
+              "Accept": "application/json",
+              "Authorization": "Bearer " + token
+            }
+          })])
 
-        const data_unread = await response_unread.json()
-        if(response_unread.ok) {
-          if(data_unread.data && data_unread.data.length > 0) {
-            // get list and append into array
-            unread_notifyList = data_unread.data
-            // console.log(data_unread.data)
+          const [data_unread, data_read] = await Promise.all([response_unread.json(), response_read.json()])
+
+          if(response_unread.ok) {
+            if(data_unread.data && data_unread.data.length > 0) {
+              // get list and append into array
+              unread_notifyList = data_unread.data
+              // console.log(data_unread.data)
+            } else {
+              isUnread = false // the unread array is empty
+            }
           } else {
-            isUnread = false // the unread array is empty
+            // console.log(data_unread)
+          }
+
+          if(response_read.ok) {
+            if(data_read.data && data_read.data.length > 0) {
+              // get list and append into array
+              read_notifyList = data_read.data
+              // console.log(data_read.data)
+            } else {
+              isRead = false // the unread array is empty
+            }
+          } else {
+            // console.log(data_read)
+          }
+          
+          // store in cache for next using
+          notifyCache.news = {
+            unread: data_unread.data?.length > 0 ? data_unread.data : [],
+            read: data_read.data?.length > 0 ? data_read.data : []
           }
         } else {
-          // console.log(data_unread)
-        }
-
-        // get read notify in news
-        const response_read = await fetch("http://127.0.0.1:8000/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=read&filter[notificationType]=news", {
-          method: "GET",
-          headers: {
-            "Accept": "application/json",
-            "Authorization": "Bearer " + token
-          }
-        })
-
-        const data_read = await response_read.json()
-        if(response_read.ok) {
-          if(data_read.data && data_read.data.length > 0) {
-            // get list and append into array
-            read_notifyList = data_read.data
-            // console.log(data_read.data)
+          if(notifyCache.news.unread) {
+            isUnread = true
+            unread_notifyList = notifyCache.news.unread
           } else {
-            isRead = false // the unread array is empty
+            isUnread = false
           }
-        } else {
-          // console.log(data_read)
+          
+          if(notifyCache.news.read) {
+            isRead = true
+            read_notifyList = notifyCache.news.read
+          } else {
+            isRead = false
+          }
         }
 
         // no news notification
@@ -465,7 +489,7 @@
             unread_notifyList.forEach(notify => {
               html += `
                 <a href='<?php echo BASE_URL ?>/pages/client/detail-post.php?post_id=${notify.notifiable.id}' class="notify-item notify-item-unread notify-id-${notify.id}">
-                  <img src='<?php echo BASE_URL . "/assets/img/left-img.png"?>' alt="item-img.png" class="notify-item-img">
+                  <img src='http://127.0.0.1:8000${notify.notifiable.postImages[0].imagePostUrl}' alt="item-img.png" class="notify-item-img">
 
                   <div class="notify-content">
                     <div class="notify-info">${notify.title}</div>
@@ -482,7 +506,7 @@
             read_notifyList.forEach(notify => {
               html += `
                 <a href='<?php echo BASE_URL ?>/pages/client/detail-post.php?post_id=${notify.notifiable.id}' class="notify-item notify-id-${notify.id}">
-                  <img src='<?php echo BASE_URL . "/assets/img/left-img.png"?>' alt="item-img.png" class="notify-item-img">
+                  <img src='http://127.0.0.1:8000${notify.notifiable.postImages[0].imagePostUrl}' alt="item-img.png" class="notify-item-img">
 
                   <div class="notify-content">
                     <div class="notify-info">${notify.title}</div>
@@ -532,6 +556,9 @@
                 const data = await response.json()
                 if(response.ok) {
                   // console.log(data)
+
+                  // reset cache
+                  notifyCache.news = null
                 } else {
                   // console.log(data)
                 }
@@ -550,48 +577,67 @@
         var unread_notifyList = []
         var read_notifyList = []
 
-        // get unread notify in transaction
-        const response_unread = await fetch("http://127.0.0.1:8000/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=unread&filter[notificationType]=transaction", {
-          method: "GET",
-          headers: {
-            "Accept": "application/json",
-            "Authorization": "Bearer " + token
-          }
-        })
+        if(!notifyCache.transaction) {
+          // get unread & read notify in transaction
+          const [response_unread, response_read] = await Promise.all([fetch("http://127.0.0.1:8000/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=unread&filter[notificationType]=transaction", {
+            method: "GET",
+            headers: {
+              "Accept": "application/json",
+              "Authorization": "Bearer " + token
+            }
+          }),fetch("http://127.0.0.1:8000/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=read&filter[notificationType]=transaction", {
+            method: "GET",
+            headers: {
+              "Accept": "application/json",
+              "Authorization": "Bearer " + token
+            }
+          })])
 
-        const data_unread = await response_unread.json()
-        if(response_unread.ok) {
-          if(data_unread.data && data_unread.data.length > 0) {
-            // get list and append into array
-            unread_notifyList = data_unread.data
-            // console.log(data_unread.data)
+          const [data_unread, data_read] = await Promise.all([response_unread.json(), response_read.json()])
+
+          if(response_unread.ok) {
+            if(data_unread.data && data_unread.data.length > 0) {
+              // get list and append into array
+              unread_notifyList = data_unread.data
+              // console.log(data_unread.data)
+            } else {
+              isUnread = false // the unread array is empty
+            }
           } else {
-            isUnread = false // the unread array is empty
+            // console.log(data_unread)
+          }
+
+          if(response_read.ok) {
+            if(data_read.data && data_read.data.length > 0) {
+              // get list and append into array
+              read_notifyList = data_read.data
+              // console.log(data_read.data)
+            } else {
+              isRead = false // the unread array is empty
+            }
+          } else {
+            // console.log(data_read)
+          }
+
+          // store in cache for next using
+          notifyCache.transaction = {
+              unread: data_unread.data?.length > 0 ? data_unread.data : [],
+              read: data_read.data?.length > 0 ? data_read.data : []
           }
         } else {
-          // console.log(data_unread)
-        }
-
-        // get read notify in transaction
-        const response_read = await fetch("http://127.0.0.1:8000/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=read&filter[notificationType]=transaction", {
-          method: "GET",
-          headers: {
-            "Accept": "application/json",
-            "Authorization": "Bearer " + token
-          }
-        })
-
-        const data_read = await response_read.json()
-        if(response_read.ok) {
-          if(data_read.data && data_read.data.length > 0) {
-            // get list and append into array
-            read_notifyList = data_read.data
-            // console.log(data_read.data)
+          if(notifyCache.transaction.unread) {
+            isUnread = true
+            unread_notifyList = notifyCache.transaction.unread
           } else {
-            isRead = false // the unread array is empty
+            isUnread = false
           }
-        } else {
-          // console.log(data_read)
+          
+          if(notifyCache.transaction.read) {
+            isRead = true
+            read_notifyList = notifyCache.transaction.read
+          } else {
+            isRead = false
+          }
         }
 
         // no transaction notification
@@ -612,8 +658,8 @@
               if (notifyContent.includes("failed")) notifyValue = "value-subtract"
               if (notifyContent.includes("being processed")) notifyValue = "value-pending"
               html += `
-                <a href='<?php echo BASE_URL ?>/pages/client/detail-post.php?post_id=${notify.notifiable.id}' class="notify-item notify-item-unread notify-id-${notify.id}">
-                  <img src='<?php echo BASE_URL . "/assets/img/left-img.png"?>' alt="item-img.png" class="notify-item-img">
+                <a href='<?php echo BASE_URL ?>/pages/client/history.php?post_id=${notify.notifiable.id}' class="notify-item notify-item-unread notify-id-${notify.id}">
+                  <img src='<?php echo BASE_URL . "/assets/img/transaction-img.png"?>' alt="item-img.png" class="notify-item-img">
 
                   <div class="notify-content">
                     <div class="notify-info">${notify.title}</div>
@@ -634,8 +680,8 @@
               if (notifyContent.includes("failed")) notifyValue = "value-subtract"
               if (notifyContent.includes("being processed")) notifyValue = "value-pending"
               html += `
-                <a href='<?php echo BASE_URL ?>/pages/client/detail-post.php?post_id=${notify.notifiable.id}' class="notify-item notify-id-${notify.id}">
-                  <img src='<?php echo BASE_URL . "/assets/img/left-img.png"?>' alt="item-img.png" class="notify-item-img">
+                <a href='<?php echo BASE_URL ?>/pages/client/history.php?post_id=${notify.notifiable.id}' class="notify-item notify-id-${notify.id}">
+                  <img src='<?php echo BASE_URL . "/assets/img/transaction-img.png"?>' alt="item-img.png" class="notify-item-img">
 
                   <div class="notify-content">
                     <div class="notify-info">${notify.title}</div>
@@ -685,6 +731,7 @@
                 const data = await response.json()
                 if(response.ok) {
                   // console.log(data)
+                  notifyCache.transaction = null
                 } else {
                   // console.log(data)
                 }
@@ -697,7 +744,7 @@
       }
 
       // update notify button
-      await checkUnreadNotification(account_id, token)
+      checkUnreadNotification(account_id, token)
     }
 
     async function updateHeader() {
@@ -709,7 +756,7 @@
         getPersonalInfo(account_id, token)
 
         // update notification
-        getNotification(account_id, token)
+        checkUnreadNotification(account_id, token)
 
         // update header buttons
         document.querySelector(".button-sign-up").style.display = "none"
@@ -740,9 +787,24 @@
     })
 
     // Notification button
+    document.querySelector(".header-notify").addEventListener("click", async (e) => {
+      // reset cache
+      notifyCache.news = null
+      notifyCache.transaction = null
+
+      const account_id = localStorage.getItem("account_id")
+      const token = localStorage.getItem("token")
+      await getNotification(account_id, token)
+    })
+
+    var isLoadingNotify = false
+
     document.querySelector(".notify-news").addEventListener("click", async (e) => {
+      if(isLoadingNotify) return
       if (!document.querySelector(".notify-news").classList.contains("notify-selected")) {
+        isLoadingNotify = true
         document.querySelector(".notify-list").style.display = "none"
+        document.querySelector(".notify-title").style.display = "none" 
         document.querySelector(".notify-news").classList.add("notify-selected")
         document.querySelector(".notify-transaction").classList.remove("notify-selected")
 
@@ -750,12 +812,18 @@
         const token = localStorage.getItem("token")
         await getNotification(account_id, token)
         document.querySelector(".notify-list").style.display = "flex"
+        document.querySelector(".notify-title").textContent = "Thông báo tin tức gần đây"
+        document.querySelector(".notify-title").style.display = "flex" 
+        isLoadingNotify = false
       }
     })
 
     document.querySelector(".notify-transaction").addEventListener("click", async (e) => {
+      if(isLoadingNotify) return
       if (!document.querySelector(".notify-transaction").classList.contains("notify-selected")) {
+        isLoadingNotify = true
         document.querySelector(".notify-list").style.display = "none"
+        document.querySelector(".notify-title").style.display = "none" 
         document.querySelector(".notify-transaction").classList.add("notify-selected")
         document.querySelector(".notify-news").classList.remove("notify-selected")
 
@@ -763,6 +831,9 @@
         const token = localStorage.getItem("token")
         await getNotification(account_id, token)
         document.querySelector(".notify-list").style.display = "flex"
+        document.querySelector(".notify-title").textContent = "Thông báo giao dịch gần đây"
+        document.querySelector(".notify-title").style.display = "flex" 
+        isLoadingNotify = false
       }
     })
 

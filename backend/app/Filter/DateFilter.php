@@ -10,13 +10,21 @@ class DateFilter implements Filter
     public function __invoke(Builder $query, $value, string $property)
     {
         // between date (ex: 2026-04-01,2026-04-30)
-        if (is_string($value) && str_contains($value, ',')) {
-            [$from, $to] = explode(',', $value);
+        // if (is_string($value) && str_contains($value, ',')) {
+        //     [$from, $to] = explode(',', $value);
             
-            return $query->whereBetween($property, [
-                Carbon::parse($from)->startOfDay(),
-                Carbon::parse($to)->endOfDay()
-            ]);
+        //     return $query->whereBetween($property, [
+        //         Carbon::parse($from)->startOfDay(),
+        //         Carbon::parse($to)->endOfDay()
+        //     ]);
+        // }
+
+        // Tuan sua
+        if (is_array($value) && count($value) === 2) {
+            $startDate = Carbon::parse($value[0])->startOfDay();
+            $endDate = Carbon::parse($value[1])->endOfDay();
+
+            return $query->whereBetween($property, [$startDate, $endDate]);
         }
 
         // with operator (ex: >2026-04-23)

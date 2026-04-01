@@ -56,19 +56,19 @@ class NotificationSeeder extends Seeder
                 'notification_type' => 'news',
 
                 'title' => match($model->status) {
-                    'completed' => 'Post approved',
-                    'pending' => 'Post is under review',
-                    'expired' => 'Post expired',
+                    'completed' => 'Bài đăng đã được duyệt',
+                    'pending' => 'Bài đăng đang được xét duyệt.',
+                    'expired' => 'Bài đăng bị từ chối.',
                     'failed' => 'Post approval failed',
                     default => 'Post update'
                 },
 
                 'content' => match($model->status) {
-                    'completed' => "Your post \"{$model->title}\" has been approved and is now visible.",
-                    'pending' => "Your post \"{$model->title}\" is being reviewed.",
-                    'expired' => "Your post \"{$model->title}\" has expired.",
-                    'failed' => "Your post \"{$model->title}\" was rejected.",
-                    default => "Your post \"{$model->title}\" has been updated."
+                    'completed' => "Bài đăng  \"{$model->title}\" đã được duyêt.",
+                    'pending' => "Bài đăng  \"{$model->title}\" đang được xét duyệt.",
+                    'expired' => "Bài đăng  \"{$model->title}\" bị từ chối.",
+                    'failed' => "Bài đăng  \"{$model->title}\" đã thất bại.",
+                    default => "Bài đăng  \"{$model->title}\" đã được cập nhật."
                 },
             ];
         }
@@ -80,15 +80,15 @@ class NotificationSeeder extends Seeder
                 'notification_type' => 'transaction',
 
                 'title' => match($model->status) {
-                    'completed' => 'Payment successful',
-                    'pending' => 'Payment pending',
-                    'failed' => 'Payment failed',
+                    'completed' => 'Thanh toán chi phí duy trì bài đăng',
+                    'pending' => 'Thanh toán chi phí duy trì bài đăng đang được xử lý',
+                    'failed' => 'Thanh toán chi phí duy trì bài đăng thất bại',
                 },
 
                 'content' => match($model->status) {
-                    'completed' => "You have been charged {$model->points} points for your post.",
-                    'pending' => "Your payment of {$model->points} points is being processed.",
-                    'failed' => "Payment of {$model->points} points failed. Please check your balance.",
+                    'completed' => "Đã trừ: " . $model->points . " điểm.",
+                    'pending' => "Trừ: " . $model->points . " điểm đang được xử lý.",
+                    'failed' => "Đã trừ: " . $model->points . " điểm. Vui lòng kiểm tra lại số điểm của bạn.",
                 },
             ];
         }
@@ -100,15 +100,15 @@ class NotificationSeeder extends Seeder
                 'notification_type' => 'transaction',
 
                 'title' => match($model->status) {
-                    'completed' => 'Recharge successful',
-                    'pending' => 'Recharge pending',
-                    'failed' => 'Recharge failed',
+                    'completed' => 'Hoá đơn nạp điểm',
+                    'pending' => 'Nạp tiền đang được xử lý',
+                    'failed' => 'Nạp tiền thất bại',
                 },
 
                 'content' => match($model->status) {
-                    'completed' => "You have successfully recharged {$model->money} VND.",
-                    'pending' => "Your recharge of {$model->money} VND is being processed.",
-                    'failed' => "Recharge of {$model->money} VND failed. Please try again.",
+                    'completed' => "Bạn đã nạp thành công " . number_format($model->total_money, 0, ',', '.') . "VND.",
+                    'pending' => "Nạp tiền " . number_format($model->total_money, 0, ',', '.') . "VND đang được xử lý.",
+                    'failed' => "Nạp " . number_format($model->total_money, 0, ',', '.') . "VND thất bại. Vui lòng thử lại.",
                 },
             ];
         }

@@ -218,8 +218,6 @@ Route::middleware(['auth:sanctum', 'permission:notification.restore'])
     ->post('/notifications/{notification}/restore', [NotificationController::class, 'restore'])
     ->withTrashed();
 
-Route::middleware(['auth:sanctum', 'permission:notification.markAsRead'])
-->patch('/notifications/{notification}/mark-as-read', [NotificationController::class, 'markAsRead']);
 
 /* API routes for Payments 
     - PayBillController
@@ -367,3 +365,6 @@ Route::middleware(['auth:sanctum'])
 
 Route::middleware(['auth:sanctum'])
     ->get('/statistic/posts/room_data', [StatisticController::class, 'getRoomTypeStatistic']);
+
+Route::middleware(['auth:sanctum'])
+    ->get('/statistic/revenue', [StatisticController::class, 'getRevenueStatistic']);

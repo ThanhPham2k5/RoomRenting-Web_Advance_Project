@@ -167,4 +167,16 @@ class AccountController extends Controller
             'message' => 'Permissions assigned'
         ]);
     }
+
+    public function changePassword(Request $request, Account $account)
+    {
+        $request->validate([
+            'current_password' => 'required|string',
+            'new_password' => 'required|string|min:8|confirmed',
+        ]);
+        
+        $result = $this->accountService->changePassword($account, $request->current_password, $request->new_password);
+
+        return response()->json($result);
+    }
 }

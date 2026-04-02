@@ -40,7 +40,9 @@ class UpdatePostRequest extends FormRequest
             'images' => 'sometimes|array',
             'images.*' => 'image|mimes:jpg,jpeg,png|max:2048',
             'orders' => 'required_with:images|array', // Bắt buộc phải có orders nếu có images
-            'orders.*' => 'integer|min:1'
+            'orders.*' => 'integer|min:1',
+            'deleted_orders' => 'sometimes|array', // Mảng chứa các order cần xóa
+            'deleted_orders.*' => 'integer|min:1',
         ];
     }
 }

@@ -7,7 +7,7 @@ use App\Models\Posts\PostImage;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\PostImage>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Posts\PostImage>
  */
 class PostImageFactory extends Factory
 {

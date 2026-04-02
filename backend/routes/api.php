@@ -48,6 +48,9 @@ Route::middleware(['auth:sanctum', 'permission:account.restore'])
     ->post('/accounts/{account}/restore', [AccountController::class, 'restore'])
     ->withTrashed();
 
+    // Change Password
+Route::middleware('auth:sanctum')
+    ->post('/accounts/{account}/change-password', [AccountController::class, 'changePassword']);
 
 // Assignments
 Route::middleware(['auth:sanctum', 'permission:account.assignRoles'])

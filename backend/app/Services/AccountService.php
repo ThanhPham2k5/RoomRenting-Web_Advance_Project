@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedSort;
 use Spatie\QueryBuilder\QueryBuilder;
+use Illuminate\Support\Facades\Hash;
 
 class AccountService
 {
@@ -217,6 +218,34 @@ class AccountService
         ]);
 
         return $query;
+    }
+
+    public function changePassword($account, $currentPassword, $newPassword)
+    {
+        // Check if current password is correct
+        if (!Hash::check($currentPassword, $account->password)) {
+            return [
+                'success' => false,
+                'message' => 'Mật khẩu hiện tại không đúng.'
+            ];
+        }
+
+        // Check if new password is different from current password
+        if (Hash::check($newPassword, $account->password)) {
+            return [
+                'success' => false,
+                'message' => 'Mật khẩu mới không được giống mật khẩu cũ.'
+            ];
+        }
+
+        // Update to new password
+        $account->password = Hash::make($newPassword);
+        $account->save();
+
+        return [
+            'success' => true,
+            'message' => 'Mật khẩu đã được thay đổi thành công.'
+        ];
     }
 }
 ?>

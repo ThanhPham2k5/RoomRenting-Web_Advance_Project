@@ -20,6 +20,8 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Events\StatusPostCreated;
 use App\Filter\AllColumnFilter;
 use App\Filter\DateFilter;
+use App\Models\Account_User\Account;
+use App\Models\Form;
 use App\Services\PostService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -173,38 +175,48 @@ class PostController extends Controller
                     ];
                 })->toArray();
 
-                //delete old images if exist
-                foreach($post->postImages as $postImage){
-                    if(in_array($postImage->order, $orders)){ // if order in request, delete file and db record of said order
-                        // delete file
-                        Storage::disk('public')->delete($postImage->image_post_url);
-                        // // delete db record
-                        // $postImage->delete();
-                    }
-                }
+                // delete old images if exist
+                // foreach($post->postImages as $postImage){
+                //     if(in_array($postImage->order, $orders)){ // if order in request, delete file of said order
+                //         // delete file
+                //         Storage::disk('public')->delete($postImage->image_post_url);
+
+                //         // delete DB record
+                //         $postImage->delete();
+                //     }
+                // }
                 
                 // store new images
-                foreach($images as $imageData){
-                    $file = $imageData['file'];
-                    $order = $imageData['order'];
+                // foreach($images as $imageData){
+                //     $file = $imageData['file'];
+                //     $order = $imageData['order'];
                  
-                    // rename to order
-                    $filename = $order . '.' . $file->getClientOriginalExtension();
+                //     // rename to order
+                //     $filename = $order . '.' . $file->getClientOriginalExtension();
 
-                    // save file
-                    $path = $file->storeAs(
-                        "posts/{$post->id}/images",
-                        $filename,
-                        "public"
-                    );
+                //     // save file
+                //     $path = $file->storeAs(
+                //         "posts/{$post->id}/images",
+                //         $filename,
+                //         "public"
+                //     );
 
+                //     $newImages[] = [
+                //         'image_post_url' => $path,
+                //         'order' => $order,
+                //     ];
+                // }
+
+                $newImages = [];
+                foreach ($files as $key => $file) {
                     $newImages[] = [
-                        'image_post_url' => $path,
-                        'order' => $order,
+                        'file' => $file, // Truyền trực tiếp đối tượng UploadedFile
+                        'order' => $orders[$key]
                     ];
                 }
-
-                $validated['postImages'] = $newImages; // add new images to validated data for post update
+                
+                $validated['postImages'] = $newImages;
+                $validated['deleted_orders'] = $request->input('deleted_orders', []); // get orders to delete from request
 
             }
 
@@ -238,5 +250,27 @@ class PostController extends Controller
         return response()->json($result);
     }
 
+    public function getRecommendedPosts(Request $request, Account $account)
+    {
+        $form = Form::where('account_id', $account->id)->first();
 
+        if (!$form) {
+            return response()->json([
+                'message' => 'You need to create a form first to get recommendations'
+            ], 404);
+        }
+
+        $query = $this->postService->getQueryRecommendedPosts($form, $account);
+
+        $perPage = $request->per_page ?? 15;
+
+        if ($perPage === 'all') {
+            $posts = $query->get();
+        } else {
+            $posts = $query->paginate((int) $perPage)
+                ->appends($request->query());
+        }
+
+        return new PostCollection($posts);
+    }
 }

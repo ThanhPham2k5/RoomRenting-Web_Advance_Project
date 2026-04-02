@@ -71,71 +71,71 @@ class FormService {
         ];
     }
 
-    public function getRecommendedPosts($user){
-        $form = Form::where('account_id', $user->account_id)->first();
+    // public function getRecommendedPosts($account){
+    //     $form = Form::where('account_id', $account->id)->first();
 
-        if (!$form) {
-            return response()->json([
-                'message' => 'You need to create a form first to get recommendations'
-            ], 404);
-        }
+    //     if (!$form) {
+    //         return response()->json([
+    //             'message' => 'You need to create a form first to get recommendations'
+    //         ], 404);
+    //     }
 
-        $query = Post::query()
-            // No need to recommend user's own posts
-            ->where('user_id', '!=', $user->id);
+    //     $query = Post::query()
+    //         // No need to recommend user's own posts
+    //         ->where('user_id', '!=', $account->user->id);
 
-        // FILTER
+    //     // build query from query builder
 
-        $query->when($form->price_min, fn($q) =>
-            $q->where('price', '>=', $form->price_min)
-        );
+    //     // FILTERS
+    //     $query->when($form->price_min, fn($q) =>
+    //         $q->where('price', '>=', $form->price_min)
+    //     );
 
-        $query->when($form->price_max, fn($q) =>
-            $q->where('price', '<=', $form->price_max)
-        );
+    //     $query->when($form->price_max, fn($q) =>
+    //         $q->where('price', '<=', $form->price_max)
+    //     );
 
-        // not tested yet
-        $query->when($form->area, function ($q) use ($form) {
-            $percent = 0.2; // ±20%
+    //     $query->when($form->area, function ($q) use ($form) {
+    //         $percent = 0.2; // ±20%
 
-            $min = $form->area * (1 - $percent);
-            $max = $form->area * (1 + $percent);
+    //         $min = $form->area * (1 - $percent);
+    //         $max = $form->area * (1 + $percent);
 
-            $q->whereBetween('area', [$min, $max]);
-        });
+    //         $q->whereBetween('area', [$min, $max]);
+    //     });
 
-        $query->when($form->ward, fn($q) =>
-            $q->where('ward', 'like', "%{$form->ward}%")
-        );
+    //     $query->when($form->ward, fn($q) =>
+    //         $q->where('ward', 'like', "%{$form->ward}%")
+    //     );
 
-        $query->when($form->province, fn($q) =>
-            $q->where('province', 'like', "%{$form->province}%")
-        );
+    //     $query->when($form->province, fn($q) =>
+    //         $q->where('province', 'like', "%{$form->province}%")
+    //     );
 
-        $query->when($form->room_type, fn($q) =>
-            $q->where('room_type', $form->room_type)
-        );
+    //     $query->when($form->room_type, fn($q) =>
+    //         $q->where('room_type', $form->room_type)
+    //     );
 
-        $query->when($form->max_occupants, fn($q) =>
-            $q->where('max_occupants', '>=', $form->max_occupants)
-        );
+    //     $query->when($form->max_occupants, fn($q) =>
+    //         $q->where('max_occupants', '>=', $form->max_occupants)
+    //     );
 
-        if ($query->count() === 0) {
-            return response()->json([
-                'message' => 'No recommended posts found based on your form criteria'
-            ], 404);
-        }
+    //     if ($query->count() === 0) {
+    //         return response()->json([
+    //             'message' => 'No recommended posts found based on your form criteria'
+    //         ], 404);
+    //     }
 
-        $posts = $query
-            ->latest()
-            ->get();
+    //     $posts = $query
+    //         ->latest()
+    //         ->get();
 
-        // Returning all posts
-        return [
-            'message' => 'Recommended posts fetched successfully',
-            'data' => PostResource::collection($posts)
-        ];
-    }
+    //     // Returning all posts
+    //     return [
+    //         'message' => 'Recommended posts fetched successfully',
+    //         'data' => PostResource::collection($posts)
+    //     ];
+    // }
 }
 
 ?>

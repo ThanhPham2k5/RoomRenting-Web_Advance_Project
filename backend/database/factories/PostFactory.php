@@ -32,6 +32,12 @@ class PostFactory extends Factory
             'completed',
             'completed',
             'completed',
+            'completed',
+            'completed',
+            'completed',
+            'completed',
+            'completed',
+            'completed',
             'completed', // bias for completed posts
             'failed',
             'rejected'

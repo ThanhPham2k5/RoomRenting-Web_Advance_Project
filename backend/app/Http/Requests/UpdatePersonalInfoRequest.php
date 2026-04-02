@@ -43,7 +43,7 @@ class UpdatePersonalInfoRequest extends FormRequest
 
             'name' => 'sometimes|nullable|string|max:255',
 
-            'pid' => 'sometimes|nullable|string|unique:personal_infos,pid,' . $this->personal_info,
+            'pid' => 'sometimes|nullable|string|digits:12|unique:personal_infos,pid,' . $this->personal_info,
         ];
     }
 }

@@ -25,6 +25,8 @@ class UpdateAccountRequest extends FormRequest
             'username' => 'sometimes|string|min:3|max:30|unique:accounts,username,' . $this->account->id,
             'password' => 'nullable|string|min:8|confirmed',
             'role' => 'sometimes|string|in:user,employee',
+            'roles' => 'sometimes|array',
+            'roles.*' => 'exists:roles,name'
         ];
     }
 }

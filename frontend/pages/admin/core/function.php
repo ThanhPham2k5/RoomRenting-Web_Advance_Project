@@ -27,7 +27,7 @@ function call_api($url, $method = 'GET', $data = []) {
     }
     $headers = [
         "Accept: application/json",
-        "Authorization: Bearer 1|KDGMkOp3u6BhMGgdHFtNSDtyGH6ND1hMLMIoBlita21ecd62"
+        "Authorization: Bearer 1|Vi64JEleBS7aReqe56i3ezDvUza24h1y7h1zZm8Z1086099c"
     ];
     if (!$hasFile) {
         $headers[] = "Content-Type: application/json";

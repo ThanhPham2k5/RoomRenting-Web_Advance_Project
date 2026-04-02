@@ -890,7 +890,7 @@
           if(data.message == "Logged out successfully") {
             alert("Bạn đã đăng xuất. Hẹn gặp lại!")
           }
-          window.location.reload()
+          window.location.href = "index.php"
         } else {
           console.error(data)
         }

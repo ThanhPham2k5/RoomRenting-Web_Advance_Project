@@ -503,7 +503,7 @@
     })
 
     // update new password
-    document.querySelector(".profile-pass-save").addEventListener("click", (e) => {
+    document.querySelector(".profile-pass-save").addEventListener("click", async (e) => {
         // validation
         var isValid = true
         const password_regex = /^[a-zA-Z0-9!@#$%^&*]{8,255}$/
@@ -537,6 +537,59 @@
             document.querySelector(".re-new-pass-error").style.display = "flex"
         } else {
             document.querySelector(".re-new-pass-error").style.display = "none"
+        }
+
+        if(isValid) {
+            var account_id = localStorage.getItem("account_id")
+            var token = localStorage.getItem("token")
+
+            try {
+                const response = await fetch("http://127.0.0.1:8000/api/accounts/" + account_id + "/change-password", {
+                    method: "POST",
+                    headers: {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + token
+                    },
+                    body: JSON.stringify({
+                        "current_password": document.querySelector(".profile-cur-pass-input").value.trim(),
+                        "new_password": document.querySelector(".profile-new-pass-input").value.trim(),
+                        "new_password_confirmation": document.querySelector(".profile-re-new-pass-input").value.trim()
+                    })
+                })
+
+                const data = await response.json()
+                if(response.ok) {
+                    if(data.success) {
+                        alert(data.message)
+                        document.querySelector(".user-logout").click()
+                    } else {
+                        if(data.message == "Mật khẩu hiện tại không đúng.") {
+                            isValid = false
+                            document.querySelector(".profile-cur-pass-input").focus()
+                            document.querySelector(".cur-pass-error").textContent = "Mật khẩu hiện tại không đúng."
+                            document.querySelector(".cur-pass-error").style.display = "flex"
+                        } else {
+                            document.querySelector(".cur-pass-error").style.display = "none"
+                        }
+
+                        if(data.message == "Mật khẩu mới không được giống mật khẩu cũ.") {
+                            if(isValid) {
+                                document.querySelector(".profile-new-pass-input").focus()
+                            }
+                            isValid = false
+                            document.querySelector(".new-pass-error").textContent = "Mật khẩu mới không được giống mật khẩu cũ."
+                            document.querySelector(".new-pass-error").style.display = "flex"
+                        } else {
+                            document.querySelector(".new-pass-error").style.display = "none"
+                        }
+                    }
+                } else {
+                    console.error(data)
+                }
+            } catch (err) {
+                console.error(err)
+            }
         }
     })
 
@@ -662,7 +715,7 @@
 
             try {
                 const response = await fetch("http://127.0.0.1:8000/api/personalInfos/byAccount/" + account_id, {
-                    method: "PUT",
+                    method: "POST",
                     headers: {
                         "Accept": "application/json",
                         "Authorization": "Bearer " + token

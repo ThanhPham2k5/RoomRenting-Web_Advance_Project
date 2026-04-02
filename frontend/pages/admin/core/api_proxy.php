@@ -19,9 +19,20 @@ if (empty($targetEndpoint)) {
 
 $method = $_SERVER['REQUEST_METHOD']; 
 
-$payload = $_POST;
-if ($method === 'GET') {
-    $payload = $_GET;
+// 2. Lấy dữ liệu chữ (Text) và LÀM PHẲNG MẢNG cho cURL
+$rawData = ($method === 'GET') ? $_GET : $_POST;
+$payload = [];
+
+foreach ($rawData as $key => $value) {
+    if (is_array($value)) {
+        // Nếu là mảng (như orders), tách nó ra thành orders[main], orders[sub_1]...
+        foreach ($value as $subKey => $subValue) {
+            $payload["{$key}[{$subKey}]"] = $subValue;
+        }
+    } else {
+        // Nếu là chữ bình thường (như title, price...) thì giữ nguyên
+        $payload[$key] = $value;
+    }
 }
 
 unset($payload['target_endpoint']);

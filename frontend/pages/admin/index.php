@@ -521,11 +521,23 @@ switch ($page) {
         event.preventDefault();
         let formData = new FormData(formElement);
 
+        const slotOrders = {
+            'main': 1,
+            'sub_1': 2,
+            'sub_2': 3,
+            'sub_3': 4
+        };
+        const slotIndex = {
+            'main': 0,
+            'sub_1': 1,
+            'sub_2': 2,
+            'sub_3': 3
+        };
         Object.keys(newUploadedFiles).forEach(slotName => {
             const file = newUploadedFiles[slotName];
             if (file !== null) {
-                // Tên biến gửi lên sẽ có dạng: new_images[main], new_images[sub_1]...
-                formData.append(`images[${slotName}]`, file);
+                formData.append(`images[${slotIndex[slotName]}]`, file);
+                formData.append(`orders[${slotIndex[slotName]}]`, slotOrders[slotName]);
             }
         });
 

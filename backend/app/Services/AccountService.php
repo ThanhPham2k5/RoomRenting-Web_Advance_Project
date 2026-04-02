@@ -113,6 +113,8 @@ class AccountService
             'role' => $data['role'] ?? $account->role,
         ]);
 
+        $account->syncRoles($data['roles']) ?? $account->roles;
+
         return [
             'message' => 'Account updated successfully',
             'post' => new AccountResource($account)

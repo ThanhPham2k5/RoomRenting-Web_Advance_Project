@@ -15,6 +15,7 @@ class FavoriteService{
     private $allowedIncludes = [
         'account',
         'post',
+        'post.postImages',
     ];
 
     public function buildGetAllQuery(){
@@ -24,6 +25,7 @@ class FavoriteService{
             AllowedFilter::exact('id'),
             AllowedFilter::exact('account.id'),
             AllowedFilter::exact('post.id'),
+            AllowedFilter::exact('post.status'),
             AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
         ])
         ->allowedSorts([

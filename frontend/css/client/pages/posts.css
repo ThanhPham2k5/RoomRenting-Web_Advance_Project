@@ -336,15 +336,29 @@
   transition: all 0.1s linear;
 }
 
+.posts-newest-ico,
+.posts-ascending-ico,
+.posts-descending-ico {
+  width: 24px;
+  height: 24px;
+  color: #000;
+}
+
 .posts-newest:hover,
 .posts-ascending:hover,
 .posts-descending:hover {
   transform: translateY(-1px);
 }
 
-.posts-newest {
+.posts-sort-selected {
   color: #f97316;
   border-color: #f97316;
+}
+
+.posts-sort-selected .posts-newest-ico,
+.posts-sort-selected .posts-ascending-ico,
+.posts-sort-selected .posts-descending-ico {
+  color: #f97316;
 }
 
 .newpost-postlist {
@@ -395,6 +409,11 @@
 
 .post-img {
   width: 250px;
+  border-radius: 12px;
+}
+
+.post-body {
+  text-decoration: none;
 }
 
 .post-title {
@@ -402,6 +421,7 @@
   font-size: inherit;
   text-align: justify;
   margin: 0 10px;
+  color: #000;
 }
 
 .post-address {

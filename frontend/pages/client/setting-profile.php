@@ -710,7 +710,8 @@
             // user avatar
             const avatarFile = document.querySelector("#profile-avatar-input").files[0]
             if (avatarFile) {
-                formData.append("profile_url", avatarFile)
+                formData.append("profile_url", avatarFile),
+                formData.append("_method", "PUT") // put img
             }
 
             try {

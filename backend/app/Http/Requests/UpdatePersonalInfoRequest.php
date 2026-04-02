@@ -24,7 +24,7 @@ class UpdatePersonalInfoRequest extends FormRequest
         return [
             'date_of_birth' => 'sometimes|nullable|date',
 
-            'gender' => 'sometimes|nullable|string|in:male,female,other',
+            'gender' => 'sometimes|nullable|string|in:Nam,Nữ,Khác',
 
             'house_number' => 'sometimes|nullable|string|max:255',
             'ward' => 'sometimes|nullable|string|max:255',

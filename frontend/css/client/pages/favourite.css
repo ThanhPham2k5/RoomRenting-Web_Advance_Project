@@ -92,7 +92,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: #626687;
+  color: #000;
   padding: 10px;
   border-radius: 12px;
   border: 1px solid #626687;
@@ -110,7 +110,7 @@
   right: 0;
   display: none;
   flex-direction: column;
-  justify-content: center;
+  justify-content: start;
   align-items: center;
   border: 1px solid #626687;
   border-top: none;
@@ -145,6 +145,10 @@
 .filter-district-item:hover,
 .filter-room-item:hover {
   background-color: rgba(0, 0, 0, 0.1);
+}
+
+.filter-arrow {
+  transition: all 0.1s linear;
 }
 
 .filter-min-price,
@@ -336,15 +340,29 @@
   transition: all 0.1s linear;
 }
 
+.posts-newest-ico,
+.posts-ascending-ico,
+.posts-descending-ico {
+  width: 24px;
+  height: 24px;
+  color: #000;
+}
+
 .posts-newest:hover,
 .posts-ascending:hover,
 .posts-descending:hover {
   transform: translateY(-1px);
 }
 
-.posts-newest {
+.posts-sort-selected {
   color: #f97316;
   border-color: #f97316;
+}
+
+.posts-sort-selected .posts-newest-ico,
+.posts-sort-selected .posts-ascending-ico,
+.posts-sort-selected .posts-descending-ico {
+  color: #f97316;
 }
 
 .newpost-postlist {
@@ -395,6 +413,11 @@
 
 .post-img {
   width: 250px;
+  border-radius: 12px;
+}
+
+.post-body {
+  text-decoration: none;
 }
 
 .post-title {
@@ -402,6 +425,7 @@
   font-size: inherit;
   text-align: justify;
   margin: 0 10px;
+  color: #000;
 }
 
 .post-address {
@@ -497,6 +521,13 @@
 .page-selected {
   background-color: #f97316;
   color: #fff;
+}
+
+.page-none {
+  cursor: not-allowed;
+  background-color: rgba(0, 0, 0, 0.1);
+  pointer-events: none;
+  opacity: 0.5;
 }
 
 /* laptop */

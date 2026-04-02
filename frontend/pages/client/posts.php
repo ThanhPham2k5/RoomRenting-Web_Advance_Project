@@ -531,37 +531,80 @@
       await updatePostsPage()
     })
 
+    document.querySelector(".page-number").addEventListener("change", async (e) => {
+      const pageNumber = document.querySelector(".page-number").value.trim()
+      if(!pageNumber)
+        page = 1
+      else 
+        page =  Math.min(lastPage, Math.max(1, parseInt(pageNumber)))
+
+      document.querySelector(".page-number").value = page
+      await updatePostsPage()
+    })
+
     function updatePageNumber() {
-      // update page number
       const prevPage = document.querySelector(".page-prev-number")
       const currPage = document.querySelector(".page-current-number")
       const nextPage = document.querySelector(".page-next-number")
 
-      if(page === 1) {
-        prevPage.textContent = 1
-        if(!prevPage.classList.contains("page-selected"))
+      // only 1 page
+      if (page === 1 && lastPage === 1) {
+          prevPage.textContent = 1
           prevPage.classList.add("page-selected")
-        currPage.textContent = 2
-        currPage.classList.remove("page-selected")
-        nextPage.textContent = 3
-        nextPage.classList.remove("page-selected")
-      } else if (page === lastPage) {
-        // if lastPage is 2
-        nextPage.textContent = lastPage
-        if(!nextPage.classList.contains("page-selected"))
-          nextPage.classList.add("page-selected")
-        currPage.textContent = Math.max(1, lastPage - 1)
-        currPage.classList.remove("page-selected")
-        prevPage.textContent = Math.max(1, lastPage - 2)
-        prevPage.classList.remove("page-selected")
-      } else if (page > 1 && page < lastPage) {
-        currPage.textContent = page
-        if(!currPage.classList.contains("page-selected"))
-          currPage.classList.add("page-selected")
-        prevPage.textContent = page - 1
-        prevPage.classList.remove("page-selected")
-        nextPage.textContent = page + 1
-        nextPage.classList.remove("page-selected")
+          currPage.textContent = 2
+          currPage.classList.remove("page-selected")
+          currPage.classList.add("page-none")
+          nextPage.textContent = 3
+          nextPage.classList.remove("page-selected")
+          nextPage.classList.add("page-none")
+
+      // 2 page
+      } else if (lastPage === 2) {
+          nextPage.textContent = 3
+          nextPage.classList.remove("page-selected")
+          nextPage.classList.add("page-none")
+
+          if (page === 1) {
+              prevPage.textContent = 1
+              prevPage.classList.add("page-selected")
+              currPage.textContent = 2
+              currPage.classList.remove("page-selected")
+              currPage.classList.remove("page-none")
+          } else {
+              prevPage.textContent = 1
+              prevPage.classList.remove("page-selected")
+              currPage.textContent = 2
+              currPage.classList.add("page-selected")
+              currPage.classList.remove("page-none")
+          }
+
+      // 3+ page
+      } else {
+          currPage.classList.remove("page-none")
+          nextPage.classList.remove("page-none")
+
+          if (page === 1) {
+              prevPage.textContent = 1
+              prevPage.classList.add("page-selected")
+              currPage.textContent = 2
+              currPage.classList.remove("page-selected")
+              nextPage.textContent = 3
+              nextPage.classList.remove("page-selected")
+          } else if (page === lastPage) {
+              nextPage.textContent = lastPage
+              nextPage.classList.add("page-selected")
+              currPage.textContent = lastPage - 1
+              currPage.classList.remove("page-selected")
+              prevPage.textContent = lastPage - 2
+              prevPage.classList.remove("page-selected")
+          } else if (page > 1 && page < lastPage) {
+              currPage.textContent = page
+              currPage.classList.add("page-selected")
+              prevPage.textContent = page - 1
+              prevPage.classList.remove("page-selected")
+              nextPage.textContent = page + 1
+              nextPage.classList.remove("page-selected")
+          }
       }
     }
 
@@ -569,7 +612,7 @@
     async function getPost(sortCondition, filterCondition, searchCondition, page) {
       try {
         // page = 2 to test pagination
-        const response = await fetch("http://127.0.0.1:8000/api/posts?per_page=2&filter[status]=completed&include=postImages,favorites.account&sort=" + sortCondition + filterCondition + searchCondition + "&page=" + page, {
+        const response = await fetch("http://127.0.0.1:8000/api/posts?per_page=10&filter[status]=completed&include=postImages,favorites.account&sort=" + sortCondition + filterCondition + searchCondition + "&page=" + page, {
           method: "GET",
           headers: {
             "Accept": "application/json"
@@ -594,14 +637,6 @@
     async function updatePostsPage() {
       var account_id = localStorage.getItem("account_id")
       var token = localStorage.getItem("token")
-
-      await autoFillProvince(account_id, token)
-
-      // console.log(sortCondition)
-      // console.log(filterCondition)
-      // console.log(searchCondition)
-      // console.log(page)
-      // console.log(lastPage)
 
       if (account_id != null && token != null) {
         const posts = await getPost(sortCondition, filterCondition, searchCondition, page)
@@ -745,6 +780,12 @@
           })
         })
 
+        // console.log(sortCondition)
+        // console.log(filterCondition)
+        // console.log(searchCondition)
+        // console.log(page)
+        // console.log(lastPage)
+
         updatePageNumber()
       } else {
         // not login yet
@@ -806,7 +847,10 @@
 
     // run once time every reload or load page
     document.addEventListener("DOMContentLoaded", async (e) => {
-      await updatePostsPage()
+      var account_id = localStorage.getItem("account_id")
+      var token = localStorage.getItem("token")
+
+      await Promise.all([autoFillProvince(account_id, token), updatePostsPage()])
     })
   </script>
 </html>

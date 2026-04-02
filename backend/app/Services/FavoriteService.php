@@ -31,6 +31,7 @@ class FavoriteService{
         ->allowedSorts([
             'id',
             AllowedSort::field('createdAt', 'created_at'),
+            'post.price',
         ]);
 
         return $query;

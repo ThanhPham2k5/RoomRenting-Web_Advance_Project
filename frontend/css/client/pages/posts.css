@@ -92,7 +92,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: #626687;
+  color: #000;
   padding: 10px;
   border-radius: 12px;
   border: 1px solid #626687;
@@ -110,7 +110,7 @@
   right: 0;
   display: none;
   flex-direction: column;
-  justify-content: center;
+  justify-content: start;
   align-items: center;
   border: 1px solid #626687;
   border-top: none;
@@ -145,6 +145,10 @@
 .filter-district-item:hover,
 .filter-room-item:hover {
   background-color: rgba(0, 0, 0, 0.1);
+}
+
+.filter-arrow {
+  transition: all 0.1s linear;
 }
 
 .filter-min-price,

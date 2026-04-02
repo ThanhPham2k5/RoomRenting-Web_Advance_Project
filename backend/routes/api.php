@@ -50,6 +50,9 @@ Route::middleware(['auth:sanctum', 'permission:account.restore'])
     ->post('/accounts/{account}/restore', [AccountController::class, 'restore'])
     ->withTrashed();
 
+    // Change Password
+Route::middleware('auth:sanctum')
+    ->post('/accounts/{account}/change-password', [AccountController::class, 'changePassword']);
 
 // Assignments
 Route::middleware(['auth:sanctum', 'permission:account.assignRoles'])
@@ -135,6 +138,9 @@ Route::middleware(['auth:sanctum', 'permission:post.restore'])
     ->post('/posts/{post}/restore', [PostController::class, 'restore'])
     ->withTrashed();
 
+Route::middleware(['auth:sanctum', 'permission:post.getRecommendation'])
+    ->get('/posts/recommendations/{account}', [PostController::class, 'getRecommendedPosts']);
+
 //Comment
 Route::middleware(['auth:sanctum','permission:comment.get'])
     ->get('/comments/{comment}', [CommentController::class, 'show']);
@@ -190,9 +196,6 @@ Route::middleware(['auth:sanctum', 'permission:form.update'])
 
 Route::middleware(['auth:sanctum', 'permission:form.update'])
     ->put('/forms/byAccount/{account}', [FormController::class, 'updateByAccountId']);
-
-Route::middleware(['auth:sanctum', 'permission:form.getRecommendation'])
-    ->get('/forms/recommendations', [FormController::class, 'getRecommendedPosts']);
 
 
 

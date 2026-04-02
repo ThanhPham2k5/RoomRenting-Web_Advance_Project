@@ -8,7 +8,7 @@ use App\Models\Posts\Post;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Favorite>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Posts\Favorite>
  */
 class FavoriteFactory extends Factory
 {

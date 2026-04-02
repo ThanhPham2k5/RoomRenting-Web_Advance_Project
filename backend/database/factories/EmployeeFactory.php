@@ -8,7 +8,7 @@ use App\Models\Account_User\PersonalInfo;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Employee>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Account_User\Employee>
  */
 class EmployeeFactory extends Factory
 {

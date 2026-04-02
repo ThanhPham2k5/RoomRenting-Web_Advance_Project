@@ -9,7 +9,7 @@ use App\Models\Posts\Post;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Post>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Posts\Post>
  */
 class PostFactory extends Factory
 {
@@ -27,6 +27,12 @@ class PostFactory extends Factory
         $status = fake()->randomElement([
             'pending',
             'expired',
+            'completed',
+            'completed',
+            'completed',
+            'completed',
+            'completed',
+            'completed',
             'completed',
             'completed',
             'completed',

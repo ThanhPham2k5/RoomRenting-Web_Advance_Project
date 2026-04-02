@@ -79,21 +79,8 @@
             <div class="history-board">
                 <h3 class="history-board-title">Lịch sử nạp</h3>
 
-                <div class="notify-list">
+                <div class="history-notify-list">
                     <!-- an example item -->
-                    <a href="" class="notify-item notify-item-unread">
-                        <img src='<?php echo BASE_URL . "/assets/img/left-img.png"?>' alt="item-img.png" class="notify-item-img">
-
-                        <div class="notify-content">
-                        <div class="notify-info">Căn nhà giá 5 tỷ, đường Trương Phước Phan, phường Bình Trị Đông, quận Bình Tân</div>
-
-                        <!-- using for transaction -->
-                        <div class="notify-value"></div>
-
-                        <div class="notify-time">01/01/2026</div>
-                        </div>
-                    </a>
-
                     <a href="" class="notify-item">
                         <img src='<?php echo BASE_URL . "/assets/img/left-img.png"?>' alt="item-img.png" class="notify-item-img">
 
@@ -128,4 +115,7 @@
 
     <?php include(__DIR__ . "/components/footer.php") ?>
   </body>
+  <script>
+    
+  </script>
 </html>

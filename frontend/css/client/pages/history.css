@@ -171,7 +171,7 @@
   align-self: start;
 }
 
-.notify-list {
+.history-notify-list {
   display: flex;
   flex-direction: column;
   justify-content: start;

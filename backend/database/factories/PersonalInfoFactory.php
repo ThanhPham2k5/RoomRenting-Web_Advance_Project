@@ -7,7 +7,7 @@ use App\Models\Account_User\PersonalInfo;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\PersonalInfo>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Account_User\PersonalInfo>
  */
 class PersonalInfoFactory extends Factory
 {
@@ -27,7 +27,7 @@ class PersonalInfoFactory extends Factory
         return [
             'name' => fake()->name(),
             'date_of_birth' => fake()->dateTimeBetween('-30 years', '-18 years')->format('Y-m-d'),
-            'gender' => fake()->randomElement(['male', 'female']),
+            'gender' => fake()->randomElement(['Nam', 'Nữ']),
             'house_number' => fake()->buildingNumber(),
             'ward' => $ward['name'],
             'province' => $province['name'],

@@ -1,5 +1,12 @@
 <?php
 session_start();
+if (!isset($_SESSION['api_token'])) {
+    header('Location: login.php');
+    exit;
+}
+$adminName = $_SESSION['admin_user'] ?? "";
+$adminRole = $_SESSION['admin_role'] ?? "";
+$adminId = $_SESSION['admin_id'] ?? "";
 require_once __DIR__ . '/core/function.php';
 $pageData = [];
 $page = $_GET['page'] ?? 'overview';
@@ -92,6 +99,11 @@ switch ($page) {
             'base_url'     => "index.php?page=permission&table={$currentTable}" . $filterQuery 
         ];
         break;
+    case 'setting':
+        $apiResult = call_api("http://127.0.0.1:8000/api/personalInfos/$adminId");
+        $pageData['info'] = $apiResult['data'] ?? [];
+        
+        break;
 }
 ?>
 
@@ -134,7 +146,6 @@ switch ($page) {
         <div class="nav">
             <?php renderComponent("navigation",false, ['currentPage' => $page]) ?> 
         </div>
-        <?php renderComponent("postdetail",false) ?>
         <div class="main-page">
             <?php
             renderComponent($page, true, $pageData);
@@ -1114,70 +1125,52 @@ switch ($page) {
         });
     }
     function revokeRoleFromAccount(event, accountId, roleNameToRemove, encodedRoles, targetModel, roleId) {
-        event.stopPropagation();
-        
-        // 1. Giải mã mảng quyền hiện tại
-        let currentRoles = [];
-        try {
-            currentRoles = JSON.parse(decodeURIComponent(encodedRoles));
-        } catch (e) {
-            console.error("Lỗi giải mã roles:", e);
+    event.stopPropagation();
+    
+    let currentRoles = [];
+    try {
+        currentRoles = JSON.parse(decodeURIComponent(encodedRoles));
+    } catch (e) {
+        currentRoles = [];
+    }
+
+    if (!confirm(`Xác nhận tước quyền [${roleNameToRemove}]?`)) return;
+
+    // 1. Lọc mảng (Nếu tước hết, remainingRoles sẽ là [])
+    let remainingRoles = currentRoles.filter(role => role !== roleNameToRemove);
+
+    // 2. Tạo Object thuần túy (KHÔNG dùng new FormData)
+    const payload = {
+        _method: 'PUT',
+        roles: remainingRoles, // Gửi nguyên mảng JS []
+        target_endpoint: `accounts/${accountId}`
+    };
+
+    const apiUrl = `../admin/core/api_proxy.php`;
+
+    // 3. Gửi Fetch với Content-Type: application/json
+    fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/json", // QUAN TRỌNG: Để Proxy và Laravel nhận diện JSON
+            "Accept": "application/json"
+        },
+        body: JSON.stringify(payload) // Chuyển Object thành chuỗi JSON
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.status === 'error' || result.errors) {
+            alert("Lỗi: " + (result.message || "Không thể thu hồi"));
             return;
         }
-
-        if (!confirm(`Xác nhận tước quyền [${roleNameToRemove}] khỏi tài khoản này?`)) return;
-
-        // 2. LOGIC LỌC MẢNG (QUAN TRỌNG)
-        // Giả sử: currentRoles = ["admin", "user"]
-        // Nếu roleNameToRemove = "admin" -> remainingRoles = ["user"]
-        let remainingRoles = currentRoles.filter(role => role !== roleNameToRemove);
-
-        // 3. Đóng gói vào FormData
-        let formData = new FormData();
-        formData.append('_method', 'PUT'); 
-        formData.append('target_endpoint', `accounts/${accountId}`);
-
-        // 4. XỬ LÝ GỬI MẢNG ROLES[]
-        if (remainingRoles.length > 0) {
-            // Nếu còn quyền (ví dụ còn ["user"]):
-            // Duyệt mảng và append NHIỀU LẦN vào cùng 1 key 'roles[]'
-            remainingRoles.forEach(role => {
-                formData.append('roles[]', role); 
-            });
-        } else {
-            // Nếu tước hết quyền (mảng rỗng []):
-            // Ta phải gửi một giá trị để Laravel biết trường 'roles' đang tồn tại nhưng trống.
-            // Gửi key 'roles' với giá trị rỗng.
-            formData.append('roles[]', ''); 
-        }
-
-        // --- DEBUG: Kiểm tra Payload trước khi gửi ---
-        console.log("Mảng gốc:", currentRoles);
-        console.log("Mảng sau khi lọc:", remainingRoles);
-        // --------------------------------------------
-
-        const apiUrl = `../admin/core/api_proxy.php`;
-
-        fetch(apiUrl, {
-            method: 'POST',
-            headers: { "Accept": "application/json" },
-            body: formData
-        })
-        .then(response => response.json())
-        .then(result => {
-            if (result.status === 'error' || result.errors) {
-                alert("Lỗi: " + (result.message || "Không thể thu hồi"));
-                return;
-            }
-            alert("Thu hồi quyền thành công!");
-            // Gọi lại hàm load danh sách để cập nhật UI
-            openAccountListModal(null, targetModel, roleNameToRemove, roleId);
-        })
-        .catch(error => {
-            alert("Lỗi thực hiện tước quyền!");
-            console.error("Fetch error:", error);
-        });
-    }
+        alert("Thu hồi quyền thành công!");
+        openAccountListModal(null, targetModel, roleNameToRemove, roleId);
+    })
+    .catch(error => {
+        console.error("Fetch error:", error);
+        alert("Lỗi kết nối hệ thống!");
+    });
+}
     // Hàm vẽ toàn bộ biểu đồ
     function renderAllCharts() {
         // Cài đặt chung cho mọi biểu đồ để font chữ đẹp hơn

@@ -1,5 +1,10 @@
 <?php
     $titleData = ['titleContent' => "Cài đặt", 'group' => false, 'insert' => false, 'edit' => false, 'delete' => false, 'handle' => false];
+    $info = $info ?? [];
+    $displayName = $info['name'] ?? 'Admin';
+    $avatarUrl = !empty($info['profileUrl']) 
+        ? $info['profileUrl'] 
+        : "https://ui-avatars.com/api/?name=" . urlencode($displayName) . "&background=EEF2FF&color=2563EB";
 ?>
 
 <div class="setting-page">
@@ -39,17 +44,17 @@
                     <p class="avatar-hint">Định dạng JPEG, PNG. Dung lượng tối đa 2MB.</p>
                 </div>
             </div>
-            <div class="item">
+           <div class="item">
                 <p>Họ và tên</p>
-                <input type="text">
+                <input type="text" name="name" value="<?php echo htmlspecialchars($info['name'] ?? ''); ?>">
             </div>
             <div class="item">
                 <p>Số điện thoại</p>
-                <input type="text">
+                <input type="text" name="phoneNumber" value="<?php echo htmlspecialchars($info['phoneNumber'] ?? ''); ?>">
             </div>
             <div class="item">
                 <p>Email</p>
-                <input type="text">
+                <input type="email" name="email" value="<?php echo htmlspecialchars($info['email'] ?? ''); ?>" readonly title="Email không thể thay đổi">
             </div>
             <div class="item">
                 <p>Địa chỉ</p>

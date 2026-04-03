@@ -246,7 +246,10 @@ switch ($page) {
         
         // Vẽ biểu đồ
         renderAllCharts();
+        renderMonthlyPostChart()
         renderRoomChart();
+        renderWardChart();
+        renderRevenueChart();
 
         // Nút bấm ở table
         const dropdownBtns = document.querySelectorAll('.dropdown-container .top-btn');
@@ -1199,34 +1202,34 @@ switch ($page) {
         // ==========================================
         // 1. BIỂU ĐỒ BÀI ĐĂNG THEO THÁNG (LINE CHART)
         // ==========================================
-        const ctx1 = document.getElementById('chart1');
-        if (ctx1) {
-            new Chart(ctx1, {
-                type: 'line',
-                data: {
-                    labels: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'],
-                    datasets: [{
-                        label: 'Số lượng bài đăng mới',
-                        data: [120, 190, 150, 220, 300, 250, 400, 350, 450, 410, 500, 580],
-                        borderColor: '#3B82F6', // Xanh dương
-                        backgroundColor: '#3B82F6',
-                        tension: 0.4, // Đường cong mềm mại
-                        borderWidth: 3,
-                        pointRadius: 0, // Ẩn các chấm tròn cho mượt
-                        pointHoverRadius: 6
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } }, // Ẩn ghi chú vì chỉ có 1 đường
-                    scales: {
-                        y: { beginAtZero: true, grid: { borderDash: [5, 5] } }, // Lưới kẻ đứt nét
-                        x: { grid: { display: false } }
-                    }
-                }
-            });
-        }
+        // const ctx1 = document.getElementById('chart1');
+        // if (ctx1) {
+        //     new Chart(ctx1, {
+        //         type: 'line',
+        //         data: {
+        //             labels: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'],
+        //             datasets: [{
+        //                 label: 'Số lượng bài đăng mới',
+        //                 data: [120, 190, 150, 220, 300, 250, 400, 350, 450, 410, 500, 580],
+        //                 borderColor: '#3B82F6', // Xanh dương
+        //                 backgroundColor: '#3B82F6',
+        //                 tension: 0.4, // Đường cong mềm mại
+        //                 borderWidth: 3,
+        //                 pointRadius: 0, // Ẩn các chấm tròn cho mượt
+        //                 pointHoverRadius: 6
+        //             }]
+        //         },
+        //         options: {
+        //             responsive: true,
+        //             maintainAspectRatio: false,
+        //             plugins: { legend: { display: false } }, // Ẩn ghi chú vì chỉ có 1 đường
+        //             scales: {
+        //                 y: { beginAtZero: true, grid: { borderDash: [5, 5] } }, // Lưới kẻ đứt nét
+        //                 x: { grid: { display: false } }
+        //             }
+        //         }
+        //     });
+        // }
 
         // ==========================================
         // 2. BIỂU ĐỒ TỶ LỆ KIỂU PHÒNG (DOUGHNUT CHART)
@@ -1266,156 +1269,420 @@ switch ($page) {
         // ==========================================
         // 3. TOP 10 KHU VỰC NHIỀU BÀI ĐĂNG (HORIZONTAL BAR)
         // ==========================================
-        const ctx3 = document.getElementById('chart3');
-        if (ctx3) {
-            new Chart(ctx3, {
-                type: 'bar',
-                data: {
-                    labels: ['Cầu Giấy', 'Đống Đa', 'Thanh Xuân', 'Nam Từ Liêm', 'Hai Bà Trưng', 'Hà Đông', 'Hoàng Mai', 'Bắc Từ Liêm', 'Ba Đình', 'Tây Hồ'],
-                    datasets: [{
-                        label: 'Số bài đăng',
-                        data: [1250, 980, 850, 720, 650, 540, 480, 420, 350, 210],
-                        backgroundColor: '#8B5CF6', // Màu tím cho bảng xếp hạng
-                        borderRadius: 4 // Bo góc cột biểu đồ
-                    }]
-                },
-                options: {
-                    indexAxis: 'y', // QUAN TRỌNG: Lật ngang biểu đồ
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: { beginAtZero: true, grid: { borderDash: [5, 5] } },
-                        y: { grid: { display: false } }
-                    }
-                }
-            });
-        }
+        // const ctx3 = document.getElementById('chart3');
+        // if (ctx3) {
+        //     new Chart(ctx3, {
+        //         type: 'bar',
+        //         data: {
+        //             labels: ['Cầu Giấy', 'Đống Đa', 'Thanh Xuân', 'Nam Từ Liêm', 'Hai Bà Trưng', 'Hà Đông', 'Hoàng Mai', 'Bắc Từ Liêm', 'Ba Đình', 'Tây Hồ'],
+        //             datasets: [{
+        //                 label: 'Số bài đăng',
+        //                 data: [1250, 980, 850, 720, 650, 540, 480, 420, 350, 210],
+        //                 backgroundColor: '#8B5CF6', // Màu tím cho bảng xếp hạng
+        //                 borderRadius: 4 // Bo góc cột biểu đồ
+        //             }]
+        //         },
+        //         options: {
+        //             indexAxis: 'y', // QUAN TRỌNG: Lật ngang biểu đồ
+        //             responsive: true,
+        //             maintainAspectRatio: false,
+        //             plugins: { legend: { display: false } },
+        //             scales: {
+        //                 x: { beginAtZero: true, grid: { borderDash: [5, 5] } },
+        //                 y: { grid: { display: false } }
+        //             }
+        //         }
+        //     });
+        // }
 
         // ==========================================
         // 4. THỐNG KÊ DOANH THU (AREA CHART)
         // ==========================================
-        const ctx4 = document.getElementById('chart4');
-        if (ctx4) {
-            new Chart(ctx4, {
-                type: 'line',
-                data: {
-                    labels: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'],
-                    datasets: [{
-                        label: 'Doanh thu (VNĐ)',
-                        data: [15, 18, 12, 20, 25, 30, 28, 35, 40, 38, 45, 50], // Đơn vị: Triệu VNĐ
-                        borderColor: '#10B981', // Màu xanh lá tượng trưng cho tiền bạc
-                        backgroundColor: 'rgba(16, 185, 129, 0.15)', // Màu xanh lá nhạt tô nền
-                        borderWidth: 3,
-                        fill: true, // QUAN TRỌNG: Bật đổ màu nền dưới biểu đồ
-                        tension: 0.4,
-                        pointRadius: 3,
-                        pointBackgroundColor: '#FFFFFF',
-                        pointBorderColor: '#10B981',
-                        pointBorderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                // Định dạng thêm chữ "Triệu VNĐ" vào tooltip khi hover chuột
-                                label: function(context) {
-                                    return context.parsed.y + ' Triệu VNĐ';
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        y: { beginAtZero: true, grid: { borderDash: [5, 5] } },
-                        x: { grid: { display: false } }
-                    }
+        // const ctx4 = document.getElementById('chart4');
+        // if (ctx4) {
+        //     new Chart(ctx4, {
+        //         type: 'line',
+        //         data: {
+        //             labels: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'],
+        //             datasets: [{
+        //                 label: 'Doanh thu (VNĐ)',
+        //                 data: [15, 18, 12, 20, 25, 30, 28, 35, 40, 38, 45, 50], // Đơn vị: Triệu VNĐ
+        //                 borderColor: '#10B981', // Màu xanh lá tượng trưng cho tiền bạc
+        //                 backgroundColor: 'rgba(16, 185, 129, 0.15)', // Màu xanh lá nhạt tô nền
+        //                 borderWidth: 3,
+        //                 fill: true, // QUAN TRỌNG: Bật đổ màu nền dưới biểu đồ
+        //                 tension: 0.4,
+        //                 pointRadius: 3,
+        //                 pointBackgroundColor: '#FFFFFF',
+        //                 pointBorderColor: '#10B981',
+        //                 pointBorderWidth: 2
+        //             }]
+        //         },
+        //         options: {
+        //             responsive: true,
+        //             maintainAspectRatio: false,
+        //             plugins: {
+        //                 legend: { display: false },
+        //                 tooltip: {
+        //                     callbacks: {
+        //                         // Định dạng thêm chữ "Triệu VNĐ" vào tooltip khi hover chuột
+        //                         label: function(context) {
+        //                             return context.parsed.y + ' Triệu VNĐ';
+        //                         }
+        //                     }
+        //                 }
+        //             },
+        //             scales: {
+        //                 y: { beginAtZero: true, grid: { borderDash: [5, 5] } },
+        //                 x: { grid: { display: false } }
+        //             }
+        //         }
+        //     });
+        // }
+    }
+
+    async function renderMonthlyPostChart() {
+        try {
+            // 1. GỌI API LẤY DỮ LIỆU BÀI ĐĂNG THEO THÁNG
+            const response = await fetch('../admin/core/api_proxy.php?target_endpoint=statistic/posts/month_data&year=2025', {
+                method: 'GET',
+                headers: {
+                    "Accept": "application/json"
                 }
             });
-        }
-    }
-    async function renderRoomChart() {
-    try {
-        // 1. GỌI QUA PROXY ĐỂ TỰ ĐỘNG GẮN TOKEN
-        const response = await fetch('../admin/core/api_proxy.php?target_endpoint=statistic/posts/room_data', {
-            method: 'GET',
-            headers: {
-                "Accept": "application/json"
+
+            const result = await response.json();
+
+            // 2. Khởi tạo mảng 12 tháng mặc định = 0
+            const postsByMonth = new Array(12).fill(0);
+
+            // 3. Trích xuất dữ liệu từ JSON trả về
+            if (result && result.monthlyDetails) {
+                result.monthlyDetails.forEach(item => {
+                    const monthIndex = item.month - 1; // Tháng 1 => index 0
+                    postsByMonth[monthIndex] = item.total;
+                });
             }
-        });
-        
-        const result = await response.json();
 
-        // 2. Từ điển dịch tên loại phòng từ Backend sang Frontend
-        const roomTypeMap = {
-            'room': 'Trọ khép kín',
-            'apartment': 'Chung cư mini',
-            'house': 'Nhà nguyên căn',
-            'dorm': 'Ở ghép'
-        };
-
-        let chartLabels = [];
-        let chartData = [];
-
-        // 3. Trích xuất dữ liệu từ JSON trả về
-        if (result && result.roomTypeDetails) {
-            result.roomTypeDetails.forEach(item => {
-                const translatedName = roomTypeMap[item.roomType] || item.roomType; 
-                chartLabels.push(translatedName);
-                chartData.push(item.total);
-            });
-        }
-
-        // 4. Vẽ biểu đồ với dữ liệu động
-        const ctx2 = document.getElementById('chart2');
-        if (ctx2) {
-            new Chart(ctx2, {
-                type: 'doughnut',
-                data: {
-                    labels: chartLabels, // Gắn mảng nhãn động vào đây
-                    datasets: [{
-                        data: chartData, // Gắn mảng số liệu động vào đây
-                        backgroundColor: [
-                            '#3B82F6', // Xanh dương
-                            '#10B981', // Xanh lá
-                            '#F59E0B', // Vàng cam
-                            '#8B5CF6', // Tím
-                            '#EF4444'  // Đỏ (Dự phòng)
-                        ],
-                        borderWidth: 0, 
-                        hoverOffset: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '70%', 
-                    plugins: {
-                        legend: {
-                            position: 'right', 
-                            labels: { 
-                                boxWidth: 12, 
-                                usePointStyle: true 
-                            } 
+            // 4. Vẽ biểu đồ với dữ liệu động
+            const ctx1 = document.getElementById('chart1');
+            if (ctx1) {
+                new Chart(ctx1, {
+                    type: 'line',
+                    data: {
+                        labels: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'],
+                        datasets: [{
+                            label: 'Số lượng bài đăng mới',
+                            data: postsByMonth,
+                            borderColor: '#3B82F6',
+                            backgroundColor: '#3B82F6',
+                            tension: 0.4,
+                            borderWidth: 3,
+                            pointRadius: 0,
+                            pointHoverRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return ` ${context.parsed.y} bài đăng`;
+                                    },
+                                    // Hiển thị thêm tổng năm ở footer tooltip
+                                    footer: function() {
+                                        return `Tổng năm ${result.year}: ${result.yearlyTotal} bài`;
+                                    }
+                                }
+                            }
                         },
-                        // Bổ sung thêm tooltip hiển thị số lượng khi rê chuột
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return ` ${context.label}: ${context.raw} phòng`;
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: { borderDash: [5, 5] },
+                                ticks: { stepSize: 1 } // Trục Y hiển thị số nguyên
+                            },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+
+        } catch (error) {
+            console.error("Lỗi khi tải dữ liệu biểu đồ bài đăng theo tháng:", error);
+        }
+    }
+
+    async function renderRoomChart() {
+        try {
+            // 1. GỌI QUA PROXY ĐỂ TỰ ĐỘNG GẮN TOKEN
+            const response = await fetch('../admin/core/api_proxy.php?target_endpoint=statistic/posts/room_data', {
+                method: 'GET',
+                headers: {
+                    "Accept": "application/json"
+                }
+            });
+            
+            const result = await response.json();
+
+            // 2. Từ điển dịch tên loại phòng từ Backend sang Frontend
+            const roomTypeMap = {
+                'room': 'Trọ khép kín',
+                'apartment': 'Chung cư mini',
+                'house': 'Nhà nguyên căn',
+                'dorm': 'Ở ghép'
+            };
+
+            let chartLabels = [];
+            let chartData = [];
+
+            // 3. Trích xuất dữ liệu từ JSON trả về
+            if (result && result.roomTypeDetails) {
+                result.roomTypeDetails.forEach(item => {
+                    const translatedName = roomTypeMap[item.roomType] || item.roomType; 
+                    chartLabels.push(translatedName);
+                    chartData.push(item.total);
+                });
+            }
+
+            // 4. Vẽ biểu đồ với dữ liệu động
+            const ctx2 = document.getElementById('chart2');
+            if (ctx2) {
+                new Chart(ctx2, {
+                    type: 'doughnut',
+                    data: {
+                        labels: chartLabels, // Gắn mảng nhãn động vào đây
+                        datasets: [{
+                            data: chartData, // Gắn mảng số liệu động vào đây
+                            backgroundColor: [
+                                '#3B82F6', // Xanh dương
+                                '#10B981', // Xanh lá
+                                '#F59E0B', // Vàng cam
+                                '#8B5CF6', // Tím
+                                '#EF4444'  // Đỏ (Dự phòng)
+                            ],
+                            borderWidth: 0, 
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '70%', 
+                        plugins: {
+                            legend: {
+                                position: 'right', 
+                                labels: { 
+                                    boxWidth: 12, 
+                                    usePointStyle: true 
+                                } 
+                            },
+                            // Bổ sung thêm tooltip hiển thị số lượng khi rê chuột
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return ` ${context.label}: ${context.raw} phòng`;
+                                    }
                                 }
                             }
                         }
                     }
+                });
+            }
+        } catch (error) {
+            console.error("Lỗi khi tải dữ liệu biểu đồ phòng:", error);
+        }
+
+        
+    }
+    
+    async function renderWardChart() {
+        try {
+            // 1. Gọi API lấy dữ liệu phường/xã
+            const response = await fetch('../admin/core/api_proxy.php?target_endpoint=statistic/posts/ward_data&province=38', {
+                method: 'GET',
+                headers: {
+                    "Accept": "application/json"
                 }
             });
+
+            const result = await response.json();
+
+            let chartLabels = [];
+            let chartData = [];
+
+            // 2. Trích xuất dữ liệu từ JSON trả về, lọc bỏ các phường có total = 0
+            if (result && result.wardDetails) {
+                result.wardDetails
+                    .filter(item => item.total > 0) // Chỉ hiển thị phường có bài đăng
+                    .sort((a, b) => b.total - a.total) // Sắp xếp giảm dần
+                    .forEach(item => {
+                        chartLabels.push(item.ward);
+                        chartData.push(item.total);
+                    });
+            }
+
+            // 3. Vẽ biểu đồ bar ngang với dữ liệu động
+            const ctx3 = document.getElementById('chart3');
+            if (ctx3) {
+                new Chart(ctx3, {
+                    type: 'bar',
+                    data: {
+                        labels: chartLabels,
+                        datasets: [{
+                            label: 'Số bài đăng',
+                            data: chartData,
+                            backgroundColor: '#8B5CF6',
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y', // Lật ngang biểu đồ
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return ` ${context.label}: ${context.raw} bài đăng`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                ticks: { precision: 0 }, // Chỉ hiển thị số nguyên
+                                grid: { borderDash: [5, 5] }
+                            },
+                            y: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+        } catch (error) {
+            console.error("Lỗi khi tải dữ liệu biểu đồ phường:", error);
         }
-    } catch (error) {
-        console.error("Lỗi khi tải dữ liệu biểu đồ phòng:", error);
     }
-}
+
+    async function renderRevenueChart() {
+        try {
+            // 1. GỌI API LẤY DỮ LIỆU DOANH THU
+            const response = await fetch('../admin/core/api_proxy.php?target_endpoint=statistic/revenue&year=2025&with_taxes=true&compare_year=2024', {
+                method: 'GET',
+                headers: {
+                    "Accept": "application/json"
+                }
+            });
+
+            const result = await response.json();
+
+            // 2. Khởi tạo mảng 12 tháng mặc định = 0
+            const revenueByMonth = new Array(12).fill(0);
+            const compareRevenueByMonth = new Array(12).fill(0);
+
+            // 3. Trích xuất dữ liệu năm hiện tại
+            if (result && result.monthlyRevenueDetails) {
+                result.monthlyRevenueDetails.forEach(item => {
+                    const monthIndex = item.month - 1; // Tháng 1 => index 0
+                    revenueByMonth[monthIndex] = Math.round(Number(item.totalRevenue) / 1000000 * 100) / 100; // Quy đổi sang Triệu VNĐ, làm tròn 2 chữ số
+                });
+            }
+
+            // 4. Trích xuất dữ liệu năm so sánh (nếu có)
+            if (result && result.compareMonthlyRevenueDetails) {
+                result.compareMonthlyRevenueDetails.forEach(item => {
+                    const monthIndex = item.month - 1;
+                    compareRevenueByMonth[monthIndex] = Math.round(Number(item.totalRevenue) / 1000000 * 100) / 100;
+                });
+            }
+
+            const currentYear = result.year || '2025';
+            const compareYear = result.compareYear || '2024';
+
+            // 5. Vẽ biểu đồ với dữ liệu động
+            const ctx4 = document.getElementById('chart4');
+            if (ctx4) {
+                new Chart(ctx4, {
+                    type: 'line',
+                    data: {
+                        labels: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'],
+                        datasets: [
+                            {
+                                label: `Doanh thu ${currentYear}`,
+                                data: revenueByMonth,
+                                borderColor: '#10B981',
+                                backgroundColor: 'rgba(16, 185, 129, 0.15)',
+                                borderWidth: 3,
+                                fill: true,
+                                tension: 0.4,
+                                pointRadius: 3,
+                                pointBackgroundColor: '#FFFFFF',
+                                pointBorderColor: '#10B981',
+                                pointBorderWidth: 2
+                            },
+                            // Dataset năm so sánh — chỉ hiển thị nếu API trả về dữ liệu
+                            ...(result.compareMonthlyRevenueDetails ? [{
+                                label: `Doanh thu ${compareYear}`,
+                                data: compareRevenueByMonth,
+                                borderColor: '#F59E0B',
+                                backgroundColor: 'rgba(245, 158, 11, 0.10)',
+                                borderWidth: 2,
+                                fill: false,
+                                tension: 0.4,
+                                pointRadius: 3,
+                                pointBackgroundColor: '#FFFFFF',
+                                pointBorderColor: '#F59E0B',
+                                pointBorderWidth: 2,
+                                borderDash: [5, 5] // Đường nét đứt để phân biệt năm cũ
+                            }] : [])
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top',
+                                labels: { boxWidth: 12, usePointStyle: true }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const value = context.parsed.y;
+                                        if (value >= 1) {
+                                            return ` ${context.dataset.label}: ${value.toLocaleString('vi-VN')} Triệu VNĐ`;
+                                        }
+                                        // Hiển thị dạng nghìn VNĐ nếu giá trị nhỏ hơn 1 triệu
+                                        return ` ${context.dataset.label}: ${(value * 1000).toLocaleString('vi-VN')} Nghìn VNĐ`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: { borderDash: [5, 5] },
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + ' Tr';  // Rút gọn trục Y
+                                    }
+                                }
+                            },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+
+        } catch (error) {
+            console.error("Lỗi khi tải dữ liệu biểu đồ doanh thu:", error);
+        }
+    }
 </script>
 </html>

@@ -66,7 +66,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: #626687;
+  color: #000;
   padding: 10px;
   border-radius: 12px;
   border: 1px solid #626687;
@@ -84,7 +84,7 @@
   right: 0;
   display: none;
   flex-direction: column;
-  justify-content: center;
+  justify-content: start;
   align-items: center;
   border: 1px solid #626687;
   border-top: none;
@@ -121,6 +121,10 @@
   background-color: rgba(0, 0, 0, 0.1);
 }
 
+.filter-arrow {
+  transition: all 0.1s linear;
+}
+
 .filter-min-price,
 .filter-max-price,
 .filter-square-number {
@@ -141,6 +145,17 @@
 .filter-max-price::placeholder,
 .filter-square-number::placeholder {
   color: rgba(0, 0, 0, 0.4);
+}
+
+.filter-error {
+  width: 100%;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  color: #fd5454;
+  margin-top: 10px;
+  text-align: justify;
+  display: none;
 }
 
 .filter-apply {

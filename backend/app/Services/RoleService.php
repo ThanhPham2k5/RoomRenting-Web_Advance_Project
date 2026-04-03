@@ -49,7 +49,15 @@ class RoleService{
     }
 
     public function createRole($data){
-        $role = Role::create($data);
+        $role = Role::create([
+            'name' => $data['name'],
+            'guard_name' => $data['guard_name'] ?? 'web',
+            'description' => $data['description'] ?? null,
+        ]);
+
+        if (isset($data['permissions'])) {
+            $role->givePermissionTo($data['permissions']);
+        }
 
         return [
             'message' => 'Role created successfully',

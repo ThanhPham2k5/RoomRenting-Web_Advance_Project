@@ -246,10 +246,12 @@ class RolePermissionSeeder extends Seeder
             //RechargeBill
             'rechargeBill.create',
             'rechargeBill.get',
+            'rechargeBill.getAll',
 
             //PayBill
             'payBill.create',
             'payBill.get',
+            'payBill.getAll',
 
             //Post
             'post.create',

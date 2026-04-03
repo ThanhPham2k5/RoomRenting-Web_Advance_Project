@@ -278,6 +278,6 @@ class AccountSeeder extends Seeder
 
     private function pid()
     {
-        return '0' . rand(100000000000, 999999999999);
+        return '0' . rand(10000000000, 99999999999);
     }
 }

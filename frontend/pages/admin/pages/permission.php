@@ -49,7 +49,7 @@
         <?php renderComponent("searchbar",false,$type) ?>
     </div>
     <?php renderComponent("table",false,$tableData) ?>
-    <?php renderComponent("pagination",false, ['paginationMeta' => $paginationMeta]) ?>
+    <?php renderComponent("pagination",false,['paginationMeta' => $paginationMeta]) ?>
     <?php
     ob_start();
     ?>

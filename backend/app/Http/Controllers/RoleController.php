@@ -25,12 +25,19 @@ class RoleController extends Controller
         $this->roleService = $roleService;
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $query = $this->roleService->buildGetAllQuery();
 
-        $roles = $query->get();
+        $perPage = $request->per_page ?? 15;
 
+        if ($perPage === 'all') {
+            $roles = $query->get();
+        } else {
+            $roles = $query->paginate((int) $perPage)
+                ->appends($request->query());
+        }
+        
         return new RoleCollection($roles);
     }
 
@@ -38,7 +45,10 @@ class RoleController extends Controller
     {
         $validate = $request->validate([
             'name' => 'required|string|unique:roles,name',
-            'description' => 'nullable|string'
+            'guard_name' => 'sometimes|string',
+            'description' => 'nullable|string',
+            'permissions' => 'sometimes|array',
+            'permissions.*' => 'exists:permissions,name'
         ]);
 
         $result = $this->roleService->createRole($validate);

@@ -42,7 +42,7 @@ switch ($page) {
             '5' => 'failed',
             default => 'completed'
         };
-        $apiResult = call_api("http://127.0.0.1:8000/api/posts?per_page=8&page={$pageNum}&include=postImages&filter[status]={$apiSt}");
+        $apiResult = call_api("http://127.0.0.1:8000/api/posts?per_page=8&page={$pageNum}&include=postImages&filter[status]={$apiSt}" . $filterQuery);
         $pageData['posts'] = $apiResult['data'] ?? [];
         $pageData['paginationMeta'] = [
             'current_page' => $apiResult['meta']['current_page'] ?? 1,
@@ -84,7 +84,7 @@ switch ($page) {
         ];
         break;
     case 'permission':
-        $apiResult = call_api("http://127.0.0.1:8000/api/roles?per_page=4&page={$pageNum}");
+        $apiResult = call_api("http://127.0.0.1:8000/api/roles?per_page=4&page={$pageNum}" . $filterQuery);
         $pageData['permissions'] = $apiResult['data'] ?? [];
         $pageData['paginationMeta'] = [
             'current_page' => $apiResult['meta']['current_page'] ?? 1,
@@ -157,6 +157,7 @@ switch ($page) {
 </body>
 </html>
 <script>
+    const defaultPlaceholderImg = '../../assets/admin/images/post_img.png';
     let currentPostData = null;
     let newUploadedFiles = {
         main: null,
@@ -178,7 +179,15 @@ switch ($page) {
         },
         'permission':{
             endpoint: 'roles'
-        }
+        },
+        'price': {
+            get endpoint() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const currentTable = urlParams.get('table') || '1';
+                return currentTable === '2' ? 'rechargeRules' : 'payRules';
+            },
+        query: ''
+    }
     };
     function applyFilter(filterKey, filterValue) {
         const url = new URL(window.location.href);
@@ -225,10 +234,7 @@ switch ($page) {
         });
         
         // Vẽ biểu đồ
-        const canvasElement = document.getElementById('postsLineChart');
-        if (canvasElement) {
-            drawHardcodedLineChart();
-        }
+        renderAllCharts();
 
         // Nút bấm ở table
         const dropdownBtns = document.querySelectorAll('.dropdown-container .top-btn');
@@ -312,8 +318,13 @@ switch ($page) {
         // 1. Lắng nghe sự kiện click vào các ô ảnh
         document.querySelectorAll('.image-slot').forEach(slot => {
             slot.addEventListener('click', function() {
-                currentActiveSlot = this.getAttribute('data-slot'); // Nhớ tên ô (main, sub_1...)
-                document.getElementById('hidden-file-input').click(); // Mở hộp thoại chọn file
+                const modal = document.getElementById('post-detail-modal');
+                if (!modal.classList.contains('edit-mode')) {
+                    return;
+                }
+
+                currentActiveSlot = this.getAttribute('data-slot');
+                document.getElementById('hidden-file-input').click();
             });
         });
 
@@ -372,6 +383,34 @@ switch ($page) {
                 window.location.href = url.toString();
             });
         }
+
+        //Xoa anh (preview)
+        document.querySelectorAll('.btn-delete-img').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+
+                // 2. Tìm cái ô chứa nút Xóa này đang mang tên gì (main, sub_1...)
+                const slotWrapper = this.closest('.image-slot');
+                const slotName = slotWrapper.getAttribute('data-slot');
+
+                // 3. Trả hình ảnh hiển thị về mặc định
+                const imgEl = slotWrapper.querySelector('img');
+                if (imgEl) {
+                    imgEl.src = defaultPlaceholderImg;
+                }
+
+                // 4. Xóa URL cũ trong thẻ input ẩn (Báo cho Laravel biết là ảnh này đã bay màu)
+                const hiddenInput = slotWrapper.querySelector('input[type="hidden"]');
+                if (hiddenInput) {
+                    hiddenInput.value = ""; 
+                }
+
+                // 5. Xóa file mới trong "Quyển sổ" (Nếu user vừa tải ảnh mới lên rồi lại đổi ý muốn xóa)
+                if (typeof newUploadedFiles !== 'undefined' && newUploadedFiles[slotName]) {
+                    newUploadedFiles[slotName] = null;
+                }
+            });
+        });
     });
     function removeNewImage(filename, buttonElement) {
         // 1. Lọc bỏ file đó khỏi mảng
@@ -505,11 +544,14 @@ switch ($page) {
         })
         .then(response => response.json())
         .then(result => {
-            if (result.message) {
-                alert("Xóa thành công!");
+            let msg = result.message || 
+              (result.data && result.data.message) || 
+              (result.original && result.original.message);
+            if (msg) {
+                alert("Xóa thành công");
                 window.location.reload();
             } else {
-                return result.json().then(err => { throw err; });
+                throw new Error(result.error || "Không tìm thấy thông báo thành công từ server.");
             }
         })
         .catch(error => {
@@ -521,21 +563,33 @@ switch ($page) {
         event.preventDefault();
         let formData = new FormData(formElement);
 
-        const slotOrders = {
-            'main': 1,
-            'sub_1': 2,
-            'sub_2': 3,
-            'sub_3': 4
-        };
-        const slotIndex = {
-            'main': 0,
-            'sub_1': 1,
-            'sub_2': 2,
-            'sub_3': 3
-        };
-        Object.keys(newUploadedFiles).forEach(slotName => {
-            const file = newUploadedFiles[slotName];
-            if (file !== null) {
+        const slotOrders = { 'main': 1, 'sub_1': 2, 'sub_2': 3, 'sub_3': 4 };
+        const slotIndex = { 'main': 0, 'sub_1': 1, 'sub_2': 2, 'sub_3': 3 };
+
+        // BÍ QUYẾT 1: KHOANH VÙNG TÌM KIẾM
+        const parentContainer = formElement.closest('.modal-content') || document;
+
+        // Lặp qua danh sách 4 ô ảnh
+        ['main', 'sub_1', 'sub_2', 'sub_3'].forEach(slotName => {
+            
+            // 1. TÌM DỮ LIỆU ẢNH CŨ
+            const hiddenInput = parentContainer.querySelector(`.image-slot[data-slot="${slotName}"] input[type="hidden"]`);
+            
+            if (hiddenInput) {
+                // NẾU GIÁ TRỊ RỖNG -> USER ĐÃ BẤM NÚT XÓA ẢNH NÀY
+                if (hiddenInput.value === "") {
+                    // Đẩy vào mảng deleted_orders theo đúng yêu cầu của Backend
+                    // Ví dụ: deleted_orders[0] = 1 (Xóa ảnh main)
+                    formData.append(`deleted_orders[${slotIndex[slotName]}]`, slotOrders[slotName]);
+                } else {
+                    // Nếu không xóa, ném trả lại ảnh cũ (để Backend biết đường mà giữ nguyên)
+                    formData.set(`existing_images[${slotName}]`, hiddenInput.value);
+                }
+            }
+
+            // 2. TÌM VÀ GOM DỮ LIỆU ẢNH MỚI (Nếu có tải lên file mới)
+            if (typeof newUploadedFiles !== 'undefined' && newUploadedFiles[slotName]) {
+                const file = newUploadedFiles[slotName];
                 formData.append(`images[${slotIndex[slotName]}]`, file);
                 formData.append(`orders[${slotIndex[slotName]}]`, slotOrders[slotName]);
             }
@@ -552,6 +606,11 @@ switch ($page) {
             formData.append('_method', 'PUT');
         }
         formData.append('target_endpoint', targetEndpoint);
+
+        if(currentPage === 'permission'){
+            formData.append('guard_name', 'api');
+        }
+
         fetch('../admin/core/api_proxy.php', {
             method: 'POST',
             headers: {
@@ -572,13 +631,77 @@ switch ($page) {
         })
         .then(result => {
             alert(isEdit ? "Cập nhật thành công!" : "Thêm mới thành công!");
-            let modalId = formElement.getAttribute('id').replace('form-', '');
-            newUploadedFiles = [];
-            closeModal(modalId);    
+            if (typeof newUploadedFiles !== 'undefined') {
+                newUploadedFiles = { main: null, sub_1: null, sub_2: null, sub_3: null };
+            }
+            let parentModal = formElement.closest('.post-detail-component-overlay');
+
+            if (parentModal) {
+                closeModal(parentModal.id);
+                if (parentModal.classList.contains('post-detail-component-overlay')) {
+                    parentModal.classList.remove('edit-mode');
+                    parentModal.classList.add('view-mode');
+                }
+            } else {
+                let formId = formElement.getAttribute('id');
+                if (formId) {
+                    let fallbackModalId = formId.replace('form-', '');
+                    if (typeof closeModal === 'function') {
+                        closeModal(fallbackModalId);
+                    }
+                }
+            }   
             window.location.reload();
         })
         .catch(error => {
             console.error("Lỗi lưu dữ liệu:", error);
+            alert(error.message);
+        });
+    }
+    function handleUpdateStatus(event, id, newStatus) {
+        event.stopPropagation(); // Ngăn sự kiện click lan ra hàng (tránh mở nhầm Modal Chi tiết)
+
+        // Xác nhận trước khi làm
+        let actionName = newStatus === 'completed' ? 'Duyệt bài' : 
+                        newStatus === 'rejected' ? 'Từ chối bài' : 'Gỡ bài';
+                        
+        if (!confirm(`Bạn có chắc chắn muốn ${actionName} này không?`)) return;
+
+        // Tạo FormData ảo (không cần thẻ <form> thật)
+        let formData = new FormData();
+        formData.append('status', newStatus); // Gửi trạng thái mới lên Backend
+        formData.append('_method', 'PUT');    // Lệnh UPDATE thì thường dùng PUT
+
+        // Xử lý Endpoint
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentPage = urlParams.get('page');
+        const config = apiConfigs[currentPage];
+        
+        // Tạo Endpoint ví dụ: posts/123
+        let targetEndpoint = `${config.endpoint}/${id}`;
+        formData.append('target_endpoint', targetEndpoint);
+
+        // Gửi API qua Proxy
+        fetch('../admin/core/api_proxy.php', {
+            method: 'POST', // Chỗ này luôn là POST do gửi qua file PHP trung gian
+            headers: {
+                "Accept": "application/json"
+            },
+            body: formData
+        })
+        .then(async response => {
+            const result = await response.json();
+            if (!response.ok || result.status === 'error') {
+                throw new Error(result.message || "Có lỗi xảy ra khi cập nhật!");
+            }
+            return result;
+        })
+        .then(result => {
+            alert("Cập nhật trạng thái thành công!");
+            window.location.reload();
+        })
+        .catch(error => {
+            console.error("Lỗi cập nhật trạng thái:", error);
             alert(error.message);
         });
     }
@@ -609,11 +732,14 @@ switch ($page) {
         })
         .then(response => response.json())
         .then(result => {
-            if (result.message) {
+            let successMessage = (result.original && result.original.message) 
+                                 ? result.original.message 
+                                 : result.message;
+            if (successMessage) {
                 alert("Khôi phục thành công!");
                 window.location.reload();
             } else {
-                return result.json().then(err => { throw err; });
+                throw new Error("Không nhận được phản hồi hợp lệ từ server.");
             }
         })
         .catch(error => {
@@ -625,26 +751,36 @@ switch ($page) {
         const urlParams = new URLSearchParams(window.location.search);
         const currentPage = urlParams.get('page');
         const config = apiConfigs[currentPage];
-        const apiUrl = `http://127.0.0.1:8000/api/${config.endpoint}/7${config.query}`;
+        
+        // 1. CHỈ GỌI VÀO PROXY. Truyền đích đến vào biến target_endpoint
+        // Nhớ sửa lại đường dẫn tới file api_proxy.php cho đúng với thư mục dự án của bạn
+        const targetEndpoint = `${config.endpoint}/7${config.query}`;
+        const apiUrl = `../admin/core/api_proxy.php?target_endpoint=${encodeURIComponent(targetEndpoint)}`;
 
+        // 2. Fetch bây giờ cực kỳ gọn nhẹ, KHÔNG CẦN TRUYỀN TOKEN NỮA
         fetch(apiUrl, {
             method: 'GET',
             headers: {
-                "Accept": "application/json",
-                "Authorization": "Bearer 1|PRRCI9BTROcV0GWmYTagGaftmUrzyzGYNvSiU8rE38eb525c"
+                "Accept": "application/json"
             }
         })
         .then(response => response.json())
         .then(result => {
+            // Kiểm tra xem Proxy/Laravel có trả về lỗi không
+            if (result.status === 'error' || !result.data) {
+                alert("Lỗi: " + (result.message || "Không thể lấy dữ liệu"));
+                return;
+            }
+
             const data = result.data;
+            
+            // --- CÁC ĐOẠN CODE ĐỔ DỮ LIỆU CỦA BẠN GIỮ NGUYÊN BÊN DƯỚI ---
             document.getElementById('view-username').textContent = data.username || 'Không xác định';
             document.getElementById('view-avatar-text').textContent = (data.username || 'A').charAt(0);
             document.getElementById('view-role').textContent = data.role === 'employee' ? 'Nhân viên' : 'Khách hàng';
             
-            // Cập nhật Grid Thông tin
             document.getElementById('view-id').textContent = data.id;
             
-            // Trạng thái (Phân loại màu nhãn)
             const statusEl = document.getElementById('view-status');
             if (data.deletedAt === null) {
                 statusEl.innerHTML = '<span class="badge-detail badge-active">Đang hoạt động</span>';
@@ -652,32 +788,29 @@ switch ($page) {
                 statusEl.innerHTML = '<span class="badge-detail badge-inactive">Đã khóa / Xóa</span>';
             }
 
-            // Lấy thông tin cá nhân (An toàn với Optional Chaining)
             const profileInfo = data.employee || data.user;
             document.getElementById('view-phone').textContent = profileInfo?.personalInfo?.phoneNumber || 'Chưa cập nhật';
             document.getElementById('view-email').textContent = profileInfo?.personalInfo?.email || 'Chưa cập nhật';
 
-            // Cập nhật danh sách quyền (Roles)
             const rolesContainer = document.getElementById('view-roles-container');
-            rolesContainer.innerHTML = ''; // Xóa dữ liệu cũ
+            rolesContainer.innerHTML = ''; 
             
             if (data.roles && data.roles.length > 0) {
                 data.roles.forEach(role => {
                     const badge = document.createElement('span');
                     badge.className = 'badge-detail badge-permission';
-                    badge.textContent = role; // Hoặc role.name tùy cấu trúc API trả về
+                    badge.textContent = role.name || role; // Đảm bảo lấy đúng name nếu role là object
                     rolesContainer.appendChild(badge);
                 });
             } else {
                 rolesContainer.innerHTML = '<span class="info-value" style="font-style: italic; color: #999;">Không có quyền đặc biệt</span>';
             }
 
-            // Mở Modal
             openModal(targetModel);
         })
         .catch(error => {
             alert("Lỗi tải chi tiết!");
-            console.error(error);
+            console.error("Fetch error:", error);
         });
     }
     function handleSearch() {
@@ -781,7 +914,7 @@ switch ($page) {
                 }
 
                 document.getElementById('detail-user-id').textContent = "ID người đăng bài: " + (data.user.id || 'Trống');
-                document.getElementById('detail-employee-id').textContent = "ID nhân viên duyệt: " + (data.employee.id || 'Chưa có');
+                document.getElementById('detail-employee-id').textContent = "ID nhân viên duyệt: " + (data.employee?.id || 'Chưa có');
                 modal.style.display = 'flex';
             })
             .catch(error => {
@@ -803,11 +936,6 @@ switch ($page) {
         } else {
             alert("Không tìm thấy dữ liệu bài viết để chỉnh sửa!");
         }
-    }
-    function switchToView() {
-        const modal = document.getElementById('post-detail-modal');
-        modal.classList.remove('edit-mode');
-        modal.classList.add('view-mode');
     }
     function closePostDetail() {
         const modal = document.getElementById('post-detail-modal');
@@ -847,70 +975,355 @@ switch ($page) {
             wardSelect.value = data.ward_id;
         }
     }
-    function drawHardcodedLineChart() {
-        // Mảng Trục X: 12 tháng trong năm
-        const labels = [
-            'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 
-            'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 
-            'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'
-        ];
-        
-        // Mảng Trục Y: Số bài đăng trong tháng đó (bạn có thể đổi số tùy ý)
-        const postCountData = [12,19,5,2,30,45,25,10,22,15,28];
+    function switchToView() {
+        const modal = document.getElementById('post-detail-modal');
+        modal.classList.remove('edit-mode');
+        modal.classList.add('view-mode');
+        fillFormEditData(currentPostData);
+        restoreImages(currentPostData.postImages);
+        if (typeof newUploadedFiles !== 'undefined') {
+            newUploadedFiles = {
+                main: null,
+                sub_1: null,
+                sub_2: null,
+                sub_3: null
+            };
+        }
+    }
+    function restoreImages(postImages) {
+        const baseUrl = "http://127.0.0.1:8000";
+        const defaultImg = "../../assets/admin/images/post_img.png";
+        const slots = ['main', 'sub_1', 'sub_2', 'sub_3'];
 
-        // 3. Khởi tạo và vẽ biểu đồ đường
-        const ctx = document.getElementById('postsLineChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'line', // Chọn loại biểu đồ là ĐƯỜNG
-            data: {
-                labels: labels, // Trục X
-                datasets: [{
-                    label: 'Số bài đăng', // Tiêu đề của đường
-                    data: postCountData,  // Dữ liệu thô (Trục Y)
-                    
-                    // Cấu hình làm đẹp cho đường
-                    fill: false,                // Không tô màu phần phía dưới đường (để làm Line Chart chuẩn)
-                    borderColor: '#4BC0C0',     // Màu xanh ngọc cho đường
-                    backgroundColor: '#4BC0C0', // Màu xanh ngọc cho các điểm nút
-                    tension: 0.3,               // Độ cong của đường (0 là đường thẳng, >0 là đường cong mượt)
-                    borderWidth: 2,             // Độ dày của đường
-                    pointRadius: 4,             // Kích thước của các điểm nút
-                    pointHoverRadius: 7         // Kích thước của các điểm nút khi rê chuột vào
-                }]
-            },
-            options: {
-                responsive: true, // Tự động co dãn theo màn hình
-                plugins: {
-                    title: {
-                        display: true,
-                        text: 'Thống kê bài đăng năm 2024 (Dữ liệu mẫu)', // Tiêu đề biểu đồ
-                        font: {
-                            size: 18
-                        }
-                    },
-                    tooltip: {
-                        enabled: true // Hiện tooltip khi rê chuột vào
-                    }
-                },
-                scales: {
-                    x: {
-                        display: true,
-                        title: {
-                            display: true,
-                            text: 'Tháng' // Tiêu đề cho trục X
-                        }
-                    },
-                    y: {
-                        display: true,
-                        title: {
-                            display: true,
-                            text: 'Số bài đăng' // Tiêu đề cho trục Y
-                        },
-                        beginAtZero: true // Luôn bắt đầu trục Y từ số 0
-                    }
-                }
+        // Bước A: Reset toàn bộ về ảnh mặc định trước
+        slots.forEach(slot => {
+            const imgEl = document.getElementById(`img-${slot}`);
+            if (imgEl) imgEl.src = defaultImg;
+            
+            const wrapper = document.querySelector(`.image-slot[data-slot="${slot}"]`);
+            if (wrapper) {
+                let hiddenInput = wrapper.querySelector('input[type="hidden"]');
+                if (hiddenInput) hiddenInput.value = ""; 
             }
         });
+
+        // Bước B: Rải lại ảnh từ data gốc vào
+        if (postImages && postImages.length > 0) {
+            postImages.forEach((imgObj, index) => {
+                let slotName = ['main', 'sub_1', 'sub_2', 'sub_3'][index];
+                if (slotName) {
+                    const imgEl = document.getElementById(`img-${slotName}`);
+                    const wrapper = document.querySelector(`.image-slot[data-slot="${slotName}"]`);
+                    
+                    if (imgEl) imgEl.src = baseUrl + imgObj.imagePostUrl;
+                    if (wrapper) {
+                        let hiddenInput = wrapper.querySelector('input[type="hidden"]');
+                        if (hiddenInput) hiddenInput.value = imgObj.imagePostUrl; 
+                    }
+                }
+            });
+        }
+    }
+    function toggleAccordion(element) {
+        // Tìm thẻ bọc ngoài cùng (.accordion-item) của cái header vừa bấm
+        const item = element.closest('.accordion-item');
+        
+        // Đảo ngược class 'active' (nếu có thì xóa, chưa có thì thêm)
+        item.classList.toggle('active');
+    }
+    function openAccountListModal(event, targetModel, roleName, roleId) {
+        if (event) {
+            event.stopPropagation();
+        }
+
+        const tbody = document.getElementById('role-account-list-body');
+        if (tbody) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" style="text-align:center; padding: 20px; color: #64748b; font-style: italic;">
+                        Đang tải danh sách tài khoản...
+                    </td>
+                </tr>
+            `;
+        }
+
+        if (typeof openModal === 'function') {
+            openModal(targetModel);
+        }
+
+        const targetEndpoint = `accounts?filter[roles.name]=${encodeURIComponent(roleName)}`;
+        const apiUrl = `../admin/core/api_proxy.php?target_endpoint=${encodeURIComponent(targetEndpoint)}`;
+
+        fetch(apiUrl, {
+            method: 'GET',
+            headers: { "Accept": "application/json" }
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.status === 'error') {
+                const errorMsg = result.message || "Không thể lấy dữ liệu";
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:red; padding: 20px;">Lỗi: ${errorMsg}</td></tr>`;
+                return;
+            }
+
+            let accounts = [];
+            if (result.data && Array.isArray(result.data)) {
+                accounts = result.data;
+            }
+
+            if (accounts.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align:center; padding: 20px; color: #64748B;">
+                            Chưa có tài khoản nào được gán quyền <strong>${roleName}</strong>!
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = accounts.map(account => {
+                // Lấy trực tiếp mảng roles (nếu API không trả về thì gán mảng rỗng)
+                let currentRoles = account.roles || [];
+
+                // Mã hóa mảng để truyền an toàn qua tham số onclick
+                let encodedRoles = encodeURIComponent(JSON.stringify(currentRoles));
+
+                return `
+                    <tr>
+                        <td>${account.id}</td>
+                        <td style="font-weight: 500;">${account.username || account.name || 'N/A'}</td>
+                        
+                        <td>${currentRoles.length > 0 ? currentRoles.join(', ') : 'N/A'}</td>
+                        
+                        <td class="text-center">
+                            <button class="table-btn red" type="button" 
+                                onclick="revokeRoleFromAccount(event, ${account.id}, '${roleName}', '${encodedRoles}', '${targetModel}', ${roleId})">
+                                Tước quyền
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        })
+        .catch(error => {
+            console.error("Fetch error:", error);
+            if (tbody) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red; padding: 20px;">Lỗi kết nối máy chủ</td></tr>';
+            }
+        });
+    }
+    function revokeRoleFromAccount(event, accountId, roleNameToRemove, encodedRoles, targetModel, roleId) {
+        event.stopPropagation();
+        
+        // 1. Giải mã mảng quyền hiện tại
+        let currentRoles = [];
+        try {
+            currentRoles = JSON.parse(decodeURIComponent(encodedRoles));
+        } catch (e) {
+            console.error("Lỗi giải mã roles:", e);
+            return;
+        }
+
+        if (!confirm(`Xác nhận tước quyền [${roleNameToRemove}] khỏi tài khoản này?`)) return;
+
+        // 2. LOGIC LỌC MẢNG (QUAN TRỌNG)
+        // Giả sử: currentRoles = ["admin", "user"]
+        // Nếu roleNameToRemove = "admin" -> remainingRoles = ["user"]
+        let remainingRoles = currentRoles.filter(role => role !== roleNameToRemove);
+
+        // 3. Đóng gói vào FormData
+        let formData = new FormData();
+        formData.append('_method', 'PUT'); 
+        formData.append('target_endpoint', `accounts/${accountId}`);
+
+        // 4. XỬ LÝ GỬI MẢNG ROLES[]
+        if (remainingRoles.length > 0) {
+            // Nếu còn quyền (ví dụ còn ["user"]):
+            // Duyệt mảng và append NHIỀU LẦN vào cùng 1 key 'roles[]'
+            remainingRoles.forEach(role => {
+                formData.append('roles[]', role); 
+            });
+        } else {
+            // Nếu tước hết quyền (mảng rỗng []):
+            // Ta phải gửi một giá trị để Laravel biết trường 'roles' đang tồn tại nhưng trống.
+            // Gửi key 'roles' với giá trị rỗng.
+            formData.append('roles[]', ''); 
+        }
+
+        // --- DEBUG: Kiểm tra Payload trước khi gửi ---
+        console.log("Mảng gốc:", currentRoles);
+        console.log("Mảng sau khi lọc:", remainingRoles);
+        // --------------------------------------------
+
+        const apiUrl = `../admin/core/api_proxy.php`;
+
+        fetch(apiUrl, {
+            method: 'POST',
+            headers: { "Accept": "application/json" },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.status === 'error' || result.errors) {
+                alert("Lỗi: " + (result.message || "Không thể thu hồi"));
+                return;
+            }
+            alert("Thu hồi quyền thành công!");
+            // Gọi lại hàm load danh sách để cập nhật UI
+            openAccountListModal(null, targetModel, roleNameToRemove, roleId);
+        })
+        .catch(error => {
+            alert("Lỗi thực hiện tước quyền!");
+            console.error("Fetch error:", error);
+        });
+    }
+    // Hàm vẽ toàn bộ biểu đồ
+    function renderAllCharts() {
+        // Cài đặt chung cho mọi biểu đồ để font chữ đẹp hơn
+        Chart.defaults.font.family = "'Roboto', sans-serif";
+        Chart.defaults.color = '#64748B'; // Màu chữ xám nhạt hiện đại
+
+        // ==========================================
+        // 1. BIỂU ĐỒ BÀI ĐĂNG THEO THÁNG (LINE CHART)
+        // ==========================================
+        const ctx1 = document.getElementById('chart1');
+        if (ctx1) {
+            new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'],
+                    datasets: [{
+                        label: 'Số lượng bài đăng mới',
+                        data: [120, 190, 150, 220, 300, 250, 400, 350, 450, 410, 500, 580],
+                        borderColor: '#3B82F6', // Xanh dương
+                        backgroundColor: '#3B82F6',
+                        tension: 0.4, // Đường cong mềm mại
+                        borderWidth: 3,
+                        pointRadius: 0, // Ẩn các chấm tròn cho mượt
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } }, // Ẩn ghi chú vì chỉ có 1 đường
+                    scales: {
+                        y: { beginAtZero: true, grid: { borderDash: [5, 5] } }, // Lưới kẻ đứt nét
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        // ==========================================
+        // 2. BIỂU ĐỒ TỶ LỆ KIỂU PHÒNG (DOUGHNUT CHART)
+        // ==========================================
+        const ctx2 = document.getElementById('chart2');
+        if (ctx2) {
+            new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Trọ khép kín', 'Chung cư mini', 'Nhà nguyên căn', 'Ở ghép'],
+                    datasets: [{
+                        data: [45, 25, 20, 10], // Tỷ lệ %
+                        backgroundColor: [
+                            '#3B82F6', // Xanh dương
+                            '#10B981', // Xanh lá
+                            '#F59E0B', // Vàng cam
+                            '#8B5CF6'  // Tím
+                        ],
+                        borderWidth: 0, // Bỏ viền trắng chia cắt
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%', // Làm cho vành khuyên mỏng lại cho tinh tế
+                    plugins: {
+                        legend: {
+                            position: 'right', // Đẩy chú thích sang phải
+                            labels: { boxWidth: 12, usePointStyle: true } // Chú thích hình tròn
+                        }
+                    }
+                }
+            });
+        }
+
+        // ==========================================
+        // 3. TOP 10 KHU VỰC NHIỀU BÀI ĐĂNG (HORIZONTAL BAR)
+        // ==========================================
+        const ctx3 = document.getElementById('chart3');
+        if (ctx3) {
+            new Chart(ctx3, {
+                type: 'bar',
+                data: {
+                    labels: ['Cầu Giấy', 'Đống Đa', 'Thanh Xuân', 'Nam Từ Liêm', 'Hai Bà Trưng', 'Hà Đông', 'Hoàng Mai', 'Bắc Từ Liêm', 'Ba Đình', 'Tây Hồ'],
+                    datasets: [{
+                        label: 'Số bài đăng',
+                        data: [1250, 980, 850, 720, 650, 540, 480, 420, 350, 210],
+                        backgroundColor: '#8B5CF6', // Màu tím cho bảng xếp hạng
+                        borderRadius: 4 // Bo góc cột biểu đồ
+                    }]
+                },
+                options: {
+                    indexAxis: 'y', // QUAN TRỌNG: Lật ngang biểu đồ
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { beginAtZero: true, grid: { borderDash: [5, 5] } },
+                        y: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        // ==========================================
+        // 4. THỐNG KÊ DOANH THU (AREA CHART)
+        // ==========================================
+        const ctx4 = document.getElementById('chart4');
+        if (ctx4) {
+            new Chart(ctx4, {
+                type: 'line',
+                data: {
+                    labels: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'],
+                    datasets: [{
+                        label: 'Doanh thu (VNĐ)',
+                        data: [15, 18, 12, 20, 25, 30, 28, 35, 40, 38, 45, 50], // Đơn vị: Triệu VNĐ
+                        borderColor: '#10B981', // Màu xanh lá tượng trưng cho tiền bạc
+                        backgroundColor: 'rgba(16, 185, 129, 0.15)', // Màu xanh lá nhạt tô nền
+                        borderWidth: 3,
+                        fill: true, // QUAN TRỌNG: Bật đổ màu nền dưới biểu đồ
+                        tension: 0.4,
+                        pointRadius: 3,
+                        pointBackgroundColor: '#FFFFFF',
+                        pointBorderColor: '#10B981',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                // Định dạng thêm chữ "Triệu VNĐ" vào tooltip khi hover chuột
+                                label: function(context) {
+                                    return context.parsed.y + ' Triệu VNĐ';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { borderDash: [5, 5] } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
     }
 </script>
 </html>

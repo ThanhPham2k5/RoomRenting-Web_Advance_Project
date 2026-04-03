@@ -22,7 +22,7 @@ class CommentService{
     ];
 
     public function buildGetAllQuery(){
-       $query = QueryBuilder::for(Comment::withTrashed())
+       $query = QueryBuilder::for(Comment::class)
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
             //generic search

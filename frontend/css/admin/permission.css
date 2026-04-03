@@ -13,3 +13,103 @@
     padding: 0 30px;
     width: 100%;
 }
+/* =========================================
+   PERMISSION ACCORDION (DROPDOWN)
+   ========================================= */
+.permission-page .modal-body .input-group.full-width {
+    width: 100%;
+}
+
+.permission-page .permission-accordion {
+    width: 100%;
+    border: 1px solid #CBD5E1;
+    border-radius: 10px;
+    background-color: #FFFFFF;
+    overflow: hidden;
+}
+
+.permission-page .accordion-item {
+    border-bottom: 1px solid #E2E8F0;
+}
+.permission-page .accordion-item:last-child {
+    border-bottom: none;
+}
+
+/* Phần Tiêu đề để Click */
+.permission-page .accordion-header {
+    padding: 16px 20px;
+    background-color: #F8FAFC;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    user-select: none;
+}
+.permission-page .accordion-header:hover {
+    background-color: #F1F5F9;
+}
+
+.permission-page .accordion-header .module-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #1E293B;
+}
+
+/* Icon mũi tên */
+.permission-page .accordion-header .chevron {
+    color: #64748B;
+    transition: transform 0.3s ease;
+}
+/* Xoay mũi tên lên khi mở */
+.permission-page .accordion-item.active .chevron {
+    transform: rotate(180deg);
+    color: #F97316; /* Đổi màu cam khi mở */
+}
+
+/* Phần nội dung bị ẩn (Chứa các checkbox) */
+.permission-page .accordion-body {
+    padding: 0 20px; /* Thu padding dọc về 0 khi đóng */
+    max-height: 0;
+    overflow: auto;
+    background-color: #FFFFFF;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Kích hoạt hiển thị khi có class active */
+.permission-page .accordion-item.active .accordion-body {
+    padding: 16px 20px;
+    max-height: 300px; /* Chiều cao tối đa đủ để xổ xuống */
+    border-top: 1px dashed #E2E8F0;
+}
+
+/* =========================================
+   CUSTOM CHECKBOX (Giữ nguyên)
+   ========================================= */
+.permission-page .custom-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: #475569;
+    user-select: none;
+    margin: 0;
+}
+.permission-page .custom-checkbox:hover {
+    color: #0F172A;
+}
+.permission-page .custom-checkbox input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+    margin: 0;
+    transition: transform 0.2s;
+}
+.permission-page .custom-checkbox input[type="checkbox"]:hover {
+    transform: scale(1.15);
+}

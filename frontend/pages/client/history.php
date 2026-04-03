@@ -225,9 +225,26 @@
       }
     }
 
+    // history tab
+    document.querySelector(".history-recharge").addEventListener("click", async (e) => {
+        if(!document.querySelector(".history-recharge").classList.contains("history-selected")) {
+            document.querySelector(".history-recharge").classList.add("history-selected")
+            document.querySelector(".history-pay").classList.remove("history-selected")
+            await updateHistoryPage()
+        }
+    })
+    
+    document.querySelector(".history-pay").addEventListener("click", async (e) => {
+        if(!document.querySelector(".history-pay").classList.contains("history-selected")) {
+            document.querySelector(".history-pay").classList.add("history-selected")
+            document.querySelector(".history-recharge").classList.remove("history-selected")
+            await updateHistoryPage()
+        }
+    })
+
     async function getBill(account_id, token, billType, page) {
         try {
-            const response = await fetch("http://127.0.0.1:8000/api/" + billType + "?per_page=10&include=account&filter[account.id]=" + account_id + "&filter[status]=completed&page=" + page, {
+            const response = await fetch("http://127.0.0.1:8000/api/" + billType + "?per_page=10&include=account&filter[account.id]=" + account_id + "&filter[status]=completed&page=" + page + "&sort=-createdAt", {
                 method: "GET",
                 headers: {
                     "Accept": "application/json",
@@ -257,6 +274,7 @@
             var billType = document.querySelector(".history-recharge").classList.contains("history-selected") ? "rechargeBills" : "payBills"
             var valueItem = document.querySelector(".history-recharge").classList.contains("history-selected") ? "value-add" : "value-subtract"
             var billTitle = document.querySelector(".history-recharge").classList.contains("history-selected") ? "Thêm điểm" : "Trừ điểm"
+            document.querySelector(".history-board-title").textContent = document.querySelector(".history-recharge").classList.contains("history-selected") ? "Lịch sử nạp" : "Lịch sử trừ"
 
             const histories = await getBill(account_id, token, billType, page)
 
@@ -265,7 +283,9 @@
 
                 histories.forEach(history => {
                     var point = Number(history.points).toLocaleString("vi-VN")
-                    html = `
+                    var date = new Date(history.createdAt).toLocaleString("vi-VN")
+
+                    html += `
                         <div class="notify-item">
                             <img src='<?php echo BASE_URL . "/assets/img/transaction-img.png"?>' alt="item-img.png" class="notify-item-img">
 
@@ -275,15 +295,18 @@
                             <!-- using for transaction -->
                             <div class="notify-value ${valueItem}">+${point} Điểm ( Nạp thêm điểm thành công )</div>
 
-                            <div class="notify-time">01/01/2026</div>
+                            <div class="notify-time">${date}</div>
                             </div>
                         </div>
                     `
                 });
 
                 document.querySelector(".history-notify-list").innerHTML = html
+
+                updatePageNumber()
             } else {
                 document.querySelector(".history-notify-list").textContent = "Chưa có lịch sử giao dịch."
+                updatePageNumber()
             }
         } else {
             alert("Bạn chưa đăng nhập. Đang chuyển hướng sang trang đăng nhập.")

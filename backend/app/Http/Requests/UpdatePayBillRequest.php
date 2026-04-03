@@ -22,11 +22,11 @@ class UpdatePayBillRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'points' => 'required|integer|min:1',
-            'status' => 'required|string|in:completed,failed',
-            'account_id' => 'required|exists:accounts,id',
-            'pay_rule_id' => 'required|exists:pay_rules,id',
-            'post_id' => 'required|exists:posts,id',
+            'points' => 'sometimes|integer|min:1',
+            'status' => 'sometimes|string|in:completed,failed',
+            'account_id' => 'sometimes|exists:accounts,id',
+            'pay_rule_id' => 'sometimes|exists:pay_rules,id',
+            'post_id' => 'sometimes|exists:posts,id',
         ];
     }
 }

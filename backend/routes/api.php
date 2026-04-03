@@ -350,13 +350,19 @@ Route::get('/address/provinces', [AddressController::class, 'getProvinces']);
 
 Route::get('/address/provinces/{code}', [AddressController::class, 'getProvinceByCode']);
 
+Route::get('/address/provinces/name/{name}', [AddressController::class, 'getProvinceByName']);
+
 Route::get('/address/provinces/{code}/wards', [AddressController::class, 'getWardsFromProvinceCode']);
+
+Route::get('/address/provinces/name/{name}/wards', [AddressController::class, 'getWardsFromProvinceName']);
 
 
 //Ward
 Route::get('/address/wards', [AddressController::class, 'getWards']);
 
 Route::get('/address/wards/{code}', [AddressController::class, 'getWardByCode']);
+
+Route::get('/address/wards/name/{name}', [AddressController::class, 'getWardByName']);
 
 
 /* API routes for Statistic 

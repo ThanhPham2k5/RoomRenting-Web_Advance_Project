@@ -22,12 +22,12 @@ class UpdateRechargeBillRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'money' => 'required|numeric|min:0.01',
-            'total_money' => 'required|numeric|min:0.01',
-            'status' => 'required|in:completed,failed',
-            'vat' => 'required|numeric|min:0',
-            'recharge_rule_id' => 'required|exists:recharge_rules,id',
-            'account_id' => 'required|exists:accounts,id',
+            'money' => 'sometimes|numeric|min:0.01',
+            'total_money' => 'sometimes|numeric|min:0.01',
+            'status' => 'sometimes|in:completed,failed',
+            'vat' => 'sometimes|numeric|min:0',
+            'recharge_rule_id' => 'sometimes|exists:recharge_rules,id',
+            'account_id' => 'sometimes|exists:accounts,id',
         ];
     }
 }

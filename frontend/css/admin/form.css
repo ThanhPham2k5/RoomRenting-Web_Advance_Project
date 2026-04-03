@@ -256,3 +256,160 @@
     gap: 8px;
     margin-top: 8px;
 }
+/* =========================================
+   7. MODAL MỞ RỘNG & TABLE TRONG MODAL
+   ========================================= */
+
+/* Dành cho các Modal cần hiển thị danh sách rộng hơn 550px mặc định */
+.modal-content.modal-large {
+    width: 800px;
+}
+
+/* Tùy chỉnh Modal Body cho Table để không bị dính sát lề */
+.modal-large .modal-body {
+    padding: 0; /* Bỏ padding để bảng full viền, nhìn pro hơn */
+    max-height: 60vh;
+}
+
+/* Làm đẹp Bảng dữ liệu */
+.data-table {
+    text-align: center;
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1.4rem;
+}
+
+/* Header của bảng: Dính chặt lên top khi cuộn (Sticky Header) */
+.data-table th {
+    position: sticky;
+    top: 0;
+    background-color: #F8FAFC; /* Màu nền nhạt tiệp với viền */
+    color: #475569;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 1.3rem;
+    letter-spacing: 0.5px;
+    padding: 16px;
+    text-align: left;
+    border-bottom: 2px solid #E2E8F0;
+    z-index: 10; /* Đảm bảo đè lên các hàng bên dưới khi cuộn */
+}
+
+.data-table th.text-center {
+    text-align: center;
+}
+
+/* Các ô dữ liệu */
+.data-table td {
+    padding: 16px;
+    border-bottom: 1px solid #E2E8F0;
+    color: #1E293B;
+    vertical-align: middle;
+}
+
+/* Hiệu ứng hover cho từng dòng */
+.data-table tbody tr {
+    transition: background-color 0.2s ease;
+}
+.data-table tbody tr:hover {
+    background-color: #F1F5F9; /* Sáng lên khi rê chuột vào dòng */
+}
+
+/* Bỏ viền của dòng cuối cùng */
+.data-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Nút Tước Quyền (Nút đỏ trong bảng) */
+.table-btn {
+    border: none;
+    background: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.table-btn.red {
+    background-color: #FEF2F2;
+    color: #DC2626;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 1.3rem;
+    border: 1px solid #FECACA;
+}
+
+.table-btn.red:hover {
+    background-color: #DC2626;
+    color: #FFFFFF;
+    border-color: #DC2626;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(220, 38, 38, 0.2);
+}
+/* =========================================
+   GHI ĐÈ CSS CHO MODAL DANH SÁCH DÙNG CHUNG FORM
+   ========================================= */
+
+#form-modal-danh-sach-nhan-vien .modal-content {
+    width: 800px;
+    max-width: 95vw;
+}
+
+/* Xóa padding mặc định của modal-body */
+#form-modal-danh-sach-nhan-vien .modal-body {
+    padding: 0 !important;
+    overflow: hidden !important;
+    max-height: none !important;
+}
+
+/* Ẩn nút lưu */
+#form-modal-danh-sach-nhan-vien .modal-footer .submit {
+    display: none;
+}
+
+#form-modal-danh-sach-nhan-vien .modal-footer {
+    background-color: #FFFFFF;
+}
+
+/* =========================================
+   BÍ QUYẾT STICKY HEADER (KHUNG CUỘN RIÊNG BẢNG)
+   ========================================= */
+.table-container {
+    max-height: 60vh; /* Giới hạn chiều cao để sinh ra thanh cuộn */
+    overflow-y: auto; /* Sinh thanh cuộn ở đây thay vì thẻ modal-body */
+    position: relative; /* Giữ cho thẻ th sticky bám vào container này */
+    
+    /* Làm đẹp thanh cuộn */
+    scrollbar-width: thin;
+    scrollbar-color: #CBD5E1 transparent;
+}
+
+.table-container::-webkit-scrollbar { width: 6px; }
+.table-container::-webkit-scrollbar-track { background: transparent; }
+.table-container::-webkit-scrollbar-thumb { background-color: #CBD5E1; border-radius: 10px; }
+
+/* Đảm bảo thẻ th dính lên đỉnh của .table-container */
+.data-table th {
+    text-align: center;
+    position: sticky;
+    top: 0;
+    background-color: #F8FAFC; 
+    color: #475569;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 1.3rem;
+    letter-spacing: 0.5px;
+    padding: 16px;
+    text-align: left;
+    /* Dùng box-shadow thay vì border-bottom để viền không bị trôi khi cuộn */
+    box-shadow: inset 0 -2px 0 #E2E8F0; 
+    z-index: 10; 
+}
+
+/* Xóa border-bottom cũ để tránh lỗi hiển thị kép với box-shadow */
+.data-table th {
+    text-align: center;
+    border-bottom: none;
+}

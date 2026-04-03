@@ -210,6 +210,7 @@ class AccountService
             AllowedFilter::exact('id'),
 
             AllowedFilter::exact('role'),
+            AllowedFilter::exact('roles.name'),
             AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
             // Tuấn thêm
             AllowedFilter::trashed(),

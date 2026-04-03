@@ -27,7 +27,7 @@ function call_api($url, $method = 'GET', $data = []) {
     }
     $headers = [
         "Accept: application/json",
-        "Authorization: Bearer 1|FNxEstL2Y2mNBvXgMAvcc8CxGkzTenkh9PJwsMTq5e61ada5"
+        "Authorization: Bearer 1|64n5eYkbP2dAKwsxCaVQVthxkBhkE9sl24dC1c6yd0bee4ac"
     ];
     $options = [
         CURLOPT_URL => $url,

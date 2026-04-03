@@ -606,6 +606,11 @@ switch ($page) {
             formData.append('_method', 'PUT');
         }
         formData.append('target_endpoint', targetEndpoint);
+
+        if(currentPage === 'permission'){
+            formData.append('guard_name', 'api');
+        }
+
         fetch('../admin/core/api_proxy.php', {
             method: 'POST',
             headers: {
@@ -1025,6 +1030,153 @@ switch ($page) {
         
         // Đảo ngược class 'active' (nếu có thì xóa, chưa có thì thêm)
         item.classList.toggle('active');
+    }
+    function openAccountListModal(event, targetModel, roleName, roleId) {
+        if (event) {
+            event.stopPropagation();
+        }
+
+        const tbody = document.getElementById('role-account-list-body');
+        if (tbody) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" style="text-align:center; padding: 20px; color: #64748b; font-style: italic;">
+                        Đang tải danh sách tài khoản...
+                    </td>
+                </tr>
+            `;
+        }
+
+        if (typeof openModal === 'function') {
+            openModal(targetModel);
+        }
+
+        const targetEndpoint = `accounts?filter[roles.name]=${encodeURIComponent(roleName)}`;
+        const apiUrl = `../admin/core/api_proxy.php?target_endpoint=${encodeURIComponent(targetEndpoint)}`;
+
+        fetch(apiUrl, {
+            method: 'GET',
+            headers: { "Accept": "application/json" }
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.status === 'error') {
+                const errorMsg = result.message || "Không thể lấy dữ liệu";
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:red; padding: 20px;">Lỗi: ${errorMsg}</td></tr>`;
+                return;
+            }
+
+            let accounts = [];
+            if (result.data && Array.isArray(result.data)) {
+                accounts = result.data;
+            }
+
+            if (accounts.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align:center; padding: 20px; color: #64748B;">
+                            Chưa có tài khoản nào được gán quyền <strong>${roleName}</strong>!
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = accounts.map(account => {
+                // Lấy trực tiếp mảng roles (nếu API không trả về thì gán mảng rỗng)
+                let currentRoles = account.roles || [];
+
+                // Mã hóa mảng để truyền an toàn qua tham số onclick
+                let encodedRoles = encodeURIComponent(JSON.stringify(currentRoles));
+
+                return `
+                    <tr>
+                        <td>${account.id}</td>
+                        <td style="font-weight: 500;">${account.username || account.name || 'N/A'}</td>
+                        
+                        <td>${currentRoles.length > 0 ? currentRoles.join(', ') : 'N/A'}</td>
+                        
+                        <td class="text-center">
+                            <button class="table-btn red" type="button" 
+                                onclick="revokeRoleFromAccount(event, ${account.id}, '${roleName}', '${encodedRoles}', '${targetModel}', ${roleId})">
+                                Tước quyền
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        })
+        .catch(error => {
+            console.error("Fetch error:", error);
+            if (tbody) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red; padding: 20px;">Lỗi kết nối máy chủ</td></tr>';
+            }
+        });
+    }
+    function revokeRoleFromAccount(event, accountId, roleNameToRemove, encodedRoles, targetModel, roleId) {
+        event.stopPropagation();
+        
+        // 1. Giải mã mảng quyền hiện tại
+        let currentRoles = [];
+        try {
+            currentRoles = JSON.parse(decodeURIComponent(encodedRoles));
+        } catch (e) {
+            console.error("Lỗi giải mã roles:", e);
+            return;
+        }
+
+        if (!confirm(`Xác nhận tước quyền [${roleNameToRemove}] khỏi tài khoản này?`)) return;
+
+        // 2. LOGIC LỌC MẢNG (QUAN TRỌNG)
+        // Giả sử: currentRoles = ["admin", "user"]
+        // Nếu roleNameToRemove = "admin" -> remainingRoles = ["user"]
+        let remainingRoles = currentRoles.filter(role => role !== roleNameToRemove);
+
+        // 3. Đóng gói vào FormData
+        let formData = new FormData();
+        formData.append('_method', 'PUT'); 
+        formData.append('target_endpoint', `accounts/${accountId}`);
+
+        // 4. XỬ LÝ GỬI MẢNG ROLES[]
+        if (remainingRoles.length > 0) {
+            // Nếu còn quyền (ví dụ còn ["user"]):
+            // Duyệt mảng và append NHIỀU LẦN vào cùng 1 key 'roles[]'
+            remainingRoles.forEach(role => {
+                formData.append('roles[]', role); 
+            });
+        } else {
+            // Nếu tước hết quyền (mảng rỗng []):
+            // Ta phải gửi một giá trị để Laravel biết trường 'roles' đang tồn tại nhưng trống.
+            // Gửi key 'roles' với giá trị rỗng.
+            formData.append('roles[]', ''); 
+        }
+
+        // --- DEBUG: Kiểm tra Payload trước khi gửi ---
+        console.log("Mảng gốc:", currentRoles);
+        console.log("Mảng sau khi lọc:", remainingRoles);
+        // --------------------------------------------
+
+        const apiUrl = `../admin/core/api_proxy.php`;
+
+        fetch(apiUrl, {
+            method: 'POST',
+            headers: { "Accept": "application/json" },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.status === 'error' || result.errors) {
+                alert("Lỗi: " + (result.message || "Không thể thu hồi"));
+                return;
+            }
+            alert("Thu hồi quyền thành công!");
+            // Gọi lại hàm load danh sách để cập nhật UI
+            openAccountListModal(null, targetModel, roleNameToRemove, roleId);
+        })
+        .catch(error => {
+            alert("Lỗi thực hiện tước quyền!");
+            console.error("Fetch error:", error);
+        });
     }
     // Hàm vẽ toàn bộ biểu đồ
     function renderAllCharts() {

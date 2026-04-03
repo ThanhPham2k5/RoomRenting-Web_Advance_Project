@@ -41,7 +41,7 @@ class RoleService{
     }
 
     public function getRole($role){
-        $role = QueryBuilder::for(Role::withTrashed())
+        $role = QueryBuilder::for(Role::class)
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($role->id);
 

@@ -10,7 +10,7 @@ $area = isset($cardData['area']) ? floatval($cardData['area']) : '0';
 // Xử lý địa chỉ
 $ward = $cardData['ward'] ?? '';
 $province = $cardData['province'] ?? '';
-$locationString = trim("$ward, $province", ", "); // Kết quả: Xã Tánh Linh, Lâm Đồng
+$locationString = trim("$ward, $province", ", ");
 $status = $cardData['status'] ?? 'pending';
 $thumbnailUrl = '../../assets/admin/images/post_img.png';
 if (!empty($cardData['postImages']) && is_array($cardData['postImages'])) {
@@ -32,26 +32,19 @@ if (!empty($cardData['postImages']) && is_array($cardData['postImages'])) {
         <p class="area"><?php echo $area; ?> m²</p>
     </div>
     <div class="cta">
-        <?php 
-            if($status === "pending"){
-        ?>
-            <button class="green" onclick="event.stopPropagation()">Duyệt bài</button>
-            <button class="yellow" onclick="event.stopPropagation()">Từ chối</button>
-        <?php 
-            }else if($status === "rejected"){
-        ?>
-            <button class="blue" onclick="event.stopPropagation()">Xem lý do</button>
-            <button class="red" onclick="event.stopPropagation()">Gỡ bài</button>
-        <?php
-            }else if($status === "completed"){
-        ?>    
-            <button class="red" onclick="event.stopPropagation()">Gỡ bài</button>
-        <?php 
-            }else if($status === "failed"){
-        ?>
-            <button class="blue" onclick="event.stopPropagation()">Xem lý do</button>
-        <?php
-            } 
-        ?>
+        <?php if($status === "pending"){ ?>
+            <button class="green" onclick="handleUpdateStatus(event, <?php echo $id; ?>, 'completed')">Duyệt bài</button>
+            <button class="yellow" onclick="handleUpdateStatus(event, <?php echo $id; ?>, 'rejected')">Từ chối</button>
+
+        <?php }else if($status === "rejected"){ ?>
+            <button class="blue" onclick="openReasonModal(event, <?php echo $id; ?>)">Xem lý do</button>
+            <button class="red" onclick="handleUpdateStatus(event, <?php echo $id; ?>, 'failed')">Gỡ bài</button>
+
+        <?php }else if($status === "completed"){ ?>    
+            <button class="red" onclick="handleUpdateStatus(event, <?php echo $id; ?>, 'failed')">Gỡ bài</button>
+
+        <?php }else if($status === "failed"){ ?>
+            <button class="blue" onclick="openReasonModal(event, <?php echo $id; ?>)">Xem lý do</button>
+        <?php } ?>
     </div>
 </div>

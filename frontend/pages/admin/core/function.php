@@ -27,11 +27,8 @@ function call_api($url, $method = 'GET', $data = []) {
     }
     $headers = [
         "Accept: application/json",
-        "Authorization: Bearer 1|Vi64JEleBS7aReqe56i3ezDvUza24h1y7h1zZm8Z1086099c"
+        "Authorization: Bearer 1|WR9Zqt9bzZevvMzRR9YW5aED1t2OGePlxFtaVbqw5a9dea03"
     ];
-    if (!$hasFile) {
-        $headers[] = "Content-Type: application/json";
-    }
     $options = [
         CURLOPT_URL => $url,
         CURLOPT_RETURNTRANSFER => true,
@@ -39,14 +36,9 @@ function call_api($url, $method = 'GET', $data = []) {
         CURLOPT_CUSTOMREQUEST => $method,
         CURLOPT_HTTPHEADER => $headers,
     ];
-    if (($method == 'POST' || $method == 'PUT' || $method == 'PATCH') && !empty($data)) {
-        if ($hasFile) {
-            $options[CURLOPT_POSTFIELDS] = $data;
-        } else {
-            $options[CURLOPT_POSTFIELDS] = json_encode($data);
-        }
+    if (($method == 'POST') && !empty($data)) {
+        $options[CURLOPT_POSTFIELDS] = $data;
     }
-
     curl_setopt_array($curl, $options);
 
     $response = curl_exec($curl);

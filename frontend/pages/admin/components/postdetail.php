@@ -1,24 +1,28 @@
 <div class="post-detail-component-overlay view-mode" id="post-detail-modal">
     <div class="post-detail-component-content">
         <div class="post-img">
-            <div class="main-image-wrapper image-slot" data-slot="main" style="cursor: pointer;" title="Bấm để thay đổi ảnh">
+            <div class="main-image-wrapper image-slot" data-slot="main" style="cursor: pointer;">
                 <img id="img-main" src="../../assets/admin/images/post_img.png" alt="Ảnh chính">
+                <button class="btn-delete-img" type="button" title="Xóa ảnh này">×</button>
                 <input type="hidden" name="existing_images[main]" value="url_anh_chinh_cu.jpg">
             </div>
 
             <div class="sub-post-img" id="detail-sub-imgs">
-                <div class="image-wrapper image-slot" data-slot="sub_1" style="cursor: pointer;" title="Bấm để thay đổi ảnh">
+                <div class="image-wrapper image-slot" data-slot="sub_1" style="cursor: pointer;">
                     <img id="img-sub_1" src="../../assets/admin/images/post_img.png" alt="Ảnh phụ 1">
+                    <button class="btn-delete-img" type="button" title="Xóa ảnh này">×</button>
                     <input type="hidden" name="existing_images[sub_1]" value="url_anh_phu_1_cu.jpg">
                 </div>
                 
-                <div class="image-wrapper image-slot" data-slot="sub_2" style="cursor: pointer;" title="Bấm để thay đổi ảnh">
+                <div class="image-wrapper image-slot" data-slot="sub_2" style="cursor: pointer;">
                     <img id="img-sub_2" src="../../assets/admin/images/post_img.png" alt="Ảnh phụ 2">
+                    <button class="btn-delete-img" type="button" title="Xóa ảnh này">×</button>
                     <input type="hidden" name="existing_images[sub_2]" value="url_anh_phu_2_cu.jpg">
                 </div>
                 
-                <div class="image-wrapper image-slot" data-slot="sub_3" style="cursor: pointer;" title="Bấm để thay đổi ảnh">
+                <div class="image-wrapper image-slot" data-slot="sub_3" style="cursor: pointer;">
                     <img id="img-sub_3" src="../../assets/admin/images/post_img.png" alt="Ảnh phụ 3">
+                    <button class="btn-delete-img" type="button" title="Xóa ảnh này">×</button>
                     <input type="hidden" name="existing_images[sub_3]" value="url_anh_phu_3_cu.jpg">
                 </div>
             </div>

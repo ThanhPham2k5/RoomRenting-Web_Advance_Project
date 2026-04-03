@@ -266,3 +266,13 @@
     transform: translateY(0); 
     pointer-events: auto;
 }
+.view-mode .image-slot {
+    cursor: default;
+}
+.edit-mode .image-slot {
+    cursor: pointer;
+}
+.edit-mode .image-slot:hover img {
+    filter: brightness(0.85);
+    transition: filter 0.2s ease;
+}

@@ -6,7 +6,7 @@
     $priceEditForm = "modal-sua-gia-dang-bai";
     $priceInsertForm1 = "modal-them-gia-quy-doi";
     $priceEditForm1 = "modal-sua-gia-quy-doi";
-    $titleData = ['targetModal' => $priceInsertForm, 'targetModal1' => $priceEditForm, 'targetModal2' => $priceInsertForm1, 'targetModal3' => $priceEditForm1, 'titleContent' => "Giá cả", 'group' => false, 'insert' => true, 'edit' => true, 'delete' => true, 'handle' => false];
+    $titleData = ['targetModal' => $priceInsertForm, 'targetModal1' => $priceEditForm, 'targetModal2' => $priceInsertForm1, 'targetModal3' => $priceEditForm1, 'titleContent' => "Giá cả", 'group' => false, 'insert' => true, 'edit' => false, 'delete' => false, 'handle' => false, 'restore' => true];
     $tableHeader = ['Id', 'Điểm', 'Ngày khởi tạo', 'Tình trạng', 'Chi tiết'];
     $tableHeader1 = ['Id', 'Số tiền', 'Điểm', 'Ngày khởi tạo', 'Tình trạng', 'Chi tiết'];
     $type = ['type' => "1"];
@@ -72,10 +72,27 @@
     
         <div class="input-group">
             <label>Số điểm</label>
-            <input type="text" name="name" placeholder="Nhập số điểm...">
+            <input type="text" name="points" placeholder="Nhập số điểm...">
         </div>
     <?php 
         $formInsertData = ob_get_clean();
     ?>
+    <?php
+    ob_start();
+    ?>
+        <input type="hidden" name="action" value="addPriceExchange">
+    
+        <div class="input-group">
+            <label>Số điểm</label>
+            <input type="text" name="points" placeholder="Nhập số điểm...">
+        </div>
+        <div class="input-group">
+            <label>Số tiền</label>
+            <input type="text" name="money" placeholder="Nhập số tiền...">
+        </div>
+    <?php 
+        $formInsertData1 = ob_get_clean();
+    ?>
     <?php renderComponent("form",false,['title' => 'Thêm giá đăng bài', 'idModal' => $priceInsertForm, 'formData' => $formInsertData]) ?>
+    <?php renderComponent("form",false,['title' => 'Thêm giá quy đổi', 'idModal' => $priceInsertForm1, 'formData' => $formInsertData1]) ?>
 </div>

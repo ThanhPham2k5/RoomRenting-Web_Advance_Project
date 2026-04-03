@@ -20,7 +20,7 @@ class PermissionService{
     ];
 
     public function buildGetAllQuery(){
-        $query = QueryBuilder::for(Permission::withTrashed())
+        $query = QueryBuilder::for(Permission::class)
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
             //generic search
@@ -42,7 +42,7 @@ class PermissionService{
     }
 
     public function getPermission($permission){
-        $permission = QueryBuilder::for(Permission::withTrashed())
+        $permission = QueryBuilder::for(Permission::class)
         ->allowedIncludes($this->allowedIncludes)
         ->findOrFail($permission->id);
 

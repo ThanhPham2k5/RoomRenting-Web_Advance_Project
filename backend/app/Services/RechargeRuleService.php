@@ -52,10 +52,7 @@ class RechargeRuleService{
     }
 
     public function createRechargeRule($data){
-        $rechargeRule = RechargeRule::create([
-            $data
-            // 'status' => 'inactive',
-        ]);
+        $rechargeRule = RechargeRule::create($data);
 
         $rechargeRule->delete();
 

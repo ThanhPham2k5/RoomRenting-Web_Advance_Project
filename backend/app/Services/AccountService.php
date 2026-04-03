@@ -113,7 +113,10 @@ class AccountService
             'role' => $data['role'] ?? $account->role,
         ]);
 
-        $account->syncRoles($data['roles']) ?? $account->roles;
+        // Nếu key 'roles' tồn tại trong request (ngay cả khi nó là []), syncRoles sẽ xóa hết role cũ
+        if (array_key_exists('roles', $data)) {
+            $account->syncRoles($data['roles']);
+        }
 
         return [
             'message' => 'Account updated successfully',

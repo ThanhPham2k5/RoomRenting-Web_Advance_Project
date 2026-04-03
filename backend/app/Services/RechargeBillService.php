@@ -64,7 +64,7 @@ class RechargeBillService{
     public function createRechargeBill($data){
         $rechargeRule = RechargeRule::where('id', $data['recharge_rule_id'])->first();
 
-        $points_after_exchange = (int)($data['total_money'] * $rechargeRule->points / $rechargeRule->money);
+        $points_after_exchange = (int)($data['money'] * $rechargeRule->points / $rechargeRule->money);
 
         $rechargeBill = RechargeBill::create([
             ...$data,

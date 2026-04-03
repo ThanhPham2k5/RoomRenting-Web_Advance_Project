@@ -37,7 +37,7 @@ class RechargeBillController extends Controller
      */
     public function index(Request $request)
     {
-        $this->authorize('viewAny', RechargeBill::class);
+        // $this->authorize('viewAny', RechargeBill::class);
 
         $query = $this->rechargeService->buildGetAllQuery();
 

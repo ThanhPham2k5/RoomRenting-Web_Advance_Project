@@ -215,6 +215,39 @@
       }
     }
 
+    // check form 
+    document.querySelectorAll(".more")[1].addEventListener("click", async (e) => {
+      e.preventDefault()
+
+      const account_id = localStorage.getItem("account_id")
+      const token = localStorage.getItem("token")
+
+      try {  
+        const response = await fetch("http://127.0.0.1:8000/api/forms/byAccount/" + account_id, {
+          method: "GET",
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer " + token
+          }
+        })
+
+        const data = await response.json()
+        if(response.ok) {
+          // console.log(data)
+          if(data.data.province && data.data.ward && data.data.roomType && data.data.priceMin && data.data.priceMax && data.data.area && data.data.maxOccupants) {
+            window.location.href = "suggest-posts.php"
+          } else {
+            alert("Bạn chưa điền form nhận đề xuất. Đang chuyển hướng sang trang điền form.")
+            window.location.href = "suggest.php"
+          }
+        } else {
+          console.error(data)
+        }
+      } catch (err) {
+        console.error(err)
+      }
+    })
+
     // check user login or not and update post section
     async function updateHomePage() {
       var account_id = localStorage.getItem("account_id")
@@ -426,6 +459,7 @@
             </div>
           `
         });
+        
         
         // update suggest section (must have favour button)
         document.querySelectorAll(".newpost-postlist")[1].innerHTML = html

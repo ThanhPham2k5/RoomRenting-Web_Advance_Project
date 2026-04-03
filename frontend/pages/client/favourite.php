@@ -397,11 +397,11 @@
       const numbRegex = /^\d{1,}$/
 
       if(document.querySelector(".filter-province-lb-text").textContent.trim() && stringRegex.test(document.querySelector(".filter-province-lb-text").textContent.trim()) && document.querySelector(".filter-province-lb-text").textContent.trim() !== "Chọn tỉnh thành") {
-        filterCondition += "&filter[province]=" + document.querySelector(".filter-province-lb-text").textContent.trim()
+        filterCondition += "&filter[post.province]=" + document.querySelector(".filter-province-lb-text").textContent.trim()
       }
 
       if(document.querySelector(".filter-district-lb-text").textContent.trim() && stringRegex.test(document.querySelector(".filter-district-lb-text").textContent.trim()) && document.querySelector(".filter-district-lb-text").textContent.trim() !== "Chọn phường xã") {
-        filterCondition += "&filter[ward]=" + document.querySelector(".filter-district-lb-text").textContent.trim()
+        filterCondition += "&filter[post.ward]=" + document.querySelector(".filter-district-lb-text").textContent.trim()
       }
 
       if(document.querySelector(".filter-room-lb-text").textContent.trim() && stringRegex.test(document.querySelector(".filter-room-lb-text").textContent.trim()) && document.querySelector(".filter-room-lb-text").textContent.trim() !== "Chọn loại phòng") {
@@ -415,19 +415,19 @@
         if(document.querySelector(".filter-room-lb-text").textContent.trim() === "Ký túc xá")
           roomType = "dorm"
 
-        filterCondition += "&filter[roomType]=" + roomType
+        filterCondition += "&filter[post.roomType]=" + roomType
       }
 
       if(document.querySelector(".filter-min-price").value.trim() && numbRegex.test(document.querySelector(".filter-min-price").value.trim()) && document.querySelector(".filter-min-price").value.trim() > 0) {
-        filterCondition += "&filter[price][gte]=" + document.querySelector(".filter-min-price").value.trim()
+        filterCondition += "&filter[post.price][gte]=" + document.querySelector(".filter-min-price").value.trim()
       }
 
       if(document.querySelector(".filter-max-price").value.trim() && numbRegex.test(document.querySelector(".filter-max-price").value.trim()) && document.querySelector(".filter-max-price").value.trim() > 0) {
-        filterCondition += "&filter[price][lte]=" + document.querySelector(".filter-max-price").value.trim()
+        filterCondition += "&filter[post.price][lte]=" + document.querySelector(".filter-max-price").value.trim()
       }
 
       if(document.querySelector(".filter-square-number").value.trim() && numbRegex.test(document.querySelector(".filter-square-number").value.trim()) && document.querySelector(".filter-square-number").value.trim() > 0) {
-        filterCondition += "&filter[area]=" + document.querySelector(".filter-square-number").value.trim()
+        filterCondition += "&filter[post.area]=" + document.querySelector(".filter-square-number").value.trim()
       }
 
       page = 1
@@ -452,7 +452,7 @@
       if(!document.querySelector(".posts-ascending").classList.contains("posts-sort-selected")) {
         document.querySelector(".posts-ascending").classList.add("posts-sort-selected")
       }
-      sortCondition = "price"
+      sortCondition = "postPrice"
 
       document.querySelector(".posts-newest").classList.remove("posts-sort-selected")
       document.querySelector(".posts-descending").classList.remove("posts-sort-selected")
@@ -465,7 +465,7 @@
       if(!document.querySelector(".posts-descending").classList.contains("posts-sort-selected")) {
         document.querySelector(".posts-descending").classList.add("posts-sort-selected")
       }
-      sortCondition = "-price"
+      sortCondition = "-postPrice"
 
       document.querySelector(".posts-newest").classList.remove("posts-sort-selected")
       document.querySelector(".posts-ascending").classList.remove("posts-sort-selected")
@@ -487,12 +487,12 @@
 
       // reset all field
       document.querySelector(".search-bar").value = ""
-      document.querySelector(".filter-province-lb-text").textContent = "Chọn tỉnh thành"
-      document.querySelector(".filter-district-lb-text").textContent = "Chọn phường xã"
-      document.querySelector(".filter-room-lb-text").textContent = "Chọn loại phòng"
-      document.querySelector(".filter-min-price").value = 0
-      document.querySelector(".filter-max-price").value = 0
-      document.querySelector(".filter-square-number").value = 0
+      // document.querySelector(".filter-province-lb-text").textContent = "Chọn tỉnh thành"
+      // document.querySelector(".filter-district-lb-text").textContent = "Chọn phường xã"
+      // document.querySelector(".filter-room-lb-text").textContent = "Chọn loại phòng"
+      // document.querySelector(".filter-min-price").value = 0
+      // document.querySelector(".filter-max-price").value = 0
+      // document.querySelector(".filter-square-number").value = 0
     })
 
     // pagination button

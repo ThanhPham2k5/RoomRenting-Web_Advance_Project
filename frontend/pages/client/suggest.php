@@ -258,6 +258,54 @@
         arrow.style.rotate = e.target.checked ? "180deg" : "0deg";
     });
 
+    // auto fill form
+    async function autoFillForm(account_id, token) {
+      try {
+        const response = await fetch("http://127.0.0.1:8000/api/forms/byAccount/" + account_id, {
+          method: "GET",
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer " + token
+          }
+        })
+
+        const data = await response.json()
+        if(response.ok) { 
+          if(data.data) {
+            if(data.data.province)
+              document.querySelector(".filter-province-lb-text").textContent = data.data.province
+
+            if(data.data.ward)
+              document.querySelector(".filter-district-lb-text").textContent = data.data.ward
+
+            if(data.data.roomType) {
+              var roomType = "Chọn loại phòng"
+              if(data.data.roomType === "room")
+                roomType = "Phòng đơn"
+              if(data.data.roomType === "apartment")
+                roomType = "Căn hộ"
+              if(data.data.roomType === "dorm")
+                roomType = "Ký túc xá"
+              document.querySelector(".filter-district-room-text").textContent = roomType
+            }
+
+            if(data.data.priceMin)
+              document.querySelector(".filter-min-price").value = data.data.priceMin
+
+            if(data.data.priceMax)
+              document.querySelector(".filter-max-price").value = data.data.priceMax
+
+            if(data.data.area)
+              document.querySelector(".filter-square-number").value = data.data.area
+          }
+        } else {
+          console.error(data)
+        }
+      } catch (err) {
+        console.error(err)
+      }
+    }
+
     // save button
     document.querySelector(".filter-apply").addEventListener("click", async (e) => {
       // validate
@@ -386,7 +434,7 @@
       var account_id = localStorage.getItem("account_id")
       var token = localStorage.getItem("token")
 
-      await autoFillProvince(account_id, token)
+      await Promise.all([autoFillProvince(account_id, token), autoFillForm(account_id, token)])
     })
   </script>
 </html>

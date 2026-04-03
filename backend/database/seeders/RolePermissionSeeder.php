@@ -248,6 +248,10 @@ class RolePermissionSeeder extends Seeder
             'rechargeBill.get',
             'rechargeBill.getAll',
 
+            //RechargeRule
+            'rechargeRule.get',
+            'rechargeRule.getAll',
+            
             //PayBill
             'payBill.create',
             'payBill.get',

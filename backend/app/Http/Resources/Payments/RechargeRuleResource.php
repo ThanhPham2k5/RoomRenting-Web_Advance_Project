@@ -18,7 +18,6 @@ class RechargeRuleResource extends JsonResource
             'id' => $this->id,
             'points' => $this->points,
             'money' =>$this->money,
-            'status' => $this->status,
             'deletedAt' => $this->deleted_at,
             'createdAt' => $this->created_at,
             'rechargeBills' => RechargeBillResource::collection(

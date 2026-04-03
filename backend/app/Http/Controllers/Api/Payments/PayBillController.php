@@ -36,7 +36,7 @@ class PayBillController extends Controller
      */
     public function index(Request $request)
     {
-        $this->authorize('viewAny', PayBill::class);
+        // $this->authorize('viewAny', PayBill::class);
 
         $query = $this->payBillService->buildGetAllQuery();
 

@@ -109,6 +109,26 @@
                     </a>
                     <?php } ?>
                 </div>
+
+                <div class="pagination">
+                  <img src='<?php echo BASE_URL . "/assets/img/page-extra-prev.png"?>' alt="page-extra-prev.png" class="page-extra-prev">
+
+                  <img src='<?php echo BASE_URL . "/assets/img/page-prev.png"?>' alt="page-prev.png" class="page-prev">
+
+                  <div class="page-prev-number page-selected">1</div>
+
+                  <div class="page-current-number">2</div>
+
+                  <div class="page-next-number">3</div>
+
+                  <input type="number" name="page-number" id="page-number" class="page-number" 
+                  min="1"
+                  placeholder="...">
+                  
+                  <img src='<?php echo BASE_URL . "/assets/img/page-next.png"?>' alt="page-next.png" class="page-next">
+
+                  <img src='<?php echo BASE_URL . "/assets/img/page-extra-next.png"?>' alt="page-extra-next.png" class="page-extra-next">
+                </div>
             </div>
         </div>
     </div>
@@ -116,6 +136,8 @@
     <?php include(__DIR__ . "/components/footer.php") ?>
   </body>
   <script>
-    
+    async function getBill(account_id, token, billType) {
+        
+    }
   </script>
 </html>

@@ -228,6 +228,57 @@
         }
     }
 
+    // auto fill district list with provinceName
+    async function autoWardByName(account_id, token, provinceName) {
+        try {
+            const response = await fetch("http://127.0.0.1:8000/api/address/provinces/name/" + provinceName + "/wards", {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json",
+                    "Authorization": "Bearer " + token
+                }
+            })
+
+            const data = await response.json()
+            if(response.ok) {
+                // console.log(data)
+                if(data.data) {
+                    let html = ""
+
+                    data.data.forEach(item => {
+                        html += `
+                            <li class="filter-district-item ${item.wardCode}">${item.name}</li>
+                        `
+                    })
+
+                    document.querySelector(".filter-district-list").innerHTML = html
+
+                    // auto update text after choosing
+                    document.querySelectorAll(".filter-district-item").forEach(item => {
+                        item.addEventListener("click", async (e) => {
+                            const district_text = document.querySelector(".filter-district-lb-text")    
+
+                            district_text.textContent = item.textContent
+
+                            const district_id = [...district_text.classList].find(c => c.startsWith("districtCode-"))
+                            if(district_id) {
+                                district_text.classList.remove(district_id)
+                            }
+                            district_text.classList.add("districtCode-" + item.classList[1])
+
+                            document.querySelector(".filter-district-cb").checked = false
+                            document.querySelector(".filter-district-lb .filter-arrow").style.rotate = "0deg"
+                        })
+                    })
+                }
+            } else {
+                console.error(data)
+            }
+        } catch (err) {
+            console.error(err)
+        }
+    }
+
     // auto update text after choosing
     document.querySelectorAll(".filter-room-item").forEach(item => {
         item.addEventListener("click", async (e) => {
@@ -274,6 +325,9 @@
           if(data.data) {
             if(data.data.province)
               document.querySelector(".filter-province-lb-text").textContent = data.data.province
+
+            // auto fill ward
+            await autoWardByName(account_id, token, data.data.province)
 
             if(data.data.ward)
               document.querySelector(".filter-district-lb-text").textContent = data.data.ward

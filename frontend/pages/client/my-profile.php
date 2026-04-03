@@ -52,16 +52,12 @@
           <input type="checkbox" name="filter-province-cb" id="filter-province-cb" class="filter-province-cb">
 
           <label for="filter-province-cb" class="filter-province-lb">
-            Chọn tỉnh thành
+            <div class="filter-province-lb-text">Chọn tỉnh thành</div> 
 
             <img src='<?php echo BASE_URL . "/assets/img/arrow_bold.png"?>' alt="arrow.png" class="filter-arrow">
           </label>
 
           <ul class="filter-province-list">
-            <!-- an example item -->
-             <?php for ($i = 1; $i <= 10; $i++) { ?>
-            <li class="filter-province-item">Thành phố Hồ Chí Minh</li>
-            <?php } ?>
           </ul>
         </div>
 
@@ -69,14 +65,12 @@
           <input type="checkbox" name="filter-district-cb" id="filter-district-cb" class="filter-district-cb">
 
           <label for="filter-district-cb" class="filter-district-lb">
-            Chọn phường xã
+            <div class="filter-district-lb-text">Chọn phường xã</div> 
 
             <img src='<?php echo BASE_URL . "/assets/img/arrow_bold.png"?>' alt="arrow.png" class="filter-arrow">
           </label>
 
           <ul class="filter-district-list">
-            <!-- an example item -->
-            <li class="filter-district-item">Phường Sài Gòn</li>
           </ul>
         </div>
 
@@ -88,14 +82,15 @@
           <input type="checkbox" name="filter-room-cb" id="filter-room-cb" class="filter-room-cb">
 
           <label for="filter-room-cb" class="filter-room-lb">
-            Chọn loại phòng
+            <div class="filter-room-lb-text">Chọn loại phòng</div> 
 
             <img src='<?php echo BASE_URL . "/assets/img/arrow_bold.png"?>' alt="arrow.png" class="filter-arrow">
           </label>
 
           <ul class="filter-room-list">
-            <!-- an example item -->
             <li class="filter-room-item">Phòng đơn</li>
+            <li class="filter-room-item">Căn hộ</li>
+            <li class="filter-room-item">Ký túc xá</li>
           </ul>
         </div>
 
@@ -130,7 +125,7 @@
             <div class="user-profile">
               <img src='<?php echo BASE_URL . "/assets/img/avatar-test.png"?>' alt="avatar.png" class="user-avatar">
 
-              <div class="user-name">Po Pici</div>
+              <div class="user-name">Người dùng</div>
 
               <a href='<?php echo BASE_URL . "/pages/client/setting-profile.php"?>' class="profile-user-link">
                 <img src='<?php echo BASE_URL . "/assets/img/modify.png"?>' alt="modify.png" class="profile-user-link-img">
@@ -143,7 +138,7 @@
                   Điểm
 
                   <div class="user-point-value">
-                    100.000
+                    0
 
                     <img src='<?php echo BASE_URL . "/assets/img/point.png"?>' alt="point.png" class="user-point-img">
                   </div>
@@ -191,41 +186,26 @@
                 </div>
 
                 <div class="newpost-postlist">
-                    <!-- a post sample -->
-                    <?php for ($i = 1; $i <= 4; $i++) { ?>
-                    <div class="post">
-                        <a href="./detail-post.php" class="post-body">
-                            <img
-                                src='<?php echo BASE_URL . "/assets/img/post.png" ?>'
-                                alt="post.png"
-                                class="post-img"
-                            />
+                </div>
 
-                            <div class="post-profile-info">
-                                <div class="post-title">
-                                    Phòng giá 5 tỷ/ tháng, đường Trương Phước Phan, phường Bình Trị
-                                    Đông, quận Bình Tân
-                                </div>
+                <div class="pagination">
+                  <img src='<?php echo BASE_URL . "/assets/img/page-extra-prev.png"?>' alt="page-extra-prev.png" class="page-extra-prev">
 
-                                <div class="post-address">
-                                    <img
-                                    src='<?php echo BASE_URL . "/assets/img/address.png" ?>'
-                                    alt="address.png"
-                                    class="address-ico"
-                                    />
+                  <img src='<?php echo BASE_URL . "/assets/img/page-prev.png"?>' alt="page-prev.png" class="page-prev">
 
-                                    <div class="address-info">Phường Bình Trị Đông, Tp Hồ Chí Minh</div>
-                                </div>
+                  <div class="page-prev-number page-selected">1</div>
 
-                                <div class="post-info">
-                                    <h3 class="post-price">5 tỷ/tháng</h3>
+                  <div class="page-current-number">2</div>
 
-                                    <div class="post-square">57.5 m2</div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                    <?php } ?>
+                  <div class="page-next-number">3</div>
+
+                  <input type="number" name="page-number" id="page-number" class="page-number" 
+                  min="1"
+                  placeholder="...">
+                  
+                  <img src='<?php echo BASE_URL . "/assets/img/page-next.png"?>' alt="page-next.png" class="page-next">
+
+                  <img src='<?php echo BASE_URL . "/assets/img/page-extra-next.png"?>' alt="page-extra-next.png" class="page-extra-next">
                 </div>
 
                 <!-- using when there is no post -->
@@ -261,5 +241,430 @@
         filter.style.display = "flex"
       }
     });
+
+    // auto fill province list
+    async function autoFillProvince(account_id, token) {
+        try {
+            const response = await fetch("http://127.0.0.1:8000/api/address/provinces", {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json",
+                    "Authorization": "Bearer " + token
+                }
+            })
+
+            const data = await response.json()
+            if(response.ok) {
+                // console.log(data)
+                if(data.data) {
+                    let html = ""
+
+                    data.data.forEach(item => {
+                        html += `
+                            <li class="filter-province-item ${item.provinceCode}">${item.name}</li>
+                        `
+                    })
+
+                    document.querySelector(".filter-province-list").innerHTML = html
+
+                    // auto update ward after choosing
+                    document.querySelectorAll(".filter-province-item").forEach(item => {
+                        item.addEventListener("click", async (e) => {
+                            const province_text = document.querySelector(".filter-province-lb-text")
+                            
+                            province_text.textContent = item.textContent
+
+                            const province_id = [...province_text.classList].find(c => c.startsWith("provinceCode-"))
+                            if(province_id) {
+                                province_text.classList.remove(province_id)
+                            }
+                            province_text.classList.add("provinceCode-" + item.classList[1])
+
+
+                            document.querySelector(".filter-province-cb").checked = false
+                            document.querySelector(".filter-province-lb .filter-arrow").style.rotate = "0deg"
+
+                            const provinceCode = item.classList[1]
+                            await autoWard(account_id, token, provinceCode)
+                        })
+                    })
+                }
+            } else {
+                console.error(data)
+            }
+        } catch (err) {
+            console.error(err)
+        }
+    }
+
+    // auto fill district list with provinceCode
+    async function autoWard(account_id, token, provinceCode) {
+        try {
+            const response = await fetch("http://127.0.0.1:8000/api/address/provinces/" + provinceCode + "/wards", {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json",
+                    "Authorization": "Bearer " + token
+                }
+            })
+
+            const data = await response.json()
+            if(response.ok) {
+                // console.log(data)
+                if(data.data) {
+                    let html = ""
+
+                    data.data.forEach(item => {
+                        html += `
+                            <li class="filter-district-item ${item.wardCode}">${item.name}</li>
+                        `
+                    })
+
+                    document.querySelector(".filter-district-list").innerHTML = html
+
+                    // auto update text after choosing
+                    document.querySelectorAll(".filter-district-item").forEach(item => {
+                        item.addEventListener("click", async (e) => {
+                            const district_text = document.querySelector(".filter-district-lb-text")    
+
+                            district_text.textContent = item.textContent
+
+                            const district_id = [...district_text.classList].find(c => c.startsWith("districtCode-"))
+                            if(district_id) {
+                                district_text.classList.remove(district_id)
+                            }
+                            district_text.classList.add("districtCode-" + item.classList[1])
+
+                            document.querySelector(".filter-district-cb").checked = false
+                            document.querySelector(".filter-district-lb .filter-arrow").style.rotate = "0deg"
+                        })
+                    })
+                }
+            } else {
+                console.error(data)
+            }
+        } catch (err) {
+            console.error(err)
+        }
+    }
+
+    // auto update text after choosing
+    document.querySelectorAll(".filter-room-item").forEach(item => {
+        item.addEventListener("click", async (e) => {
+            const room_text = document.querySelector(".filter-room-lb-text")    
+
+            room_text.textContent = item.textContent
+
+            document.querySelector(".filter-room-cb").checked = false
+            document.querySelector(".filter-room-lb .filter-arrow").style.rotate = "0deg"
+        })
+    })
+
+    // province button (arrow animation)
+    document.querySelector(".filter-province-cb").addEventListener("change", (e) => {
+        const arrow = document.querySelector(".filter-province-lb .filter-arrow");
+        arrow.style.rotate = e.target.checked ? "180deg" : "0deg";
+    });
+
+    // ward button
+    document.querySelector(".filter-district-cb").addEventListener("change", (e) => {
+        const arrow = document.querySelector(".filter-district-lb .filter-arrow");
+        arrow.style.rotate = e.target.checked ? "180deg" : "0deg";
+    });
+
+    // room button
+    document.querySelector(".filter-room-cb").addEventListener("change", (e) => {
+        const arrow = document.querySelector(".filter-room-lb .filter-arrow");
+        arrow.style.rotate = e.target.checked ? "180deg" : "0deg";
+    });
+
+    // filter & sort & page value
+    var filterCondition = ""
+    var sortCondition = "createdAt" // default
+    var searchCondition = ""
+    var page = 1
+    var lastPage = 1
+
+    document.querySelector(".filter-apply").addEventListener("click", async (e) => {
+      filterCondition = ""
+
+      const stringRegex = /^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\s]{3,255}$/
+      const numbRegex = /^\d{1,}$/
+
+      if(document.querySelector(".filter-province-lb-text").textContent.trim() && stringRegex.test(document.querySelector(".filter-province-lb-text").textContent.trim()) && document.querySelector(".filter-province-lb-text").textContent.trim() !== "Chọn tỉnh thành") {
+        filterCondition += "&filter[province]=" + document.querySelector(".filter-province-lb-text").textContent.trim()
+      }
+
+      if(document.querySelector(".filter-district-lb-text").textContent.trim() && stringRegex.test(document.querySelector(".filter-district-lb-text").textContent.trim()) && document.querySelector(".filter-district-lb-text").textContent.trim() !== "Chọn phường xã") {
+        filterCondition += "&filter[ward]=" + document.querySelector(".filter-district-lb-text").textContent.trim()
+      }
+
+      if(document.querySelector(".filter-room-lb-text").textContent.trim() && stringRegex.test(document.querySelector(".filter-room-lb-text").textContent.trim()) && document.querySelector(".filter-room-lb-text").textContent.trim() !== "Chọn loại phòng") {
+        var roomType = ""
+        if(document.querySelector(".filter-room-lb-text").textContent.trim() === "Phòng đơn")
+          roomType = "room"
+
+        if(document.querySelector(".filter-room-lb-text").textContent.trim() === "Căn hộ")
+          roomType = "apartment"
+        
+        if(document.querySelector(".filter-room-lb-text").textContent.trim() === "Ký túc xá")
+          roomType = "dorm"
+
+        filterCondition += "&filter[roomType]=" + roomType
+      }
+
+      if(document.querySelector(".filter-min-price").value.trim() && numbRegex.test(document.querySelector(".filter-min-price").value.trim()) && document.querySelector(".filter-min-price").value.trim() > 0) {
+        filterCondition += "&filter[price][gte]=" + document.querySelector(".filter-min-price").value.trim()
+      }
+
+      if(document.querySelector(".filter-max-price").value.trim() && numbRegex.test(document.querySelector(".filter-max-price").value.trim()) && document.querySelector(".filter-max-price").value.trim() > 0) {
+        filterCondition += "&filter[price][lte]=" + document.querySelector(".filter-max-price").value.trim()
+      }
+
+      if(document.querySelector(".filter-square-number").value.trim() && numbRegex.test(document.querySelector(".filter-square-number").value.trim()) && document.querySelector(".filter-square-number").value.trim() > 0) {
+        filterCondition += "&filter[area]=" + document.querySelector(".filter-square-number").value.trim()
+      }
+
+      page = 1
+      await updatePostsPage()
+    })
+
+    // search button
+    document.querySelector(".search-submit").addEventListener("click", async (e) => {
+      searchCondition = ""
+
+      const stringRegex = /^[a-zA-Z0-9ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\s]{3,255}$/
+      if(document.querySelector(".search-bar").value.trim() && stringRegex.test(document.querySelector(".search-bar").value.trim())) {
+        searchCondition = "&filter[search]=" + document.querySelector(".search-bar").value.trim()
+        page = 1
+        await updatePostsPage()
+      }
+
+      // reset all field
+      document.querySelector(".search-bar").value = ""
+      document.querySelector(".filter-province-lb-text").textContent = "Chọn tỉnh thành"
+      document.querySelector(".filter-district-lb-text").textContent = "Chọn phường xã"
+      document.querySelector(".filter-room-lb-text").textContent = "Chọn loại phòng"
+      document.querySelector(".filter-min-price").value = 0
+      document.querySelector(".filter-max-price").value = 0
+      document.querySelector(".filter-square-number").value = 0
+    })
+
+    // pagination button
+    document.querySelector(".page-extra-prev").addEventListener("click", async (e) => {
+      page = 1
+      await updatePostsPage()
+    })
+
+    document.querySelector(".page-prev").addEventListener("click", async (e) => {
+      page = Math.max(1, page - 1)
+      await updatePostsPage()
+    })
+
+    document.querySelector(".page-extra-next").addEventListener("click", async (e) => {
+      page = lastPage
+      await updatePostsPage()
+    })
+
+    document.querySelector(".page-next").addEventListener("click", async (e) => {
+      page = Math.min(lastPage, page + 1)
+      await updatePostsPage()
+    })
+    
+    document.querySelector(".page-prev-number").addEventListener("click", async (e) => {
+      page = parseInt(document.querySelector(".page-prev-number").textContent.trim())
+      await updatePostsPage()
+    })
+    
+    document.querySelector(".page-current-number").addEventListener("click", async (e) => {
+      page = parseInt(document.querySelector(".page-current-number").textContent.trim())
+      await updatePostsPage()
+    })
+    
+    document.querySelector(".page-next-number").addEventListener("click", async (e) => {
+      page = parseInt(document.querySelector(".page-next-number").textContent.trim())
+      await updatePostsPage()
+    })
+
+    document.querySelector(".page-number").addEventListener("change", async (e) => {
+      const pageNumber = document.querySelector(".page-number").value.trim()
+      if(!pageNumber)
+        page = 1
+      else 
+        page =  Math.min(lastPage, Math.max(1, parseInt(pageNumber)))
+
+      document.querySelector(".page-number").value = page
+      await updatePostsPage()
+    })
+
+    function updatePageNumber() {
+      const prevPage = document.querySelector(".page-prev-number")
+      const currPage = document.querySelector(".page-current-number")
+      const nextPage = document.querySelector(".page-next-number")
+
+      // only 1 page
+      if (page === 1 && lastPage === 1) {
+          prevPage.textContent = 1
+          prevPage.classList.add("page-selected")
+          currPage.textContent = 2
+          currPage.classList.remove("page-selected")
+          currPage.classList.add("page-none")
+          nextPage.textContent = 3
+          nextPage.classList.remove("page-selected")
+          nextPage.classList.add("page-none")
+
+      // 2 page
+      } else if (lastPage === 2) {
+          nextPage.textContent = 3
+          nextPage.classList.remove("page-selected")
+          nextPage.classList.add("page-none")
+
+          if (page === 1) {
+              prevPage.textContent = 1
+              prevPage.classList.add("page-selected")
+              currPage.textContent = 2
+              currPage.classList.remove("page-selected")
+              currPage.classList.remove("page-none")
+          } else {
+              prevPage.textContent = 1
+              prevPage.classList.remove("page-selected")
+              currPage.textContent = 2
+              currPage.classList.add("page-selected")
+              currPage.classList.remove("page-none")
+          }
+
+      // 3+ page
+      } else {
+          currPage.classList.remove("page-none")
+          nextPage.classList.remove("page-none")
+
+          if (page === 1) {
+              prevPage.textContent = 1
+              prevPage.classList.add("page-selected")
+              currPage.textContent = 2
+              currPage.classList.remove("page-selected")
+              nextPage.textContent = 3
+              nextPage.classList.remove("page-selected")
+          } else if (page === lastPage) {
+              nextPage.textContent = lastPage
+              nextPage.classList.add("page-selected")
+              currPage.textContent = lastPage - 1
+              currPage.classList.remove("page-selected")
+              prevPage.textContent = lastPage - 2
+              prevPage.classList.remove("page-selected")
+          } else if (page > 1 && page < lastPage) {
+              currPage.textContent = page
+              currPage.classList.add("page-selected")
+              prevPage.textContent = page - 1
+              prevPage.classList.remove("page-selected")
+              nextPage.textContent = page + 1
+              nextPage.classList.remove("page-selected")
+          }
+      }
+    }
+
+    // get all posts to posts section (do not require token)
+    async function getPost(sortCondition, filterCondition, searchCondition, page, account_id, token) {
+      try {
+        // page = 2 to test pagination
+        const response = await fetch("http://127.0.0.1:8000/api/posts?per_page=10&filter[status]=completed&include=postImages&sort=" + sortCondition + filterCondition + searchCondition + "&page=" + page + "&filter[user.account_id]=" + account_id, {
+          method: "GET",
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer " + token
+          }
+        })
+
+        const data = await response.json()
+        if(response.ok) {
+          if(data.data) {
+            // console.log(data.data)
+            lastPage = data.meta.last_page
+            return data.data
+          }
+        } else {
+          console.error(data)
+        }
+      } catch (err) {
+        console.error(err)
+      }
+    }
+
+    async function updatePostsPage() {
+      var account_id = localStorage.getItem("account_id")
+      var token = localStorage.getItem("token")
+      // console.log(sortCondition)
+      // console.log(filterCondition)
+      // console.log(searchCondition)
+      // console.log(page)
+      // console.log(lastPage)
+
+      if (account_id != null && token != null) {
+        const posts = await getPost(sortCondition, filterCondition, searchCondition, page, account_id, token)
+
+        if(posts != null && posts.length > 0) {
+          let html = ""
+
+          posts.forEach(post => {
+            var money = Number(post.price).toLocaleString("vi-VN")
+
+            html += `
+              <div class="post">
+                <a href='<?php echo BASE_URL ?>/pages/client/detail-post.php?post_id=${post.id}' class="post-body">
+                    <img
+                        src='http://127.0.0.1:8000${post.postImages[0].imagePostUrl}'
+                        alt="post.png"
+                        class="post-img"
+                    />
+
+                    <div class="post-profile-info">
+                        <div class="post-title">
+                            ${post.title}
+                        </div>
+
+                        <div class="post-address">
+                            <img
+                            src='<?php echo BASE_URL . "/assets/img/address.png" ?>'
+                            alt="address.png"
+                            class="address-ico"
+                            />
+
+                            <div class="address-info">${post.houseNumber}, ${post.ward}, ${post.province}</div>
+                        </div>
+
+                        <div class="post-info">
+                            <h3 class="post-price">${money} VND/tháng</h3>
+
+                            <div class="post-square">${post.area} m2</div>
+                        </div>
+                    </div>
+                </a>
+              </div>
+            `
+          });
+          
+          document.querySelector(".newpost-postlist").innerHTML = html
+
+          updatePageNumber()
+        } else if (filterCondition == null && searchCondition == null) {
+          document.querySelector(".newpost-postlist").style.display = "none"
+          document.querySelector(".pagination").style.display = "none"
+          document.querySelector(".no-post").style.display = "flex"
+        } else {
+          document.querySelector(".newpost-postlist").textContent = "Không tìm thấy kết quả phù hợp."
+        }
+      } else {
+        alert("Bạn chưa đăng nhập. Đang chuyển hướng sang trang đăng nhập.")
+        window.location.href = "login.php"
+      }
+    }
+
+    // run once time every reload or load page
+    document.addEventListener("DOMContentLoaded", async (e) => {
+      var account_id = localStorage.getItem("account_id")
+      var token = localStorage.getItem("token")
+
+      await Promise.all([autoFillProvince(account_id, token), updatePostsPage()])
+    })
   </script>
 </html>

@@ -647,135 +647,142 @@
       if (account_id != null && token != null) {
         const posts = await getPost(sortCondition, filterCondition, searchCondition, page, account_id, token)
 
-        let html = ""
+        if(posts != null && posts.length > 0) {
+          let html = ""
 
-        posts.forEach(post => {
-          var money = Number(post.post.price).toLocaleString("vi-VN")
-          var favIco = "favour"
-          var favId = post.id
+          posts.forEach(post => {
+            var money = Number(post.post.price).toLocaleString("vi-VN")
+            var favIco = "favour"
+            var favId = post.id
 
-          html += `
-            <div class="post">
-              <div class="post-favour post-id-${post.post.id} favourite-id-${favId} ${favIco}">
-                <img
-                  src='<?php echo BASE_URL ?>/assets/img/${favIco}.png'
-                  alt="favour.png"
-                  class="post-favour-ico"
-                />
-              </div>
-
-              <a href='<?php echo BASE_URL ?>/pages/client/detail-post.php?post_id=${post.post.id}' class="post-body">
-                <img
-                  src='http://127.0.0.1:8000${post.post.postImages[0].imagePostUrl}'
-                  alt="post.png"
-                  class="post-img"
-                />
-
-                <div class="post-title">
-                  ${post.post.title}
+            html += `
+              <div class="post">
+                <div class="post-favour post-id-${post.post.id} favourite-id-${favId} ${favIco}">
+                  <img
+                    src='<?php echo BASE_URL ?>/assets/img/${favIco}.png'
+                    alt="favour.png"
+                    class="post-favour-ico"
+                  />
                 </div>
 
-                <div class="post-address">
+                <a href='<?php echo BASE_URL ?>/pages/client/detail-post.php?post_id=${post.post.id}' class="post-body">
                   <img
-                    src='<?php echo BASE_URL . "/assets/img/address.png" ?>'
-                    alt="address.png"
-                    class="address-ico"
+                    src='http://127.0.0.1:8000${post.post.postImages[0].imagePostUrl}'
+                    alt="post.png"
+                    class="post-img"
                   />
 
-                  <div class="address-info">${post.post.houseNumber}, ${post.post.ward}, ${post.post.province}</div>
-                </div>
+                  <div class="post-title">
+                    ${post.post.title}
+                  </div>
 
-                <div class="post-info">
-                  <h3 class="post-price">${money} VND/tháng</h3>
+                  <div class="post-address">
+                    <img
+                      src='<?php echo BASE_URL . "/assets/img/address.png" ?>'
+                      alt="address.png"
+                      class="address-ico"
+                    />
 
-                  <div class="post-square">${post.post.area} m2</div>
-                </div>
-              </a>
-            </div>
-          `
-        });
-        
-        // update post section (must have favour button)
-        document.querySelector(".newpost-postlist").innerHTML = html
+                    <div class="address-info">${post.post.houseNumber}, ${post.post.ward}, ${post.post.province}</div>
+                  </div>
 
-        // update favorite post when client clicked
-        document.querySelector(".newpost-postlist").querySelectorAll(".post-favour").forEach(item => {
-          item.addEventListener("click", async (e) => { 
-            // console.log(item.classList)
-            var favIco = item.classList.contains("favour")
-            const postClass = [...item.classList].find(c => c.startsWith("post-id-"))
-            var post_id = postClass.replace("post-id-", "")
+                  <div class="post-info">
+                    <h3 class="post-price">${money} VND/tháng</h3>
 
-            // create new favorite
-            if(!favIco) {
-              item.classList.remove("unfavour")
-              item.classList.add("favour")
-              item.querySelector(".post-favour-ico").setAttribute("src", '<?php echo BASE_URL ?>/assets/img/favour.png')
+                    <div class="post-square">${post.post.area} m2</div>
+                  </div>
+                </a>
+              </div>
+            `
+          });
+          
+          // update post section (must have favour button)
+          document.querySelector(".newpost-postlist").innerHTML = html
 
-              try {
-                const response = await fetch("http://127.0.0.1:8000/api/favorites", {
-                  method: "POST",
-                  headers: {
-                    "Accept": "application/json",
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + token
-                  },
-                  body: JSON.stringify({
-                    "account_id": account_id,
-                    "post_id": post_id
+          // update favorite post when client clicked
+          document.querySelector(".newpost-postlist").querySelectorAll(".post-favour").forEach(item => {
+            item.addEventListener("click", async (e) => { 
+              // console.log(item.classList)
+              var favIco = item.classList.contains("favour")
+              const postClass = [...item.classList].find(c => c.startsWith("post-id-"))
+              var post_id = postClass.replace("post-id-", "")
+
+              // create new favorite
+              if(!favIco) {
+                item.classList.remove("unfavour")
+                item.classList.add("favour")
+                item.querySelector(".post-favour-ico").setAttribute("src", '<?php echo BASE_URL ?>/assets/img/favour.png')
+
+                try {
+                  const response = await fetch("http://127.0.0.1:8000/api/favorites", {
+                    method: "POST",
+                    headers: {
+                      "Accept": "application/json",
+                      "Content-Type": "application/json",
+                      "Authorization": "Bearer " + token
+                    },
+                    body: JSON.stringify({
+                      "account_id": account_id,
+                      "post_id": post_id
+                    })
                   })
-                })
 
-                const data = await response.json()
-                if(response.ok) {
-                  // console.log(data)
-                  if(data) {
-                    const favClass = [...item.classList].find(c => c.startsWith("favourite-id-"))
-                    if(favClass) {
-                      item.classList.remove(favClass)
-                      item.classList.add("favourite-id-" + data.favorite.id)
+                  const data = await response.json()
+                  if(response.ok) {
+                    // console.log(data)
+                    if(data) {
+                      const favClass = [...item.classList].find(c => c.startsWith("favourite-id-"))
+                      if(favClass) {
+                        item.classList.remove(favClass)
+                        item.classList.add("favourite-id-" + data.favorite.id)
+                      }
                     }
+                  } else {
+                    console.error(data)
                   }
-                } else {
-                  console.error(data)
+                } catch (err) {
+                  console.error(err)
                 }
-              } catch (err) {
-                console.error(err)
               }
-            }
 
-            // delete favorite
-            if(favIco) {
-              item.classList.remove("favour")
-              item.classList.add("unfavour")
-              item.querySelector(".post-favour-ico").setAttribute("src", '<?php echo BASE_URL ?>/assets/img/unfavour.png')
-              const favClass = [...item.classList].find(c => c.startsWith("favourite-id-"))
-              var fav_id = favClass.replace("favourite-id-", "")
+              // delete favorite
+              if(favIco) {
+                item.classList.remove("favour")
+                item.classList.add("unfavour")
+                item.querySelector(".post-favour-ico").setAttribute("src", '<?php echo BASE_URL ?>/assets/img/unfavour.png')
+                const favClass = [...item.classList].find(c => c.startsWith("favourite-id-"))
+                var fav_id = favClass.replace("favourite-id-", "")
 
-              try {
-                const response = await fetch("http://127.0.0.1:8000/api/favorites/" + fav_id, {
-                  method: "DELETE",
-                  headers: {
-                    "Accept": "application/json",
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + token
+                try {
+                  const response = await fetch("http://127.0.0.1:8000/api/favorites/" + fav_id, {
+                    method: "DELETE",
+                    headers: {
+                      "Accept": "application/json",
+                      "Content-Type": "application/json",
+                      "Authorization": "Bearer " + token
+                    }
+                  })
+
+                  const data = await response.json()
+                  if(response.ok) {
+                    // console.log(data)
+                  } else {
+                    console.error(data)
                   }
-                })
-
-                const data = await response.json()
-                if(response.ok) {
-                  // console.log(data)
-                } else {
-                  console.error(data)
+                } catch (err) {
+                  console.error(err)
                 }
-              } catch (err) {
-                console.error(err)
               }
-            }
+            })
           })
-        })
 
-        updatePageNumber()
+          updatePageNumber()
+        } else {
+          document.querySelector(".newpost-postlist").textContent = "Không tìm thấy kết quả phù hợp."
+        }
+      } else {
+        alert("Bạn chưa đăng nhập. Đang chuyển hướng sang trang đăng nhập.")
+        window.location.href = "login.php"
       }
     }
 

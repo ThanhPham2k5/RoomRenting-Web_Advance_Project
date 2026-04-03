@@ -102,7 +102,7 @@ switch ($page) {
     case 'setting':
         $apiResult = call_api("http://127.0.0.1:8000/api/personalInfos/$adminId");
         $pageData['info'] = $apiResult['data'] ?? [];
-        
+        $pageData['id'] = $adminId ?? "";
         break;
 }
 ?>
@@ -246,6 +246,7 @@ switch ($page) {
         
         // Vẽ biểu đồ
         renderAllCharts();
+        renderRoomChart();
 
         // Nút bấm ở table
         const dropdownBtns = document.querySelectorAll('.dropdown-container .top-btn');
@@ -327,45 +328,63 @@ switch ($page) {
 
         //Chon File
         // 1. Lắng nghe sự kiện click vào các ô ảnh
+        // 1. BẮT SỰ KIỆN CLICK CHO ẢNH BÀI ĐĂNG
         document.querySelectorAll('.image-slot').forEach(slot => {
             slot.addEventListener('click', function() {
                 const modal = document.getElementById('post-detail-modal');
-                if (!modal.classList.contains('edit-mode')) {
+                
+                // BẢO VỆ: Nếu trang không có modal này, hoặc modal không ở chế độ edit -> Bỏ qua
+                if (!modal || !modal.classList.contains('edit-mode')) {
                     return;
                 }
 
                 currentActiveSlot = this.getAttribute('data-slot');
-                document.getElementById('hidden-file-input').click();
+                const hiddenInput = document.getElementById('hidden-file-input');
+                if (hiddenInput) {
+                    hiddenInput.click();
+                }
             });
         });
 
-        // 2. Xử lý khi user chọn xong file
-        document.getElementById('hidden-file-input').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file || !currentActiveSlot) return;
+        // 2. XỬ LÝ KHI CHỌN ẢNH BÀI ĐĂNG
+        const hiddenFileInput = document.getElementById('hidden-file-input');
 
-            // A. Đổi ảnh hiển thị trên giao diện (Preview)
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                // Tìm đúng thẻ img của ô đang active để thay đổi src
-                document.getElementById(`img-${currentActiveSlot}`).src = event.target.result;
-            }
-            reader.readAsDataURL(file);
+        if (hiddenFileInput) {
+            hiddenFileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                
+                // SỬA CHÍNH XÁC DÒNG NÀY: Bỏ dấu ! thừa trước chữ typeof
+                if (!file || typeof currentActiveSlot === 'undefined' || !currentActiveSlot) return;
 
-            // B. Lưu file thật vào Quyển sổ
-            newUploadedFiles[currentActiveSlot] = file;
+                // A. Đổi ảnh hiển thị trên giao diện (Preview)
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    // Tìm đúng thẻ img của ô đang active để thay đổi src
+                    const imgElement = document.getElementById(`img-${currentActiveSlot}`);
+                    if (imgElement) {
+                        imgElement.src = event.target.result;
+                    }
+                }
+                reader.readAsDataURL(file);
 
-            // C. XÓA thẻ input hidden của ảnh cũ đi (nếu có)
-            // Để báo cho Laravel biết là "Ảnh cũ này đã bị tao ghi đè rồi, hãy xóa nó đi!"
-            const currentSlotWrapper = document.querySelector(`.image-slot[data-slot="${currentActiveSlot}"]`);
-            const oldHiddenInput = currentSlotWrapper.querySelector('input[type="hidden"]');
-            if (oldHiddenInput) {
-                oldHiddenInput.remove(); 
-            }
+                // B. Lưu file thật vào Quyển sổ
+                if (typeof newUploadedFiles !== 'undefined') {
+                    newUploadedFiles[currentActiveSlot] = file;
+                }
 
-            // Reset input file để có thể chọn lại file cùng tên
-            this.value = '';
-        });
+                // C. XÓA thẻ input hidden của ảnh cũ đi (nếu có)
+                const currentSlotWrapper = document.querySelector(`.image-slot[data-slot="${currentActiveSlot}"]`);
+                if (currentSlotWrapper) {
+                    const oldHiddenInput = currentSlotWrapper.querySelector('input[type="hidden"]');
+                    if (oldHiddenInput) {
+                        oldHiddenInput.remove(); 
+                    }
+                }
+
+                // Reset input file để có thể chọn lại file cùng tên
+                this.value = '';
+            });
+        }
 
         //Loc theo ngay
         const btnFilterDate = document.querySelector('.btn-filter-date');
@@ -662,7 +681,7 @@ switch ($page) {
                     }
                 }
             }   
-            window.location.reload();
+            // window.location.reload();
         })
         .catch(error => {
             console.error("Lỗi lưu dữ liệu:", error);
@@ -1125,52 +1144,52 @@ switch ($page) {
         });
     }
     function revokeRoleFromAccount(event, accountId, roleNameToRemove, encodedRoles, targetModel, roleId) {
-    event.stopPropagation();
-    
-    let currentRoles = [];
-    try {
-        currentRoles = JSON.parse(decodeURIComponent(encodedRoles));
-    } catch (e) {
-        currentRoles = [];
-    }
-
-    if (!confirm(`Xác nhận tước quyền [${roleNameToRemove}]?`)) return;
-
-    // 1. Lọc mảng (Nếu tước hết, remainingRoles sẽ là [])
-    let remainingRoles = currentRoles.filter(role => role !== roleNameToRemove);
-
-    // 2. Tạo Object thuần túy (KHÔNG dùng new FormData)
-    const payload = {
-        _method: 'PUT',
-        roles: remainingRoles, // Gửi nguyên mảng JS []
-        target_endpoint: `accounts/${accountId}`
-    };
-
-    const apiUrl = `../admin/core/api_proxy.php`;
-
-    // 3. Gửi Fetch với Content-Type: application/json
-    fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-            "Content-Type": "application/json", // QUAN TRỌNG: Để Proxy và Laravel nhận diện JSON
-            "Accept": "application/json"
-        },
-        body: JSON.stringify(payload) // Chuyển Object thành chuỗi JSON
-    })
-    .then(response => response.json())
-    .then(result => {
-        if (result.status === 'error' || result.errors) {
-            alert("Lỗi: " + (result.message || "Không thể thu hồi"));
-            return;
+        event.stopPropagation();
+        
+        let currentRoles = [];
+        try {
+            currentRoles = JSON.parse(decodeURIComponent(encodedRoles));
+        } catch (e) {
+            currentRoles = [];
         }
-        alert("Thu hồi quyền thành công!");
-        openAccountListModal(null, targetModel, roleNameToRemove, roleId);
-    })
-    .catch(error => {
-        console.error("Fetch error:", error);
-        alert("Lỗi kết nối hệ thống!");
-    });
-}
+
+        if (!confirm(`Xác nhận tước quyền [${roleNameToRemove}]?`)) return;
+
+        // 1. Lọc mảng (Nếu tước hết, remainingRoles sẽ là [])
+        let remainingRoles = currentRoles.filter(role => role !== roleNameToRemove);
+
+        // 2. Tạo Object thuần túy (KHÔNG dùng new FormData)
+        const payload = {
+            _method: 'PUT',
+            roles: remainingRoles, // Gửi nguyên mảng JS []
+            target_endpoint: `accounts/${accountId}`
+        };
+
+        const apiUrl = `../admin/core/api_proxy.php`;
+
+        // 3. Gửi Fetch với Content-Type: application/json
+        fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json", // QUAN TRỌNG: Để Proxy và Laravel nhận diện JSON
+                "Accept": "application/json"
+            },
+            body: JSON.stringify(payload) // Chuyển Object thành chuỗi JSON
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.status === 'error' || result.errors) {
+                alert("Lỗi: " + (result.message || "Không thể thu hồi"));
+                return;
+            }
+            alert("Thu hồi quyền thành công!");
+            openAccountListModal(null, targetModel, roleNameToRemove, roleId);
+        })
+        .catch(error => {
+            console.error("Fetch error:", error);
+            alert("Lỗi kết nối hệ thống!");
+        });
+    }
     // Hàm vẽ toàn bộ biểu đồ
     function renderAllCharts() {
         // Cài đặt chung cho mọi biểu đồ để font chữ đẹp hơn
@@ -1212,37 +1231,37 @@ switch ($page) {
         // ==========================================
         // 2. BIỂU ĐỒ TỶ LỆ KIỂU PHÒNG (DOUGHNUT CHART)
         // ==========================================
-        const ctx2 = document.getElementById('chart2');
-        if (ctx2) {
-            new Chart(ctx2, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Trọ khép kín', 'Chung cư mini', 'Nhà nguyên căn', 'Ở ghép'],
-                    datasets: [{
-                        data: [45, 25, 20, 10], // Tỷ lệ %
-                        backgroundColor: [
-                            '#3B82F6', // Xanh dương
-                            '#10B981', // Xanh lá
-                            '#F59E0B', // Vàng cam
-                            '#8B5CF6'  // Tím
-                        ],
-                        borderWidth: 0, // Bỏ viền trắng chia cắt
-                        hoverOffset: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '70%', // Làm cho vành khuyên mỏng lại cho tinh tế
-                    plugins: {
-                        legend: {
-                            position: 'right', // Đẩy chú thích sang phải
-                            labels: { boxWidth: 12, usePointStyle: true } // Chú thích hình tròn
-                        }
-                    }
-                }
-            });
-        }
+        // const ctx2 = document.getElementById('chart2');
+        // if (ctx2) {
+        //     new Chart(ctx2, {
+        //         type: 'doughnut',
+        //         data: {
+        //             labels: ['Trọ khép kín', 'Chung cư mini', 'Nhà nguyên căn', 'Ở ghép'],
+        //             datasets: [{
+        //                 data: [45, 25, 20, 10], // Tỷ lệ %
+        //                 backgroundColor: [
+        //                     '#3B82F6', // Xanh dương
+        //                     '#10B981', // Xanh lá
+        //                     '#F59E0B', // Vàng cam
+        //                     '#8B5CF6'  // Tím
+        //                 ],
+        //                 borderWidth: 0, // Bỏ viền trắng chia cắt
+        //                 hoverOffset: 4
+        //             }]
+        //         },
+        //         options: {
+        //             responsive: true,
+        //             maintainAspectRatio: false,
+        //             cutout: '70%', // Làm cho vành khuyên mỏng lại cho tinh tế
+        //             plugins: {
+        //                 legend: {
+        //                     position: 'right', // Đẩy chú thích sang phải
+        //                     labels: { boxWidth: 12, usePointStyle: true } // Chú thích hình tròn
+        //                 }
+        //             }
+        //         }
+        //     });
+        // }
 
         // ==========================================
         // 3. TOP 10 KHU VỰC NHIỀU BÀI ĐĂNG (HORIZONTAL BAR)
@@ -1318,5 +1337,85 @@ switch ($page) {
             });
         }
     }
+    async function renderRoomChart() {
+    try {
+        // 1. GỌI QUA PROXY ĐỂ TỰ ĐỘNG GẮN TOKEN
+        const response = await fetch('../admin/core/api_proxy.php?target_endpoint=statistic/posts/room_data', {
+            method: 'GET',
+            headers: {
+                "Accept": "application/json"
+            }
+        });
+        
+        const result = await response.json();
+
+        // 2. Từ điển dịch tên loại phòng từ Backend sang Frontend
+        const roomTypeMap = {
+            'room': 'Trọ khép kín',
+            'apartment': 'Chung cư mini',
+            'house': 'Nhà nguyên căn',
+            'dorm': 'Ở ghép'
+        };
+
+        let chartLabels = [];
+        let chartData = [];
+
+        // 3. Trích xuất dữ liệu từ JSON trả về
+        if (result && result.roomTypeDetails) {
+            result.roomTypeDetails.forEach(item => {
+                const translatedName = roomTypeMap[item.roomType] || item.roomType; 
+                chartLabels.push(translatedName);
+                chartData.push(item.total);
+            });
+        }
+
+        // 4. Vẽ biểu đồ với dữ liệu động
+        const ctx2 = document.getElementById('chart2');
+        if (ctx2) {
+            new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: chartLabels, // Gắn mảng nhãn động vào đây
+                    datasets: [{
+                        data: chartData, // Gắn mảng số liệu động vào đây
+                        backgroundColor: [
+                            '#3B82F6', // Xanh dương
+                            '#10B981', // Xanh lá
+                            '#F59E0B', // Vàng cam
+                            '#8B5CF6', // Tím
+                            '#EF4444'  // Đỏ (Dự phòng)
+                        ],
+                        borderWidth: 0, 
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%', 
+                    plugins: {
+                        legend: {
+                            position: 'right', 
+                            labels: { 
+                                boxWidth: 12, 
+                                usePointStyle: true 
+                            } 
+                        },
+                        // Bổ sung thêm tooltip hiển thị số lượng khi rê chuột
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ` ${context.label}: ${context.raw} phòng`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    } catch (error) {
+        console.error("Lỗi khi tải dữ liệu biểu đồ phòng:", error);
+    }
+}
 </script>
 </html>

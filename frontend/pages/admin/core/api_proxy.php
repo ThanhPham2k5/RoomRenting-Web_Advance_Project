@@ -67,7 +67,7 @@ if ($isJson) {
                     $payload[$key] = new CURLFile(
                         $fileInfo['tmp_name'], 
                         $fileInfo['type'], 
-                        $name
+                        $fileInfo['name']
                     );
                 }
             }

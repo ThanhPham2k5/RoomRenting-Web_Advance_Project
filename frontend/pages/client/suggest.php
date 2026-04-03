@@ -354,7 +354,7 @@
               "Content-Type": "application/json",
               "Authorization": "Bearer " + token
             },
-            body: {
+            body: JSON.stringify({
               "province": province,
               "ward": ward,
               "room_type": roomType,
@@ -362,18 +362,15 @@
               "price_min": document.querySelector(".filter-min-price").value.trim(),
               "price_max": document.querySelector(".filter-max-price").value.trim(),
               "max_occupants": null
-            }
+            })
           })
-
-          console.log(province)
-          console.log(ward)
 
           const data = await response.json()
           if(response.ok) {
             if(data.message === "Form updated successfully") {
-              console.log(data)
-              // alert("Lưu thông tin đề xuất thành công. Đang chuyển hướng sang trang bài đăng phù hợp.")
-              // window.location.href = "suggest-posts.php"
+              // console.log(data)
+              alert("Lưu thông tin thành công. Đang chuyển hướng sang trang bài đăng phù hợp.")
+              window.location.href = "suggest-posts.php"
             }
           } else {
             console.error(data)

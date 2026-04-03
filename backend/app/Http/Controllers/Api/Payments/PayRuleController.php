@@ -62,7 +62,6 @@ class PayRuleController extends Controller
     public function store(StorePayRuleRequest $request)
     {
         $validated = $request->validated();
-        // $validated['status'] = 'inactive';
 
         $result = $this->payRuleService->createPayRule($validated);
 

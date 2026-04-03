@@ -22,13 +22,13 @@ class UpdateFormRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'price_max' => 'nullable|numeric|min:0',
-            'price_min' => 'nullable|numeric|min:0',
-            'area' => 'nullable|numeric|min:0',
-            'ward' => 'nullable|string|max:255',
-            'province' => 'nullable|string|max:255',
-            'room_type' => 'nullable|in:room,apartment,dorm',
-            'max_occupants' => 'nullable|integer|min:1',
+            'price_max' => 'sometimes|nullable|numeric|min:0',
+            'price_min' => 'sometimes|nullable|numeric|min:0',
+            'area' => 'sometimes|nullable|numeric|min:0',
+            'ward' => 'sometimes|nullable|string|max:255',
+            'province' => 'sometimes|nullable|string|max:255',
+            'room_type' => 'sometimes|nullable|in:room,apartment,dorm',
+            'max_occupants' => 'sometimes|nullable|integer|min:1',
         ];
     }
 }

@@ -14,6 +14,7 @@ class CommentService{
     private $allowedIncludes = [
         'account',
         'post',
+        'account.user.personalInfo',
     ];
 
     private $allColFilter = [

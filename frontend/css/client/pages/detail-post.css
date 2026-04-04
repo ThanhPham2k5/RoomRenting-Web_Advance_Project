@@ -1,3 +1,48 @@
+.image-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 3;
+  margin-top: 84px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  display: none;
+}
+
+.image-block {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  border-radius: 12px;
+  align-items: center;
+}
+
+.image-close {
+  position: absolute;
+  right: -10px;
+  top: -10px;
+  font-family: "Body";
+  font-style: inherit;
+  font-size: 1rem;
+  background-color: #f97316;
+  color: #fff;
+  padding: 10px 16px;
+  cursor: pointer;
+  border-radius: 999px;
+}
+
+.image-img {
+  width: 800px;
+  height: 600px;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 12px;
+}
+
 .content {
   width: 100%;
   display: flex;
@@ -39,7 +84,8 @@
 
 .left-title {
   display: flex;
-  justify-content: center;
+  width: 100%;
+  justify-content: space-between;
   align-items: center;
   gap: 20px;
 }
@@ -107,6 +153,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: start;
+  display: none;
 }
 
 .left-map-api {
@@ -196,6 +243,10 @@
   margin: 10px 0;
 }
 
+.comment-box-false {
+  display: none;
+}
+
 .comment-img {
   padding: 40px;
   background-color: rgba(0, 0, 0, 0.04);
@@ -215,6 +266,14 @@
   align-items: start;
   max-height: 400px;
   overflow-y: auto;
+  gap: 10px;
+}
+
+.comment-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
   gap: 10px;
 }
 
@@ -251,6 +310,24 @@
 .other-comment-time {
   color: #626687;
   margin-top: 2px;
+}
+
+.more {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-self: center;
+  padding: 4px 20px;
+  border: 1px solid #000;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.1s linear;
+}
+
+.more:hover {
+  transform: translateY(-1px);
+  border-color: var(--orange);
+  color: var(--orange);
 }
 
 .comment-line {
@@ -327,5 +404,31 @@
 
   .content-right {
     width: 90%;
+  }
+
+  .image-img {
+    width: 500px;
+    height: 400px;
+  }
+}
+
+@media (max-width: 425.99px) {
+  .image-img {
+    width: 400px;
+    height: 400px;
+  }
+}
+
+@media (max-width: 375.99px) {
+  .image-img {
+    width: 350px;
+    height: 400px;
+  }
+}
+
+@media (max-width: 325.99px) {
+  .image-img {
+    width: 300px;
+    height: 400px;
   }
 }

@@ -2,7 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Account_User\Employee;
+use App\Models\Account_User\PersonalInfo;
+use App\Models\Account_User\User;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdatePersonalInfoRequest extends FormRequest
 {
@@ -21,29 +25,46 @@ class UpdatePersonalInfoRequest extends FormRequest
      */
     public function rules(): array
     {
+        $personalInfoRoute = $this->route('personalInfo');
+        $id = is_object($personalInfoRoute) ? $personalInfoRoute->id : $personalInfoRoute;
+
+        $accountRoute = $this->route('account');
+        if ($accountRoute) {
+            $accountId = is_object($accountRoute) ? $accountRoute->id : $accountRoute;
+
+            $id = User::where('account_id', $accountId)->value('personal_info_id') 
+               ?? Employee::where('account_id', $accountId)->value('personal_info_id');
+        }
+
         return [
-            'date_of_birth' => 'sometimes|nullable|date',
+        'date_of_birth' => 'sometimes|nullable|date',
+        'gender'        => 'sometimes|nullable|string|in:Nam,Nữ,Khác',
+        'house_number'  => 'sometimes|nullable|string|max:255',
+        'ward'          => 'sometimes|nullable|string|max:255',
+        'province'      => 'sometimes|nullable|string|max:255',
+        'name'          => 'sometimes|nullable|string|max:255',
+        'profile_url'   => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:2048',
 
-            'gender' => 'sometimes|nullable|string|in:Nam,Nữ,Khác',
+        'email' => [
+            'sometimes',
+            'email',
+            Rule::unique('personal_infos', 'email')->ignore($id),
+        ],
 
-            'house_number' => 'sometimes|nullable|string|max:255',
-            'ward' => 'sometimes|nullable|string|max:255',
-            'province' => 'sometimes|nullable|string|max:255',
+        'phone_number' => [
+            'sometimes',
+            'string',
+            'regex:/^(03|05|07|08|09)[0-9]{8}$/',
+            Rule::unique('personal_infos', 'phone_number')->ignore($id)
+        ],
 
-            'email' => 'sometimes|email|unique:personal_infos,email,' . $this->personal_info,
-
-            'phone_number' => [
-                'sometimes',
-                'string',
-                'regex:/^(03|05|07|08|09)[0-9]{8}$/',
-                'unique:personal_infos,phone_number,' . $this->personal_info
-            ],
-
-            'profile_url' => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:2048',
-
-            'name' => 'sometimes|nullable|string|max:255',
-
-            'pid' => 'sometimes|nullable|string|digits:12|unique:personal_infos,pid,' . $this->personal_info,
-        ];
+        'pid' => [
+            'sometimes',
+            'nullable',
+            'string',
+            'digits:12',
+            Rule::unique('personal_infos', 'pid')->ignore($id),
+        ],
+    ];
     }
 }

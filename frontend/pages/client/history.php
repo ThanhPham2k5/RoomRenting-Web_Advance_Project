@@ -244,7 +244,7 @@
 
     async function getBill(account_id, token, billType, page) {
         try {
-            const response = await fetch("http://127.0.0.1:8000/api/" + billType + "?per_page=10&include=account&filter[account.id]=" + account_id + "&filter[status]=completed&page=" + page + "&sort=-createdAt", {
+            const response = await fetch("http://backend.test/api/" + billType + "?per_page=10&include=account&filter[account.id]=" + account_id + "&filter[status]=completed&page=" + page + "&sort=-createdAt", {
                 method: "GET",
                 headers: {
                     "Accept": "application/json",

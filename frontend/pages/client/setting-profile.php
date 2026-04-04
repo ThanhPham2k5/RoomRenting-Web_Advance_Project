@@ -286,7 +286,7 @@
     // auto fill province list
     async function autoFillProvince(account_id, token) {
         try {
-            const response = await fetch("http://127.0.0.1:8000/api/address/provinces", {
+            const response = await fetch("http://backend.test/api/address/provinces", {
                 method: "GET",
                 headers: {
                     "Accept": "application/json",
@@ -341,7 +341,7 @@
     // auto fill district list with provinceCode
     async function autoWard(account_id, token, provinceCode) {
         try {
-            const response = await fetch("http://127.0.0.1:8000/api/address/provinces/" + provinceCode + "/wards", {
+            const response = await fetch("http://backend.test/api/address/provinces/" + provinceCode + "/wards", {
                 method: "GET",
                 headers: {
                     "Accept": "application/json",
@@ -392,7 +392,7 @@
     // auto fill district list with provinceName
     async function autoWardByName(account_id, token, provinceName) {
         try {
-            const response = await fetch("http://127.0.0.1:8000/api/address/provinces/name/" + provinceName + "/wards", {
+            const response = await fetch("http://backend.test/api/address/provinces/name/" + provinceName + "/wards", {
                 method: "GET",
                 headers: {
                     "Accept": "application/json",
@@ -473,7 +473,7 @@
     // auto fill personal data
     async function autoPersonalInfo(account_id, token) {
         try {
-            const response = await fetch("http://127.0.0.1:8000/api/personalInfos/byAccount/" + account_id, {
+            const response = await fetch("http://backend.test/api/personalInfos/byAccount/" + account_id, {
                 method: "GET",
                 headers: {
                     "Accept": "application/json",
@@ -596,7 +596,7 @@
             var token = localStorage.getItem("token")
 
             try {
-                const response = await fetch("http://127.0.0.1:8000/api/accounts/" + account_id + "/change-password", {
+                const response = await fetch("http://backend.test/api/accounts/" + account_id + "/change-password", {
                     method: "POST",
                     headers: {
                         "Accept": "application/json",
@@ -767,7 +767,7 @@
             }
 
             try {
-                const response = await fetch("http://127.0.0.1:8000/api/personalInfos/byAccount/" + account_id, {
+                const response = await fetch("http://backend.test/api/personalInfos/byAccount/" + account_id, {
                     method: "POST",
                     headers: {
                         "Accept": "application/json",

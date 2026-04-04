@@ -17,7 +17,7 @@ class PostImageResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'imagePostUrl' => Storage::url($this->image_post_url),
+            'imagePostUrl' => '/storage/' .$this->image_post_url,
             'order' => $this->order,
             'post' => PostResource::make(
                 $this->whenLoaded('post')

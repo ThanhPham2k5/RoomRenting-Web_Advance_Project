@@ -77,7 +77,7 @@ $currentPage = $currentPage ?? "overview";
             </a>
         </div>
         <div class="item">
-            <a href="#">
+            <a href="logout.php">
                 <div class="dangxuat">
                     <svg width="9" height="18" viewBox="0 0 9 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M2 2H8C8.55 2 9 1.55 9 1C9 0.45 8.55 0 8 0H2C0.9 0 0 0.9 0 2V16C0 17.1 0.9 18 2 18H8C8.55 18 9 17.55 9 17C9 16.45 8.55 16 8 16H2V2Z" fill="currentColor"/>

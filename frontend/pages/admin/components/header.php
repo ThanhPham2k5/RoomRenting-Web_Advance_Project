@@ -1,10 +1,18 @@
+<?php 
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+    $adminName = $_SESSION['admin_user'] ?? "";
+    $adminRole = $_SESSION['admin_role'] ?? "";
+?>
+
 <div class="header-component">
     <div class="main-content">
         <div class="info">
             <img src="../../assets/admin/images/avatar.png" alt="avatar">
             <div class="desc">
-                <p>Nguyễn Trần Trung Tuấn</p>
-                <p>Chức vụ: Nhân viên quản lý tài khoản</p>
+                <p><?php echo $adminName ?></p>
+                <p>Chức vụ: <?php echo $adminRole ?></p>
             </div>
         </div>
     </div>

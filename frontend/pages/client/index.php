@@ -261,7 +261,7 @@
       if (account_id != null && token != null) {
         // logined
         // update post section (require -> must have favour button)
-        const [posts, suggests] = await Promise.all([getNewPost(), getSuggestPost(account_id, token)])
+        let [posts, suggests] = await Promise.all([getNewPost(), getSuggestPost(account_id, token)])
 
         let html = ""
 
@@ -407,6 +407,8 @@
         if(!suggests || suggests.length == 0) {
           suggests = posts
         }
+
+        console.log(suggests)
 
         suggests.forEach(post => {
           var money = Number(post.price).toLocaleString("vi-VN")

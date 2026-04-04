@@ -129,7 +129,7 @@
 
                  <div class="comment-input">
                     <div class="comment-input-box">
-                        <img src='<?php echo BASE_URL . "/assets/img/avatar-test.png"?>' alt="user-avatar.png" class="user-avatar">
+                        <img src='<?php echo BASE_URL . "/assets/img/avatar-test.png"?>' alt="comment-user-avatar.png" class="comment-user-avatar">
 
                         <textarea type="text" name="user-input" id="user-input" class="user-input" placeholder="Bình luận..."></textarea>
                     </div>
@@ -144,4 +144,25 @@
     
     <?php include(__DIR__ . "/components/footer.php") ?>
   </body>
+  <script>
+    const params = URLSearchParams(window.location.search)
+    const post_id = params.get("post_id")
+
+    async function updateDetailPost(account_id, token) {
+        
+    }
+
+    // run once time every reload or load page
+    document.addEventListener("DOMContentLoaded", async (e) => {
+      var account_id = localStorage.getItem("account_id")
+      var token = localStorage.getItem("token")
+
+      if (account_id != null && token != null) {
+        await updateDetailPost(account_id, token)
+      } else {
+        alert("Bạn chưa đăng nhập. Đang chuyển hướng sang trang đăng nhập.")
+        window.location.href = "login.php"
+      }
+    })
+  </script>
 </html>

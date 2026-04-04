@@ -17,6 +17,7 @@ use Spatie\QueryBuilder\QueryBuilder;
 class PostService{
     private $allowedIncludes = [
         'user',
+        'user.personalInfo',
         'employee',
         'postImages',
         'comments',

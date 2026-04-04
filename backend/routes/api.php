@@ -139,6 +139,9 @@ Route::middleware(['auth:sanctum', 'permission:post.restore'])
 Route::middleware(['auth:sanctum', 'permission:post.getRecommendation'])
     ->get('/posts/recommendations/{account}', [PostController::class, 'getRecommendedPosts']);
 
+Route::middleware(['auth:sanctum',])
+    ->post('/posts/{post}/payment', [PostController::class, 'postPayment']);
+
 //Comment
 Route::middleware(['auth:sanctum','permission:comment.get'])
     ->get('/comments/{comment}', [CommentController::class, 'show']);

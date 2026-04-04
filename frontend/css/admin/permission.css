@@ -113,3 +113,145 @@
 .permission-page .custom-checkbox input[type="checkbox"]:hover {
     transform: scale(1.15);
 }
+/* ================= HEADER CHI TIẾT ================= */
+.detail-profile-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+/* Biến tấu Avatar thành khối Icon vuông bo góc cho Quyền */
+.avatar-placeholder {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%; /* Nếu thích tròn thì giữ nguyên, nếu thích vuông bo góc thì đổi thành 12px */
+    background-color: #EEF2FF;
+    color: #2563EB;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: 600;
+    text-transform: uppercase;
+    border: 2px solid #E0E7FF;
+}
+
+.avatar-placeholder.permission-icon {
+    border-radius: 14px; /* Icon quyền làm vuông bo góc sẽ hợp lý hơn */
+    background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%);
+    color: #4F46E5;
+    box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.1);
+}
+
+.profile-title h3 {
+    margin: 0 0 8px 0;
+    font-size: 2.2rem;
+    color: #111827;
+    font-weight: 600;
+}
+
+/* ================= BADGE (NHÃN) ================= */
+.badge-detail {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 1.3rem;
+    font-weight: 500;
+}
+
+.badge-detail-role {
+    background-color: #FEF3C7;
+    color: #D97706;
+}
+
+.badge-detail-guard {
+    background-color: #ECFCCB;
+    color: #65A30D;
+}
+
+/* Dòng kẻ ngang */
+.divider {
+    border: 0;
+    border-top: 1px solid #E5E7EB;
+    margin: 20px 0;
+}
+
+/* ================= LƯỚI THÔNG TIN (GRID) ================= */
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Chia 2 cột đều nhau */
+    gap: 24px 20px; /* Khoảng cách: Dòng 24px, Cột 20px */
+}
+
+.info-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* Ép phần tử chiếm cả 2 cột ngang */
+.info-group.full-width {
+    grid-column: span 2;
+}
+
+.info-group label {
+    font-size: 1.3rem;
+    color: #6B7280;
+    font-weight: 500;
+}
+
+.info-value {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #111827;
+    font-weight: 500;
+}
+
+/* Box mô tả làm chìm xuống một chút cho đẹp */
+.description-box {
+    background-color: #F9FAFB;
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid #E5E7EB;
+    line-height: 1.5;
+    color: #4B5563;
+    min-height: 80px;
+}
+/* ... (Giữ nguyên các CSS cũ) ... */
+
+/* ================= CONTAINER CHỨA BADGE ================= */
+.roles-badge-container {
+    display: flex;
+    flex-wrap: wrap; /* Cho phép các badge rớt dòng nếu quá dài */
+    gap: 8px;
+    margin-top: 4px;
+}
+
+/* ================= BADGE QUYỀN CON (PERMISSIONS) ================= */
+.badge-sub-permission {
+    background-color: #F3F4F6; /* Xám nhạt */
+    color: #374151; /* Xám đậm */
+    border: 1px solid #D1D5DB;
+    padding: 6px 12px;
+    border-radius: 20px; /* Bo tròn nhiều hơn tạo cảm giác như 'tag' */
+    font-size: 1.2rem;
+    font-family: monospace; /* Dùng font monospace cho dễ đọc tên quyền (post.create) */
+    display: inline-block;
+    transition: all 0.2s ease;
+}
+
+.badge-sub-permission:hover {
+    background-color: #E5E7EB;
+    border-color: #9CA3AF;
+}
+
+/* Tùy chỉnh box chứa danh sách quyền con cho gọn gàng */
+.permissions-list {
+    max-height: 150px; /* Giới hạn chiều cao nếu danh sách quá dài */
+    overflow-y: auto; /* Thêm thanh cuộn dọc */
+    padding: 10px;
+    background-color: #FDFDFD;
+    border: 1px dashed #D1D5DB;
+    border-radius: 8px;
+}

@@ -1,4 +1,8 @@
 <?php
+    $apiRole = call_api("http://127.0.0.1:8000/api/address/provinces");
+    $provinces= $apiRole['data'] ?? [];
+    $apiRole = call_api("http://127.0.0.1:8000/api/address/wards");
+    $wards= $apiRole['data'] ?? [];
     $titleData = ['titleContent' => "Cài đặt", 'group' => false, 'insert' => false, 'edit' => false, 'delete' => false, 'handle' => false];
     
     // Đảm bảo $info tồn tại (đã lấy từ $pageData trước đó)
@@ -6,7 +10,7 @@
     $id = $id ?? "";
     // Avatar
     $displayName = $info['name'] ?? 'Admin';
-    $avatarUrl = !empty($info['profileUrl']) 
+    $avatarUrl = !empty($info['profileUrl'])
         ? $info['profileUrl'] 
         : "https://ui-avatars.com/api/?name=" . urlencode($displayName) . "&background=EEF2FF&color=2563EB";
         
@@ -65,26 +69,27 @@
                 <p>Email</p>
                 <input type="email" name="email" value="<?php echo htmlspecialchars($info['email'] ?? ''); ?>" readonly title="Email không thể thay đổi">
             </div>
-            
+        
             <div class="item">
                 <p>Địa chỉ</p>
                 <input type="text" name="houseNumber" value="<?php echo htmlspecialchars($info['houseNumber'] ?? ''); ?>" placeholder="Số nhà, Tên đường" style="margin-bottom: 10px;">
                 
-                <select name="province" style="margin-bottom: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%;">
-                    <option value="">-- Chọn Tỉnh/Thành phố --</option>
-                    <option value="Thanh Hóa" <?php echo ($currentProvince === 'Thanh Hóa') ? 'selected' : ''; ?>>Thanh Hóa</option>
-                    <option value="Hà Nội" <?php echo ($currentProvince === 'Hà Nội') ? 'selected' : ''; ?>>Hà Nội</option>
-                    <option value="Hồ Chí Minh" <?php echo ($currentProvince === 'Hồ Chí Minh') ? 'selected' : ''; ?>>Hồ Chí Minh</option>
-                    <option value="Đà Nẵng" <?php echo ($currentProvince === 'Đà Nẵng') ? 'selected' : ''; ?>>Đà Nẵng</option>
-                </select>
+                <div class="input-group">
+                    <select name="province" id="city-select">
+                        <option value="">-- Chọn Tỉnh/Thành phố --</option>
+                        <?php foreach ($provinces as $province): ?>
+                            <option value="<?php echo htmlspecialchars($province['name'] ?? ''); ?>" data-name="<?php echo htmlspecialchars($province['name'] ?? ''); ?>">
+                                <?php echo htmlspecialchars($province['name'] ?? ''); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
 
-                <select name="ward" style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%;">
-                    <option value="">-- Chọn Phường/Xã --</option>
-                    <option value="Xã Nhi Sơn" <?php echo ($currentWard === 'Xã Nhi Sơn') ? 'selected' : ''; ?>>Xã Nhi Sơn</option>
-                    <option value="Phường Bến Nghé" <?php echo ($currentWard === 'Phường Bến Nghé') ? 'selected' : ''; ?>>Phường Bến Nghé</option>
-                    <option value="Phường Dịch Vọng" <?php echo ($currentWard === 'Phường Dịch Vọng') ? 'selected' : ''; ?>>Phường Dịch Vọng</option>
-                    <option value="Phường Hải Châu" <?php echo ($currentWard === 'Phường Hải Châu') ? 'selected' : ''; ?>>Phường Hải Châu</option>
-                </select>
+                <div class="input-group">
+                    <select name="ward" id="ward-select">
+                        <option value="">-- Chọn Phường/Xã --</option>
+                    </select>
+                </div>
             </div>
             
             <p style="margin-top: 20px;">Thông tin bảo mật</p>
@@ -195,7 +200,6 @@
         });
     }
 
-    // KHUYẾN MÃI THÊM: Script để Preview Avatar ngay khi vừa chọn file
     document.getElementById('upload-avatar').addEventListener('change', function(event) {
         const file = event.target.files[0];
         if (file) {
@@ -258,4 +262,37 @@
             alert(error.message);
         });
     }
+    document.addEventListener('DOMContentLoaded', function() {
+        const citySelect = document.getElementById('city-select');
+        const wardSelect = document.getElementById('ward-select');
+
+        if (citySelect && wardSelect) {
+            
+            // 1. TẠO RA DỮ LIỆU "DATA" TỪ PHP CHO JS (Giống như biến data bên Post)
+            const userProvince = "<?php echo htmlspecialchars($info['province'] ?? ''); ?>";
+            const userWard = "<?php echo htmlspecialchars($info['ward'] ?? ''); ?>";
+
+            // 2. FILL DỮ LIỆU Y HỆT NHƯ HÀM fillFormEditData
+            if (userProvince) {
+                citySelect.value = userProvince; // Tự động chọn Tỉnh
+                
+                if (citySelect.value) {
+                    // Tự động gọi API lấy Phường và fill Phường cũ vào
+                    loadWards(userProvince, userWard); 
+                }
+            }
+
+            // 3. XỬ LÝ KHI NGƯỜI DÙNG TỰ ĐỔI TỈNH
+            citySelect.addEventListener('change', function() {
+                const selectedProvince = this.value; 
+                
+                if (selectedProvince) {
+                    // Tỉnh mới thì truyền null để reset Phường
+                    loadWards(selectedProvince, null); 
+                } else {
+                    wardSelect.innerHTML = '<option value="">-- Chọn Phường/Xã --</option>';
+                }
+            });
+        }
+    });
 </script>

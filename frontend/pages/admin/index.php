@@ -1,5 +1,12 @@
 <?php
 session_start();
+if (!isset($_SESSION['api_token'])) {
+    header('Location: login.php');
+    exit;
+}
+$adminName = $_SESSION['admin_user'] ?? "";
+$adminRole = $_SESSION['admin_role'] ?? "";
+$adminId = $_SESSION['admin_id'] ?? "";
 require_once __DIR__ . '/core/function.php';
 $pageData = [];
 $page = $_GET['page'] ?? 'overview';
@@ -92,6 +99,11 @@ switch ($page) {
             'base_url'     => "index.php?page=permission&table={$currentTable}" . $filterQuery 
         ];
         break;
+    case 'setting':
+        $apiResult = call_api("http://127.0.0.1:8000/api/personalInfos/$adminId");
+        $pageData['info'] = $apiResult['data'] ?? [];
+        $pageData['id'] = $adminId ?? "";
+        break;
 }
 ?>
 
@@ -134,7 +146,6 @@ switch ($page) {
         <div class="nav">
             <?php renderComponent("navigation",false, ['currentPage' => $page]) ?> 
         </div>
-        <?php renderComponent("postdetail",false) ?>
         <div class="main-page">
             <?php
             renderComponent($page, true, $pageData);
@@ -157,6 +168,7 @@ switch ($page) {
 </body>
 </html>
 <script>
+    const baseUrl = 'http://127.0.0.1:8000';
     const defaultPlaceholderImg = '../../assets/admin/images/post_img.png';
     let currentPostData = null;
     let newUploadedFiles = {
@@ -169,16 +181,24 @@ switch ($page) {
     const apiConfigs = {
         'account': { 
             endpoint: 'accounts', 
-            query: '?include=roles'
+            get query() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const currentTable = urlParams.get('table') || '1';
+                const relation = currentTable === '2' ? 'employee.personalInfo' : 'user.personalInfo';
+                return `?include=roles,${relation}`;
+            }
         },
         'post': { 
-            endpoint: 'posts'
+            endpoint: 'posts',
+            query: ''
         },
         'comment': {
-            endpoint: 'comments'
+            endpoint: 'comments',
+            query: '?include=account'
         },
         'permission':{
-            endpoint: 'roles'
+            endpoint: 'roles',
+            query: '?include=permissions'
         },
         'price': {
             get endpoint() {
@@ -186,8 +206,16 @@ switch ($page) {
                 const currentTable = urlParams.get('table') || '1';
                 return currentTable === '2' ? 'rechargeRules' : 'payRules';
             },
-        query: ''
-    }
+            query: ''
+        },
+        'bill': {
+            get endpoint() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const currentTable = urlParams.get('table') || '1';
+                return currentTable === '2' ? 'rechargeBills' : 'payBills';
+            },
+            query: ''
+        }
     };
     function applyFilter(filterKey, filterValue) {
         const url = new URL(window.location.href);
@@ -234,7 +262,11 @@ switch ($page) {
         });
         
         // Vẽ biểu đồ
-        renderAllCharts();
+        // renderAllCharts();
+        renderMonthlyPostChart()
+        renderRoomChart();
+        renderWardChart();
+        renderRevenueChart();
 
         // Nút bấm ở table
         const dropdownBtns = document.querySelectorAll('.dropdown-container .top-btn');
@@ -316,45 +348,63 @@ switch ($page) {
 
         //Chon File
         // 1. Lắng nghe sự kiện click vào các ô ảnh
+        // 1. BẮT SỰ KIỆN CLICK CHO ẢNH BÀI ĐĂNG
         document.querySelectorAll('.image-slot').forEach(slot => {
             slot.addEventListener('click', function() {
                 const modal = document.getElementById('post-detail-modal');
-                if (!modal.classList.contains('edit-mode')) {
+                
+                // BẢO VỆ: Nếu trang không có modal này, hoặc modal không ở chế độ edit -> Bỏ qua
+                if (!modal || !modal.classList.contains('edit-mode')) {
                     return;
                 }
 
                 currentActiveSlot = this.getAttribute('data-slot');
-                document.getElementById('hidden-file-input').click();
+                const hiddenInput = document.getElementById('hidden-file-input');
+                if (hiddenInput) {
+                    hiddenInput.click();
+                }
             });
         });
 
-        // 2. Xử lý khi user chọn xong file
-        document.getElementById('hidden-file-input').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file || !currentActiveSlot) return;
+        // 2. XỬ LÝ KHI CHỌN ẢNH BÀI ĐĂNG
+        const hiddenFileInput = document.getElementById('hidden-file-input');
 
-            // A. Đổi ảnh hiển thị trên giao diện (Preview)
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                // Tìm đúng thẻ img của ô đang active để thay đổi src
-                document.getElementById(`img-${currentActiveSlot}`).src = event.target.result;
-            }
-            reader.readAsDataURL(file);
+        if (hiddenFileInput) {
+            hiddenFileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                
+                // SỬA CHÍNH XÁC DÒNG NÀY: Bỏ dấu ! thừa trước chữ typeof
+                if (!file || typeof currentActiveSlot === 'undefined' || !currentActiveSlot) return;
 
-            // B. Lưu file thật vào Quyển sổ
-            newUploadedFiles[currentActiveSlot] = file;
+                // A. Đổi ảnh hiển thị trên giao diện (Preview)
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    // Tìm đúng thẻ img của ô đang active để thay đổi src
+                    const imgElement = document.getElementById(`img-${currentActiveSlot}`);
+                    if (imgElement) {
+                        imgElement.src = event.target.result;
+                    }
+                }
+                reader.readAsDataURL(file);
 
-            // C. XÓA thẻ input hidden của ảnh cũ đi (nếu có)
-            // Để báo cho Laravel biết là "Ảnh cũ này đã bị tao ghi đè rồi, hãy xóa nó đi!"
-            const currentSlotWrapper = document.querySelector(`.image-slot[data-slot="${currentActiveSlot}"]`);
-            const oldHiddenInput = currentSlotWrapper.querySelector('input[type="hidden"]');
-            if (oldHiddenInput) {
-                oldHiddenInput.remove(); 
-            }
+                // B. Lưu file thật vào Quyển sổ
+                if (typeof newUploadedFiles !== 'undefined') {
+                    newUploadedFiles[currentActiveSlot] = file;
+                }
 
-            // Reset input file để có thể chọn lại file cùng tên
-            this.value = '';
-        });
+                // C. XÓA thẻ input hidden của ảnh cũ đi (nếu có)
+                const currentSlotWrapper = document.querySelector(`.image-slot[data-slot="${currentActiveSlot}"]`);
+                if (currentSlotWrapper) {
+                    const oldHiddenInput = currentSlotWrapper.querySelector('input[type="hidden"]');
+                    if (oldHiddenInput) {
+                        oldHiddenInput.remove(); 
+                    }
+                }
+
+                // Reset input file để có thể chọn lại file cùng tên
+                this.value = '';
+            });
+        }
 
         //Loc theo ngay
         const btnFilterDate = document.querySelector('.btn-filter-date');
@@ -430,7 +480,7 @@ switch ($page) {
             window.history.replaceState({}, '', currentUrl.toString());
         }
     }
-    function selectRow(trElement) {
+    function selectRow(trElement) { 
         const radio = trElement.querySelector('input[type="radio"]');
         
         if (radio) {
@@ -651,7 +701,7 @@ switch ($page) {
                     }
                 }
             }   
-            window.location.reload();
+            // window.location.reload();
         })
         .catch(error => {
             console.error("Lỗi lưu dữ liệu:", error);
@@ -747,17 +797,17 @@ switch ($page) {
             alert(error.message || "Có lỗi xảy ra! Không thể khôi phục dữ liệu này.");
         });
     }
-    function handleView(targetModel) {
+    // Thêm tham số id vào hàm
+    function handleView(id, targetModal) {
         const urlParams = new URLSearchParams(window.location.search);
         const currentPage = urlParams.get('page');
         const config = apiConfigs[currentPage];
         
-        // 1. CHỈ GỌI VÀO PROXY. Truyền đích đến vào biến target_endpoint
-        // Nhớ sửa lại đường dẫn tới file api_proxy.php cho đúng với thư mục dự án của bạn
-        const targetEndpoint = `${config.endpoint}/7${config.query}`;
+        let query = config.query ? config.query : '';
+        const targetEndpoint = `${config.endpoint}/${id}${query}`;
         const apiUrl = `../admin/core/api_proxy.php?target_endpoint=${encodeURIComponent(targetEndpoint)}`;
 
-        // 2. Fetch bây giờ cực kỳ gọn nhẹ, KHÔNG CẦN TRUYỀN TOKEN NỮA
+        // 2. Fetch dữ liệu
         fetch(apiUrl, {
             method: 'GET',
             headers: {
@@ -766,7 +816,6 @@ switch ($page) {
         })
         .then(response => response.json())
         .then(result => {
-            // Kiểm tra xem Proxy/Laravel có trả về lỗi không
             if (result.status === 'error' || !result.data) {
                 alert("Lỗi: " + (result.message || "Không thể lấy dữ liệu"));
                 return;
@@ -774,39 +823,227 @@ switch ($page) {
 
             const data = result.data;
             
-            // --- CÁC ĐOẠN CODE ĐỔ DỮ LIỆU CỦA BẠN GIỮ NGUYÊN BÊN DƯỚI ---
-            document.getElementById('view-username').textContent = data.username || 'Không xác định';
-            document.getElementById('view-avatar-text').textContent = (data.username || 'A').charAt(0);
-            document.getElementById('view-role').textContent = data.role === 'employee' ? 'Nhân viên' : 'Khách hàng';
+            // ========================================================
+            // 3. TÁCH LOGIC ĐỔ DỮ LIỆU TÙY THEO TỪNG TRANG
+            // ========================================================
             
-            document.getElementById('view-id').textContent = data.id;
+            // ---> NẾU LÀ TRANG ACCOUNT
+            if (currentPage === 'account') {
+                document.getElementById('view-username').textContent = data.username || 'Không xác định';
+                document.getElementById('view-avatar-text').textContent = (data.username || 'A').charAt(0);
+                document.getElementById('view-role').textContent = data.role === 'employee' ? 'Nhân viên' : 'Khách hàng';
+                document.getElementById('view-id').textContent = data.id;
+                
+                const statusEl = document.getElementById('view-status');
+                if (data.deletedAt === null) {
+                    statusEl.innerHTML = '<span class="badge-detail badge-active">Đang hoạt động</span>';
+                } else {
+                    statusEl.innerHTML = '<span class="badge-detail badge-inactive">Đã khóa / Xóa</span>';
+                }
+
+                const profileInfo = data.employee || data.user;
+                document.getElementById('view-phone').textContent = profileInfo?.personalInfo?.phoneNumber || 'Chưa cập nhật';
+                document.getElementById('view-email').textContent = profileInfo?.personalInfo?.email || 'Chưa cập nhật';
+
+                const rolesContainer = document.getElementById('view-roles-container');
+                rolesContainer.innerHTML = ''; 
+                
+                if (data.roles && data.roles.length > 0) {
+                    data.roles.forEach(role => {
+                        const badge = document.createElement('span');
+                        badge.className = 'badge-detail badge-permission';
+                        badge.textContent = role.name || role;
+                        rolesContainer.appendChild(badge);
+                    });
+                } else {
+                    rolesContainer.innerHTML = '<span class="info-value" style="font-style: italic; color: #999;">Không có quyền đặc biệt</span>';
+                }
+            }
             
-            const statusEl = document.getElementById('view-status');
-            if (data.deletedAt === null) {
-                statusEl.innerHTML = '<span class="badge-detail badge-active">Đang hoạt động</span>';
-            } else {
-                statusEl.innerHTML = '<span class="badge-detail badge-inactive">Đã khóa / Xóa</span>';
+            // ---> NẾU LÀ TRANG PERMISSION (Quyền hạn)
+            else if (currentPage === 'permission') {
+                document.getElementById('view-permission-name').textContent = data.name || 'Không xác định';
+                document.getElementById('view-guard-name').textContent = `Guard: ${data.guard_name || 'api'}`;
+                document.getElementById('view-permission-id').textContent = data.id;
+                document.getElementById('view-permission-key').textContent = data.name || '';
+                
+                const formatDate = (dateString) => {
+                    if (!dateString) return '--/--/----';
+                    const date = new Date(dateString);
+                    return date.toLocaleDateString('vi-VN');
+                };
+
+                document.getElementById('view-created-at').textContent = formatDate(data.createdAt);
+                
+                const descEl = document.getElementById('view-description');
+                if (descEl) {
+                    descEl.textContent = data.description || 'Chưa có mô tả chi tiết cho quyền hạn này.';
+                }
+
+                // XỬ LÝ DANH SÁCH QUYỀN CON (PERMISSIONS)
+                const subPermContainer = document.getElementById('view-sub-permissions-container');
+                if (subPermContainer) {
+                    subPermContainer.innerHTML = '';
+
+                    if (data.permissions && data.permissions.length > 0) {
+                        data.permissions.forEach(perm => {
+                            const badge = document.createElement('span');
+                            badge.className = 'badge-detail badge-sub-permission';
+                            badge.textContent = perm.name;
+                            badge.title = `ID: ${perm.id} | Ngày tạo: ${formatDate(perm.createdAt)}`;
+                            subPermContainer.appendChild(badge);
+                        });
+                    } else {
+                        subPermContainer.innerHTML = '<span class="info-value" style="font-style: italic; color: #999;">Role này chưa được gán quyền hạn nào.</span>';
+                    }
+                }
+            } else if (currentPage === 'comment') {
+                const account = data.account || {};
+                const username = account.username || 'Khách ẩn danh';
+
+                // Cập nhật Header
+                document.getElementById('view-comment-username').textContent = username;
+                document.getElementById('view-comment-avatar-text').textContent = username.charAt(0).toUpperCase();
+                document.getElementById('view-comment-role').textContent = account.role === 'employee' ? 'Nhân viên' : 'Khách hàng';
+                
+                // Cập nhật Grid
+                document.getElementById('view-comment-id').textContent = data.id;
+                document.getElementById('view-comment-account-id').textContent = account.id ? `${account.id}` : 'Không có';
+
+                // Xử lý Ngày tháng
+                const formatDate = (dateString) => {
+                    if (!dateString) return '--/--/----';
+                    const date = new Date(dateString);
+                    return date.toLocaleDateString('vi-VN');
+                };
+                document.getElementById('view-comment-date').textContent = formatDate(data.createdAt || data.created_at);
+
+                // Xử lý Trạng thái (Bị xóa/ẩn hay Đang hiển thị)
+                const statusEl = document.getElementById('view-comment-status');
+                if (data.deletedAt === null) {
+                    statusEl.innerHTML = '<span class="badge-detail badge-active" style="background-color: #D1FAE5; color: #059669;">Hiển thị</span>';
+                } else {
+                    statusEl.innerHTML = '<span class="badge-detail badge-inactive" style="background-color: #FEE2E2; color: #DC2626;">Đã bị ẩn</span>';
+                }
+
+                // Xử lý Nội dung bình luận
+                document.getElementById('view-comment-content').textContent = data.content || 'Không có nội dung.';
+            }
+            // ---> NẾU LÀ TRANG HÓA ĐƠN (Invoice / Payment)
+            else if (currentPage === 'bill') {
+                
+                // Hàm tiện ích: Format ngày
+                const formatDate = (dateString) => {
+                    if (!dateString) return '--/--/----';
+                    const date = new Date(dateString);
+                    return date.toLocaleDateString('vi-VN');
+                };
+
+                // Hàm tiện ích: Format tiền VNĐ
+                const formatCurrency = (amount) => {
+                    if (!amount) return '0 đ';
+                    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+                };
+
+                // 1. Thông tin chung
+                document.getElementById('view-invoice-id').textContent = data.id;
+                document.getElementById('view-invoice-date').textContent = formatDate(data.createdAt);
+                document.getElementById('view-invoice-points').textContent = `+${data.points || 0} Điểm`;
+
+                // Xử lý Trạng thái (Status)
+                const statusEl = document.getElementById('view-invoice-status');
+                if (data.status === 'completed') {
+                    statusEl.innerHTML = '<span class="badge-detail badge-active" style="background-color: #D1FAE5; color: #059669;">Thành công</span>';
+                } else if (data.status === 'pending') {
+                    statusEl.innerHTML = '<span class="badge-detail badge-warning" style="background-color: #FEF3C7; color: #D97706;">Đang xử lý</span>';
+                } else {
+                    statusEl.innerHTML = '<span class="badge-detail badge-inactive" style="background-color: #FEE2E2; color: #DC2626;">Thất bại / Hủy</span>';
+                }
+
+                // 2. Thông tin Tài khoản
+                const acc = data.account || {};
+                document.getElementById('view-invoice-username').textContent = acc.username ? `${acc.username} (ID: ${acc.id})` : 'Khách vãng lai';
+                document.getElementById('view-invoice-role').textContent = acc.role === 'employee' ? 'Nhân viên' : 'Khách hàng';
+
+                // 3. Thông tin Bài đăng
+                const post = data.post || {};
+                document.getElementById('view-invoice-post-id').textContent = post.id ? `#${post.id}` : '---';
+                document.getElementById('view-invoice-post-title').textContent = post.title || 'Bài đăng không tồn tại hoặc đã bị xóa';
+                document.getElementById('view-invoice-post-price').textContent = formatCurrency(post.price);
+
+                // Nối chuỗi địa chỉ
+                const addressParts = [post.houseNumber, post.ward, post.province].filter(Boolean);
+                document.getElementById('view-invoice-post-address').textContent = addressParts.length > 0 ? addressParts.join(', ') : 'Chưa cập nhật địa chỉ';
+            }
+            // ---> NẾU LÀ TRANG CẤU HÌNH GIÁ ĐĂNG BÀI
+            else if (currentPage === 'price') {
+                // Hàm tiện ích format ngày
+                const formatDate = (dateString) => {
+                    if (!dateString) return '--/--/----';
+                    const date = new Date(dateString);
+                    return date.toLocaleDateString('vi-VN') + ' ' + date.toLocaleTimeString('vi-VN');
+                };
+
+                // 1. Fill thông tin cơ bản
+                document.getElementById('view-pricing-id').textContent = data.id;
+                document.getElementById('view-pricing-created').textContent = formatDate(data.createdAt);
+                document.getElementById('view-pricing-points').textContent = `${data.points} Điểm`;
+
+                // 2. Xử lý Trạng thái & Hiển thị khung "Đã xóa"
+                const statusEl = document.getElementById('view-pricing-status');
+                const deletedGroup = document.getElementById('view-pricing-deleted-group');
+
+                if (data.deletedAt) {
+                    // Nếu có deletedAt -> Cấu hình này đã bị ngừng áp dụng
+                    statusEl.innerHTML = '<span class="badge-detail badge-inactive" style="background-color: #FEE2E2; color: #DC2626;">Ngừng áp dụng (Đã xóa)</span>';
+                    deletedGroup.style.display = 'block';
+                    document.getElementById('view-pricing-deleted').textContent = formatDate(data.deletedAt);
+                } else {
+                    // Nếu không có deletedAt -> Đang là cấu hình hiện tại
+                    statusEl.innerHTML = '<span class="badge-detail badge-active" style="background-color: #D1FAE5; color: #059669;">Đang áp dụng</span>';
+                    deletedGroup.style.display = 'none';
+                }
+            }
+            // ---> NẾU LÀ TRANG GÓI QUY ĐỔI NẠP TIỀN
+            else if (currentPage === 'exchange') { // Sửa lại 'exchange' cho khớp với ?page= của bạn
+                
+                // Hàm tiện ích format
+                const formatDate = (dateString) => {
+                    if (!dateString) return '--/--/----';
+                    const date = new Date(dateString);
+                    return date.toLocaleDateString('vi-VN') + ' ' + date.toLocaleTimeString('vi-VN');
+                };
+                const formatCurrency = (amount) => {
+                    if (!amount) return '0 đ';
+                    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+                };
+
+                // 1. Thông tin chung
+                document.getElementById('view-exchange-id').textContent = data.id;
+                document.getElementById('view-exchange-created').textContent = formatDate(data.createdAt);
+                
+                // 2. Fill Tỷ lệ quy đổi (Tiền và Điểm)
+                document.getElementById('view-exchange-money').textContent = formatCurrency(parseFloat(data.money));
+                document.getElementById('view-exchange-points').textContent = `+${new Intl.NumberFormat('vi-VN').format(data.points)} Điểm`;
+
+                // 3. Xử lý Trạng thái & Khung hiển thị "Đã xóa"
+                const statusEl = document.getElementById('view-exchange-status');
+                const deletedGroup = document.getElementById('view-exchange-deleted-group');
+
+                if (data.deletedAt) {
+                    // Đã bị ngừng áp dụng
+                    statusEl.innerHTML = '<span class="badge-detail badge-inactive" style="background-color: #FEE2E2; color: #DC2626;">Ngừng áp dụng (Cũ)</span>';
+                    deletedGroup.style.display = 'block';
+                    document.getElementById('view-exchange-deleted').textContent = formatDate(data.deletedAt);
+                } else {
+                    // Đang hoạt động
+                    statusEl.innerHTML = '<span class="badge-detail badge-active" style="background-color: #D1FAE5; color: #059669;">Đang áp dụng</span>';
+                    deletedGroup.style.display = 'none';
+                }
             }
 
-            const profileInfo = data.employee || data.user;
-            document.getElementById('view-phone').textContent = profileInfo?.personalInfo?.phoneNumber || 'Chưa cập nhật';
-            document.getElementById('view-email').textContent = profileInfo?.personalInfo?.email || 'Chưa cập nhật';
-
-            const rolesContainer = document.getElementById('view-roles-container');
-            rolesContainer.innerHTML = ''; 
-            
-            if (data.roles && data.roles.length > 0) {
-                data.roles.forEach(role => {
-                    const badge = document.createElement('span');
-                    badge.className = 'badge-detail badge-permission';
-                    badge.textContent = role.name || role; // Đảm bảo lấy đúng name nếu role là object
-                    rolesContainer.appendChild(badge);
-                });
-            } else {
-                rolesContainer.innerHTML = '<span class="info-value" style="font-style: italic; color: #999;">Không có quyền đặc biệt</span>';
-            }
-
-            openModal(targetModel);
+            // Mở modal sau khi đã đổ dữ liệu xong
+            openModal(targetModal);
         })
         .catch(error => {
             alert("Lỗi tải chi tiết!");
@@ -883,13 +1120,16 @@ switch ($page) {
                 // BƯỚC 2: ĐỔ DỮ LIỆU TỪ API VÀO 4 Ô TƯƠNG ỨNG
                 // ==========================================
                 if (data.postImages && data.postImages.length > 0) {
-                    data.postImages.forEach((imgObj, index) => {
-                        // Xác định vị trí ô dựa vào index của mảng (0 là main, 1,2,3 là sub)
+                    data.postImages.forEach((imgObj) => {
+                        // Dùng thuộc tính 'order' từ Database thay vì 'index' của mảng
+                        // Ép kiểu về số (parseInt) cho chắc chắn
+                        let order = parseInt(imgObj.order); 
                         let slotName = '';
-                        if (index === 0) slotName = 'main';
-                        else if (index === 1) slotName = 'sub_1';
-                        else if (index === 2) slotName = 'sub_2';
-                        else if (index === 3) slotName = 'sub_3';
+
+                        if (order === 1) slotName = 'main';
+                        else if (order === 2) slotName = 'sub_1';
+                        else if (order === 3) slotName = 'sub_2';
+                        else if (order === 4) slotName = 'sub_3';
 
                         if (slotName) {
                             const imgEl = document.getElementById(`img-${slotName}`);
@@ -905,7 +1145,6 @@ switch ($page) {
                             if (wrapper) {
                                 let hiddenInput = wrapper.querySelector('input[type="hidden"]');
                                 if (hiddenInput) {
-                                    // Bạn có thể lưu url (imgObj.imagePostUrl) hoặc ID của ảnh tùy logic Laravel
                                     hiddenInput.value = imgObj.imagePostUrl; 
                                 }
                             }
@@ -960,19 +1199,17 @@ switch ($page) {
             roomTypeSelect.value = data.room_type;
         }
         const citySelect = document.getElementById('city-select');
-        const wardSelect = document.getElementById('ward-select');
-        if (citySelect && data.city_id) {
-            if (!citySelect.querySelector(`option[value="${data.city_id}"]`)) {
-                citySelect.innerHTML += `<option value="${data.city_id}" selected>${data.city_name || 'Tỉnh ID ' + data.city_id}</option>`;
+        
+        if (citySelect && data.province) {
+            citySelect.value = data.province; 
+            if (citySelect.value) {
+                loadWards(data.province, data.ward);
             }
-            citySelect.value = data.city_id;
-        }
-
-        if (wardSelect && data.ward_id) {
-            if (!wardSelect.querySelector(`option[value="${data.ward_id}"]`)) {
-                wardSelect.innerHTML += `<option value="${data.ward_id}" selected>${data.ward_name || 'Phường ID ' + data.ward_id}</option>`;
+        } else {
+            const wardSelect = document.getElementById('ward-select');
+            if (wardSelect) {
+                wardSelect.innerHTML = '<option value="">-- Chọn Phường/Xã --</option>';
             }
-            wardSelect.value = data.ward_id;
         }
     }
     function switchToView() {
@@ -991,11 +1228,10 @@ switch ($page) {
         }
     }
     function restoreImages(postImages) {
-        const baseUrl = "http://127.0.0.1:8000";
-        const defaultImg = "../../assets/admin/images/post_img.png";
+        const defaultImg = '../../assets/admin/images/post_img.png';
         const slots = ['main', 'sub_1', 'sub_2', 'sub_3'];
 
-        // Bước A: Reset toàn bộ về ảnh mặc định trước
+        // 1. DỌN SẠCH ẢNH TẠM (Phòng khi user lỡ đổi ảnh mới nhưng lại bấm Hủy)
         slots.forEach(slot => {
             const imgEl = document.getElementById(`img-${slot}`);
             if (imgEl) imgEl.src = defaultImg;
@@ -1003,22 +1239,39 @@ switch ($page) {
             const wrapper = document.querySelector(`.image-slot[data-slot="${slot}"]`);
             if (wrapper) {
                 let hiddenInput = wrapper.querySelector('input[type="hidden"]');
-                if (hiddenInput) hiddenInput.value = ""; 
+                if (hiddenInput) {
+                    hiddenInput.value = ""; 
+                } else {
+                    wrapper.insertAdjacentHTML('beforeend', `<input type="hidden" name="existing_images[${slot}]" value="">`);
+                }
             }
         });
-
-        // Bước B: Rải lại ảnh từ data gốc vào
+        
+        // 2. ĐỔ LẠI DỮ LIỆU GỐC THEO ĐÚNG ORDER
         if (postImages && postImages.length > 0) {
-            postImages.forEach((imgObj, index) => {
-                let slotName = ['main', 'sub_1', 'sub_2', 'sub_3'][index];
+            postImages.forEach(imgObj => {
+                let order = parseInt(imgObj.order); // Dùng order, tuyệt đối không dùng index
+                let slotName = '';
+
+                if (order === 1) slotName = 'main';
+                else if (order === 2) slotName = 'sub_1';
+                else if (order === 3) slotName = 'sub_2';
+                else if (order === 4) slotName = 'sub_3';
+
                 if (slotName) {
                     const imgEl = document.getElementById(`img-${slotName}`);
                     const wrapper = document.querySelector(`.image-slot[data-slot="${slotName}"]`);
                     
-                    if (imgEl) imgEl.src = baseUrl + imgObj.imagePostUrl;
+                    // Đảm bảo biến baseUrl đã được khai báo ở file của bạn
+                    const fullUrl = baseUrl + imgObj.imagePostUrl; 
+
+                    // Gán ảnh và input ẩn
+                    if (imgEl) imgEl.src = fullUrl;
                     if (wrapper) {
                         let hiddenInput = wrapper.querySelector('input[type="hidden"]');
-                        if (hiddenInput) hiddenInput.value = imgObj.imagePostUrl; 
+                        if (hiddenInput) {
+                            hiddenInput.value = imgObj.imagePostUrl; 
+                        }
                     }
                 }
             });
@@ -1116,52 +1369,35 @@ switch ($page) {
     function revokeRoleFromAccount(event, accountId, roleNameToRemove, encodedRoles, targetModel, roleId) {
         event.stopPropagation();
         
-        // 1. Giải mã mảng quyền hiện tại
         let currentRoles = [];
         try {
             currentRoles = JSON.parse(decodeURIComponent(encodedRoles));
         } catch (e) {
-            console.error("Lỗi giải mã roles:", e);
-            return;
+            currentRoles = [];
         }
 
-        if (!confirm(`Xác nhận tước quyền [${roleNameToRemove}] khỏi tài khoản này?`)) return;
+        if (!confirm(`Xác nhận tước quyền [${roleNameToRemove}]?`)) return;
 
-        // 2. LOGIC LỌC MẢNG (QUAN TRỌNG)
-        // Giả sử: currentRoles = ["admin", "user"]
-        // Nếu roleNameToRemove = "admin" -> remainingRoles = ["user"]
+        // 1. Lọc mảng (Nếu tước hết, remainingRoles sẽ là [])
         let remainingRoles = currentRoles.filter(role => role !== roleNameToRemove);
 
-        // 3. Đóng gói vào FormData
-        let formData = new FormData();
-        formData.append('_method', 'PUT'); 
-        formData.append('target_endpoint', `accounts/${accountId}`);
-
-        // 4. XỬ LÝ GỬI MẢNG ROLES[]
-        if (remainingRoles.length > 0) {
-            // Nếu còn quyền (ví dụ còn ["user"]):
-            // Duyệt mảng và append NHIỀU LẦN vào cùng 1 key 'roles[]'
-            remainingRoles.forEach(role => {
-                formData.append('roles[]', role); 
-            });
-        } else {
-            // Nếu tước hết quyền (mảng rỗng []):
-            // Ta phải gửi một giá trị để Laravel biết trường 'roles' đang tồn tại nhưng trống.
-            // Gửi key 'roles' với giá trị rỗng.
-            formData.append('roles[]', ''); 
-        }
-
-        // --- DEBUG: Kiểm tra Payload trước khi gửi ---
-        console.log("Mảng gốc:", currentRoles);
-        console.log("Mảng sau khi lọc:", remainingRoles);
-        // --------------------------------------------
+        // 2. Tạo Object thuần túy (KHÔNG dùng new FormData)
+        const payload = {
+            _method: 'PUT',
+            roles: remainingRoles, // Gửi nguyên mảng JS []
+            target_endpoint: `accounts/${accountId}`
+        };
 
         const apiUrl = `../admin/core/api_proxy.php`;
 
+        // 3. Gửi Fetch với Content-Type: application/json
         fetch(apiUrl, {
             method: 'POST',
-            headers: { "Accept": "application/json" },
-            body: formData
+            headers: {
+                "Content-Type": "application/json", // QUAN TRỌNG: Để Proxy và Laravel nhận diện JSON
+                "Accept": "application/json"
+            },
+            body: JSON.stringify(payload) // Chuyển Object thành chuỗi JSON
         })
         .then(response => response.json())
         .then(result => {
@@ -1170,160 +1406,417 @@ switch ($page) {
                 return;
             }
             alert("Thu hồi quyền thành công!");
-            // Gọi lại hàm load danh sách để cập nhật UI
             openAccountListModal(null, targetModel, roleNameToRemove, roleId);
         })
         .catch(error => {
-            alert("Lỗi thực hiện tước quyền!");
             console.error("Fetch error:", error);
+            alert("Lỗi kết nối hệ thống!");
         });
     }
     // Hàm vẽ toàn bộ biểu đồ
-    function renderAllCharts() {
-        // Cài đặt chung cho mọi biểu đồ để font chữ đẹp hơn
-        Chart.defaults.font.family = "'Roboto', sans-serif";
-        Chart.defaults.color = '#64748B'; // Màu chữ xám nhạt hiện đại
-
-        // ==========================================
-        // 1. BIỂU ĐỒ BÀI ĐĂNG THEO THÁNG (LINE CHART)
-        // ==========================================
-        const ctx1 = document.getElementById('chart1');
-        if (ctx1) {
-            new Chart(ctx1, {
-                type: 'line',
-                data: {
-                    labels: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'],
-                    datasets: [{
-                        label: 'Số lượng bài đăng mới',
-                        data: [120, 190, 150, 220, 300, 250, 400, 350, 450, 410, 500, 580],
-                        borderColor: '#3B82F6', // Xanh dương
-                        backgroundColor: '#3B82F6',
-                        tension: 0.4, // Đường cong mềm mại
-                        borderWidth: 3,
-                        pointRadius: 0, // Ẩn các chấm tròn cho mượt
-                        pointHoverRadius: 6
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } }, // Ẩn ghi chú vì chỉ có 1 đường
-                    scales: {
-                        y: { beginAtZero: true, grid: { borderDash: [5, 5] } }, // Lưới kẻ đứt nét
-                        x: { grid: { display: false } }
-                    }
+    async function renderMonthlyPostChart() {
+        try {
+            // 1. GỌI API LẤY DỮ LIỆU BÀI ĐĂNG THEO THÁNG
+            const response = await fetch('../admin/core/api_proxy.php?target_endpoint=statistic/posts/month_data&year=2025', {
+                method: 'GET',
+                headers: {
+                    "Accept": "application/json"
                 }
             });
-        }
 
-        // ==========================================
-        // 2. BIỂU ĐỒ TỶ LỆ KIỂU PHÒNG (DOUGHNUT CHART)
-        // ==========================================
-        const ctx2 = document.getElementById('chart2');
-        if (ctx2) {
-            new Chart(ctx2, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Trọ khép kín', 'Chung cư mini', 'Nhà nguyên căn', 'Ở ghép'],
-                    datasets: [{
-                        data: [45, 25, 20, 10], // Tỷ lệ %
-                        backgroundColor: [
-                            '#3B82F6', // Xanh dương
-                            '#10B981', // Xanh lá
-                            '#F59E0B', // Vàng cam
-                            '#8B5CF6'  // Tím
-                        ],
-                        borderWidth: 0, // Bỏ viền trắng chia cắt
-                        hoverOffset: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '70%', // Làm cho vành khuyên mỏng lại cho tinh tế
-                    plugins: {
-                        legend: {
-                            position: 'right', // Đẩy chú thích sang phải
-                            labels: { boxWidth: 12, usePointStyle: true } // Chú thích hình tròn
+            const result = await response.json();
+
+            // 2. Khởi tạo mảng 12 tháng mặc định = 0
+            const postsByMonth = new Array(12).fill(0);
+
+            // 3. Trích xuất dữ liệu từ JSON trả về
+            if (result && result.monthlyDetails) {
+                result.monthlyDetails.forEach(item => {
+                    const monthIndex = item.month - 1; // Tháng 1 => index 0
+                    postsByMonth[monthIndex] = item.total;
+                });
+            }
+
+            // 4. Vẽ biểu đồ với dữ liệu động
+            const ctx1 = document.getElementById('chart1');
+            if (ctx1) {
+                new Chart(ctx1, {
+                    type: 'line',
+                    data: {
+                        labels: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'],
+                        datasets: [{
+                            label: 'Số lượng bài đăng mới',
+                            data: postsByMonth,
+                            borderColor: '#3B82F6',
+                            backgroundColor: '#3B82F6',
+                            tension: 0.4,
+                            borderWidth: 3,
+                            pointRadius: 0,
+                            pointHoverRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return ` ${context.parsed.y} bài đăng`;
+                                    },
+                                    // Hiển thị thêm tổng năm ở footer tooltip
+                                    footer: function() {
+                                        return `Tổng năm ${result.year}: ${result.yearlyTotal} bài`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: { borderDash: [5, 5] },
+                                ticks: { stepSize: 1 } // Trục Y hiển thị số nguyên
+                            },
+                            x: { grid: { display: false } }
                         }
                     }
+                });
+            }
+
+        } catch (error) {
+            console.error("Lỗi khi tải dữ liệu biểu đồ bài đăng theo tháng:", error);
+        }
+    }
+
+    async function renderRoomChart() {
+        try {
+            // 1. GỌI QUA PROXY ĐỂ TỰ ĐỘNG GẮN TOKEN
+            const response = await fetch('../admin/core/api_proxy.php?target_endpoint=statistic/posts/room_data', {
+                method: 'GET',
+                headers: {
+                    "Accept": "application/json"
                 }
             });
-        }
+            
+            const result = await response.json();
 
-        // ==========================================
-        // 3. TOP 10 KHU VỰC NHIỀU BÀI ĐĂNG (HORIZONTAL BAR)
-        // ==========================================
-        const ctx3 = document.getElementById('chart3');
-        if (ctx3) {
-            new Chart(ctx3, {
-                type: 'bar',
-                data: {
-                    labels: ['Cầu Giấy', 'Đống Đa', 'Thanh Xuân', 'Nam Từ Liêm', 'Hai Bà Trưng', 'Hà Đông', 'Hoàng Mai', 'Bắc Từ Liêm', 'Ba Đình', 'Tây Hồ'],
-                    datasets: [{
-                        label: 'Số bài đăng',
-                        data: [1250, 980, 850, 720, 650, 540, 480, 420, 350, 210],
-                        backgroundColor: '#8B5CF6', // Màu tím cho bảng xếp hạng
-                        borderRadius: 4 // Bo góc cột biểu đồ
-                    }]
-                },
-                options: {
-                    indexAxis: 'y', // QUAN TRỌNG: Lật ngang biểu đồ
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: { beginAtZero: true, grid: { borderDash: [5, 5] } },
-                        y: { grid: { display: false } }
-                    }
-                }
-            });
-        }
+            // 2. Từ điển dịch tên loại phòng từ Backend sang Frontend
+            const roomTypeMap = {
+                'room': 'Trọ khép kín',
+                'apartment': 'Chung cư mini',
+                'house': 'Nhà nguyên căn',
+                'dorm': 'Ở ghép'
+            };
 
-        // ==========================================
-        // 4. THỐNG KÊ DOANH THU (AREA CHART)
-        // ==========================================
-        const ctx4 = document.getElementById('chart4');
-        if (ctx4) {
-            new Chart(ctx4, {
-                type: 'line',
-                data: {
-                    labels: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'],
-                    datasets: [{
-                        label: 'Doanh thu (VNĐ)',
-                        data: [15, 18, 12, 20, 25, 30, 28, 35, 40, 38, 45, 50], // Đơn vị: Triệu VNĐ
-                        borderColor: '#10B981', // Màu xanh lá tượng trưng cho tiền bạc
-                        backgroundColor: 'rgba(16, 185, 129, 0.15)', // Màu xanh lá nhạt tô nền
-                        borderWidth: 3,
-                        fill: true, // QUAN TRỌNG: Bật đổ màu nền dưới biểu đồ
-                        tension: 0.4,
-                        pointRadius: 3,
-                        pointBackgroundColor: '#FFFFFF',
-                        pointBorderColor: '#10B981',
-                        pointBorderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                // Định dạng thêm chữ "Triệu VNĐ" vào tooltip khi hover chuột
-                                label: function(context) {
-                                    return context.parsed.y + ' Triệu VNĐ';
+            let chartLabels = [];
+            let chartData = [];
+
+            // 3. Trích xuất dữ liệu từ JSON trả về
+            if (result && result.roomTypeDetails) {
+                result.roomTypeDetails.forEach(item => {
+                    const translatedName = roomTypeMap[item.roomType] || item.roomType; 
+                    chartLabels.push(translatedName);
+                    chartData.push(item.total);
+                });
+            }
+            // 4. Vẽ biểu đồ với dữ liệu động
+            const ctx2 = document.getElementById('chart2');
+            if (ctx2) {
+                new Chart(ctx2, {
+                    type: 'doughnut',
+                    data: {
+                        labels: chartLabels, // Gắn mảng nhãn động vào đây
+                        datasets: [{
+                            data: chartData, // Gắn mảng số liệu động vào đây
+                            backgroundColor: [
+                                '#3B82F6', // Xanh dương
+                                '#10B981', // Xanh lá
+                                '#F59E0B', // Vàng cam
+                                '#8B5CF6', // Tím
+                                '#EF4444'  // Đỏ (Dự phòng)
+                            ],
+                            borderWidth: 0, 
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '70%', 
+                        plugins: {
+                            legend: {
+                                position: 'right', 
+                                labels: { 
+                                    boxWidth: 12, 
+                                    usePointStyle: true 
+                                } 
+                            },
+                            // Bổ sung thêm tooltip hiển thị số lượng khi rê chuột
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return ` ${context.label}: ${context.raw} phòng`;
+                                    }
                                 }
                             }
                         }
-                    },
-                    scales: {
-                        y: { beginAtZero: true, grid: { borderDash: [5, 5] } },
-                        x: { grid: { display: false } }
                     }
+                });
+            }
+        } catch (error) {
+            console.error("Lỗi khi tải dữ liệu biểu đồ phòng:", error);
+        }
+
+        
+    }
+    
+    async function renderWardChart() {
+        try {
+            // 1. Gọi API lấy dữ liệu phường/xã
+            const response = await fetch('../admin/core/api_proxy.php?target_endpoint=statistic/posts/ward_data&province=38', {
+                method: 'GET',
+                headers: {
+                    "Accept": "application/json"
                 }
             });
+
+            const result = await response.json();
+
+            let chartLabels = [];
+            let chartData = [];
+
+            // 2. Trích xuất dữ liệu từ JSON trả về, lọc bỏ các phường có total = 0
+            if (result && result.wardDetails) {
+                result.wardDetails
+                    .filter(item => item.total > 0) // Chỉ hiển thị phường có bài đăng
+                    .sort((a, b) => b.total - a.total) // Sắp xếp giảm dần
+                    .forEach(item => {
+                        chartLabels.push(item.ward);
+                        chartData.push(item.total);
+                    });
+            }
+
+            // 3. Vẽ biểu đồ bar ngang với dữ liệu động
+            const ctx3 = document.getElementById('chart3');
+            if (ctx3) {
+                new Chart(ctx3, {
+                    type: 'bar',
+                    data: {
+                        labels: chartLabels,
+                        datasets: [{
+                            label: 'Số bài đăng',
+                            data: chartData,
+                            backgroundColor: '#8B5CF6',
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y', // Lật ngang biểu đồ
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return ` ${context.label}: ${context.raw} bài đăng`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                ticks: { precision: 0 }, // Chỉ hiển thị số nguyên
+                                grid: { borderDash: [5, 5] }
+                            },
+                            y: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+        } catch (error) {
+            console.error("Lỗi khi tải dữ liệu biểu đồ phường:", error);
         }
     }
+
+    async function renderRevenueChart() {
+        try {
+            // 1. GỌI API LẤY DỮ LIỆU DOANH THU
+            const response = await fetch('../admin/core/api_proxy.php?target_endpoint=statistic/revenue&year=2025&with_taxes=true&compare_year=2024', {
+                method: 'GET',
+                headers: {
+                    "Accept": "application/json"
+                }
+            });
+
+            const result = await response.json();
+
+            // 2. Khởi tạo mảng 12 tháng mặc định = 0
+            const revenueByMonth = new Array(12).fill(0);
+            const compareRevenueByMonth = new Array(12).fill(0);
+
+            // 3. Trích xuất dữ liệu năm hiện tại
+            if (result && result.monthlyRevenueDetails) {
+                result.monthlyRevenueDetails.forEach(item => {
+                    const monthIndex = item.month - 1; // Tháng 1 => index 0
+                    revenueByMonth[monthIndex] = Math.round(Number(item.totalRevenue) / 1000000 * 100) / 100; // Quy đổi sang Triệu VNĐ, làm tròn 2 chữ số
+                });
+            }
+
+            // 4. Trích xuất dữ liệu năm so sánh (nếu có)
+            if (result && result.compareMonthlyRevenueDetails) {
+                result.compareMonthlyRevenueDetails.forEach(item => {
+                    const monthIndex = item.month - 1;
+                    compareRevenueByMonth[monthIndex] = Math.round(Number(item.totalRevenue) / 1000000 * 100) / 100;
+                });
+            }
+
+            const currentYear = result.year || '2025';
+            const compareYear = result.compareYear || '2024';
+
+            // 5. Vẽ biểu đồ với dữ liệu động
+            const ctx4 = document.getElementById('chart4');
+            if (ctx4) {
+                new Chart(ctx4, {
+                    type: 'line',
+                    data: {
+                        labels: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'],
+                        datasets: [
+                            {
+                                label: `Doanh thu ${currentYear}`,
+                                data: revenueByMonth,
+                                borderColor: '#10B981',
+                                backgroundColor: 'rgba(16, 185, 129, 0.15)',
+                                borderWidth: 3,
+                                fill: true,
+                                tension: 0.4,
+                                pointRadius: 3,
+                                pointBackgroundColor: '#FFFFFF',
+                                pointBorderColor: '#10B981',
+                                pointBorderWidth: 2
+                            },
+                            // Dataset năm so sánh — chỉ hiển thị nếu API trả về dữ liệu
+                            ...(result.compareMonthlyRevenueDetails ? [{
+                                label: `Doanh thu ${compareYear}`,
+                                data: compareRevenueByMonth,
+                                borderColor: '#F59E0B',
+                                backgroundColor: 'rgba(245, 158, 11, 0.10)',
+                                borderWidth: 2,
+                                fill: false,
+                                tension: 0.4,
+                                pointRadius: 3,
+                                pointBackgroundColor: '#FFFFFF',
+                                pointBorderColor: '#F59E0B',
+                                pointBorderWidth: 2,
+                                borderDash: [5, 5] // Đường nét đứt để phân biệt năm cũ
+                            }] : [])
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top',
+                                labels: { boxWidth: 12, usePointStyle: true }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const value = context.parsed.y;
+                                        if (value >= 1) {
+                                            return ` ${context.dataset.label}: ${value.toLocaleString('vi-VN')} Triệu VNĐ`;
+                                        }
+                                        // Hiển thị dạng nghìn VNĐ nếu giá trị nhỏ hơn 1 triệu
+                                        return ` ${context.dataset.label}: ${(value * 1000).toLocaleString('vi-VN')} Nghìn VNĐ`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: { borderDash: [5, 5] },
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + ' Tr';  // Rút gọn trục Y
+                                    }
+                                }
+                            },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+
+        } catch (error) {
+            console.error("Lỗi khi tải dữ liệu biểu đồ doanh thu:", error);
+        }
+    }
+    async function loadWards(cityName, selectedWardName = null) {
+        const wardSelect = document.getElementById('ward-select');
+        if (!wardSelect) return;
+        wardSelect.innerHTML = '<option value="">-- Chọn Phường/Xã --</option>';
+        if (!cityName) return;
+
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/api/address/provinces/name/${encodeURIComponent(cityName)}/wards`);
+            const result = await response.json();
+            
+            const wards = result.data || result; 
+            
+            if (wards && wards.length > 0) {
+                wards.forEach(ward => {
+                    const option = document.createElement('option');
+                    option.value = ward.name;
+                    option.textContent = ward.name;
+                    wardSelect.appendChild(option);
+                });
+                
+                if (selectedWardName) {
+                    wardSelect.value = selectedWardName;
+                }
+            }
+        } catch (error) {
+            console.error("Lỗi khi tải danh sách Phường/Xã:", error);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+    const citySelect = document.getElementById('city-select');
+    const wardSelect = document.getElementById('ward-select');
+
+    if (citySelect && wardSelect) {
+        
+        // --- BƯỚC A: TỰ ĐỘNG NẠP DỮ LIỆU CŨ LÚC VỪA VÀO TRANG ---
+        const initialProvince = citySelect.value; 
+        const initialWard = "<?php echo htmlspecialchars($info['ward'] ?? ''); ?>";
+
+        if (initialProvince) {
+            // Lấy đúng tên Tỉnh từ thuộc tính data-name (nếu bạn có dùng data-name ở HTML)
+            const selectedOption = citySelect.options[citySelect.selectedIndex];
+            const cityName = selectedOption ? selectedOption.getAttribute('data-name') : initialProvince;
+            
+            loadWards(cityName, initialWard);
+        }
+
+        // --- BƯỚC B: CHỈ BẮT SỰ KIỆN CHANGE 1 LẦN DUY NHẤT Ở ĐÂY ---
+        citySelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const cityName = selectedOption ? selectedOption.getAttribute('data-name') : null;
+            
+            if (cityName) {
+                // Tỉnh mới nên Phường phải reset (truyền null)
+                loadWards(cityName, null); 
+            } else {
+                // Nếu User chọn về "-- Chọn Tỉnh/Thành phố --" thì dọn sạch ô Phường
+                wardSelect.innerHTML = '<option value="">-- Chọn Phường/Xã --</option>';
+            }
+        });
+    }
+});
 </script>
 </html>

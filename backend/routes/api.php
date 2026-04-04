@@ -253,7 +253,8 @@ Route::middleware(['auth:sanctum', 'permission:payBill.restore'])
 
 //PayRule
 Route::middleware(['auth:sanctum', 'permission:payRule.get'])
-->get('/payRules/{payRule}', [PayRuleController::class, 'show']);
+->get('/payRules/{payRule}', [PayRuleController::class, 'show'])
+->withTrashed();
     
 Route::middleware(['auth:sanctum', 'permission:payRule.getAll'])
 ->get('/payRules', [PayRuleController::class, 'index']);
@@ -295,7 +296,8 @@ Route::middleware(['auth:sanctum', 'permission:rechargeBill.restore'])
 
 //RechargeRule
 Route::middleware(['auth:sanctum', 'permission:rechargeRule.get'])
-->get('/rechargeRules/{rechargeRule}', [RechargeRuleController::class, 'show']);
+->get('/rechargeRules/{rechargeRule}', [RechargeRuleController::class, 'show'])
+->withTrashed();
     
 Route::middleware(['auth:sanctum', 'permission:rechargeRule.getAll'])
 ->get('/rechargeRules', [RechargeRuleController::class, 'index']);

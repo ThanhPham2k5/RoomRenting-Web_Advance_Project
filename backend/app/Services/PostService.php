@@ -97,7 +97,7 @@ class PostService{
                 $image = $post->postImages()->where('order', $orderToDelete)->first();
                 if ($image) {
                     Storage::disk('public')->delete($image->image_post_url);
-                    $image->delete();
+                    $image->forceDelete();
                 }
             }
         }

@@ -321,7 +321,7 @@
         // auto fill province list
         async function autoFillProvince(account_id, token) {
             try {
-                const response = await fetch("http://127.0.0.1:8000/api/address/provinces", {
+                const response = await fetch("http://backend.test/api/address/provinces", {
                     method: "GET",
                     headers: {
                         "Accept": "application/json",
@@ -376,7 +376,7 @@
         // auto fill district list with provinceCode
         async function autoWard(account_id, token, provinceCode) {
             try {
-                const response = await fetch("http://127.0.0.1:8000/api/address/provinces/" + provinceCode + "/wards", {
+                const response = await fetch("http://backend.test/api/address/provinces/" + provinceCode + "/wards", {
                     method: "GET",
                     headers: {
                         "Accept": "application/json",
@@ -689,7 +689,7 @@
         async function getPost(statusCondition, sortCondition, filterCondition, searchCondition, page, account_id, token) {
             try {
                 // page = 2 to test pagination
-                const response = await fetch("http://127.0.0.1:8000/api/posts?per_page=10&filter[status]=" + statusCondition + "&include=postImages&sort=" + sortCondition + filterCondition + searchCondition + "&page=" + page + "&filter[user.account_id]=" + account_id, {
+                const response = await fetch("http://backend.test/api/posts?per_page=10&filter[status]=" + statusCondition + "&include=postImages&sort=" + sortCondition + filterCondition + searchCondition + "&page=" + page + "&filter[user.account_id]=" + account_id, {
                 method: "GET",
                 headers: {
                     "Accept": "application/json",
@@ -735,7 +735,7 @@
                                 <div class="post-body">
                                     <a href='<?php echo BASE_URL ?>/pages/client/detail-post.php?post_id=${post.id}' class="post-link-img">
                                     <img
-                                        src='http://127.0.0.1:8000${post.postImages && post.postImages.length > 0 ? post.postImages[0].imagePostUrl : "/assets/img/post.png"}'
+                                        src='http://backend.test${post.postImages && post.postImages.length > 0 ? post.postImages[0].imagePostUrl : "/assets/img/post.png"}'
                                         alt="post.png"
                                         class="post-img"
                                     />
@@ -791,11 +791,11 @@
                                                 Gửi duyệt lại
                                             </button>
                                             
-                                            <a href='<?php echo BASE_URL . "/pages/client/recharge.php"?>' class="post-btn-paid">
+                                            <button type="button" class="post-btn-paid ${post.id}">
                                                 <img src='<?php echo BASE_URL . "/assets/img/paid-img.png"?>' alt="paid-img.png" class="post-btn-paid-img">
 
                                                 Cần thanh toán
-                                            </a>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -819,64 +819,59 @@
                     // delete button
                     document.querySelectorAll(".post-btn-del").forEach(btn => {
                         btn.addEventListener("click", async (e) => {
-                            const post_id = btn.classList[1]
+                            const isConfirm = confirm("Bạn có chắc muốn xóa bài đăng này không?")
 
-                            const formData = new FormData()
-                            formData.append("_method", "PUT")
-                            formData.append("status", "failed")
+                            if(isConfirm) {
+                                const post_id = btn.classList[1]
 
-                            try {
-                                const response = await fetch("http://127.0.0.1:8000/api/posts/" + post_id, {
-                                    method: "POST",
-                                    headers: {
-                                        "Accept": "application/json",
-                                        "Authorization": "Bearer " + token
-                                    },
-                                    body: formData
-                                })
+                                const formData = new FormData()
+                                formData.append("_method", "PUT")
+                                formData.append("status", "failed")
 
-                                const data = await response.json()
-                                if(response.ok) {
-                                    if(data.message === "Post updated successfully") {
-                                        // console.log(".post-id-" + post_id)
-                                        document.querySelector(".post-id-" + post_id).style.display = "none"
+                                try {
+                                    const response = await fetch("http://backend.test/api/posts/" + post_id, {
+                                        method: "POST",
+                                        headers: {
+                                            "Accept": "application/json",
+                                            "Authorization": "Bearer " + token
+                                        },
+                                        body: formData
+                                    })
+
+                                    const data = await response.json()
+                                    if(response.ok) {
+                                        if(data.message === "Post updated successfully") {
+                                            // console.log(".post-id-" + post_id)
+                                            document.querySelector(".post-id-" + post_id).style.display = "none"
+                                        }
+                                    } else {
+                                        console.error(data)
                                     }
-                                } else {
-                                    console.error(data)
+                                } catch (err) {
+                                    console.error(err)
                                 }
-                            } catch (err) {
-                                console.error(err)
                             }
                         })
                     })
 
                     // reason button
-
-                    // resend button
-                    document.querySelectorAll(".post-btn-resend").forEach(btn => {
+                    document.querySelectorAll(".post-btn-reason").forEach(btn => {
                         btn.addEventListener("click", async (e) => {
                             const post_id = btn.classList[1]
 
-                            const formData = new FormData()
-                            formData.append("_method", "PUT")
-                            formData.append("status", "pending")
-
                             try {
-                                const response = await fetch("http://127.0.0.1:8000/api/posts/" + post_id, {
-                                    method: "POST",
+                                const response = await fetch("http://backend.test/api/posts/" + post_id, {
+                                    method: "GET",
                                     headers: {
                                         "Accept": "application/json",
                                         "Authorization": "Bearer " + token
-                                    },
-                                    body: formData
+                                    }
                                 })
 
                                 const data = await response.json()
                                 if(response.ok) {
-                                    console.log(data.message)
-                                    if(data.message === "Post updated successfully") {
-                                        console.log(".post-id-" + post_id)
-                                        document.querySelector(".post-id-" + post_id).style.display = "none"
+                                    if(data.data) {
+                                        alert("Lý do từ chối bài đăng: " + data.data.reason)
                                     }
                                 } else {
                                     console.error(data)
@@ -887,7 +882,83 @@
                         })
                     })
 
+                    // resend button
+                    document.querySelectorAll(".post-btn-resend").forEach(btn => {
+                        btn.addEventListener("click", async (e) => {
+                            const isConfirm = confirm("Bạn muốn đăng duyệt lại?")
+                            if(isConfirm) {
+                                const post_id = btn.classList[1]
+
+                                const formData = new FormData()
+                                formData.append("_method", "PUT")
+                                formData.append("status", "pending")
+
+                                try {
+                                    const response = await fetch("http://backend.test/api/posts/" + post_id, {
+                                        method: "POST",
+                                        headers: {
+                                            "Accept": "application/json",
+                                            "Authorization": "Bearer " + token
+                                        },
+                                        body: formData
+                                    })
+
+                                    const data = await response.json()
+                                    if(response.ok) {
+                                        console.log(data.message)
+                                        if(data.message === "Post updated successfully") {
+                                            console.log(".post-id-" + post_id)
+                                            document.querySelector(".post-id-" + post_id).style.display = "none"
+                                        }
+                                    } else {
+                                        console.error(data)
+                                    }
+                                } catch (err) {
+                                    console.error(err)
+                                }
+                            }
+                        })
+                    })
+
                     // pay button
+                    document.querySelectorAll(".post-btn-paid").forEach(btn => {
+                        btn.addEventListener("click", async (e) => {
+                            const isConfirm = confirm("Bạn muốn tiếp tục thanh toán bài đăng này?")
+                            if(isConfirm) {
+                                const post_id = btn.classList[1]
+
+                                const formData = new FormData()
+                                formData.append("_method", "PUT")
+                                formData.append("status", "pending")
+
+                                try {
+                                    const response = await fetch("http://backend.test/api/posts/" + post_id + "/payment", {
+                                        method: "POST",
+                                        headers: {
+                                            "Accept": "application/json",
+                                            "Authorization": "Bearer " + token
+                                        }
+                                    })
+
+                                    const data = await response.json()
+                                    if(response.ok) {
+                                        if(data.message === "Thanh toán thành công.") {
+                                            document.querySelector(".post-id-" + post_id).style.display = "none"
+                                            alert("Đã thanh toán thành công!")
+                                        }
+                                    } else {
+                                        console.error(data)
+                                        if(data.message === "Tài khoản của bạn không đủ điểm.") {
+                                            alert("Bạn không có đủ điểm. Chuyển hướng tới trang nạp điểm.")
+                                            window.location.href = "recharge.php"
+                                        }
+                                    }
+                                } catch (err) {
+                                    console.error(err)
+                                }
+                            }
+                        })
+                    })
 
                     updatePageNumber()
                 } else if (filterCondition == null && searchCondition == null) {

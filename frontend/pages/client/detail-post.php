@@ -176,19 +176,19 @@
 
     async function updateDetailPost(account_id, token) {
         try {
-            const [response, comments, personalInfo] = await Promise.all([fetch("http://127.0.0.1:8000/api/posts/" + post_id + "?include=postImages,user.personalInfo,favorites.account", {
+            const [response, comments, personalInfo] = await Promise.all([fetch("http://backend.test/api/posts/" + post_id + "?include=postImages,user.personalInfo,favorites.account", {
                 method: "GET",
                 headers: {
                     "Accept": "application/json",
                     "Authorization": "Bearer " + token
                 }
-            }), fetch("http://127.0.0.1:8000/api/comments?include=account.user.personalInfo&per_page=5&filter[post.id]=" + post_id + "&page=" + page + "&sort=-createdAt", {
+            }), fetch("http://backend.test/api/comments?include=account.user.personalInfo&per_page=5&filter[post.id]=" + post_id + "&page=" + page + "&sort=-createdAt", {
                 method: "GET",
                 headers: {
                     "Accept": "application/json",
                     "Authorization": "Bearer " + token
                 }
-            }), fetch("http://127.0.0.1:8000/api/personalInfos/byAccount/" + account_id, {
+            }), fetch("http://backend.test/api/personalInfos/byAccount/" + account_id, {
                 method: "GET",
                 headers: {
                     "Accept": "application/json",
@@ -202,21 +202,21 @@
                     // update post image
                     if(data.data.postImages) {
                         if(data.data.postImages[0]) {
-                            document.querySelector(".left-img").src = "http://127.0.0.1:8000" + data.data.postImages[0].imagePostUrl
+                            document.querySelector(".left-img").src = "http://backend.test" + data.data.postImages[0].imagePostUrl
                         }
                         
                         if(data.data.postImages[1]) {
-                            document.querySelector(".left-img-1").src = "http://127.0.0.1:8000" + data.data.postImages[1].imagePostUrl
+                            document.querySelector(".left-img-1").src = "http://backend.test" + data.data.postImages[1].imagePostUrl
                         }
 
                         
                         if(data.data.postImages[2]) {
-                            document.querySelector(".left-img-2").src = "http://127.0.0.1:8000" + data.data.postImages[2].imagePostUrl
+                            document.querySelector(".left-img-2").src = "http://backend.test" + data.data.postImages[2].imagePostUrl
                         }
 
                         
                         if(data.data.postImages[3]) {
-                            document.querySelector(".left-img-3").src = "http://127.0.0.1:8000" + data.data.postImages[3].imagePostUrl
+                            document.querySelector(".left-img-3").src = "http://backend.test" + data.data.postImages[3].imagePostUrl
                         }
                     }
 
@@ -258,7 +258,7 @@
                         document.querySelector(".left-favourite").setAttribute("src", '<?php echo BASE_URL ?>/assets/img/favour.png')
 
                         try {
-                            const response = await fetch("http://127.0.0.1:8000/api/favorites", {
+                            const response = await fetch("http://backend.test/api/favorites", {
                             method: "POST",
                             headers: {
                                 "Accept": "application/json",
@@ -298,7 +298,7 @@
                         var fav_id = favClass.replace("favourite-id-", "")
 
                         try {
-                            const response = await fetch("http://127.0.0.1:8000/api/favorites/" + fav_id, {
+                            const response = await fetch("http://backend.test/api/favorites/" + fav_id, {
                             method: "DELETE",
                             headers: {
                                 "Accept": "application/json",
@@ -394,7 +394,7 @@
             page++
 
             try {
-                const response = await fetch("http://127.0.0.1:8000/api/comments?include=account.user.personalInfo&per_page=5&filter[post.id]=" + post_id + "&page=" + page + "&sort=-createdAt", {
+                const response = await fetch("http://backend.test/api/comments?include=account.user.personalInfo&per_page=5&filter[post.id]=" + post_id + "&page=" + page + "&sort=-createdAt", {
                     method: "GET",
                     headers: {
                         "Accept": "application/json",
@@ -462,7 +462,7 @@
             }
 
             try {
-                const response = await fetch("http://127.0.0.1:8000/api/comments", {
+                const response = await fetch("http://backend.test/api/comments", {
                     method: "POST",
                     headers: {
                         "Accept": "application/json",

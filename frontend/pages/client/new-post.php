@@ -183,7 +183,7 @@
     // auto fill province list
     async function autoFillProvince(account_id, token) {
         try {
-            const response = await fetch("http://127.0.0.1:8000/api/address/provinces", {
+            const response = await fetch("http://backend.test/api/address/provinces", {
                 method: "GET",
                 headers: {
                     "Accept": "application/json",
@@ -238,7 +238,7 @@
     // auto fill district list with provinceCode
     async function autoWard(account_id, token, provinceCode) {
         try {
-            const response = await fetch("http://127.0.0.1:8000/api/address/provinces/" + provinceCode + "/wards", {
+            const response = await fetch("http://backend.test/api/address/provinces/" + provinceCode + "/wards", {
                 method: "GET",
                 headers: {
                     "Accept": "application/json",
@@ -517,7 +517,7 @@
         const account_id = localStorage.getItem("account_id")
 
         try {
-          const response = await fetch("http://127.0.0.1:8000/api/accounts/" + account_id + "?include=user", {
+          const response = await fetch("http://backend.test/api/accounts/" + account_id + "?include=user", {
             method: "GET",
             headers: {
               "Accept": "application/json",
@@ -538,7 +538,7 @@
         }
 
         try {
-          const response = await fetch("http://127.0.0.1:8000/api/posts", {
+          const response = await fetch("http://backend.test/api/posts", {
             method: "POST",
             headers: {
               "Accept": "application/json",

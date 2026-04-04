@@ -198,7 +198,7 @@
 
             const data = await response.json()
             if(response.ok) {
-                if(data.data) {
+                if(data.data && data.data.status === "completed") {
                     // update post image
                     if(data.data.postImages) {
                         if(data.data.postImages[0]) {
@@ -373,6 +373,9 @@
                     } else {
                         console.error(info)
                     }
+                } else {
+                    alert("Bài đăng không tồn tại.")
+                    window.location.href = "index.php"
                 }
             } else {
                 console.error(data)

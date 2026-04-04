@@ -758,12 +758,12 @@
             formData.append("phone_number", document.querySelector(".profile-phone-input").value.trim())
             formData.append("name", document.querySelector(".profile-fullname-input").value.trim())
             formData.append("pid", document.querySelector(".profile-id-card-input").value.trim())
+            formData.append("_method", "PUT")
 
             // user avatar
             const avatarFile = document.querySelector("#profile-avatar-input").files[0]
             if (avatarFile) {
-                formData.append("profile_url", avatarFile),
-                formData.append("_method", "PUT") // put img
+                formData.append("profile_url", avatarFile)
             }
 
             try {
@@ -780,6 +780,7 @@
                 if (response.ok) {
                     if (data.personalInfo) {
                         alert("Cập nhật thành công!")
+                        console.log(data.personalInfo)
                         window.location.reload()
                     }
                 } else {

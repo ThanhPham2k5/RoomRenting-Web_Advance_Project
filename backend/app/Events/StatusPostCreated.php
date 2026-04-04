@@ -18,15 +18,12 @@ class StatusPostCreated
      * Create a new event instance.
      */
     public $post;
-    public $content;
-    public $title;
-    public function __construct($post, $content, $title)
+    public $titleNotification;
+    public function __construct($post, $titleNotification)
     {
         $this->post = $post;
-        $this->content = $content;
-        $this->title = $title;
+        $this->titleNotification = $titleNotification;
     }
-
     /**
      * Get the channels the event should broadcast on.
      *

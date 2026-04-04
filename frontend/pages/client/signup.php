@@ -327,7 +327,7 @@
 
       if(isValid) {
         try {
-          const response = await fetch("http://127.0.0.1:8000/api/register", {
+          const response = await fetch("http://backend.test/api/register", {
             method: "POST",
             headers: {
               "Accept": "application/json",

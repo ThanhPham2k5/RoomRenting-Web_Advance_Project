@@ -175,7 +175,7 @@
 
       if(account_id != null && token != null) {
         try {
-          const response = await fetch("http://127.0.0.1:8000/api/rechargeBills", {
+          const response = await fetch("http://backend.test/api/rechargeBills", {
             method: "POST",
             headers: {
               "Accept": "application/json",
@@ -209,7 +209,7 @@
 
     async function getRechargeRule(account_id, token) {
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/rechargeRules", {
+        const response = await fetch("http://backend.test/api/rechargeRules", {
           method: "GET",
           headers: {
             "Accept": "application/json",

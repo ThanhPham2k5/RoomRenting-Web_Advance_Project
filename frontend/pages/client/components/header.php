@@ -337,7 +337,7 @@
     // check user token and update header bar
     async function getPersonalInfo(account_id, token) {
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/accounts/" + account_id + "?include=user.personalInfo", {
+        const response = await fetch("http://backend.test/api/accounts/" + account_id + "?include=user.personalInfo", {
           method: "GET",
           headers: {
             "Accept": "application/json",
@@ -404,10 +404,10 @@
 
       try {
         const [res_news, res_transaction] = await Promise.all([
-          fetch("http://127.0.0.1:8000/api/notifications?filter[account.id]=" + account_id + "&filter[status]=unread&filter[notificationType]=news", {
+          fetch("http://backend.test/api/notifications?filter[account.id]=" + account_id + "&filter[status]=unread&filter[notificationType]=news", {
               headers: { "Accept": "application/json", "Authorization": "Bearer " + token }
           }),
-          fetch("http://127.0.0.1:8000/api/notifications?filter[account.id]=" + account_id + "&filter[status]=unread&filter[notificationType]=transaction", {
+          fetch("http://backend.test/api/notifications?filter[account.id]=" + account_id + "&filter[status]=unread&filter[notificationType]=transaction", {
               headers: { "Accept": "application/json", "Authorization": "Bearer " + token }
           })
         ])
@@ -436,13 +436,13 @@
         if(!notifyCache.news || Date.now() > notifyCache.newsExpiredAt) {
           try {
             // get unread & read notify in news
-            const [response_unread, response_read] = await Promise.all([fetch("http://127.0.0.1:8000/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=unread&filter[notificationType]=news", {
+            const [response_unread, response_read] = await Promise.all([fetch("http://backend.test/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=unread&filter[notificationType]=news", {
               method: "GET",
               headers: {
                 "Accept": "application/json",
                 "Authorization": "Bearer " + token
               }
-            }),fetch("http://127.0.0.1:8000/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=read&filter[notificationType]=news", {
+            }),fetch("http://backend.test/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=read&filter[notificationType]=news", {
               method: "GET",
               headers: {
                 "Accept": "application/json",
@@ -516,7 +516,7 @@
             unread_notifyList.forEach(notify => {
               html += `
                 <a href='<?php echo BASE_URL ?>/pages/client/detail-post.php?post_id=${notify.notifiable.id}' class="notify-item notify-item-unread notify-id-${notify.id}">
-                  <img src='http://127.0.0.1:8000${notify.notifiable.postImages[0].imagePostUrl}' alt="item-img.png" class="notify-item-img">
+                  <img src='http://backend.test${notify.notifiable.postImages[0].imagePostUrl}' alt="item-img.png" class="notify-item-img">
 
                   <div class="notify-content">
                     <div class="notify-info">${notify.title}</div>
@@ -533,7 +533,7 @@
             read_notifyList.forEach(notify => {
               html += `
                 <a href='<?php echo BASE_URL ?>/pages/client/detail-post.php?post_id=${notify.notifiable.id}' class="notify-item notify-id-${notify.id}">
-                  <img src='http://127.0.0.1:8000${notify.notifiable.postImages[0].imagePostUrl}' alt="item-img.png" class="notify-item-img">
+                  <img src='http://backend.test${notify.notifiable.postImages[0].imagePostUrl}' alt="item-img.png" class="notify-item-img">
 
                   <div class="notify-content">
                     <div class="notify-info">${notify.title}</div>
@@ -565,7 +565,7 @@
                 var notification_type = document.querySelector(".notify-news").classList.contains("notify-selected") ? "news" : "transaction"
 
                 try {
-                  const response = await fetch("http://127.0.0.1:8000/api/notifications/" + notify_id, {
+                  const response = await fetch("http://backend.test/api/notifications/" + notify_id, {
                     method: "PUT",
                     headers: {
                       "Accept": "application/json",
@@ -607,13 +607,13 @@
         if(!notifyCache.transaction || Date.now() > notifyCache.transactionExpiredAt) {
           try {
             // get unread & read notify in transaction
-            const [response_unread, response_read] = await Promise.all([fetch("http://127.0.0.1:8000/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=unread&filter[notificationType]=transaction", {
+            const [response_unread, response_read] = await Promise.all([fetch("http://backend.test/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=unread&filter[notificationType]=transaction", {
               method: "GET",
               headers: {
                 "Accept": "application/json",
                 "Authorization": "Bearer " + token
               }
-            }),fetch("http://127.0.0.1:8000/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=read&filter[notificationType]=transaction", {
+            }),fetch("http://backend.test/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=read&filter[notificationType]=transaction", {
               method: "GET",
               headers: {
                 "Accept": "application/json",
@@ -746,7 +746,7 @@
                 var notification_type = document.querySelector(".notify-news").classList.contains("notify-selected") ? "news" : "transaction"
 
                 try {
-                  const response = await fetch("http://127.0.0.1:8000/api/notifications/" + notify_id, {
+                  const response = await fetch("http://backend.test/api/notifications/" + notify_id, {
                     method: "PUT",
                     headers: {
                       "Accept": "application/json",
@@ -874,7 +874,7 @@
       const token = localStorage.getItem("token")
 
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/logout", {
+        const response = await fetch("http://backend.test/api/logout", {
           method: "POST",
           headers: {
             "Accept": "application/json",

@@ -250,7 +250,7 @@
     // auto fill province list
     async function autoFillProvince(account_id, token) {
         try {
-            const response = await fetch("http://127.0.0.1:8000/api/address/provinces", {
+            const response = await fetch("http://backend.test/api/address/provinces", {
                 method: "GET",
                 headers: {
                     "Accept": "application/json",
@@ -305,7 +305,7 @@
     // auto fill district list with provinceCode
     async function autoWard(account_id, token, provinceCode) {
         try {
-            const response = await fetch("http://127.0.0.1:8000/api/address/provinces/" + provinceCode + "/wards", {
+            const response = await fetch("http://backend.test/api/address/provinces/" + provinceCode + "/wards", {
                 method: "GET",
                 headers: {
                     "Accept": "application/json",
@@ -612,7 +612,7 @@
     async function getPost(sortCondition, filterCondition, searchCondition, page) {
       try {
         // page = 2 to test pagination
-        const response = await fetch("http://127.0.0.1:8000/api/posts?per_page=10&filter[status]=completed&include=postImages,favorites.account&sort=" + sortCondition + filterCondition + searchCondition + "&page=" + page, {
+        const response = await fetch("http://backend.test/api/posts?per_page=10&filter[status]=completed&include=postImages,favorites.account&sort=" + sortCondition + filterCondition + searchCondition + "&page=" + page, {
           method: "GET",
           headers: {
             "Accept": "application/json"
@@ -674,7 +674,7 @@
 
                 <a href='<?php echo BASE_URL ?>/pages/client/detail-post.php?post_id=${post.id}' class="post-body">
                   <img
-                    src='http://127.0.0.1:8000${post.postImages[0].imagePostUrl}'
+                    src='http://backend.test${post.postImages[0].imagePostUrl}'
                     alt="post.png"
                     class="post-img"
                   />
@@ -721,7 +721,7 @@
                 item.querySelector(".post-favour-ico").setAttribute("src", '<?php echo BASE_URL ?>/assets/img/favour.png')
 
                 try {
-                  const response = await fetch("http://127.0.0.1:8000/api/favorites", {
+                  const response = await fetch("http://backend.test/api/favorites", {
                     method: "POST",
                     headers: {
                       "Accept": "application/json",
@@ -761,7 +761,7 @@
                 var fav_id = favClass.replace("favourite-id-", "")
 
                 try {
-                  const response = await fetch("http://127.0.0.1:8000/api/favorites/" + fav_id, {
+                  const response = await fetch("http://backend.test/api/favorites/" + fav_id, {
                     method: "DELETE",
                     headers: {
                       "Accept": "application/json",
@@ -815,7 +815,7 @@
 
                 <a href='<?php echo BASE_URL ?>/pages/client/detail-post.php?post_id=${post.id}' class="post-body">
                   <img
-                    src='http://127.0.0.1:8000${post.postImages[0].imagePostUrl}'
+                    src='http://backend.test${post.postImages[0].imagePostUrl}'
                     alt="post.png"
                     class="post-img"
                   />

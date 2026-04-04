@@ -169,7 +169,7 @@
     // get all posts to posts section (do not require token)
     async function getNewPost() {
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/posts?per_page=5&filter[status]=completed&include=postImages,favorites.account&sort=createdAt", {
+        const response = await fetch("http://backend.test/api/posts?per_page=5&filter[status]=completed&include=postImages,favorites.account&sort=createdAt", {
           method: "GET",
           headers: {
             "Accept": "application/json"
@@ -193,7 +193,7 @@
     // get suggest posts to suggest posts section (require token)
     async function getSuggestPost(account_id, token) {
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/posts/recommendations/" + account_id + "?per_page=5&filter[status]=completed&include=postImages,favorites.account&sort=createdAt", {
+        const response = await fetch("http://backend.test/api/posts/recommendations/" + account_id + "?per_page=5&filter[status]=completed&include=postImages,favorites.account&sort=createdAt", {
           method: "GET",
           headers: {
             "Accept": "application/json",
@@ -224,7 +224,7 @@
 
       if(account_id != null && token != null) {
         try {  
-          const response = await fetch("http://127.0.0.1:8000/api/forms/byAccount/" + account_id, {
+          const response = await fetch("http://backend.test/api/forms/byAccount/" + account_id, {
             method: "GET",
             headers: {
               "Accept": "application/json",
@@ -293,7 +293,7 @@
 
               <a href='<?php echo BASE_URL ?>/pages/client/detail-post.php?post_id=${post.id}' class="post-body">
                 <img
-                  src='http://127.0.0.1:8000${post.postImages[0].imagePostUrl}'
+                  src='http://backend.test${post.postImages[0].imagePostUrl}'
                   alt="post.png"
                   class="post-img"
                 />
@@ -340,7 +340,7 @@
               item.querySelector(".post-favour-ico").setAttribute("src", '<?php echo BASE_URL ?>/assets/img/favour.png')
 
               try {
-                const response = await fetch("http://127.0.0.1:8000/api/favorites", {
+                const response = await fetch("http://backend.test/api/favorites", {
                   method: "POST",
                   headers: {
                     "Accept": "application/json",
@@ -380,7 +380,7 @@
               var fav_id = favClass.replace("favourite-id-", "")
 
               try {
-                const response = await fetch("http://127.0.0.1:8000/api/favorites/" + fav_id, {
+                const response = await fetch("http://backend.test/api/favorites/" + fav_id, {
                   method: "DELETE",
                   headers: {
                     "Accept": "application/json",
@@ -438,7 +438,7 @@
 
               <a href='<?php echo BASE_URL ?>/pages/client/detail-post.php?post_id=${post.id}' class="post-body">
                 <img
-                  src='http://127.0.0.1:8000${post.postImages[0].imagePostUrl}'
+                  src='http://backend.test${post.postImages[0].imagePostUrl}'
                   alt="post.png"
                   class="post-img"
                 />
@@ -486,7 +486,7 @@
               item.querySelector(".post-favour-ico").setAttribute("src", '<?php echo BASE_URL ?>/assets/img/favour.png')
 
               try {
-                const response = await fetch("http://127.0.0.1:8000/api/favorites", {
+                const response = await fetch("http://backend.test/api/favorites", {
                   method: "POST",
                   headers: {
                     "Accept": "application/json",
@@ -526,7 +526,7 @@
               var fav_id = favClass.replace("favourite-id-", "")
 
               try {
-                const response = await fetch("http://127.0.0.1:8000/api/favorites/" + fav_id, {
+                const response = await fetch("http://backend.test/api/favorites/" + fav_id, {
                   method: "DELETE",
                   headers: {
                     "Accept": "application/json",
@@ -567,7 +567,7 @@
 
               <a href='<?php echo BASE_URL ?>/pages/client/detail-post.php?post_id=${post.id}' class="post-body">
                 <img
-                  src='http://127.0.0.1:8000${post.postImages[0].imagePostUrl}'
+                  src='http://backend.test${post.postImages[0].imagePostUrl}'
                   alt="post.png"
                   class="post-img"
                 />

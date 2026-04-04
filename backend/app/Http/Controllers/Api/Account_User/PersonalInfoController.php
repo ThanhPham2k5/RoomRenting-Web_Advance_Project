@@ -113,9 +113,12 @@ class PersonalInfoController extends Controller
         $validated = $request->validated();
 
         return DB::transaction(function () use ($request, $personalInfo, $validated) {
-            $this->getProfileFromRequest($request, $personalInfo);
+            if ($request->hasFile('profile_url'))
+                $validated['profile_url'] =$this->getProfileFromRequest($request, $personalInfo);
 
             $result = $this->personalInfoService->updatePersonalInfo($personalInfo, $validated);
+
+            $personalInfo->refresh();
 
             return response()->json($result);
         });
@@ -135,9 +138,13 @@ class PersonalInfoController extends Controller
         $validated = $request->validated();
 
         return DB::transaction(function () use ($request, $personalInfo, $validated) {
-            $this->getProfileFromRequest($request, $personalInfo);
+            if ($request->hasFile('profile_url'))
+                $validated['profile_url'] = $this->getProfileFromRequest($request, $personalInfo);
 
+            // dd($validated['profile_url']);
             $result = $this->personalInfoService->updatePersonalInfo($personalInfo, $validated);
+
+            $personalInfo->refresh();
 
             return response()->json($result);
         });
@@ -165,23 +172,26 @@ class PersonalInfoController extends Controller
             // Rename to avatar
             $filename = 'avatar.' . $image->getClientOriginalExtension();
 
-            if($personalInfo->user){
-                // store new image
-                $path = $image->storeAs(
-                    "profiles/{$personalInfo->user->account_id}",
-                    $filename,
-                    "public"
-                );
-            }else{
-                // store new image
-                $path = $image->storeAs(
-                    "profiles/{$personalInfo->employee->account_id}",
-                    $filename,
-                    "public"
-                );
-            }
+            // if($personalInfo->user){
+            //     // store new image
+            //     $path = $image->storeAs(
+            //         "profiles/{$personalInfo->user->account_id}",
+            //         $filename,
+            //         "public"
+            //     );
+            // }else{
+            //     // store new image
+            //     $path = $image->storeAs(
+            //         "profiles/{$personalInfo->employee->account_id}",
+            //         $filename,
+            //         "public"
+            //     );
+            // }
 
-            $validated['profile_url'] = $path;
+            // Determine the account ID
+            $accountId = $personalInfo->user ? $personalInfo->user->account_id : $personalInfo->employee->account_id;
+
+            return $image->storeAs("profiles/{$accountId}", $filename, "public");
         }
     }
 }

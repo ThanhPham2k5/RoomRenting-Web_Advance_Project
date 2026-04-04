@@ -149,12 +149,6 @@ class PostController extends Controller
         $this->authorize('update', $post);
 
         $validated = $request->validated();
-        
-        // if ($request->status === $post->status) {
-        //     return response()->json([
-        //         'message' => 'Can not update post with similiar status'
-        //     ]);            
-        // }
 
         return DB::transaction(function () use ($request, $post, $validated) {
 
@@ -172,42 +166,11 @@ class PostController extends Controller
                     ];
                 })->toArray();
 
-                // delete old images if exist
-                // foreach($post->postImages as $postImage){
-                //     if(in_array($postImage->order, $orders)){ // if order in request, delete file of said order
-                //         // delete file
-                //         Storage::disk('public')->delete($postImage->image_post_url);
-
-                //         // delete DB record
-                //         $postImage->delete();
-                //     }
-                // }
-                
-                // store new images
-                // foreach($images as $imageData){
-                //     $file = $imageData['file'];
-                //     $order = $imageData['order'];
-                 
-                //     // rename to order
-                //     $filename = $order . '.' . $file->getClientOriginalExtension();
-
-                //     // save file
-                //     $path = $file->storeAs(
-                //         "posts/{$post->id}/images",
-                //         $filename,
-                //         "public"
-                //     );
-
-                //     $newImages[] = [
-                //         'image_post_url' => $path,
-                //         'order' => $order,
-                //     ];
-                // }
 
                 $newImages = [];
                 foreach ($files as $key => $file) {
                     $newImages[] = [
-                        'file' => $file, // Truyền trực tiếp đối tượng UploadedFile
+                        'file' => $file,
                         'order' => $orders[$key]
                     ];
                 }

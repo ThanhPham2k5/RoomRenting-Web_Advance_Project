@@ -27,6 +27,7 @@ class RolePermissionSeeder extends Seeder
             'post.getAll',
             'post.restore',
             'post.getRecommendation',
+            'post.payment',
 
             //PostImages
             'postImage.create',
@@ -149,6 +150,7 @@ class RolePermissionSeeder extends Seeder
             'post.get',
             'post.getAll',
             'post.restore',
+            'post.payment',
 
             //PostImage
             'postImage.create',
@@ -264,6 +266,7 @@ class RolePermissionSeeder extends Seeder
             'post.get',
             'post.getAll',
             'post.getRecommendation',
+            'post.payment',
 
             //PostImage
             'postImage.create',

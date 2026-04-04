@@ -141,7 +141,6 @@ class PersonalInfoController extends Controller
             if ($request->hasFile('profile_url'))
                 $validated['profile_url'] = $this->getProfileFromRequest($request, $personalInfo);
 
-            // dd($validated['profile_url']);
             $result = $this->personalInfoService->updatePersonalInfo($personalInfo, $validated);
 
             $personalInfo->refresh();
@@ -171,22 +170,6 @@ class PersonalInfoController extends Controller
 
             // Rename to avatar
             $filename = 'avatar.' . $image->getClientOriginalExtension();
-
-            // if($personalInfo->user){
-            //     // store new image
-            //     $path = $image->storeAs(
-            //         "profiles/{$personalInfo->user->account_id}",
-            //         $filename,
-            //         "public"
-            //     );
-            // }else{
-            //     // store new image
-            //     $path = $image->storeAs(
-            //         "profiles/{$personalInfo->employee->account_id}",
-            //         $filename,
-            //         "public"
-            //     );
-            // }
 
             // Determine the account ID
             $accountId = $personalInfo->user ? $personalInfo->user->account_id : $personalInfo->employee->account_id;

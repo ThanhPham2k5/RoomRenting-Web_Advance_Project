@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Api\Posts;
 
-use _PHPStan_781aefaf6\Composer\XdebugHandler\Status;
-use App\Listeners\SendStatusPostNotification;
+use App\Models\Payments\PayRule;
+use App\Models\Payments\PayBill;
 use App\Models\Posts\Post;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePostRequest;
@@ -11,20 +11,14 @@ use App\Http\Requests\UpdatePostRequest;
 use App\Http\Resources\Posts\PostCollection;
 use App\Http\Resources\Posts\PostResource;
 use Illuminate\Http\Request;
-use Spatie\QueryBuilder\AllowedFilter;
-use Spatie\QueryBuilder\AllowedSort;
-use Spatie\QueryBuilder\Enums\FilterOperator;
-use Spatie\QueryBuilder\QueryBuilder;
-use App\Events\PostCreated;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Events\StatusPostCreated;
-use App\Filter\AllColumnFilter;
-use App\Filter\DateFilter;
 use App\Models\Account_User\Account;
 use App\Models\Form;
 use App\Services\PostService;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
+use App\Events\PayBillCreated;
+
 
 class PostController extends Controller
 {
@@ -88,6 +82,9 @@ class PostController extends Controller
             // remove images from validated data to prevent mass assignment error
             unset($validated['images']);
             unset($validated['orders']);
+            
+            // set reason to null if not exist to prevent mass assignment error
+            $validated['reason'] = null;
 
             // Create post
             $post = Post::create($validated);
@@ -117,7 +114,7 @@ class PostController extends Controller
             }
 
             // Fire create post event
-            event(new StatusPostCreated($post, $request['content'], $request['title']));
+            event(new StatusPostCreated($post, $request['titleNotification'] ?? null));
 
             return response()->json([
                 'message' => 'Post created successfully',
@@ -222,7 +219,7 @@ class PostController extends Controller
 
             $post = $this->postService->updatePost($post, $validated);
 
-            event(new StatusPostCreated($post, $request['content'], $request['title']));
+            event(new StatusPostCreated($post, $request['titleNotification'] ?? null));
 
             return response()->json([
                 'message' => 'Post updated successfully',
@@ -272,5 +269,46 @@ class PostController extends Controller
         }
 
         return new PostCollection($posts);
+    }
+
+    public function postPayment(Request $request, Post $post)
+    {
+        $this->authorize('update', $post);
+
+        if ($post->status !== 'expired') {
+            return response()->json([
+                'message' => 'Chỉ thanh toán được những bài đăng quá hạn.'
+            ], 400);
+        }
+
+        $user = $post->user;
+        $payRule = PayRule::first();
+        $points = $payRule->points;
+        $payRule = PayRule::firstOrFail();
+
+        if ($user->points > $points) {
+            $user->decrement('points', $points);
+                $paybill = PayBill::create([
+                    'account_id' => $user->account->id,
+                    'status' => 'completed',
+                    'points' => $points,
+                    'pay_rule_id' => $payRule->id,
+                    'post_id' => $post->id,
+                ]);
+
+            $post->update(['status' => 'completed',
+                'next_payment_date' => now()->addMonth()]);
+            event(new PayBillCreated($paybill));
+
+        } else {
+            return response()->json([
+                'message' => 'Tài khoản của bạn không đủ điểm.'
+            ], 400);
+        }
+
+        return response()->json([
+            'message' => 'Thanh toán thành công.',
+        ]);
+
     }
 }

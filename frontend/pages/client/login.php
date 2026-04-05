@@ -166,11 +166,16 @@
       var isValid = true;
 
       var username_regex = /^[a-zA-Z0-9]{3,30}$/
+      var email_regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
       const username_value = username_input.value.trim()
-      if(!username_regex.test(username_value)) {
+      if(!username_regex.test(username_value) && !email_regex.test(username_value)) {
         isValid = false;
         username_input.focus()
-        username_error_text.textContent = "Username có độ dài từ 3 đến 30 kí tự, chỉ chứa kí tự chữ và số."
+        if(username_value.includes("@")) {
+          username_error_text.textContent = "Email không hợp lệ."
+        } else {
+          username_error_text.textContent = "Username có độ dài từ 3 đến 30 kí tự, chỉ chứa kí tự chữ và số."
+        }
         username_error.style.display = "flex"
       } else {
         username_error.style.display = "none"
@@ -215,7 +220,7 @@
                 isValid = false;
 
                 username_input.focus()
-                username_error_text.textContent = "Username " + username_value + " không chính xác."
+                username_error_text.textContent = "Username hoặc email " + username_value + " không chính xác."
                 username_error.style.display = "flex"
 
                 password_error_text.textContent = "Mất khẩu không chính xác."

@@ -63,7 +63,7 @@
 
       <div class="newpost-postlist">
         <!-- a post sample -->
-        <div class="post">
+        <!-- <div class="post">
           <div class="post-favour">
             <img
               src='<?php echo BASE_URL . "/assets/img/favour.png" ?>'
@@ -100,7 +100,7 @@
               <div class="post-square">57.5 m2</div>
             </div>
           </a>
-        </div>
+        </div> -->
       </div>
 
       <a href='<?php echo BASE_URL . "/pages/client/posts.php"?>' class="more">Xem thêm</a>
@@ -120,7 +120,7 @@
 
       <div class="newpost-postlist">
         <!-- a post sample -->
-        <div class="post">
+        <!-- <div class="post">
           <div class="post-favour">
             <img
               src='<?php echo BASE_URL . "/assets/img/favour.png" ?>'
@@ -157,7 +157,7 @@
               <div class="post-square">57.5 m2</div>
             </div>
           </a>
-        </div>
+        </div> -->
       </div>
 
       <a href='<?php echo BASE_URL . "/pages/client/suggest-posts.php"?>' class="more">Xem thêm</a>
@@ -263,343 +263,348 @@
         // update post section (require -> must have favour button)
         let [posts, suggests] = await Promise.all([getNewPost(), getSuggestPost(account_id, token)])
 
-        let html = ""
+        if(posts != null && posts.length > 0) {
+          let html = ""
 
-        posts.forEach(post => {
-          var money = Number(post.price).toLocaleString("vi-VN")
+          posts.forEach(post => {
+            var money = Number(post.price).toLocaleString("vi-VN")
 
-          // check isFav or not
-          var isFav = false
-          var favId = ""
-          post.favorites.forEach(favorite => {
-            // console.log(favorite)
-            if(favorite.account.id == account_id) {
-              isFav = true
-              favId = favorite.id
-            }
-          })
+            // check isFav or not
+            var isFav = false
+            var favId = ""
+            post.favorites.forEach(favorite => {
+              // console.log(favorite)
+              if(favorite.account.id == account_id) {
+                isFav = true
+                favId = favorite.id
+              }
+            })
 
-          var favIco = isFav ? "favour" : "unfavour"
+            var favIco = isFav ? "favour" : "unfavour"
 
-          html += `
-            <div class="post">
-              <div class="post-favour post-id-${post.id} favourite-id-${favId} ${favIco}">
-                <img
-                  src='<?php echo BASE_URL ?>/assets/img/${favIco}.png'
-                  alt="favour.png"
-                  class="post-favour-ico"
-                />
-              </div>
-
-              <a href='<?php echo BASE_URL ?>/pages/client/detail-post.php?post_id=${post.id}' class="post-body">
-                <img
-                  src='http://backend.test${post.postImages[0].imagePostUrl}'
-                  alt="post.png"
-                  class="post-img"
-                />
-
-                <div class="post-title">
-                  ${post.title}
+            html += `
+              <div class="post">
+                <div class="post-favour post-id-${post.id} favourite-id-${favId} ${favIco}">
+                  <img
+                    src='<?php echo BASE_URL ?>/assets/img/${favIco}.png'
+                    alt="favour.png"
+                    class="post-favour-ico"
+                  />
                 </div>
 
-                <div class="post-address">
+                <a href='<?php echo BASE_URL ?>/pages/client/detail-post.php?post_id=${post.id}' class="post-body">
                   <img
-                    src='<?php echo BASE_URL . "/assets/img/address.png" ?>'
-                    alt="address.png"
-                    class="address-ico"
+                    src='http://backend.test${post.postImages[0].imagePostUrl}'
+                    alt="post.png"
+                    class="post-img"
                   />
 
-                  <div class="address-info">${post.houseNumber}, ${post.ward}, ${post.province}</div>
-                </div>
+                  <div class="post-title">
+                    ${post.title}
+                  </div>
 
-                <div class="post-info">
-                  <h3 class="post-price">${money} VND/tháng</h3>
+                  <div class="post-address">
+                    <img
+                      src='<?php echo BASE_URL . "/assets/img/address.png" ?>'
+                      alt="address.png"
+                      class="address-ico"
+                    />
 
-                  <div class="post-square">${post.area} m2</div>
-                </div>
-              </a>
-            </div>
-          `
-        });
-        
-        // update post section (must have favour button)
-        document.querySelectorAll(".newpost-postlist")[0].innerHTML = html
+                    <div class="address-info">${post.houseNumber}, ${post.ward}, ${post.province}</div>
+                  </div>
 
-        // update favorite post when client clicked
-        document.querySelectorAll(".newpost-postlist")[0].querySelectorAll(".post-favour").forEach(item => {
-          item.addEventListener("click", async (e) => { 
-            // console.log(item.classList)
-            var favIco = item.classList.contains("favour")
-            const postClass = [...item.classList].find(c => c.startsWith("post-id-"))
-            var post_id = postClass.replace("post-id-", "")
+                  <div class="post-info">
+                    <h3 class="post-price">${money} VND/tháng</h3>
 
-            // create new favorite
-            if(!favIco) {
-              item.classList.remove("unfavour")
-              item.classList.add("favour")
-              item.querySelector(".post-favour-ico").setAttribute("src", '<?php echo BASE_URL ?>/assets/img/favour.png')
+                    <div class="post-square">${post.area} m2</div>
+                  </div>
+                </a>
+              </div>
+            `
+          });
+          
+          // update post section (must have favour button)
+          document.querySelectorAll(".newpost-postlist")[0].innerHTML = html
 
-              try {
-                const response = await fetch("http://backend.test/api/favorites", {
-                  method: "POST",
-                  headers: {
-                    "Accept": "application/json",
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + token
-                  },
-                  body: JSON.stringify({
-                    "account_id": account_id,
-                    "post_id": post_id
+          // update favorite post when client clicked
+          document.querySelectorAll(".newpost-postlist")[0].querySelectorAll(".post-favour").forEach(item => {
+            item.addEventListener("click", async (e) => { 
+              // console.log(item.classList)
+              var favIco = item.classList.contains("favour")
+              const postClass = [...item.classList].find(c => c.startsWith("post-id-"))
+              var post_id = postClass.replace("post-id-", "")
+
+              // create new favorite
+              if(!favIco) {
+                item.classList.remove("unfavour")
+                item.classList.add("favour")
+                item.querySelector(".post-favour-ico").setAttribute("src", '<?php echo BASE_URL ?>/assets/img/favour.png')
+
+                try {
+                  const response = await fetch("http://backend.test/api/favorites", {
+                    method: "POST",
+                    headers: {
+                      "Accept": "application/json",
+                      "Content-Type": "application/json",
+                      "Authorization": "Bearer " + token
+                    },
+                    body: JSON.stringify({
+                      "account_id": account_id,
+                      "post_id": post_id
+                    })
                   })
-                })
 
-                const data = await response.json()
-                if(response.ok) {
-                  // console.log(data)
-                  if(data) {
-                    const favClass = [...item.classList].find(c => c.startsWith("favourite-id-"))
-                    if(favClass) {
-                      item.classList.remove(favClass)
-                      item.classList.add("favourite-id-" + data.favorite.id)
+                  const data = await response.json()
+                  if(response.ok) {
+                    // console.log(data)
+                    if(data) {
+                      const favClass = [...item.classList].find(c => c.startsWith("favourite-id-"))
+                      if(favClass) {
+                        item.classList.remove(favClass)
+                        item.classList.add("favourite-id-" + data.favorite.id)
+                      }
                     }
+                  } else {
+                    console.error(err)
                   }
-                } else {
+                } catch (err) {
                   console.error(err)
                 }
-              } catch (err) {
-                console.error(err)
               }
-            }
 
-            // delete favorite
-            if(favIco) {
-              item.classList.remove("favour")
-              item.classList.add("unfavour")
-              item.querySelector(".post-favour-ico").setAttribute("src", '<?php echo BASE_URL ?>/assets/img/unfavour.png')
-              const favClass = [...item.classList].find(c => c.startsWith("favourite-id-"))
-              var fav_id = favClass.replace("favourite-id-", "")
+              // delete favorite
+              if(favIco) {
+                item.classList.remove("favour")
+                item.classList.add("unfavour")
+                item.querySelector(".post-favour-ico").setAttribute("src", '<?php echo BASE_URL ?>/assets/img/unfavour.png')
+                const favClass = [...item.classList].find(c => c.startsWith("favourite-id-"))
+                var fav_id = favClass.replace("favourite-id-", "")
 
-              try {
-                const response = await fetch("http://backend.test/api/favorites/" + fav_id, {
-                  method: "DELETE",
-                  headers: {
-                    "Accept": "application/json",
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + token
+                try {
+                  const response = await fetch("http://backend.test/api/favorites/" + fav_id, {
+                    method: "DELETE",
+                    headers: {
+                      "Accept": "application/json",
+                      "Content-Type": "application/json",
+                      "Authorization": "Bearer " + token
+                    }
+                  })
+
+                  const data = await response.json()
+                  if(response.ok) {
+                    // console.log(data)
+                  } else {
+                    console.error(err)
                   }
-                })
-
-                const data = await response.json()
-                if(response.ok) {
-                  // console.log(data)
-                } else {
+                } catch (err) {
                   console.error(err)
                 }
-              } catch (err) {
-                console.error(err)
               }
-            }
+            })
           })
-        })
-        
-        html = ""
+          
+          html = ""
 
-        if(!suggests || suggests.length == 0) {
-          suggests = posts
+          if(!suggests || suggests.length == 0) {
+            suggests = posts
+          }
+
+          // console.log(suggests)
+
+          suggests.forEach(post => {
+            var money = Number(post.price).toLocaleString("vi-VN")
+
+            // check isFav or not
+            var isFav = false
+            var favId = ""
+            post.favorites.forEach(favorite => {
+              // console.log(favorite)
+              if(favorite.account.id == account_id) {
+                isFav = true
+                favId = favorite.id
+              }
+            })
+
+            var favIco = isFav ? "favour" : "unfavour"
+
+            html += `
+              <div class="post">
+                <div class="post-favour post-id-${post.id} favourite-id-${favId} ${favIco}">
+                  <img
+                    src='<?php echo BASE_URL ?>/assets/img/${favIco}.png'
+                    alt="favour.png"
+                    class="post-favour-ico"
+                  />
+                </div>
+
+                <a href='<?php echo BASE_URL ?>/pages/client/detail-post.php?post_id=${post.id}' class="post-body">
+                  <img
+                    src='http://backend.test${post.postImages[0].imagePostUrl}'
+                    alt="post.png"
+                    class="post-img"
+                  />
+
+                  <div class="post-title">
+                    ${post.title}
+                  </div>
+
+                  <div class="post-address">
+                    <img
+                      src='<?php echo BASE_URL . "/assets/img/address.png" ?>'
+                      alt="address.png"
+                      class="address-ico"
+                    />
+
+                    <div class="address-info">${post.houseNumber}, ${post.ward}, ${post.province}</div>
+                  </div>
+
+                  <div class="post-info">
+                    <h3 class="post-price">${money} VND/tháng</h3>
+
+                    <div class="post-square">${post.area} m2</div>
+                  </div>
+                </a>
+              </div>
+            `
+          });
+          
+          
+          // update suggest section (must have favour button)
+          document.querySelectorAll(".newpost-postlist")[1].innerHTML = html
+
+          // update favorite suggest when client clicked
+          document.querySelectorAll(".newpost-postlist")[1].querySelectorAll(".post-favour").forEach(item => {
+            item.addEventListener("click", async (e) => { 
+              // console.log(item.classList)
+              var favIco = item.classList.contains("favour")
+              const postClass = [...item.classList].find(c => c.startsWith("post-id-"))
+              var post_id = postClass.replace("post-id-", "")
+
+              // create new favorite
+              if(!favIco) {
+                item.classList.remove("unfavour")
+                item.classList.add("favour")
+                item.querySelector(".post-favour-ico").setAttribute("src", '<?php echo BASE_URL ?>/assets/img/favour.png')
+
+                try {
+                  const response = await fetch("http://backend.test/api/favorites", {
+                    method: "POST",
+                    headers: {
+                      "Accept": "application/json",
+                      "Content-Type": "application/json",
+                      "Authorization": "Bearer " + token
+                    },
+                    body: JSON.stringify({
+                      "account_id": account_id,
+                      "post_id": post_id
+                    })
+                  })
+
+                  const data = await response.json()
+                  if(response.ok) {
+                    // console.log(data)
+                    if(data) {
+                      const favClass = [...item.classList].find(c => c.startsWith("favourite-id-"))
+                      if(favClass) {
+                        item.classList.remove(favClass)
+                        item.classList.add("favourite-id-" + data.favorite.id)
+                      }
+                    }
+                  } else {
+                    console.error(err)
+                  }
+                } catch (err) {
+                  console.error(err)
+                }
+              }
+
+              // delete favorite
+              if(favIco) {
+                item.classList.remove("favour")
+                item.classList.add("unfavour")
+                item.querySelector(".post-favour-ico").setAttribute("src", '<?php echo BASE_URL ?>/assets/img/unfavour.png')
+                const favClass = [...item.classList].find(c => c.startsWith("favourite-id-"))
+                var fav_id = favClass.replace("favourite-id-", "")
+
+                try {
+                  const response = await fetch("http://backend.test/api/favorites/" + fav_id, {
+                    method: "DELETE",
+                    headers: {
+                      "Accept": "application/json",
+                      "Content-Type": "application/json",
+                      "Authorization": "Bearer " + token
+                    }
+                  })
+
+                  const data = await response.json()
+                  if(response.ok) {
+                    // console.log(data)
+                  } else {
+                    console.error(err)
+                  }
+                } catch (err) {
+                  console.error(err)
+                }
+              }
+            })
+          })
         }
-
-        console.log(suggests)
-
-        suggests.forEach(post => {
-          var money = Number(post.price).toLocaleString("vi-VN")
-
-          // check isFav or not
-          var isFav = false
-          var favId = ""
-          post.favorites.forEach(favorite => {
-            // console.log(favorite)
-            if(favorite.account.id == account_id) {
-              isFav = true
-              favId = favorite.id
-            }
-          })
-
-          var favIco = isFav ? "favour" : "unfavour"
-
-          html += `
-            <div class="post">
-              <div class="post-favour post-id-${post.id} favourite-id-${favId} ${favIco}">
-                <img
-                  src='<?php echo BASE_URL ?>/assets/img/${favIco}.png'
-                  alt="favour.png"
-                  class="post-favour-ico"
-                />
-              </div>
-
-              <a href='<?php echo BASE_URL ?>/pages/client/detail-post.php?post_id=${post.id}' class="post-body">
-                <img
-                  src='http://backend.test${post.postImages[0].imagePostUrl}'
-                  alt="post.png"
-                  class="post-img"
-                />
-
-                <div class="post-title">
-                  ${post.title}
-                </div>
-
-                <div class="post-address">
-                  <img
-                    src='<?php echo BASE_URL . "/assets/img/address.png" ?>'
-                    alt="address.png"
-                    class="address-ico"
-                  />
-
-                  <div class="address-info">${post.houseNumber}, ${post.ward}, ${post.province}</div>
-                </div>
-
-                <div class="post-info">
-                  <h3 class="post-price">${money} VND/tháng</h3>
-
-                  <div class="post-square">${post.area} m2</div>
-                </div>
-              </a>
-            </div>
-          `
-        });
-        
-        
-        // update suggest section (must have favour button)
-        document.querySelectorAll(".newpost-postlist")[1].innerHTML = html
-
-        // update favorite suggest when client clicked
-        document.querySelectorAll(".newpost-postlist")[1].querySelectorAll(".post-favour").forEach(item => {
-          item.addEventListener("click", async (e) => { 
-            // console.log(item.classList)
-            var favIco = item.classList.contains("favour")
-            const postClass = [...item.classList].find(c => c.startsWith("post-id-"))
-            var post_id = postClass.replace("post-id-", "")
-
-            // create new favorite
-            if(!favIco) {
-              item.classList.remove("unfavour")
-              item.classList.add("favour")
-              item.querySelector(".post-favour-ico").setAttribute("src", '<?php echo BASE_URL ?>/assets/img/favour.png')
-
-              try {
-                const response = await fetch("http://backend.test/api/favorites", {
-                  method: "POST",
-                  headers: {
-                    "Accept": "application/json",
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + token
-                  },
-                  body: JSON.stringify({
-                    "account_id": account_id,
-                    "post_id": post_id
-                  })
-                })
-
-                const data = await response.json()
-                if(response.ok) {
-                  // console.log(data)
-                  if(data) {
-                    const favClass = [...item.classList].find(c => c.startsWith("favourite-id-"))
-                    if(favClass) {
-                      item.classList.remove(favClass)
-                      item.classList.add("favourite-id-" + data.favorite.id)
-                    }
-                  }
-                } else {
-                  console.error(err)
-                }
-              } catch (err) {
-                console.error(err)
-              }
-            }
-
-            // delete favorite
-            if(favIco) {
-              item.classList.remove("favour")
-              item.classList.add("unfavour")
-              item.querySelector(".post-favour-ico").setAttribute("src", '<?php echo BASE_URL ?>/assets/img/unfavour.png')
-              const favClass = [...item.classList].find(c => c.startsWith("favourite-id-"))
-              var fav_id = favClass.replace("favourite-id-", "")
-
-              try {
-                const response = await fetch("http://backend.test/api/favorites/" + fav_id, {
-                  method: "DELETE",
-                  headers: {
-                    "Accept": "application/json",
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + token
-                  }
-                })
-
-                const data = await response.json()
-                if(response.ok) {
-                  // console.log(data)
-                } else {
-                  console.error(err)
-                }
-              } catch (err) {
-                console.error(err)
-              }
-            }
-          })
-        })
       } else {
         // not login yet
         var posts = await getNewPost()
         // console.log(posts)
-        let html = ""
+        
+        if(posts != null && posts.length > 0) {
+          let html = ""
 
-        posts.forEach(post => {
-          var money = Number(post.price).toLocaleString("vi-VN")
-          html += `
-            <div class="post">
-              <div class="post-favour" style="display: none">
-                <img
-                  src='<?php echo BASE_URL . "/assets/img/favour.png" ?>'
-                  alt="favour.png"
-                  class="post-favour-ico"
-                />
-              </div>
-
-              <a href='<?php echo BASE_URL ?>/pages/client/detail-post.php?post_id=${post.id}' class="post-body">
-                <img
-                  src='http://backend.test${post.postImages[0].imagePostUrl}'
-                  alt="post.png"
-                  class="post-img"
-                />
-
-                <div class="post-title">
-                  ${post.title}
+          posts.forEach(post => {
+            var money = Number(post.price).toLocaleString("vi-VN")
+            html += `
+              <div class="post">
+                <div class="post-favour" style="display: none">
+                  <img
+                    src='<?php echo BASE_URL . "/assets/img/favour.png" ?>'
+                    alt="favour.png"
+                    class="post-favour-ico"
+                  />
                 </div>
 
-                <div class="post-address">
+                <a href='<?php echo BASE_URL ?>/pages/client/detail-post.php?post_id=${post.id}' class="post-body">
                   <img
-                    src='<?php echo BASE_URL . "/assets/img/address.png" ?>'
-                    alt="address.png"
-                    class="address-ico"
+                    src='http://backend.test${post.postImages[0].imagePostUrl}'
+                    alt="post.png"
+                    class="post-img"
                   />
 
-                  <div class="address-info">${post.houseNumber}, ${post.ward}, ${post.province}</div>
-                </div>
+                  <div class="post-title">
+                    ${post.title}
+                  </div>
 
-                <div class="post-info">
-                  <h3 class="post-price">${money} VND/tháng</h3>
+                  <div class="post-address">
+                    <img
+                      src='<?php echo BASE_URL . "/assets/img/address.png" ?>'
+                      alt="address.png"
+                      class="address-ico"
+                    />
 
-                  <div class="post-square">${post.area} m2</div>
-                </div>
-              </a>
-            </div>
-          `
-        });
-        
-        // update post section (not require -> do not have favour button)
-        document.querySelectorAll(".newpost-postlist").forEach(item => {
-          item.innerHTML = html
-        })
+                    <div class="address-info">${post.houseNumber}, ${post.ward}, ${post.province}</div>
+                  </div>
+
+                  <div class="post-info">
+                    <h3 class="post-price">${money} VND/tháng</h3>
+
+                    <div class="post-square">${post.area} m2</div>
+                  </div>
+                </a>
+              </div>
+            `
+          });
+          
+          // update post section (not require -> do not have favour button)
+          document.querySelectorAll(".newpost-postlist").forEach(item => {
+            item.innerHTML = html
+          })
+        }
       }
     }
 

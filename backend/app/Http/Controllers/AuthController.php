@@ -43,7 +43,7 @@ class AuthController extends Controller
 
         $loginValue = $fields['login'];
 
-        $account = Account::where(function ($query) use ($loginValue) {
+        $account = Account::withTrashed()->where(function ($query) use ($loginValue) {
             $query->where('username', $loginValue)
                   ->orWhereHas('user', function ($query) use ($loginValue) {
                       $query->whereHas('personalInfo', function ($query) use ($loginValue) {
@@ -58,6 +58,11 @@ class AuthController extends Controller
                       });
                   });
         })->first();
+
+        //check if account is deleted or not
+        if ($account && $account->deleted_at) {
+            return response()->json(['message' => 'Tài khoản đã bị khóa'], 403);
+        }
 
         if (!$account || !Hash::check($fields['password'], $account->password)) {
             return response()->json(['message' => 'Invalid credentials'], 401);

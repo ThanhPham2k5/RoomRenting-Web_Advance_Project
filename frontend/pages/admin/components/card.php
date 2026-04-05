@@ -33,15 +33,15 @@ if (!empty($cardData['postImages']) && is_array($cardData['postImages'])) {
     </div>
     <div class="cta">
         <?php if($status === "pending"){ ?>
-            <button class="green" onclick="handleUpdateStatus(event, <?php echo $id; ?>, 'completed')">Duyệt bài</button>
-            <button class="yellow" onclick="handleUpdateStatus(event, <?php echo $id; ?>, 'rejected')">Từ chối</button>
+            <button class="green" onclick="handleUpdateStatus(event, <?php echo $id; ?>, 'completed', '<?php echo $title; ?>')">Duyệt bài</button>
+            <button class="yellow" onclick="handleUpdateStatus(event, <?php echo $id; ?>, 'rejected', '<?php echo $title; ?>')">Từ chối</button>
 
         <?php }else if($status === "rejected"){ ?>
             <button class="blue" onclick="openReasonModal(event, <?php echo $id; ?>)">Xem lý do</button>
-            <button class="red" onclick="handleUpdateStatus(event, <?php echo $id; ?>, 'failed')">Gỡ bài</button>
+            <button class="red" onclick="handleUpdateStatus(event, <?php echo $id; ?>, 'failed', '<?php echo $title; ?>')">Gỡ bài</button>
 
         <?php }else if($status === "completed"){ ?>    
-            <button class="red" onclick="handleUpdateStatus(event, <?php echo $id; ?>, 'failed')">Gỡ bài</button>
+            <button class="red" onclick="handleUpdateStatus(event, <?php echo $id; ?>, 'failed', '<?php echo $title; ?>')">Gỡ bài</button>
 
         <?php }else if($status === "failed"){ ?>
             <button class="blue" onclick="openReasonModal(event, <?php echo $id; ?>)">Xem lý do</button>

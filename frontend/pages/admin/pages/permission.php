@@ -383,7 +383,7 @@
     <?php
     ob_start();
     ?>
-        <input type="hidden" name="action" value="updatePermission">
+        <input type="hidden" name="action" value="editPermission">
         <input type="hidden" name="id"> <div class="input-group">
             <label>Tên quyền</label>
             <input type="text" name="name" placeholder="Nhập tên quyền...">
@@ -598,3 +598,83 @@
     <?php renderComponent("form",false,['title' => 'Danh sách nhân viên', 'idModal' => $permissionListAccountForm, 'formData' => $formListAccountData]) ?>
     <?php renderComponent("form",false,['title' => 'Chi tiết quyền', 'idModal' => $permissionDetailForm, 'formData' => $formDetailData]) ?>
 </div>
+<script>
+function validatePermissionMaster(form) {
+    // 1. Lấy các phần tử DOM cần kiểm tra
+    const nameInput = form.querySelector('input[name="name"]');
+    const descInput = form.querySelector('input[name="description"]');
+    // Với checkbox dạng mảng, ta cần chọn tất cả để kiểm tra xem có cái nào được check không
+    const permissionCheckboxes = form.querySelectorAll('input[name="permissions[]"]');
+
+    // 2. Xóa các thông báo lỗi cũ trước khi thực hiện kiểm tra mới
+    [nameInput, descInput].forEach(input => {
+        if (input) Validator.clearError(input);
+    });
+    
+    // Vì checkbox nằm trong một cấu trúc accordion phức tạp, ta cần tìm container chung gần nhất
+    // để hiển thị lỗi, ví dụ div chứa toàn bộ accordion.
+    const accordionContainer = form.querySelector('.permission-accordion');
+    if (accordionContainer) Validator.clearError(accordionContainer);
+
+    let isValid = true;
+
+    // --- KIỂM TRA TÊN QUYỀN ---
+    // Yêu cầu: Không được rỗng, độ dài tối đa 255 kí tự
+    if (nameInput) {
+        const nameValue = nameInput.value.trim();
+        const nameEmptyErr = Validator.isRequired(nameValue, 'Tên quyền không được để trống!');
+        
+        if (nameEmptyErr) {
+            Validator.showError(nameInput, nameEmptyErr);
+            isValid = false;
+        } else {
+            const nameLenErr = Validator.checkLength(nameValue, 1, 255, 'Tên quyền');
+            if (nameLenErr) {
+                Validator.showError(nameInput, nameLenErr);
+                isValid = false;
+            }
+        }
+    }
+
+    // --- KIỂM TRA MÔ TẢ ---
+    // Yêu cầu: Không được rỗng, độ dài tối đa 255 kí tự
+    if (descInput) {
+        const descValue = descInput.value.trim();
+        const descEmptyErr = Validator.isRequired(descValue, 'Mô tả không được để trống!');
+        
+        if (descEmptyErr) {
+            Validator.showError(descInput, descEmptyErr);
+            isValid = false;
+        } else {
+            const descLenErr = Validator.checkLength(descValue, 1, 255, 'Mô tả');
+            if (descLenErr) {
+                Validator.showError(descInput, descLenErr);
+                isValid = false;
+            }
+        }
+    }
+
+    // --- KIỂM TRA TÙY CHỌN CHỨC NĂNG (QUYỀN) ---
+    // Yêu cầu: Không được rỗng (phải chọn ít nhất 1 checkbox)
+    if (permissionCheckboxes.length > 0) {
+        let isAnyChecked = false;
+        // Duyệt qua NodeList để xem có checkbox nào đang được checked không
+        for (let i = 0; i < permissionCheckboxes.length; i++) {
+            if (permissionCheckboxes[i].checked) {
+                isAnyChecked = true;
+                break;
+            }
+        }
+
+        if (!isAnyChecked) {
+            // Nếu không có checkbox nào được chọn, hiển thị lỗi ở container bọc ngoài
+            if (accordionContainer) {
+                 Validator.showError(accordionContainer, 'Vui lòng chọn ít nhất một chức năng!');
+            }
+            isValid = false;
+        }
+    }
+
+    return isValid;
+}
+</script>

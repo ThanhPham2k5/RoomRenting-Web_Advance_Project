@@ -438,6 +438,30 @@ switch ($page) {
                 }
             });
         });
+
+        const btnToggle = document.getElementById('btnFilterToggle');
+        const filterPanel = document.getElementById('filterDropdownPanel');
+
+        // Nếu không có nút hoặc panel thì không làm gì (Tránh lỗi console ở trang không có bộ lọc)
+        if (!btnToggle || !filterPanel) return;
+
+        // Bấm nút thì mở/đóng panel
+        btnToggle.addEventListener('click', function(event) {
+            event.stopPropagation(); // Ngăn click lan ra ngoài body
+            filterPanel.classList.toggle('show');
+        });
+
+        // Bấm vào bên trong panel (đang gõ form) thì không được đóng
+        filterPanel.addEventListener('click', function(event) {
+            event.stopPropagation();
+        });
+
+        // Bấm ra ngoài khoảng không (body) thì tự động ẩn panel đi
+        document.addEventListener('click', function() {
+            if (filterPanel.classList.contains('show')) {
+                filterPanel.classList.remove('show');
+            }
+        });
     });
     function removeNewImage(filename, buttonElement) {
         // 1. Lọc bỏ file đó khỏi mảng
@@ -628,11 +652,14 @@ switch ($page) {
         let isValid = true;
 
         // Gọi hàm kiểm tra tương ứng với action
-            if (action === 'addAccount' || action === 'editAccount') {
-                isValid = validateAccountMaster(form);
-            }
+        if (action === 'addAccount' || action === 'editAccount') {
+            isValid = validateAccountMaster(form);
+        } else if(action === 'addPermission' || action === 'editPermission'){
+            isValid = validatePermissionMaster(form);
+        } else if(action === 'addPricePost' || action === 'addPriceExchange'){
+            isValid = validatePricingMaster(form);
+        } 
         
-
         // 2. --- NẾU LỖI THÌ DỪNG LẠI NGAY ---
         if (!isValid) {
             // Form có lỗi, viền đỏ đã hiện, ta return để ngăn không cho gọi API
@@ -739,19 +766,40 @@ switch ($page) {
             alert(error.message);
         });
     }
-    function handleUpdateStatus(event, id, newStatus) {
-        event.stopPropagation(); // Ngăn sự kiện click lan ra hàng (tránh mở nhầm Modal Chi tiết)
+    function handleUpdateStatus(event, id, newStatus, title) {
+        event.stopPropagation();
 
         // Xác nhận trước khi làm
         let actionName = newStatus === 'completed' ? 'Duyệt bài' : 
                         newStatus === 'rejected' ? 'Từ chối bài' : 'Gỡ bài';
                         
         if (!confirm(`Bạn có chắc chắn muốn ${actionName} này không?`)) return;
+        const reasonMap = {
+            'completed': `Bài đăng "${title}" đã được duyệt.`,
+            'rejected': `Bài đăng "${title}" đã bị từ chối.`,
+            'pending': `Bài đăng "${title}" đang được xét duyệt.`,
+            'failed': `Bài đăng "${title}" đã bị gỡ/xóa.`
+        };
+        let reasonText = reasonMap[newStatus];
+
+        // 2. TÍNH NĂNG NÂNG CAO: Cho phép nhập lý do nếu Từ chối/Gỡ bài
+        if (newStatus === 'rejected' || newStatus === 'failed') {
+            let customReason = prompt(`Vui lòng nhập lý do ${actionName} (Tùy chọn):`);
+            
+            // Nếu người dùng bấm "Cancel" ở ô nhập lý do -> Hủy hành động
+            if (customReason === null) return; 
+            
+            // Nếu có nhập chữ, nối thêm vào câu thông báo
+            if (customReason.trim() !== '') {
+                reasonText += ` Lý do chi tiết: ${customReason.trim()}`;
+            }
+        }
 
         // Tạo FormData ảo (không cần thẻ <form> thật)
         let formData = new FormData();
-        formData.append('status', newStatus); // Gửi trạng thái mới lên Backend
-        formData.append('_method', 'PUT');    // Lệnh UPDATE thì thường dùng PUT
+        formData.append('status', newStatus);
+        formData.append('_method', 'PUT');
+        formData.append('reason', reasonText);
 
         // Xử lý Endpoint
         const urlParams = new URLSearchParams(window.location.search);
@@ -764,7 +812,7 @@ switch ($page) {
 
         // Gửi API qua Proxy
         fetch('../admin/core/api_proxy.php', {
-            method: 'POST', // Chỗ này luôn là POST do gửi qua file PHP trung gian
+            method: 'POST',
             headers: {
                 "Accept": "application/json"
             },
@@ -1577,7 +1625,6 @@ switch ($page) {
             console.error("Lỗi khi tải dữ liệu biểu đồ bài đăng theo tháng:", error);
         }
     }
-
     async function renderRoomChart() {
         try {
             // 1. GỌI QUA PROXY ĐỂ TỰ ĐỘNG GẮN TOKEN
@@ -1659,7 +1706,6 @@ switch ($page) {
 
         
     }
-    
     async function renderWardChart() {
         try {
             // 1. Gọi API lấy dữ liệu phường/xã
@@ -1729,7 +1775,6 @@ switch ($page) {
             console.error("Lỗi khi tải dữ liệu biểu đồ phường:", error);
         }
     }
-
     async function renderRevenueChart() {
         try {
             // 1. GỌI API LẤY DỮ LIỆU DOANH THU
@@ -1873,7 +1918,6 @@ switch ($page) {
             console.error("Lỗi khi tải danh sách Phường/Xã:", error);
         }
     }
-
     document.addEventListener('DOMContentLoaded', function() {
         const citySelect = document.getElementById('city-select');
         const wardSelect = document.getElementById('ward-select');
@@ -1907,5 +1951,27 @@ switch ($page) {
             });
         }
     });
+    // Hàm xử lý áp dụng lọc
+    function handleApplyFilter(event) {
+        event.preventDefault();
+        
+        const form = event.target;
+        const formData = new FormData(form);
+        
+        // Tự động gom data từ form thành 1 object
+        const filterData = Object.fromEntries(formData.entries());
+
+        console.log("Data Lọc:", filterData);
+
+        // TODO: Gắn các trường vào URL hoặc gọi lại hàm loadData của bạn
+        // Ví dụ:
+        // let queryParams = new URLSearchParams(window.location.search);
+        // queryParams.set('min_price', filterData.min_price);
+        // queryParams.set('max_price', filterData.max_price);
+        // window.location.search = queryParams.toString();
+        
+        // Đóng panel
+        document.getElementById('filterDropdownPanel').classList.remove('show');
+    }
 </script>
 </html>

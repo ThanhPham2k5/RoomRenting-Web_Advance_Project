@@ -149,7 +149,7 @@ class PostController extends Controller
         $this->authorize('update', $post);
 
         $validated = $request->validated();
-
+        
         return DB::transaction(function () use ($request, $post, $validated) {
 
             // process images if exist

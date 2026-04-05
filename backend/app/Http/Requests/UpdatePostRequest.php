@@ -29,7 +29,7 @@ class UpdatePostRequest extends FormRequest
             'ward' => 'sometimes|string|max:255',
             'province' => 'sometimes|string|max:255',
             'description' => 'sometimes|string',
-            'deposit' => 'sometimes|numeric|min:0',
+            'deposit' => 'sometimes|numeric|min:0|max:price',
             'status' => 'sometimes|string|in:rejected,expired,pending,completed,failed',
             'room_type' => 'sometimes|string|in:room,apartment,dorm',
             'max_occupants' => 'sometimes|integer|min:1',

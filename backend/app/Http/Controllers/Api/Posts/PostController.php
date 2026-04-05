@@ -234,7 +234,7 @@ class PostController extends Controller
         return new PostCollection($posts);
     }
 
-    public function postPayment(Request $request, Post $post)
+    public function postPayment(Post $post)
     {
         $this->authorize('update', $post);
 
@@ -244,34 +244,9 @@ class PostController extends Controller
             ], 400);
         }
 
-        $user = $post->user;
-        $payRule = PayRule::first();
-        $points = $payRule->points;
-        $payRule = PayRule::firstOrFail();
+        $result = $this->postService->postPayment($post);
 
-        if ($user->points > $points) {
-            $user->decrement('points', $points);
-                $paybill = PayBill::create([
-                    'account_id' => $user->account->id,
-                    'status' => 'completed',
-                    'points' => $points,
-                    'pay_rule_id' => $payRule->id,
-                    'post_id' => $post->id,
-                ]);
-
-            $post->update(['status' => 'completed',
-                'next_payment_date' => now()->addMonth()]);
-            event(new PayBillCreated($paybill));
-
-        } else {
-            return response()->json([
-                'message' => 'Tài khoản của bạn không đủ điểm.'
-            ], 400);
-        }
-
-        return response()->json([
-            'message' => 'Thanh toán thành công.',
-        ]);
+        return response()->json($result);
 
     }
 }

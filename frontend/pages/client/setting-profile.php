@@ -485,16 +485,26 @@
             if(response.ok) {
                 // console.log(data.data)
                 if(data.data) {
-                    document.querySelector(".profile-avatar-img").setAttribute("src", data.data.profileUrl)
-                    document.querySelector(".profile-fullname-input").setAttribute("value", data.data.name)
-                    document.querySelector(".profile-phone-input").setAttribute("value", data.data.phoneNumber)
-                    document.querySelector(".profile-address-input").setAttribute("value", data.data.houseNumber)
-                    document.querySelector(".filter-province-lb-text").textContent = data.data.province
-                    await autoWardByName(account_id, token, data.data.province)
-                    document.querySelector(".filter-district-lb-text").textContent = data.data.ward
-                    document.querySelector(".profile-id-card-input").setAttribute("value", data.data.pid)
-                    document.querySelector(".filter-gender-lb-text").textContent = data.data.gender
-                    document.querySelector(".profile-dob-input").setAttribute("value", data.data.dateOfBirth)
+                    if(data.data.profileUrl)
+                        document.querySelector(".profile-avatar-img").setAttribute("src", data.data.profileUrl)
+                    if(data.data.name)
+                        document.querySelector(".profile-fullname-input").value = data.data.name
+                    if(data.data.phoneNumber)
+                        document.querySelector(".profile-phone-input").value = data.data.phoneNumber
+                    if(data.data.houseNumber)
+                        document.querySelector(".profile-address-input").value = data.data.houseNumber
+                    if(data.data.province) {
+                        document.querySelector(".filter-province-lb-text").textContent = data.data.province
+                        await autoWardByName(account_id, token, data.data.province)
+                    }
+                    if(data.data.ward)  
+                        document.querySelector(".filter-district-lb-text").textContent = data.data.ward
+                    if(data.data.pid)
+                        document.querySelector(".profile-id-card-input").value = data.data.pid
+                    if(data.data.gender)
+                        document.querySelector(".filter-gender-lb-text").textContent = data.data.gender
+                    if(data.data.dateOfBirth)
+                        document.querySelector(".profile-dob-input").value = data.data.dateOfBirth
                 }
             } else {
                 console.error(data)
@@ -563,12 +573,12 @@
     document.querySelector(".profile-pass-save").addEventListener("click", async (e) => {
         // validation
         var isValid = true
-        const password_regex = /^[a-zA-Z0-9!@#$%^&*]{8,255}$/
+        const password_regex = /^\S{8,255}$/
 
         if(!password_regex.test(document.querySelector(".profile-cur-pass-input").value.trim())) {
             isValid = false
             document.querySelector(".profile-cur-pass-input").focus()
-            document.querySelector(".cur-pass-error").textContent = "Mật khẩu phải có từ 8 - 255 kí tự."
+            document.querySelector(".cur-pass-error").textContent = "Mật khẩu phải có từ 8 - 255 kí tự (bao gồm !@#$%^&*)."
             document.querySelector(".cur-pass-error").style.display = "flex"
         } else {
             document.querySelector(".cur-pass-error").style.display = "none"
@@ -579,7 +589,7 @@
                 document.querySelector(".profile-new-pass-input").focus()
             }
             isValid = false
-            document.querySelector(".new-pass-error").textContent = "Mật khẩu mới phải có từ 8 - 255 kí tự."
+            document.querySelector(".new-pass-error").textContent = "Mật khẩu mới phải có từ 8 - 255 kí tự (bao gồm !@#$%^&*)."
             document.querySelector(".new-pass-error").style.display = "flex"
         } else {
             document.querySelector(".new-pass-error").style.display = "none"

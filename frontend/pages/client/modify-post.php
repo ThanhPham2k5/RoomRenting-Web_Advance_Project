@@ -112,7 +112,7 @@
           <label for="profile-square-input" class="profile-square"><h3>Diện tích</h3></label>
 
           <input type="number" name="profile-square-input" id="profile-square-input" class="profile-square-input"
-          placeholder="Nhập diện tích (VD: 35m2)" min="1">
+          placeholder="Nhập diện tích (VD: 35.2) m2" min="1">
 
           <div class="profile-error square-error">Số nhà không hợp lệ</div>
           

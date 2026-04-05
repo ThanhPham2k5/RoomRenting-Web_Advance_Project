@@ -17,7 +17,7 @@ return new class extends Migration
             $table->decimal('money', 30, 0);
             $table->decimal('total_money', 30, 0);
             $table->integer('points');
-            $table->decimal('vat', 8, 2);
+            $table->decimal('vat', 30, 2);
             $table->enum('status', ['completed', 'pending', 'failed']);
 
             $table->foreignId('account_id')->constrained()->cascadeOnDelete();

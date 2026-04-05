@@ -118,3 +118,15 @@
     transform: translateY(-2px);
     box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.1);
 }
+/* 4. NÚT KHÔI PHỤC (Restore) - Warning/Recovery Action */
+.title-component .cta .btn_restore {
+    background-color: #FFFBEB; /* Nền vàng/cam nhạt */
+    color: #D97706; /* Chữ cam ấm */
+    border: 1px solid #FDE68A;
+}
+.title-component .cta .btn_restore:hover {
+    background-color: #FEF3C7;
+    color: #B45309;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(217, 119, 6, 0.15);
+}

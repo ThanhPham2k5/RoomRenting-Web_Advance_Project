@@ -196,7 +196,7 @@
     ?>
     <?php renderComponent("form",false,['title' => 'Thêm tài khoản', 'idModal' => $accountInsertForm, 'formData' => $formInsertData]) ?>
     <?php renderComponent("form",false,['title' => 'Sửa tài khoản', 'idModal' => $accountEditForm, 'formData' => $formEditData]) ?>
-    <?php renderComponent("form",false,['title' => 'Chi tiết tài khoản', 'idModal' => $accountDetailForm, 'formData' => $formDetailData]) ?>
+    <?php renderComponent("form",false,['title' => 'Chi tiết tài khoản', 'idModal' => $accountDetailForm, 'formData' => $formDetailData, 'save' => false]) ?>
 </div>
 <script>
 // Hàm chuyên kiểm tra form Tài khoản

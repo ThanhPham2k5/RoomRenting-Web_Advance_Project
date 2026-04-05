@@ -10,7 +10,8 @@
               </div>';
             }else{
                 foreach ($posts as $post){
-                    renderComponent("card",false,['cardData' => $post]);
+                    if(!isset($post['deletedAt']))
+                        renderComponent("card",false,['cardData' => $post]);
                 }
             }
         ?>

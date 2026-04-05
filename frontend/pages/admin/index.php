@@ -8,6 +8,12 @@ $adminName = $_SESSION['admin_user'] ?? "";
 $adminRole = $_SESSION['admin_role'] ?? "";
 $adminId = $_SESSION['admin_id'] ?? "";
 require_once __DIR__ . '/core/function.php';
+$accountData = call_api("http://127.0.0.1:8000/api/accounts/$adminId?include=roles.permissions");
+$userPermissions = [];
+if (isset($accountData['data']['roles'][0]['permissions'])) {
+    $userPermissions = $accountData['data']['roles'][0]['permissions'];
+}
+$_SESSION['user_permissions'] = $userPermissions;
 $pageData = [];
 $page = $_GET['page'] ?? 'overview';
 $validPage = ['overview', 'account', 'bill', 'comment', 'permission', 'post', 'price', 'setting'];
@@ -439,6 +445,7 @@ switch ($page) {
             });
         });
 
+        //Loc cua post
         const btnToggle = document.getElementById('btnFilterToggle');
         const filterPanel = document.getElementById('filterDropdownPanel');
 
@@ -462,6 +469,56 @@ switch ($page) {
                 filterPanel.classList.remove('show');
             }
         });
+
+        //Save data for filter post
+        const filterForm = document.getElementById('filterForm');
+        
+        // Nếu không có form này (VD: đang ở trang chủ, trang quản lý user...) thì DỪNG LUÔN
+        if (!filterForm) return; 
+
+        const urlParams = new URLSearchParams(window.location.search);
+
+        // 1. Hàm rút gọn để điền dữ liệu an toàn 100%
+        const setFilterValue = (inputName, value) => {
+            // Chỉ tìm thẻ input nằm TRONG form bộ lọc
+            const field = filterForm.querySelector(`[name="${inputName}"]`);
+            
+            // RÀO CHẮN SỐ 2: Đảm bảo thẻ tồn tại VÀ dữ liệu trên URL không bị rỗng/null
+            if (field && value !== null && value !== '') {
+                field.value = value;
+            }
+        };
+
+        // 2. Điền các ô dữ liệu cơ bản
+        setFilterValue('province', urlParams.get('filter[province]'));
+        setFilterValue('area', urlParams.get('filter[area]'));
+        setFilterValue('room_type', urlParams.get('filter[roomType]')); 
+
+        // 3. Xử lý Giá tiền
+        const priceParam = urlParams.get('filter[price]');
+        if (priceParam) {
+            const priceParts = priceParam.split(','); 
+            
+            priceParts.forEach(part => {
+                if (part.startsWith('>=')) {
+                    setFilterValue('min_price', part.replace('>=', ''));
+                } else if (part.startsWith('<=')) {
+                    setFilterValue('max_price', part.replace('<=', ''));
+                }
+            });
+        }
+
+        // 4. Xử lý phục hồi Phường/Xã
+        const savedProvince = urlParams.get('filter[province]');
+        const savedWard = urlParams.get('filter[ward]');
+        
+        if (savedProvince) {
+            if (typeof loadWards === 'function') {
+                loadWards(savedProvince, savedWard); 
+            } else {
+                setFilterValue('ward', savedWard);
+            }
+        }
     });
     function removeNewImage(filename, buttonElement) {
         // 1. Lọc bỏ file đó khỏi mảng
@@ -759,7 +816,7 @@ switch ($page) {
                     }
                 }
             }   
-            // window.location.reload();
+            window.location.reload();
         })
         .catch(error => {
             console.error("Lỗi lưu dữ liệu:", error);
@@ -1225,6 +1282,7 @@ switch ($page) {
                 document.getElementById('room-type').textContent = "Kiểu phòng trọ: " + data.roomType;
                 document.getElementById('occupants-data').textContent = "Số lượng người tối đa: " + data.maxOccupants;
                 document.getElementById('detail-description').textContent = data.description;
+                document.getElementById('reason').textContent = data.reason ?? "Lý do: Không có"
                 
                 // Cấu hình đường dẫn mặc định
                 const baseUrl = "http://backend.test";
@@ -1954,25 +2012,99 @@ switch ($page) {
     });
     // Hàm xử lý áp dụng lọc
     function handleApplyFilter(event) {
-        event.preventDefault();
-        
+        event.preventDefault(); // Ngăn form tự động load lại trang
+
         const form = event.target;
         const formData = new FormData(form);
-        
-        // Tự động gom data từ form thành 1 object
-        const filterData = Object.fromEntries(formData.entries());
+        const url = new URL(window.location.href);
 
-        console.log("Data Lọc:", filterData);
+        // Thêm tham số per_page=all
+        url.searchParams.set('per_page', 'all');
 
-        // TODO: Gắn các trường vào URL hoặc gọi lại hàm loadData của bạn
-        // Ví dụ:
-        // let queryParams = new URLSearchParams(window.location.search);
-        // queryParams.set('min_price', filterData.min_price);
-        // queryParams.set('max_price', filterData.max_price);
-        // window.location.search = queryParams.toString();
+        // 1. XỬ LÝ KHOẢNG GIÁ
+        let minPrice = formData.get('min_price');
+        let maxPrice = formData.get('max_price');
+        let priceFilter = '';
+
+        if (minPrice && maxPrice) {
+            priceFilter = `>=${minPrice},<=${maxPrice}`;
+        } else if (minPrice) {
+            priceFilter = `>=${minPrice}`;
+        } else if (maxPrice) {
+            priceFilter = `<=${maxPrice}`;
+        }
+
+        if (priceFilter) {
+            url.searchParams.set('filter[price]', priceFilter);
+        } else {
+            url.searchParams.delete('filter[price]');
+        }
+
+        // 2. XỬ LÝ CÁC TRƯỜNG CÒN LẠI 
+        // (Dùng một hàm ngắn để kiểm tra: có data thì set, trống thì delete cho sạch URL)
+        const setOrDeleteParam = (paramName, value) => {
+            if (value && value.trim() !== "") {
+                url.searchParams.set(paramName, value);
+            } else {
+                url.searchParams.delete(paramName);
+            }
+        };
+
+        setOrDeleteParam('filter[province]', formData.get('province'));
+        setOrDeleteParam('filter[ward]', formData.get('ward'));
+        setOrDeleteParam('filter[area]', formData.get('area'));
+        setOrDeleteParam('filter[roomType]', formData.get('room_type')); // Đổi key thành roomType
+
+        // Lưu ý: Cố tình bỏ qua formData.get('max_people') theo yêu cầu
+
+        // 3. XÓA TRANG HIỆN TẠI (Đưa về trang 1 khi có bộ lọc mới)
+        url.searchParams.delete('p');
+
+        // 4. ẨN PANEL VÀ CHUYỂN HƯỚNG
+        const filterPanel = document.getElementById('filterDropdownPanel');
+        if (filterPanel) {
+            filterPanel.classList.remove('show');
+        }
+
+        window.location.href = url.toString();
+    }
+    // Hàm tách lý do chi tiết từ chuỗi của Backend trả về
+    function extractReasonDetail(fullReason) {
+        if (!fullReason) return "Không có thông tin lý do.";
+
+        const keyword = "Lý do chi tiết: ";
         
-        // Đóng panel
-        document.getElementById('filterDropdownPanel').classList.remove('show');
+        // Kiểm tra xem trong chuỗi có chứa từ khóa này không
+        if (fullReason.includes(keyword)) {
+            // Cắt chuỗi thành mảng gồm 2 phần, lấy phần thứ 2 (index 1)
+            const parts = fullReason.split(keyword);
+            return parts[1].trim(); // Trả về chữ "aaaa"
+        }
+        
+        // Nếu không có chữ "Lý do chi tiết", trả về toàn bộ câu gốc (đề phòng)
+        return fullReason; 
+    }
+    // Thêm tham số postId vào cuối cùng
+    function handleViewReason(event, fullReasonString, postId) {
+        // 1. Chặn click lan ra ngoài
+        event.stopPropagation();
+
+        // 2. Cắt lấy lý do thực sự
+        const exactReason = extractReasonDetail(fullReasonString);
+
+        // 3. Tìm ĐÚNG thẻ textarea của bài đăng này (Nối thêm postId vào ID)
+        const reasonDisplayEl = document.getElementById('reason-display-' + postId);
+        
+        if (reasonDisplayEl) {
+            if (reasonDisplayEl.tagName === 'INPUT' || reasonDisplayEl.tagName === 'TEXTAREA') {
+                reasonDisplayEl.value = exactReason;
+            } else {
+                reasonDisplayEl.innerText = exactReason;
+            }
+        }
+
+        // 4. Mở ĐÚNG cái Modal của bài đăng này
+        openModal('modal-xem-ly-do-' + postId);
     }
 </script>
 </html>

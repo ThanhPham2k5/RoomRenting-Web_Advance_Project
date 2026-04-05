@@ -139,7 +139,7 @@
     <?php 
         $invoiceDetailData = ob_get_clean();
     ?>
-    <?php renderComponent("form",false,['title' => 'Chi tiết hóa đơn thanh toán', 'idModal' => $invoiceDetailForm, 'formData' => $invoiceDetailData]) ?>
+    <?php renderComponent("form",false,['title' => 'Chi tiết hóa đơn thanh toán', 'idModal' => $invoiceDetailForm, 'formData' => $invoiceDetailData, 'save' => false]) ?>
     <?php
     ob_start();
     ?>
@@ -210,6 +210,6 @@
     <?php 
         $rechargeDetailData = ob_get_clean();
     ?>
-    <?php renderComponent("form",false,['title' => 'Chi tiết hóa đơn nạp tiền', 'idModal' => $rechargeDetailForm, 'formData' => $rechargeDetailData]) ?>
+    <?php renderComponent("form",false,['title' => 'Chi tiết hóa đơn nạp tiền', 'idModal' => $rechargeDetailForm, 'formData' => $rechargeDetailData, 'save' => false]) ?>
 </div>
 </div>

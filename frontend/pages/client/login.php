@@ -216,7 +216,7 @@
             window.location.href = '<?php echo BASE_URL . "/pages/client/index.php" ?>'
           } else {
             console.log(data)
-            if(data.message) {
+            if(data.message === "Invalid credentials") {
                 isValid = false;
 
                 username_input.focus()
@@ -225,6 +225,9 @@
 
                 password_error_text.textContent = "Mất khẩu không chính xác."
                 password_error.style.display = "flex"
+            } else if (data.message === "Tài khoản đã bị khóa") {
+              alert("Tài khoản của bạn đã bị khóa. Vui lòng liên hệ với ban quản trị.")
+              window.location.href = "index.php"
             } else {
                 username_error.style.display = "none"
                 password_error.style.display = "none"

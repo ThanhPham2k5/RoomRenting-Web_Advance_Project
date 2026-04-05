@@ -29,7 +29,7 @@ class StorePostRequest extends FormRequest
             'ward' => 'required|string|max:255',
             'province' => 'required|string|max:255',
             'description' => 'required|string',
-            'deposit' => 'required|numeric|min:0|max:price',
+            'deposit' => 'required|numeric|min:0|lt:price',
             'status' => 'required|string|in:pending,failed',
             'room_type' => 'required|string|in:room,apartment,dorm',
             'max_occupants' => 'required|integer|min:1',

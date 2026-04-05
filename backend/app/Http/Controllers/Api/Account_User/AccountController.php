@@ -140,6 +140,20 @@ class AccountController extends Controller
         ]);
     }
 
+    public function revokeRoles(Request $request, Account $account)
+    {
+        $request->validate([
+            'roles' => 'required|array',
+            'roles.*' => 'exists:roles,name'
+        ]);
+
+        $account->removeRole($request->roles);
+        
+        return response()->json([
+            'message' => 'Roles revoked'
+        ]);
+    }
+
     public function syncRoles(Request $request, Account $account)
     {
         $request->validate([
@@ -165,6 +179,20 @@ class AccountController extends Controller
 
         return response()->json([
             'message' => 'Permissions assigned'
+        ]);
+    }
+
+    public function revokePermissions(Request $request, Account $account)
+    {
+        $request->validate([
+            'permissions' => 'required|array',
+            'permissions.*' => 'exists:permissions,name'
+        ]);
+
+        $account->revokePermissionTo($request->permissions);
+
+        return response()->json([
+            'message' => 'Permissions revoked'
         ]);
     }
 

@@ -50,7 +50,7 @@ Route::middleware(['auth:sanctum', 'permission:account.restore'])
     ->post('/accounts/{account}/restore', [AccountController::class, 'restore'])
     ->withTrashed();
 
-    // Change Password
+// Change Password
 Route::middleware('auth:sanctum')
     ->post('/accounts/{account}/change-password', [AccountController::class, 'changePassword']);
 
@@ -63,6 +63,12 @@ Route::middleware(['auth:sanctum', 'permission:account.syncRoles'])
 
 Route::middleware(['auth:sanctum', 'permission:account.assignPermissions'])
     ->post('/accounts/{account}/assign-permissions', [AccountController::class, 'assignPermissions']);
+
+Route::middleware(['auth:sanctum', 'permission:account.revokeRoles'])
+    ->post('/accounts/{account}/revoke-roles', [AccountController::class, 'revokeRoles']);
+
+Route::middleware(['auth:sanctum', 'permission:account.revokePermissions'])
+    ->post('/accounts/{account}/revoke-permissions', [AccountController::class, 'revokePermissions']);
 
     
 //User
@@ -334,16 +340,34 @@ Route::post('/logout', [AuthController::class, 'logout'])
     - PermissionController
 */
 // Roles
-Route::middleware(['auth:sanctum'])
-    ->apiResource('roles', RoleController::class);
+Route::middleware(['auth:sanctum', 'permission:role.getAll'])
+    ->get('roles', [RoleController::class, 'index']);
 
-Route::middleware(['auth:sanctum'])
+Route::middleware(['auth:sanctum', 'permission:role.create'])
+    ->post('roles', [RoleController::class, 'store']);
+
+Route::middleware(['auth:sanctum', 'permission:role.get'])
+    ->get('roles/{role}', [RoleController::class, 'show']);
+
+Route::middleware(['auth:sanctum', 'permission:role.update'])
+    ->put('roles/{role}', [RoleController::class, 'update']);
+
+Route::middleware(['auth:sanctum', 'permission:role.delete'])
+    ->delete('roles/{role}', [RoleController::class, 'destroy']);
+
+Route::middleware(['auth:sanctum', 'permission:role.assignPermissions'])
     ->post('/roles/{role}/assign-permissions', [RoleController::class, 'assignPermissionsToRole']);
+
+Route::middleware(['auth:sanctum', 'permission:role.revokePermissions'])
+    ->post('/roles/{role}/revoke-permissions', [RoleController::class, 'revokePermissionsFromRole']);
 
 
 // Permissions
-Route::middleware(['auth:sanctum'])
-    ->apiResource('permissions', PermissionController::class);
+Route::middleware(['auth:sanctum', 'permission:permission.getAll'])
+    ->get('permissions', [PermissionController::class, 'index']);
+
+Route::middleware(['auth:sanctum', 'permission:permission.get'])
+    ->get('permissions/{permission}', [PermissionController::class, 'show']);
 
 
 /* API routes for Address 

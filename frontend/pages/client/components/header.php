@@ -386,11 +386,24 @@
     var notifyCache = {
       news: null,
       transaction: null,
-    newsExpiredAt: null,
-    transactionExpiredAt: null
+      newsExpiredAt: null,
+      transactionExpiredAt: null
     }
 
     const CACHE_TTL = 30 * 1000
+
+    function timeAgo(dateString) {
+      const now = new Date()
+      const date = new Date(dateString)
+      const diff = Math.floor((now - date) / 1000) // seconds
+
+      if (diff < 60) return "Vừa xong"
+      if (diff < 3600) return Math.floor(diff / 60) + " phút trước"
+      if (diff < 86400) return Math.floor(diff / 3600) + " giờ trước"
+      if (diff < 2592000) return Math.floor(diff / 86400) + " ngày trước"
+      if (diff < 31536000) return Math.floor(diff / 2592000) + " tháng trước"
+      return Math.floor(diff / 31536000) + " năm trước"
+    }
 
     async function checkUnreadNotification(account_id, token) {
       const newsUnread = notifyCache.news?.unread?.length > 0
@@ -523,6 +536,8 @@
 
                     <!-- using for transaction -->
                     <div class="notify-value">${notify.content}</div>
+                    
+                    <div class="notify-time">${timeAgo(notify.createdAt)}</div>
                   </div>
                 </a>
               `
@@ -540,6 +555,8 @@
 
                     <!-- using for transaction -->
                     <div class="notify-value">${notify.content}</div>
+                    
+                    <div class="notify-time">${timeAgo(notify.createdAt)}</div>
                   </div>
                 </a>
               `
@@ -699,6 +716,8 @@
 
                     <!-- using for transaction -->
                     <div class="notify-value ${notifyValue}">${notify.content}</div>
+                    
+                    <div class="notify-time">${timeAgo(notify.createdAt)}</div>
                   </div>
                 </a>
               `
@@ -721,6 +740,8 @@
 
                     <!-- using for transaction -->
                     <div class="notify-value ${notifyValue}">${notify.content}</div>
+                    
+                    <div class="notify-time">${timeAgo(notify.createdAt)}</div>
                   </div>
                 </a>
               `
@@ -829,44 +850,58 @@
       await getNotification(account_id, token)
     })
 
-    var isLoadingNotify = false
+    document.querySelector(".sidebar-notify-block").addEventListener("click", async (e) => {
+      // reset cache
+      // notifyCache.news = null
+      // notifyCache.transaction = null
 
-    document.querySelector(".notify-news").addEventListener("click", async (e) => {
-      if(isLoadingNotify) return
-      if (!document.querySelector(".notify-news").classList.contains("notify-selected")) {
-        isLoadingNotify = true
-        document.querySelector(".notify-list").style.display = "none"
-        document.querySelector(".notify-title").style.display = "none" 
-        document.querySelector(".notify-news").classList.add("notify-selected")
-        document.querySelector(".notify-transaction").classList.remove("notify-selected")
-
-        const account_id = localStorage.getItem("account_id")
-        const token = localStorage.getItem("token")
-        await getNotification(account_id, token)
-        document.querySelector(".notify-list").style.display = "flex"
-        document.querySelector(".notify-title").textContent = "Thông báo tin tức gần đây"
-        document.querySelector(".notify-title").style.display = "flex" 
-        isLoadingNotify = false
-      }
+      const account_id = localStorage.getItem("account_id")
+      const token = localStorage.getItem("token")
+      await getNotification(account_id, token)
     })
 
-    document.querySelector(".notify-transaction").addEventListener("click", async (e) => {
-      if(isLoadingNotify) return
-      if (!document.querySelector(".notify-transaction").classList.contains("notify-selected")) {
-        isLoadingNotify = true
-        document.querySelector(".notify-list").style.display = "none"
-        document.querySelector(".notify-title").style.display = "none" 
-        document.querySelector(".notify-transaction").classList.add("notify-selected")
-        document.querySelector(".notify-news").classList.remove("notify-selected")
+    var isLoadingNotify = false
 
-        const account_id = localStorage.getItem("account_id")
-        const token = localStorage.getItem("token")
-        await getNotification(account_id, token)
-        document.querySelector(".notify-list").style.display = "flex"
-        document.querySelector(".notify-title").textContent = "Thông báo giao dịch gần đây"
-        document.querySelector(".notify-title").style.display = "flex" 
-        isLoadingNotify = false
-      }
+    document.querySelectorAll(".notify-news").forEach(item => {
+      item.addEventListener("click", async (e) => {
+        if(isLoadingNotify) return
+        if (!document.querySelector(".notify-news").classList.contains("notify-selected")) {
+          isLoadingNotify = true
+          document.querySelector(".notify-list").style.display = "none"
+          document.querySelector(".notify-title").style.display = "none" 
+          document.querySelector(".notify-news").classList.add("notify-selected")
+          document.querySelector(".notify-transaction").classList.remove("notify-selected")
+
+          const account_id = localStorage.getItem("account_id")
+          const token = localStorage.getItem("token")
+          await getNotification(account_id, token)
+          document.querySelector(".notify-list").style.display = "flex"
+          document.querySelector(".notify-title").textContent = "Thông báo tin tức gần đây"
+          document.querySelector(".notify-title").style.display = "flex" 
+          isLoadingNotify = false
+        }
+      })
+    })
+
+    document.querySelectorAll(".notify-transaction").forEach(item => {
+      item.addEventListener("click", async (e) => {
+        if(isLoadingNotify) return
+        if (!document.querySelector(".notify-transaction").classList.contains("notify-selected")) {
+          isLoadingNotify = true
+          document.querySelector(".notify-list").style.display = "none"
+          document.querySelector(".notify-title").style.display = "none" 
+          document.querySelector(".notify-transaction").classList.add("notify-selected")
+          document.querySelector(".notify-news").classList.remove("notify-selected")
+
+          const account_id = localStorage.getItem("account_id")
+          const token = localStorage.getItem("token")
+          await getNotification(account_id, token)
+          document.querySelector(".notify-list").style.display = "flex"
+          document.querySelector(".notify-title").textContent = "Thông báo giao dịch gần đây"
+          document.querySelector(".notify-title").style.display = "flex" 
+          isLoadingNotify = false
+        }
+      })
     })
 
     // log out button

@@ -37,11 +37,17 @@
         <div class="filter-background">
         <div class="filter">
             <div class="filter-return-block">
-            <div class="filter-return">
-                <img src='<?php echo BASE_URL . "/assets/img/return-ico.png"?>' alt="return-ico.png" class="filter-return-ico">
+                <div class="filter-return">
+                    <img src='<?php echo BASE_URL . "/assets/img/return-ico.png"?>' alt="return-ico.png" class="filter-return-ico">
 
-                Quay lại
-            </div>
+                    Quay lại
+                </div>
+
+                <div class="filter-reset">
+                    <img src='<?php echo BASE_URL . "/assets/img/filter-reset.png"?>' alt="reset-ico.png" class="filter-reset-ico">
+
+                    Làm mới
+                </div>
             </div>
 
             <!-- <div class="filter-line"></div> -->
@@ -190,78 +196,6 @@
                     </div>
 
                     <div class="newpost-postlist">
-                        <!-- a post sample -->
-                        <?php for ($i = 1; $i <= 4; $i++) { ?>
-                        <div class="post">
-                            <div class="post-body">
-                                <a href="./detail-post.php" class="post-link-img">
-                                <img
-                                    src='<?php echo BASE_URL . "/assets/img/post.png" ?>'
-                                    alt="post.png"
-                                    class="post-img"
-                                />
-                                </a>
-
-                                <div class="post-profile-info">
-                                    <a href="./detail-post.php" class="post-link">
-                                    <div class="post-title">
-                                        Phòng giá 5 tỷ/ tháng, đường Trương Phước Phan, phường Bình Trị
-                                        Đông, quận Bình Tân
-                                    </div>
-                                    </a>
-
-                                    <a href="./detail-post.php" class="post-link">
-                                    <div class="post-address">
-                                        <img
-                                        src='<?php echo BASE_URL . "/assets/img/address.png" ?>'
-                                        alt="address.png"
-                                        class="address-ico"
-                                        />
-
-                                        <div class="address-info">Phường Bình Trị Đông, Tp Hồ Chí Minh</div>
-                                    </div>
-                                    </a>
-
-                                    <a href="./detail-post.php" class="post-link">
-                                    <div class="post-info">
-                                        <h3 class="post-price">5 tỷ/tháng</h3>
-
-                                        <div class="post-square">57.5 m2</div>
-                                    </div>
-                                    </a>
-
-                                    <!-- list of button -->
-                                    <div class="post-btn-list">
-                                        <a href='<?php echo BASE_URL . "/pages/client/modify-post.php"?>' type="button" class="post-btn-modify">
-                                            <img src='<?php echo BASE_URL . "/assets/img/modify-img.png"?>' alt="modify-img.png" class="post-btn-modify-img">
-
-                                            Sửa bài
-                                        </a>
-                                        
-                                        <button type="button" class="post-btn-del">
-                                            <img src='<?php echo BASE_URL . "/assets/img/del-img.png"?>' alt="del-img.png" class="post-btn-del-img">
-
-                                            Xóa bài
-                                        </button>
-                                        
-                                        <button type="button" class="post-btn-reason">
-                                            Xem lí do
-                                        </button>
-                                        
-                                        <button type="button" class="post-btn-resend">
-                                            Gửi duyệt lại
-                                        </button>
-                                        
-                                        <button type="button" class="post-btn-paid">
-                                            <img src='<?php echo BASE_URL . "/assets/img/paid-img.png"?>' alt="paid-img.png" class="post-btn-paid-img">
-
-                                            Cần thanh toán
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <?php } ?>
                     </div>
 
                     <div class="pagination">
@@ -317,6 +251,12 @@
                 filter.style.display = "flex"
             }
         });
+
+        function formatPrice(price) {
+            if (price >= 1000000000) return (price / 1000000000).toFixed(1) + " tỷ"
+            if (price >= 1000000) return (price / 1000000).toFixed(1) + " triệu"
+            return Number(price).toLocaleString("vi-VN")
+        }
 
         // auto fill province list
         async function autoFillProvince(account_id, token) {
@@ -456,7 +396,7 @@
 
         // filter & sort & page value
         var filterCondition = ""
-        var sortCondition = "createdAt" // default
+        var sortCondition = "-createdAt" // default
         var statusCondition = "completed" // default
         var searchCondition = ""
         var page = 1
@@ -506,12 +446,24 @@
             await updatePostsPage()
         })
 
+        // reset filter
+        document.querySelector(".filter-reset").addEventListener("click", (e) => { 
+            filterCondition = ""
+            document.querySelector(".filter-province-lb-text").textContent = "Chọn tỉnh thành"
+            document.querySelector(".filter-district-lb-text").textContent = "Chọn phường xã"
+            document.querySelector(".filter-room-lb-text").textContent = "Chọn loại phòng"
+            document.querySelector(".filter-min-price").value = 0
+            document.querySelector(".filter-max-price").value = 0
+            document.querySelector(".filter-square-number").value = 0
+            document.querySelector(".filter-apply").click()
+        })
+
         // search button
         document.querySelector(".search-submit").addEventListener("click", async (e) => {
             searchCondition = ""
 
             const stringRegex = /^[a-zA-Z0-9ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\s]{3,255}$/
-            if(document.querySelector(".search-bar").value.trim() && stringRegex.test(document.querySelector(".search-bar").value.trim())) {
+            if((document.querySelector(".search-bar").value.trim() && stringRegex.test(document.querySelector(".search-bar").value.trim())) || !document.querySelector(".search-bar").value.trim()) {
                 searchCondition = "&filter[search]=" + document.querySelector(".search-bar").value.trim()
                 page = 1
                 await updatePostsPage()
@@ -519,12 +471,12 @@
 
             // reset all field
             document.querySelector(".search-bar").value = ""
-            document.querySelector(".filter-province-lb-text").textContent = "Chọn tỉnh thành"
-            document.querySelector(".filter-district-lb-text").textContent = "Chọn phường xã"
-            document.querySelector(".filter-room-lb-text").textContent = "Chọn loại phòng"
-            document.querySelector(".filter-min-price").value = 0
-            document.querySelector(".filter-max-price").value = 0
-            document.querySelector(".filter-square-number").value = 0
+            // document.querySelector(".filter-province-lb-text").textContent = "Chọn tỉnh thành"
+            // document.querySelector(".filter-district-lb-text").textContent = "Chọn phường xã"
+            // document.querySelector(".filter-room-lb-text").textContent = "Chọn loại phòng"
+            // document.querySelector(".filter-min-price").value = 0
+            // document.querySelector(".filter-max-price").value = 0
+            // document.querySelector(".filter-square-number").value = 0
         })
 
         // status button
@@ -763,7 +715,7 @@
 
                                         <a href='<?php echo BASE_URL ?>/pages/client/detail-post.php?post_id=${post.id}' class="post-link">
                                         <div class="post-info">
-                                            <h3 class="post-price">${money} VND/tháng</h3>
+                                            <h3 class="post-price">${formatPrice(post.price)} VND/tháng</h3>
 
                                             <div class="post-square">${post.area} m2</div>
                                         </div>

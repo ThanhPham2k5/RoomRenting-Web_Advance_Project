@@ -508,10 +508,15 @@
         const account_id = localStorage.getItem("account_id")
         const token = localStorage.getItem("token")
 
-        await Promise.all([
-            autoFillProvince(account_id, token),
-            autoPersonalInfo(account_id,token)
-        ])
+        if(account_id != null && token != null) {
+            await Promise.all([
+                autoFillProvince(account_id, token),
+                autoPersonalInfo(account_id,token)
+            ])
+        } else {
+            alert("Bạn chưa đăng nhập. Đang chuyển hướng sang trang đăng nhập.")
+            window.location.href = "login.php"
+        }
     }
 
     // run once time every reload or load page

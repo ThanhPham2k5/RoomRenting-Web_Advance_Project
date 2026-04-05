@@ -166,10 +166,16 @@
     <?php include(__DIR__ . "/components/footer.php") ?>
   </body>
   <script>
+    function formatPrice(price) {
+        if (price >= 1000000000) return (price / 1000000000).toFixed(1) + " tỷ"
+        if (price >= 1000000) return (price / 1000000).toFixed(1) + " triệu"
+        return Number(price).toLocaleString("vi-VN")
+    }
+
     // get all posts to posts section (do not require token)
     async function getNewPost() {
       try {
-        const response = await fetch("http://backend.test/api/posts?per_page=5&filter[status]=completed&include=postImages,favorites.account&sort=createdAt", {
+        const response = await fetch("http://backend.test/api/posts?per_page=5&filter[status]=completed&include=postImages,favorites.account&sort=-createdAt", {
           method: "GET",
           headers: {
             "Accept": "application/json"
@@ -193,7 +199,7 @@
     // get suggest posts to suggest posts section (require token)
     async function getSuggestPost(account_id, token) {
       try {
-        const response = await fetch("http://backend.test/api/posts/recommendations/" + account_id + "?per_page=5&filter[status]=completed&include=postImages,favorites.account&sort=createdAt", {
+        const response = await fetch("http://backend.test/api/posts/recommendations/" + account_id + "?per_page=5&filter[status]=completed&include=postImages,favorites.account&sort=-createdAt", {
           method: "GET",
           headers: {
             "Accept": "application/json",
@@ -314,7 +320,7 @@
                   </div>
 
                   <div class="post-info">
-                    <h3 class="post-price">${money} VND/tháng</h3>
+                    <h3 class="post-price">${formatPrice(post.price)} VND/tháng</h3>
 
                     <div class="post-square">${post.area} m2</div>
                   </div>
@@ -459,7 +465,7 @@
                   </div>
 
                   <div class="post-info">
-                    <h3 class="post-price">${money} VND/tháng</h3>
+                    <h3 class="post-price">${formatPrice(post.price)} VND/tháng</h3>
 
                     <div class="post-square">${post.area} m2</div>
                   </div>

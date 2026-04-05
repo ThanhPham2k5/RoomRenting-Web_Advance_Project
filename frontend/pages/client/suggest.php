@@ -488,7 +488,12 @@
       var account_id = localStorage.getItem("account_id")
       var token = localStorage.getItem("token")
 
-      await Promise.all([autoFillProvince(account_id, token), autoFillForm(account_id, token)])
+      if(account_id != null && token != null) {
+        await Promise.all([autoFillProvince(account_id, token), autoFillForm(account_id, token)])
+      } else {
+        alert("Bạn chưa đăng nhập. Đang chuyển hướng sang trang đăng nhập.")
+        window.location.href = "login.php"
+      }
     })
   </script>
 </html>

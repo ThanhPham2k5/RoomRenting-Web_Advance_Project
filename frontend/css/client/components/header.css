@@ -201,6 +201,9 @@
 .notify-item-img {
   width: 100px;
   height: 100px;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 12px;
 }
 
 .notify-content {
@@ -210,6 +213,13 @@
   align-items: center;
   text-align: center;
   width: 100%;
+}
+
+.notify-time {
+  align-self: end;
+  margin-right: 10px;
+  color: #626687;
+  font-style: italic;
 }
 
 .value-add {

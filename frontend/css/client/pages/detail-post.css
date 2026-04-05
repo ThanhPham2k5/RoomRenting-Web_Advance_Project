@@ -64,6 +64,9 @@
   width: 100%;
   border-radius: 12px;
   cursor: pointer;
+  object-fit: cover;
+  object-position: center;
+  height: 450px;
 }
 
 .left-img-list {
@@ -80,6 +83,9 @@
   width: 30%;
   border-radius: 12px;
   cursor: pointer;
+  object-fit: cover;
+  object-position: center;
+  height: 140px;
 }
 
 .left-title {
@@ -88,6 +94,7 @@
   justify-content: space-between;
   align-items: center;
   gap: 20px;
+  min-width: 0;
 }
 
 .left-favourite {
@@ -114,11 +121,19 @@
   font-size: 1rem;
 }
 
+.left-address-text {
+  display: block;
+  overflow: hidden;
+  word-break: break-word;
+  text-overflow: ellipsis;
+}
+
 .left-info {
   display: flex;
   justify-content: start;
   align-items: center;
-  gap: 80px;
+  gap: 20px;
+  flex-wrap: wrap;
   margin: 20px 0;
 }
 

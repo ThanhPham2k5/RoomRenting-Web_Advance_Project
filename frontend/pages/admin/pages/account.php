@@ -198,3 +198,92 @@
     <?php renderComponent("form",false,['title' => 'Sửa tài khoản', 'idModal' => $accountEditForm, 'formData' => $formEditData]) ?>
     <?php renderComponent("form",false,['title' => 'Chi tiết tài khoản', 'idModal' => $accountDetailForm, 'formData' => $formDetailData]) ?>
 </div>
+<script>
+// Hàm chuyên kiểm tra form Tài khoản
+// Hàm Master kiểm tra cho CẢ Thêm và Sửa tài khoản
+function validateAccountMaster(form) {
+    // 1. Tự động nhận diện đang Thêm hay Sửa dựa vào input action
+    const action = form.querySelector('input[name="action"]')?.value;
+    const isEditMode = (action === 'editAccount'); // Nếu true là Sửa, false là Thêm
+
+    // 2. Lấy các DOM
+    const phoneInput = form.querySelector('input[name="phone_number"]');
+    const emailInput = form.querySelector('input[name="email"]');
+    const usernameInput = form.querySelector('input[name="username"]');
+    const passwordInput = form.querySelector('input[name="password"]');
+    const confirmInput = form.querySelector('input[name="password_confirmation"]');
+    const roleInput = form.querySelector('select[name="role"]');
+    const rolesInput = form.querySelector('select[name="roles[]"]');
+
+    // 3. Xóa lỗi cũ
+    [phoneInput, emailInput, usernameInput, passwordInput, confirmInput, roleInput, rolesInput].forEach(input => {
+        if (input) Validator.clearError(input);
+    });
+
+    let isValid = true;
+
+    // --- CHECK CÁC TRƯỜNG CƠ BẢN (Dùng chung cho cả 2 form) ---
+    
+    // Nếu form Thêm thì có Số điện thoại và Email, Form sửa không có thì nó tự bỏ qua an toàn
+    if (phoneInput) {
+        const phoneErr = Validator.isRequired(phoneInput.value) || Validator.isPhone(phoneInput.value);
+        if (phoneErr) { Validator.showError(phoneInput, phoneErr); isValid = false; }
+    }
+
+    if (emailInput) {
+        const emailErr = Validator.isRequired(emailInput.value) || Validator.isEmail(emailInput.value);
+        if (emailErr) { Validator.showError(emailInput, emailErr); isValid = false; }
+    }
+
+    const userErr = Validator.isRequired(usernameInput?.value) || Validator.checkLength(usernameInput?.value, 1, 255, 'Tên tài khoản');
+    if (userErr) { Validator.showError(usernameInput, userErr); isValid = false; }
+
+    // =========================================================
+    // --- CHECK MẬT KHẨU (LOGIC THÔNG MINH PHÂN BIỆT THÊM/SỬA) ---
+    // =========================================================
+    
+    if (passwordInput) {
+        const passValue = passwordInput.value.trim();
+
+        if (isEditMode && passValue === '') {
+            // [TRƯỜNG HỢP 1]: FORM SỬA VÀ ĐỂ TRỐNG -> HỢP LỆ (Bỏ qua không kiểm tra)
+            if (confirmInput) {
+                confirmInput.value = ''; // Xóa luôn ô xác nhận cho sạch
+                Validator.clearError(confirmInput);
+            }
+        } else {
+            // [TRƯỜNG HỢP 2]: FORM THÊM, HOẶC FORM SỬA NHƯNG CỐ TÌNH GÕ CHỮ -> KIỂM TRA GẮT GAO
+            if (passValue === '') {
+                Validator.showError(passwordInput, 'Trường này không được để trống!');
+                isValid = false;
+            } else if (passValue.length < 8 || passValue.length > 255) {
+                Validator.showError(passwordInput, 'Mật khẩu phải từ 8 đến 255 ký tự!');
+                isValid = false;
+            }
+
+            // Đồng thời bắt buộc phải check Xác nhận mật khẩu
+            if (confirmInput) {
+                const confirmValue = confirmInput.value.trim();
+                if (confirmValue === '') {
+                    Validator.showError(confirmInput, 'Vui lòng xác nhận lại mật khẩu!');
+                    isValid = false;
+                } else if (confirmValue !== passValue) {
+                    Validator.showError(confirmInput, 'Mật khẩu xác nhận không khớp!');
+                    isValid = false;
+                }
+            }
+        }
+    }
+
+    // --- CHECK CHỨC VỤ & QUYỀN ---
+    if (roleInput && !roleInput.disabled) { // Nếu form sửa disable ô role thì không cần check
+        const roleErr = Validator.isRequired(roleInput.value, 'Vui lòng chọn chức vụ!');
+        if (roleErr) { Validator.showError(roleInput, roleErr); isValid = false; }
+    }
+
+    const rolesErr = Validator.isRequired(rolesInput?.value, 'Vui lòng chọn quyền hạn!');
+    if (rolesErr) { Validator.showError(rolesInput, rolesErr); isValid = false; }
+
+    return isValid;
+}
+</script>

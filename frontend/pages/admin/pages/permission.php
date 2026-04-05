@@ -380,8 +380,221 @@
     <?php 
         $formDetailData = ob_get_clean();
     ?>
+    <?php
+    ob_start();
+    ?>
+        <input type="hidden" name="action" value="updatePermission">
+        <input type="hidden" name="id"> <div class="input-group">
+            <label>Tên quyền</label>
+            <input type="text" name="name" placeholder="Nhập tên quyền...">
+        </div>
+        
+        <div class="input-group">
+            <label>Mô tả</label>
+            <input type="text" name="description" placeholder="Nhập mô tả...">
+        </div>
+
+        <div class="input-group full-width">
+            <label>Phân quyền chức năng</label>
+            
+            <div class="permission-accordion">
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span class="module-title">Quản lý tài khoản</span>
+                        <svg class="chevron" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="accordion-body">
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="account.getAll"> <span>Xem danh sách</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="account.get"> <span>Xem chi tiết</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="account.create"> <span>Thêm</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="account.update"> <span>Sửa</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="account.delete"> <span>Xóa</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="account.restore"> <span>Khôi phục</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="account.assignRoles"> <span>Gán Role</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="account.assignPermissions"> <span>Gán Quyền</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="account.syncRoles"> <span>Đồng bộ Role</span></label>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span class="module-title">Quản lý bài đăng & Hình ảnh</span>
+                        <svg class="chevron" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="accordion-body">
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="post.getAll"> <span>Xem DS Bài</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="post.get"> <span>Xem Bài</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="post.create"> <span>Thêm Bài</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="post.update"> <span>Sửa Bài</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="post.delete"> <span>Xóa Bài</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="post.restore"> <span>Khôi phục Bài</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="post.getRecommendation"> <span>Xem Đề xuất</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="postImage.getAll"> <span>Xem DS Ảnh</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="postImage.get"> <span>Xem Ảnh</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="postImage.create"> <span>Thêm Ảnh</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="postImage.update"> <span>Sửa Ảnh</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="postImage.delete"> <span>Xóa Ảnh</span></label>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span class="module-title">Quản lý bình luận</span>
+                        <svg class="chevron" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="accordion-body">
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="comment.getAll"> <span>Xem danh sách</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="comment.get"> <span>Xem chi tiết</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="comment.create"> <span>Thêm</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="comment.update"> <span>Sửa</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="comment.delete"> <span>Xóa</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="comment.restore"> <span>Khôi phục</span></label>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span class="module-title">Quản lý yêu thích</span>
+                        <svg class="chevron" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="accordion-body">
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="favorite.getAll"> <span>Xem danh sách</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="favorite.get"> <span>Xem chi tiết</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="favorite.create"> <span>Thêm</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="favorite.delete"> <span>Xóa</span></label>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span class="module-title">Quản lý hóa đơn thanh toán</span>
+                        <svg class="chevron" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="accordion-body">
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="payBill.getAll"> <span>Xem danh sách</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="payBill.get"> <span>Xem chi tiết</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="payBill.create"> <span>Thêm</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="payBill.update"> <span>Sửa</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="payBill.delete"> <span>Xóa</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="payBill.restore"> <span>Khôi phục</span></label>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span class="module-title">Quản lý giá đăng bài</span>
+                        <svg class="chevron" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="accordion-body">
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="payRule.getAll"> <span>Xem danh sách</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="payRule.get"> <span>Xem chi tiết</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="payRule.create"> <span>Thêm</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="payRule.update"> <span>Sửa</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="payRule.delete"> <span>Xóa</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="payRule.restore"> <span>Khôi phục</span></label>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span class="module-title">Quản lý hóa đơn nạp tiền</span>
+                        <svg class="chevron" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="accordion-body">
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="rechargeBill.getAll"> <span>Xem danh sách</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="rechargeBill.get"> <span>Xem chi tiết</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="rechargeBill.create"> <span>Thêm</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="rechargeBill.update"> <span>Sửa</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="rechargeBill.delete"> <span>Xóa</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="rechargeBill.restore"> <span>Khôi phục</span></label>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span class="module-title">Quản lý giá trị quy đổi</span>
+                        <svg class="chevron" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="accordion-body">
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="rechargeRule.getAll"> <span>Xem danh sách</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="rechargeRule.get"> <span>Xem chi tiết</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="rechargeRule.create"> <span>Thêm</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="rechargeRule.update"> <span>Sửa</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="rechargeRule.delete"> <span>Xóa</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="rechargeRule.restore"> <span>Khôi phục</span></label>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span class="module-title">Quản lý form đề xuất</span>
+                        <svg class="chevron" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="accordion-body">
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="form.getAll"> <span>Xem danh sách</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="form.get"> <span>Xem chi tiết</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="form.create"> <span>Thêm</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="form.update"> <span>Sửa</span></label>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span class="module-title">Quản lý thông báo</span>
+                        <svg class="chevron" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="accordion-body">
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="notification.getAll"> <span>Xem danh sách</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="notification.get"> <span>Xem chi tiết</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="notification.create"> <span>Thêm</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="notification.update"> <span>Sửa</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="notification.delete"> <span>Xóa</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="notification.restore"> <span>Khôi phục</span></label>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span class="module-title">Quản lý thông tin cá nhân</span>
+                        <svg class="chevron" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="accordion-body">
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="personalInfo.getAll"> <span>Xem danh sách</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="personalInfo.get"> <span>Xem chi tiết</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="personalInfo.create"> <span>Thêm</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="personalInfo.update"> <span>Sửa</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" name="permissions[]" value="personalInfo.delete"> <span>Xóa</span></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <?php 
+    $editPermissionData = ob_get_clean();
+    ?>
     <?php renderComponent("form",false,['title' => 'Thêm quyền', 'idModal' => $permissionInsertForm, 'formData' => $formInsertData]) ?>
-    <?php renderComponent("form",false,['title' => 'Sửa quyền', 'idModal' => $permissionEditForm]) ?>
+    <?php renderComponent("form",false,['title' => 'Sửa quyền', 'idModal' => $permissionEditForm, 'formData' => $editPermissionData]) ?>
     <?php renderComponent("form",false,['title' => 'Danh sách nhân viên', 'idModal' => $permissionListAccountForm, 'formData' => $formListAccountData]) ?>
     <?php renderComponent("form",false,['title' => 'Chi tiết quyền', 'idModal' => $permissionDetailForm, 'formData' => $formDetailData]) ?>
 </div>

@@ -417,7 +417,9 @@
       }
 
       const numbRegex = /^\d{1,}$/
-      if(!numbRegex.test(document.querySelector(".profile-square-input").value.trim())) {
+
+      const squareRegex = /^\d+([.,]\d+)?$/
+      if(!squareRegex.test(document.querySelector(".profile-square-input").value.trim())) {
         if(isValid)
           document.querySelector(".profile-square-input").focus()
         isValid = false
@@ -485,7 +487,9 @@
         const formData = new FormData()
         formData.append("title", document.querySelector(".profile-post-input").value.trim())
         formData.append("price", document.querySelector(".profile-price-input").value.trim())
-        formData.append("area", document.querySelector(".profile-square-input").value.trim())
+        const areaValue = document.querySelector(".profile-square-input").value.trim().replace(",", ".")
+        const area = parseFloat(areaValue)
+        formData.append("area", area)
         formData.append("house_number", document.querySelector(".profile-address-input").value.trim())
         formData.append("ward", document.querySelector(".filter-district-lb-text").textContent.trim())
         formData.append("province", document.querySelector(".filter-province-lb-text").textContent.trim())

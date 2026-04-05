@@ -121,10 +121,25 @@ class RolePermissionSeeder extends Seeder
             'personalInfo.get',
             'personalInfo.getAll',
 
-            //Assign
+            //account_role and account_permission
             'account.assignRoles',
             'account.assignPermissions',
-            'account.syncRoles'
+            'account.syncRoles',
+            'account.revokeRoles',
+            'account.revokePermissions',
+
+            //Role
+            'role.create',
+            'role.update',
+            'role.delete',
+            'role.get',
+            'role.getAll',
+            'role.assignPermissions',
+            'role.revokePermissions',
+
+            //permission
+            'permission.get',
+            'permission.getAll',
         ];
 
 
@@ -137,6 +152,7 @@ class RolePermissionSeeder extends Seeder
         $billManager = Role::create(['name' => 'billManager', 'guard_name' => 'api', 'description' => 'Tôi là kế toán kiêm tài chính']);
         $userManager = Role::create(['name' => 'userManager', 'guard_name' => 'api', 'description' => 'Quản lý tài khoản khách hàng và nhân viên']);
         $commentManager = Role::create(['name' => 'commentManager', 'guard_name' => 'api', 'description' => 'Quản lý comment']);
+        $roleManager = Role::create(['name' => 'roleManager', 'guard_name' => 'api', 'description' => 'Quản lý vai trò và quyền hạn']);
         $user = Role::create(['name' => 'user', 'guard_name' => 'api', 'description' => 'Tôi là người dùng']);
 
         
@@ -225,10 +241,27 @@ class RolePermissionSeeder extends Seeder
             'personalInfo.get',
             'personalInfo.getAll',
 
-            //Assign
+        ]);
+        $roleManager->givePermissionTo([
+            //account_role and account_permission
             'account.assignRoles',
             'account.assignPermissions',
-            'account.syncRoles'
+            'account.syncRoles',
+            'account.revokeRoles',
+            'account.revokePermissions',
+
+            //role
+            'role.get',
+            'role.getAll',
+            'role.create',
+            'role.update',
+            'role.delete',
+            'role.assignPermissions',
+            'role.revokePermissions',
+            
+            //permission
+            'permission.get',
+            'permission.getAll',
         ]);
         $user->givePermissionTo([
             //Account

@@ -66,7 +66,15 @@ class RoleService{
     }
 
     public function updateRole($role, $data){
-        $role->update($data);
+        $role->update([
+            'name' => $data['name'],
+            'guard_name' => $data['guard_name'] ?? $role->guard_name,
+            'description' => $data['description'] ?? $role->description,
+        ]);
+
+        if (isset($data['permissions'])) {
+            $role->syncPermissions($data['permissions']);
+        }
 
         return [
             'message' => 'Role updated successfully',

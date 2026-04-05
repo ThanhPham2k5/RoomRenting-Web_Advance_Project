@@ -218,9 +218,11 @@
                             }
                             province_text.classList.add("provinceCode-" + item.classList[1])
 
-
                             document.querySelector(".filter-province-cb").checked = false
                             document.querySelector(".filter-province-lb .filter-arrow").style.rotate = "0deg"
+
+                            // reset ward value
+                            document.querySelector(".filter-district-lb-text").textContent = "Chọn phường xã"
 
                             const provinceCode = item.classList[1]
                             await autoWard(account_id, token, provinceCode)
@@ -379,19 +381,29 @@
         if(selectedFiles.length >= 4) {
           selectedFiles.shift()
         }
-        selectedFiles.push(file)
+
+        selectedFiles.push({
+          type: "file",
+          file: file
+        })
       })
+      
+      e.target.value = ""
 
       for(let i = 0; i < 4; i++) {
           document.querySelector(".new-pic-" + (i + 1)).setAttribute("src", '<?= BASE_URL ?>/assets/img/post.png')
       }
 
-      selectedFiles.forEach((file, i) => {
-        const reader = new FileReader()
-        reader.onload = (e) => {
-          document.querySelector(".new-pic-" + (i + 1)).setAttribute("src", e.target.result)
+      selectedFiles.forEach((item, i) => {
+        if (item.type === "url") {
+            document.querySelector(".new-pic-" + (i + 1)).src = item.url
+        } else {
+            const reader = new FileReader()
+            reader.onload = (e) => {
+                document.querySelector(".new-pic-" + (i + 1)).src = e.target.result
+            }
+            reader.readAsDataURL(item.file)
         }
-        reader.readAsDataURL(file)
       })
     })
 
@@ -404,12 +416,16 @@
           document.querySelector(".new-pic-" + (i + 1)).setAttribute("src", '<?= BASE_URL ?>/assets/img/post.png')
         }
 
-        selectedFiles.forEach((file, i) => {
+        selectedFiles.forEach((item, i) => {
+          if(item.type === "url")
+            document.querySelector(".new-pic-" + (i + 1)).src = item.url
+          else {
             const reader = new FileReader()
             reader.onload = (e) => {
                 document.querySelector(".new-pic-" + (i + 1)).setAttribute("src", e.target.result)
             }
-            reader.readAsDataURL(file)
+            reader.readAsDataURL(item.file)
+          }
         })
       })
     })
@@ -654,7 +670,15 @@
             document.querySelector(".profile-post-textarea").value = data.data.description
 
             data.data.postImages.forEach((image, index) => {
-              document.querySelector(".new-pic-" + (index + 1)).src = "http://backend.test" + image.imagePostUrl
+              const url = "http://backend.test" + image.imagePostUrl
+
+              selectedFiles.push({
+                type: "url",
+                url: url,
+                order: image.order
+              })
+
+              document.querySelector(".new-pic-" + (index + 1)).src = url
             })
           }
         } else {

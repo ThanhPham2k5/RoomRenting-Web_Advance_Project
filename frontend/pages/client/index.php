@@ -241,7 +241,7 @@
           const data = await response.json()
           if(response.ok) {
             // console.log(data)
-            if(data.data.province && data.data.ward && data.data.roomType && data.data.priceMin && data.data.priceMax && data.data.area && data.data.maxOccupants) {
+            if(data.data.province || data.data.ward || data.data.roomType || data.data.priceMin || data.data.priceMax || data.data.area || data.data.maxOccupants) {
               window.location.href = "suggest-posts.php"
             } else {
               alert("Bạn chưa điền form nhận đề xuất. Đang chuyển hướng sang trang điền form.")

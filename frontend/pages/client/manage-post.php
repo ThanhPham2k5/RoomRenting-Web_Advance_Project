@@ -296,9 +296,11 @@
                                 }
                                 province_text.classList.add("provinceCode-" + item.classList[1])
 
-
                                 document.querySelector(".filter-province-cb").checked = false
                                 document.querySelector(".filter-province-lb .filter-arrow").style.rotate = "0deg"
+
+                                // reset ward value
+                                document.querySelector(".filter-district-lb-text").textContent = "Chọn phường xã"
 
                                 const provinceCode = item.classList[1]
                                 await autoWard(account_id, token, provinceCode)
@@ -444,6 +446,7 @@
 
             page = 1
             await updatePostsPage()
+            filter_return.click()
         })
 
         // reset filter
@@ -823,7 +826,10 @@
                                 const data = await response.json()
                                 if(response.ok) {
                                     if(data.data) {
-                                        alert("Lý do từ chối bài đăng: " + data.data.reason)
+                                        var reason = "không rõ"
+                                        if(data.data.reason)
+                                            reason = data.data.reason
+                                        alert("Lý do từ chối bài đăng: " + reason)
                                     }
                                 } else {
                                     console.error(data)

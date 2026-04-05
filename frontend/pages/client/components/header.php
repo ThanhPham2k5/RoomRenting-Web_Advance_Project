@@ -449,13 +449,13 @@
         if(!notifyCache.news || Date.now() > notifyCache.newsExpiredAt) {
           try {
             // get unread & read notify in news
-            const [response_unread, response_read] = await Promise.all([fetch("http://backend.test/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=unread&filter[notificationType]=news", {
+            const [response_unread, response_read] = await Promise.all([fetch("http://backend.test/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=unread&filter[notificationType]=news&sort=-createdAt", {
               method: "GET",
               headers: {
                 "Accept": "application/json",
                 "Authorization": "Bearer " + token
               }
-            }),fetch("http://backend.test/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=read&filter[notificationType]=news", {
+            }),fetch("http://backend.test/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=read&filter[notificationType]=news&sort=-createdAt", {
               method: "GET",
               headers: {
                 "Accept": "application/json",
@@ -528,7 +528,7 @@
           if(isUnread) {
             unread_notifyList.forEach(notify => {
               html += `
-                <a href='<?php echo BASE_URL ?>/pages/client/detail-post.php?post_id=${notify.notifiable.id}' class="notify-item notify-item-unread notify-id-${notify.id}">
+                <a href='<?php echo BASE_URL ?>/pages/client/manage-post.php?post_id=${notify.notifiable.id}' class="notify-item notify-item-unread notify-id-${notify.id}">
                   <img src='http://backend.test${notify.notifiable.postImages[0].imagePostUrl}' alt="item-img.png" class="notify-item-img">
 
                   <div class="notify-content">
@@ -547,7 +547,7 @@
           if(isRead) {
             read_notifyList.forEach(notify => {
               html += `
-                <a href='<?php echo BASE_URL ?>/pages/client/detail-post.php?post_id=${notify.notifiable.id}' class="notify-item notify-id-${notify.id}">
+                <a href='<?php echo BASE_URL ?>/pages/client/manage-post.php?post_id=${notify.notifiable.id}' class="notify-item notify-id-${notify.id}">
                   <img src='http://backend.test${notify.notifiable.postImages[0].imagePostUrl}' alt="item-img.png" class="notify-item-img">
 
                   <div class="notify-content">
@@ -624,13 +624,13 @@
         if(!notifyCache.transaction || Date.now() > notifyCache.transactionExpiredAt) {
           try {
             // get unread & read notify in transaction
-            const [response_unread, response_read] = await Promise.all([fetch("http://backend.test/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=unread&filter[notificationType]=transaction", {
+            const [response_unread, response_read] = await Promise.all([fetch("http://backend.test/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=unread&filter[notificationType]=transaction&sort=-createdAt", {
               method: "GET",
               headers: {
                 "Accept": "application/json",
                 "Authorization": "Bearer " + token
               }
-            }),fetch("http://backend.test/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=read&filter[notificationType]=transaction", {
+            }),fetch("http://backend.test/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=read&filter[notificationType]=transaction&sort=-createdAt", {
               method: "GET",
               headers: {
                 "Accept": "application/json",

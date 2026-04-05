@@ -284,7 +284,7 @@
 
                     document.querySelector(".filter-province-list").innerHTML = html
 
-                    // auto update ward after choosing
+                    // auto update ward and reset after choosing
                     document.querySelectorAll(".filter-province-item").forEach(item => {
                         item.addEventListener("click", async (e) => {
                             const province_text = document.querySelector(".filter-province-lb-text")
@@ -300,6 +300,9 @@
 
                             document.querySelector(".filter-province-cb").checked = false
                             document.querySelector(".filter-province-lb .filter-arrow").style.rotate = "0deg"
+
+                            // reset ward value
+                            document.querySelector(".filter-district-lb-text").textContent = "Chọn phường xã"
 
                             const provinceCode = item.classList[1]
                             await autoWard(account_id, token, provinceCode)
@@ -444,6 +447,7 @@
 
       page = 1
       await updatePostsPage()
+      filter_return.click()
     })
 
     // reset filter
@@ -799,11 +803,11 @@
             })
           })
 
-          console.log(sortCondition)
-          console.log(filterCondition)
-          console.log(searchCondition)
-          console.log(page)
-          console.log(lastPage)
+          // console.log(sortCondition)
+          // console.log(filterCondition)
+          // console.log(searchCondition)
+          // console.log(page)
+          // console.log(lastPage)
 
           updatePageNumber()
         } else {

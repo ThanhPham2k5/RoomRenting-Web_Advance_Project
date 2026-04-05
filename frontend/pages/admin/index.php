@@ -167,6 +167,7 @@ switch ($page) {
     <?php endif; ?>
 </body>
 </html>
+<script src="./core/validate.js"></script>
 <script>
     const baseUrl = 'http://127.0.0.1:8000';
     const defaultPlaceholderImg = '../../assets/admin/images/post_img.png';
@@ -214,7 +215,12 @@ switch ($page) {
                 const currentTable = urlParams.get('table') || '1';
                 return currentTable === '2' ? 'rechargeBills' : 'payBills';
             },
-            query: ''
+            get query() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const currentTable = urlParams.get('table') || '1';
+                const relation = currentTable === '2' ? 'include=account,rechargeRule' : 'include=account,post';
+                return `?${relation}`;
+            }
         }
     };
     function applyFilter(filterKey, filterValue) {
@@ -304,35 +310,6 @@ switch ($page) {
             endDateInput.addEventListener('change', function() {
                 const selectedEndDate = this.value;
                 startDateInput.max = selectedEndDate;
-            });
-        }
-
-        //Valid tai khoan
-        const formSua = document.getElementById('form-modal-sua-tai-khoan');
-        if (formSua) {
-            formSua.addEventListener('submit', function(event) {
-                const passwordInput = formSua.querySelector('input[name="password"]');
-                const passwordConfirmInput = formSua.querySelector('input[name="password_confirmation"]');
-                
-                const password = passwordInput ? passwordInput.value : '';
-                const passwordConfirm = passwordConfirmInput ? passwordConfirmInput.value : '';
-
-                if (password.trim() !== '') {
-                    
-                    if (passwordConfirm.trim() === '') {
-                        event.preventDefault();
-                        alert('Vui lòng nhập lại mật khẩu xác nhận!');
-                        if (passwordConfirmInput) passwordConfirmInput.focus();
-                        return;
-                    }
-                    
-                    if (password !== passwordConfirm) {
-                        event.preventDefault();
-                        alert('Mật khẩu xác nhận không khớp với mật khẩu mới!');
-                        if (passwordConfirmInput) passwordConfirmInput.focus();
-                        return;
-                    }
-                }
             });
         }
 
@@ -509,7 +486,7 @@ switch ($page) {
             }
         }
     });
-    function handleEdit(targetModel1) {
+    function handleEdit(modalId) {
         const selectedRadio = document.querySelector('input[name="selectedRow"]:checked');
         if (!selectedRadio) {
             alert("Vui lòng chọn dòng dữ liệu để sửa!");
@@ -520,54 +497,86 @@ switch ($page) {
         const urlParams = new URLSearchParams(window.location.search);
         const currentPage = urlParams.get('page');
         const config = apiConfigs[currentPage];
-        const queryString = config.query ? config.query : ''; 
+        
+        // 1. Lấy query từ config (để lấy được permissions, roles, v.v.)
+        let queryString = config.query ? (typeof config.query === 'function' ? config.query : config.query) : '';
         const targetEndpoint = `${config.endpoint}/${id}${queryString}`;
         const proxyUrl = `../admin/core/api_proxy.php?target_endpoint=${encodeURIComponent(targetEndpoint)}`;
+
         fetch(proxyUrl, {
             method: 'GET',
-            headers: {
-                "Accept": "application/json"
-            }
+            headers: { "Accept": "application/json" }
         })
         .then(response => response.json())
         .then(result => {
-            const data = result.data;
-            const form = document.getElementById(targetModel1);
-            
+            const data = result.data || result;
+            const form = document.getElementById(modalId);
+            if (!form) return;
+
             const idInput = form.querySelector('input[name="id"]');
             if (idInput) idInput.value = data.id;
-            const usernameInput = form.querySelector('input[name="username"]');
-            if (usernameInput) usernameInput.value = data.username;
-            const roleInput = form.querySelector('select[name="role"]');
-            if (roleInput) roleInput.value = data.role;
-            const statusSelect = form.querySelector('select[name="status"]');
-            if (statusSelect) {
-                if (data.deletedAt === null) {
-                    statusSelect.value = 'active';
-                } else {
-                    statusSelect.value = 'inactive';
-                }
+            if (currentPage === 'account') {
+                fillAccountData(form, data);
+            } 
+            else if (currentPage === 'permission') {
+                fillPermissionData(form, data);
             }
-            const rolesSelect = form.querySelector('select[name="roles[]"]');
-            if (rolesSelect) {
-                Array.from(rolesSelect.options).forEach(option => {
-                    option.selected = false;
-                });
 
-                if (data.roles && Array.isArray(data.roles)) {
-                    Array.from(rolesSelect.options).forEach(option => {
-                        if (data.roles.includes(option.value)) {
-                            option.selected = true;
-                        }
-                    });
-                }
-            }
-            openModal(targetModel1);
+            openModal(modalId);
         })
         .catch(error => {
-            alert("Có lỗi xảy ra khi lấy dữ liệu!");
             console.error(error);
+            alert("Có lỗi xảy ra khi lấy dữ liệu!");
         });
+    }
+    function fillAccountData(form, data) {
+        const usernameInput = form.querySelector('input[name="username"]');
+        if (usernameInput) usernameInput.value = data.username;
+        
+        const roleInput = form.querySelector('select[name="role"]');
+        if (roleInput) roleInput.value = data.role;
+
+        const statusSelect = form.querySelector('select[name="status"]');
+        if (statusSelect) {
+            if (data.deletedAt === null) {
+                statusSelect.value = 'active';
+            } else {
+                statusSelect.value = 'inactive';
+            }
+        }
+        const rolesSelect = form.querySelector('select[name="roles[]"]');
+        if (rolesSelect) {
+            Array.from(rolesSelect.options).forEach(option => {
+                option.selected = false;
+            });
+
+            if (data.roles && Array.isArray(data.roles)) {
+                Array.from(rolesSelect.options).forEach(option => {
+                    if (data.roles.includes(option.value)) {
+                        option.selected = true;
+                    }
+                });
+            }
+        }
+    }
+    function fillPermissionData(form, data) {
+        if (form.querySelector('input[name="name"]')) 
+            form.querySelector('input[name="name"]').value = data.name;
+        
+        if (form.querySelector('input[name="description"]')) 
+            form.querySelector('input[name="description"]').value = data.description;
+
+        // Logic đổ checkbox vào Accordion
+        const checkboxes = form.querySelectorAll('input[name="permissions[]"]');
+        checkboxes.forEach(cb => cb.checked = false); // Reset
+
+        if (data.permissions && Array.isArray(data.permissions)) {
+            data.permissions.forEach(p => {
+                const permName = typeof p === 'object' ? p.name : p;
+                const checkbox = form.querySelector(`input[value="${permName}"]`);
+                if (checkbox) checkbox.checked = true;
+            });
+        }
     }
     function handleDelete() {
         const selectedRadio = document.querySelector('input[name="selectedRow"]:checked');
@@ -611,6 +620,28 @@ switch ($page) {
     }
     function handleSave(event, formElement) {
         event.preventDefault();
+
+        // 1. --- CHÈN BƯỚC KIỂM TRA (VALIDATION) VÀO ĐÂY ---
+        const form = event.target;
+        const actionInput = form.querySelector('input[name="action"]');
+        const action = actionInput ? actionInput.value : null;
+        let isValid = true;
+
+        // Gọi hàm kiểm tra tương ứng với action
+            if (action === 'addAccount' || action === 'editAccount') {
+                isValid = validateAccountMaster(form);
+            }
+        
+
+        // 2. --- NẾU LỖI THÌ DỪNG LẠI NGAY ---
+        if (!isValid) {
+            // Form có lỗi, viền đỏ đã hiện, ta return để ngăn không cho gọi API
+            return; 
+        }
+
+        // 3. --- GIỮ NGUYÊN CODE GỌI API CŨ CỦA BẠN Ở DƯỚI NÀY ---
+        console.log("Dữ liệu đã chuẩn 100%, bắt đầu gọi API lưu...");
+
         let formData = new FormData(formElement);
 
         const slotOrders = { 'main': 1, 'sub_1': 2, 'sub_2': 3, 'sub_3': 4 };
@@ -801,6 +832,7 @@ switch ($page) {
     function handleView(id, targetModal) {
         const urlParams = new URLSearchParams(window.location.search);
         const currentPage = urlParams.get('page');
+        const currentTable = urlParams.get('table');
         const config = apiConfigs[currentPage];
         
         let query = config.query ? config.query : '';
@@ -859,7 +891,6 @@ switch ($page) {
                     rolesContainer.innerHTML = '<span class="info-value" style="font-style: italic; color: #999;">Không có quyền đặc biệt</span>';
                 }
             }
-            
             // ---> NẾU LÀ TRANG PERMISSION (Quyền hạn)
             else if (currentPage === 'permission') {
                 document.getElementById('view-permission-name').textContent = data.name || 'Không xác định';
@@ -897,7 +928,8 @@ switch ($page) {
                         subPermContainer.innerHTML = '<span class="info-value" style="font-style: italic; color: #999;">Role này chưa được gán quyền hạn nào.</span>';
                     }
                 }
-            } else if (currentPage === 'comment') {
+            } 
+            else if (currentPage === 'comment') {
                 const account = data.account || {};
                 const username = account.username || 'Khách ẩn danh';
 
@@ -930,7 +962,7 @@ switch ($page) {
                 document.getElementById('view-comment-content').textContent = data.content || 'Không có nội dung.';
             }
             // ---> NẾU LÀ TRANG HÓA ĐƠN (Invoice / Payment)
-            else if (currentPage === 'bill') {
+            else if (currentPage === 'bill' && currentTable === '1') {
                 
                 // Hàm tiện ích: Format ngày
                 const formatDate = (dateString) => {
@@ -941,7 +973,7 @@ switch ($page) {
 
                 // Hàm tiện ích: Format tiền VNĐ
                 const formatCurrency = (amount) => {
-                    if (!amount) return '0 đ';
+                    if (!amount) return '0 VND';
                     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
                 };
 
@@ -967,7 +999,7 @@ switch ($page) {
 
                 // 3. Thông tin Bài đăng
                 const post = data.post || {};
-                document.getElementById('view-invoice-post-id').textContent = post.id ? `#${post.id}` : '---';
+                document.getElementById('view-invoice-post-id').textContent = post.id ? `${post.id}` : '---';
                 document.getElementById('view-invoice-post-title').textContent = post.title || 'Bài đăng không tồn tại hoặc đã bị xóa';
                 document.getElementById('view-invoice-post-price').textContent = formatCurrency(post.price);
 
@@ -975,13 +1007,70 @@ switch ($page) {
                 const addressParts = [post.houseNumber, post.ward, post.province].filter(Boolean);
                 document.getElementById('view-invoice-post-address').textContent = addressParts.length > 0 ? addressParts.join(', ') : 'Chưa cập nhật địa chỉ';
             }
+            // ---> NẾU LÀ TRANG HÓA ĐƠN NẠP TIÊN (Recharge)
+            else if (currentPage === 'bill' && currentTable === '2') { 
+                
+                // Hàm tiện ích format
+                const formatDate = (dateString) => {
+                    if (!dateString) return '--/--/----';
+                    const date = new Date(dateString);
+                    return date.toLocaleDateString('vi-VN');
+                };
+                const formatCurrency = (amount) => {
+                    if (!amount) return '0 VND';
+                    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+                };
+
+                // 1. Thông tin chung
+                document.getElementById('view-recharge-id').textContent = data.id;
+                document.getElementById('view-recharge-date').textContent = formatDate(data.createdAt);
+
+                // Xử lý Trạng thái
+                const statusEl = document.getElementById('view-recharge-status');
+                if (data.status === 'completed') {
+                    statusEl.innerHTML = '<span class="badge-detail badge-active" style="background-color: #D1FAE5; color: #059669;">Thành công</span>';
+                } else if (data.status === 'pending') {
+                    statusEl.innerHTML = '<span class="badge-detail badge-warning" style="background-color: #FEF3C7; color: #D97706;">Đang xử lý</span>';
+                } else {
+                    statusEl.innerHTML = '<span class="badge-detail badge-inactive" style="background-color: #FEE2E2; color: #DC2626;">Thất bại</span>';
+                }
+
+                // 2. Chi tiết thanh toán tiền & điểm
+                // API trả về kiểu string ("469877"), ép kiểu sang số để format
+                document.getElementById('view-recharge-money').textContent = formatCurrency(parseFloat(data.money));
+                document.getElementById('view-recharge-vat').textContent = formatCurrency(parseFloat(data.vat));
+                document.getElementById('view-recharge-total').textContent = formatCurrency(parseFloat(data.totalMoney));
+                document.getElementById('view-recharge-points').textContent = `+${new Intl.NumberFormat('vi-VN').format(data.points)} Điểm`;
+
+                // 3. Thông tin người nạp
+                const acc = data.account || {};
+                document.getElementById('view-recharge-username').textContent = acc.username ? `${acc.username} (ID: ${acc.id})` : 'Không xác định';
+                document.getElementById('view-recharge-role').textContent = acc.role === 'employee' ? 'Nhân viên' : 'Khách hàng';
+
+                // 4. Thông tin gói nạp (Recharge Rule)
+                const rule = data.rechargeRule;
+                const ruleContainer = document.getElementById('view-recharge-rule');
+                if (rule) {
+                    ruleContainer.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <span>Mã gói: <strong>#${rule.id}</strong></span>
+                            <span style="color: #059669;">+${new Intl.NumberFormat('vi-VN').format(rule.points)} Điểm</span>
+                        </div>
+                        <div style="font-size: 1.3rem; color: #64748B;">
+                            Giá gốc gói: ${formatCurrency(parseFloat(rule.money))}
+                        </div>
+                    `;
+                } else {
+                    ruleContainer.innerHTML = '<span style="font-style: italic; color: #94A3B8;">Nạp tự do (Không áp dụng gói)</span>';
+                }
+            }
             // ---> NẾU LÀ TRANG CẤU HÌNH GIÁ ĐĂNG BÀI
-            else if (currentPage === 'price') {
+            else if (currentPage === 'price' && currentTable === '1') {
                 // Hàm tiện ích format ngày
                 const formatDate = (dateString) => {
                     if (!dateString) return '--/--/----';
                     const date = new Date(dateString);
-                    return date.toLocaleDateString('vi-VN') + ' ' + date.toLocaleTimeString('vi-VN');
+                    return date.toLocaleDateString('vi-VN');
                 };
 
                 // 1. Fill thông tin cơ bản
@@ -1005,13 +1094,13 @@ switch ($page) {
                 }
             }
             // ---> NẾU LÀ TRANG GÓI QUY ĐỔI NẠP TIỀN
-            else if (currentPage === 'exchange') { // Sửa lại 'exchange' cho khớp với ?page= của bạn
+            else if (currentPage === 'price' && currentTable === '2') { // Sửa lại 'exchange' cho khớp với ?page= của bạn
                 
                 // Hàm tiện ích format
                 const formatDate = (dateString) => {
                     if (!dateString) return '--/--/----';
                     const date = new Date(dateString);
-                    return date.toLocaleDateString('vi-VN') + ' ' + date.toLocaleTimeString('vi-VN');
+                    return date.toLocaleDateString('vi-VN');
                 };
                 const formatCurrency = (amount) => {
                     if (!amount) return '0 đ';
@@ -1786,37 +1875,37 @@ switch ($page) {
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-    const citySelect = document.getElementById('city-select');
-    const wardSelect = document.getElementById('ward-select');
+        const citySelect = document.getElementById('city-select');
+        const wardSelect = document.getElementById('ward-select');
 
-    if (citySelect && wardSelect) {
-        
-        // --- BƯỚC A: TỰ ĐỘNG NẠP DỮ LIỆU CŨ LÚC VỪA VÀO TRANG ---
-        const initialProvince = citySelect.value; 
-        const initialWard = "<?php echo htmlspecialchars($info['ward'] ?? ''); ?>";
-
-        if (initialProvince) {
-            // Lấy đúng tên Tỉnh từ thuộc tính data-name (nếu bạn có dùng data-name ở HTML)
-            const selectedOption = citySelect.options[citySelect.selectedIndex];
-            const cityName = selectedOption ? selectedOption.getAttribute('data-name') : initialProvince;
+        if (citySelect && wardSelect) {
             
-            loadWards(cityName, initialWard);
-        }
+            // --- BƯỚC A: TỰ ĐỘNG NẠP DỮ LIỆU CŨ LÚC VỪA VÀO TRANG ---
+            const initialProvince = citySelect.value; 
+            const initialWard = "<?php echo htmlspecialchars($info['ward'] ?? ''); ?>";
 
-        // --- BƯỚC B: CHỈ BẮT SỰ KIỆN CHANGE 1 LẦN DUY NHẤT Ở ĐÂY ---
-        citySelect.addEventListener('change', function() {
-            const selectedOption = this.options[this.selectedIndex];
-            const cityName = selectedOption ? selectedOption.getAttribute('data-name') : null;
-            
-            if (cityName) {
-                // Tỉnh mới nên Phường phải reset (truyền null)
-                loadWards(cityName, null); 
-            } else {
-                // Nếu User chọn về "-- Chọn Tỉnh/Thành phố --" thì dọn sạch ô Phường
-                wardSelect.innerHTML = '<option value="">-- Chọn Phường/Xã --</option>';
+            if (initialProvince) {
+                // Lấy đúng tên Tỉnh từ thuộc tính data-name (nếu bạn có dùng data-name ở HTML)
+                const selectedOption = citySelect.options[citySelect.selectedIndex];
+                const cityName = selectedOption ? selectedOption.getAttribute('data-name') : initialProvince;
+                
+                loadWards(cityName, initialWard);
             }
-        });
-    }
-});
+
+            // --- BƯỚC B: CHỈ BẮT SỰ KIỆN CHANGE 1 LẦN DUY NHẤT Ở ĐÂY ---
+            citySelect.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                const cityName = selectedOption ? selectedOption.getAttribute('data-name') : null;
+                
+                if (cityName) {
+                    // Tỉnh mới nên Phường phải reset (truyền null)
+                    loadWards(cityName, null); 
+                } else {
+                    // Nếu User chọn về "-- Chọn Tỉnh/Thành phố --" thì dọn sạch ô Phường
+                    wardSelect.innerHTML = '<option value="">-- Chọn Phường/Xã --</option>';
+                }
+            });
+        }
+    });
 </script>
 </html>

@@ -166,11 +166,16 @@
       var isValid = true;
 
       var username_regex = /^[a-zA-Z0-9]{3,30}$/
+      var email_regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
       const username_value = username_input.value.trim()
-      if(!username_regex.test(username_value)) {
+      if(!username_regex.test(username_value) && !email_regex.test(username_value)) {
         isValid = false;
         username_input.focus()
-        username_error_text.textContent = "Username có độ dài từ 3 đến 30 kí tự, chỉ chứa kí tự chữ và số."
+        if(username_value.includes("@")) {
+          username_error_text.textContent = "Email không hợp lệ."
+        } else {
+          username_error_text.textContent = "Username có độ dài từ 3 đến 30 kí tự, chỉ chứa kí tự chữ và số."
+        }
         username_error.style.display = "flex"
       } else {
         username_error.style.display = "none"
@@ -189,40 +194,47 @@
       }
 
       if(isValid) {
-        const response = await fetch("http://127.0.0.1:8000/api/login", {
-          method: "POST",
-          headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            "username": username_value,
-            "password": password_value
+        try {
+          const response = await fetch("http://backend.test/api/login", {
+            method: "POST",
+            headers: {
+              "Accept": "application/json",
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              "login": username_value,
+              "password": password_value
+            })
           })
-        })
 
-        const data = await response.json()
-        
-        if(response.ok) {
-          localStorage.setItem("token", data.token)
-          localStorage.setItem("account_id", data.account.id)
-          alert("Bạn đã đăng nhập thành công!")
-          window.location.href = '<?php echo BASE_URL . "/pages/client/index.php" ?>'
-        } else {
-          console.log(data)
-          if(data.message) {
-              isValid = false;
-
-              username_input.focus()
-              username_error_text.textContent = "Username " + username_value + " không chính xác."
-              username_error.style.display = "flex"
-
-              password_error_text.textContent = "Mất khẩu không chính xác."
-              password_error.style.display = "flex"
+          const data = await response.json()
+          
+          if(response.ok) {
+            localStorage.setItem("token", data.token)
+            localStorage.setItem("account_id", data.account.id)
+            alert("Bạn đã đăng nhập thành công!")
+            window.location.href = '<?php echo BASE_URL . "/pages/client/index.php" ?>'
           } else {
-              username_error.style.display = "none"
-              password_error.style.display = "none"
+            console.log(data)
+            if(data.message === "Invalid credentials") {
+                isValid = false;
+
+                username_input.focus()
+                username_error_text.textContent = "Username hoặc email " + username_value + " không chính xác."
+                username_error.style.display = "flex"
+
+                password_error_text.textContent = "Mất khẩu không chính xác."
+                password_error.style.display = "flex"
+            } else if (data.message === "Tài khoản đã bị khóa") {
+              alert("Tài khoản của bạn đã bị khóa. Vui lòng liên hệ với ban quản trị.")
+              window.location.href = "index.php"
+            } else {
+                username_error.style.display = "none"
+                password_error.style.display = "none"
+            }
           }
+        } catch (error) {
+          console.error(error)
         }
       }
     })

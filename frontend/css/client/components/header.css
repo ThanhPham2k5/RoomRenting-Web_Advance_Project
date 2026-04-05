@@ -201,6 +201,9 @@
 .notify-item-img {
   width: 100px;
   height: 100px;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 12px;
 }
 
 .notify-content {
@@ -212,12 +215,23 @@
   width: 100%;
 }
 
+.notify-time {
+  align-self: end;
+  margin-right: 10px;
+  color: #626687;
+  font-style: italic;
+}
+
 .value-add {
   color: #10b981;
 }
 
 .value-subtract {
   color: #fd5454;
+}
+
+.value-pending {
+  color: #fff312;
 }
 
 .notify-item-unread {
@@ -241,6 +255,7 @@
   position: absolute;
   top: 0;
   right: 0;
+  display: none;
 }
 
 .button-posts {
@@ -270,6 +285,8 @@
   width: 30px;
   height: 30px;
   border-radius: 999px;
+  object-fit: cover;
+  object-position: center;
 }
 
 .button-user-arrow {
@@ -304,6 +321,8 @@
   width: 80px;
   height: 80px;
   border-radius: 999px;
+  object-fit: cover;
+  object-position: center;
 }
 
 .user-name,
@@ -412,6 +431,13 @@
   border-radius: 12px;
   width: 100%;
   cursor: pointer;
+}
+
+.user-favourite span,
+.user-suggest span,
+.user-transaction span {
+  flex: 1;
+  white-space: nowrap;
 }
 
 .user-setting,

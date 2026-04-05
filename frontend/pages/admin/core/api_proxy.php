@@ -82,7 +82,7 @@ if (empty($targetEndpoint)) {
 }
 
 $method = $_SERVER['REQUEST_METHOD']; 
-$apiUrl = "http://127.0.0.1:8000/api/" . $targetEndpoint;
+$apiUrl = "http://backend.test/api/" . $targetEndpoint;
 // GỌI API: Bạn cần đảm bảo hàm call_api trong function.php 
 // có thể nhận diện nếu $payload là mảng JSON thì set Header Content-Type tương ứng.
 $apiResponse = call_api($apiUrl, $method, $payload);

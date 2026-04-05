@@ -59,7 +59,7 @@
             <div class="recharge-coin">
               <img src='<?php echo BASE_URL . "/assets/img/point.png"?>'  alt="coin-ico.png" class="recharge-coin-ico">
 
-              <div class="recharge-coin-value">25.000 điểm</div>
+              <div class="recharge-coin-value">0 điểm</div>
             </div>
 
             <img src='<?php echo BASE_URL . "/assets/img/recharge-arrow.png"?>' alt="arrow.png" class="recharge-arrow">
@@ -67,7 +67,7 @@
             <div class="recharge-money">
               <img src='<?php echo BASE_URL . "/assets/img/money.png"?>'  alt="money-ico.png" class="recharge-money-ico">
 
-              <div class="recharge-money-value">25.000 VND</div>
+              <div class="recharge-money-value">0 VND</div>
             </div>
           </div>
 
@@ -75,13 +75,13 @@
             <div class="recharge-total">
               <div class="recharge-total-title">Tổng</div>
 
-              <div class="recharge-total-value">25.000 VND</div>
+              <div class="recharge-total-value">0 VND</div>
             </div>
 
             <div class="recharge-vat">
-              <div class="recharge-vat-title">Thuế VAT (5%)</div>
+              <div class="recharge-vat-title">Thuế VAT (10%)</div>
 
-              <div class="recharge-vat-value">2.000 VND</div>
+              <div class="recharge-vat-value">0 VND</div>
             </div>
 
             <div class="recharge-line"></div>
@@ -89,7 +89,7 @@
             <div class="recharge-sum">
               <div class="recharge-sum-title">Tổng tiền thanh toán</div>
 
-              <div class="recharge-sum-value">27.000 VND</div>
+              <div class="recharge-sum-value">0 VND</div>
             </div>
           </div>
         </div>
@@ -145,4 +145,124 @@
 
     <?php include(__DIR__ . "/components/footer.php") ?>
   </body>
+
+  <script>
+    var rechargeId = ""
+    var point = 0
+    var money = 0
+
+    // auto update number data
+    document.querySelector(".recharge-point-input").addEventListener("change", (e) => {
+      const input = Number(document.querySelector(".recharge-point-input").value.trim())
+
+      document.querySelector(".recharge-coin-value").textContent = input.toLocaleString("vi-VN") + " điểm"
+
+      document.querySelector(".recharge-money-value").textContent = Math.ceil(input * money / point).toLocaleString("vi-VN") + " VND"
+
+      document.querySelector(".recharge-total-value").textContent = Math.ceil(input * money / point).toLocaleString("vi-VN") + " VND"
+
+      document.querySelector(".recharge-vat-value").textContent = Math.ceil((input * money / point) * 10 / 100).toLocaleString("vi-VN") + " VND"
+
+      document.querySelector(".recharge-sum-value").textContent = Math.ceil((input * money / point) * 110 / 100).toLocaleString("vi-VN") + " VND"
+    })
+
+    var isLoading = false
+
+    // submit button
+    document.querySelector(".recharge-pay").addEventListener("click", async (e) => {
+      e.preventDefault()
+
+      if(isLoading) return
+      isLoading = true
+      document.querySelector(".recharge-pay").disabled = true
+      document.querySelector(".recharge-pay").textContent = "Đang xử lý..."
+
+      var account_id = localStorage.getItem("account_id")
+      var token = localStorage.getItem("token")
+      const input = Number(document.querySelector(".recharge-point-input").value.trim())
+
+      if(account_id != null && token != null) {
+        try {
+          const response = await fetch("http://backend.test/api/rechargeBills", {
+            method: "POST",
+            headers: {
+              "Accept": "application/json",
+              "Content-Type": "application/json",
+              "Authorization": "Bearer " + token
+            },
+            body: JSON.stringify({
+              "money": Math.ceil(input * money / point),
+              "total_money": Math.ceil((input * money / point) * 110 / 100),
+              "status": "completed",
+              "vat": Math.ceil((input * money / point) * 10 / 100),
+              "recharge_rule_id": rechargeId,
+              "account_id": account_id
+            })
+          })
+
+          const data = await response.json()
+          if(response.ok) {
+            if(data.message === "Recharge bill created successfully") {
+              alert("Đã nạp điểm thành công.")
+              window.location.reload()
+            }
+          } else {
+            console.error(data)
+          }
+        } catch (err) {
+          console.error(err)
+        }
+        finally {
+          isLoading = false
+          document.querySelector(".recharge-pay").disabled = false
+          document.querySelector(".recharge-pay").textContent = "Thanh toán"
+        }
+      }
+    })
+
+    async function getRechargeRule(account_id, token) {
+      try {
+        const response = await fetch("http://backend.test/api/rechargeRules", {
+          method: "GET",
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer " + token
+          }
+        })
+
+        const data = await response.json()
+        if(response.ok) {
+          if(data.data) {
+            data.data.forEach(rule => {
+              if(rule.deletedAt == null) {
+                rechargeId = rule.id
+                point = rule.points
+                money = rule.money
+              }
+            })
+            console.log(rechargeId)
+            console.log(point)
+            console.log(money)
+          }
+        } else {
+          console.error(data)
+        }
+      } catch (err) {
+        console.error(err)
+      }
+    }
+
+    // run once time every reload or load page
+    document.addEventListener("DOMContentLoaded", async (e) => {
+      var account_id = localStorage.getItem("account_id")
+      var token = localStorage.getItem("token")
+
+      if(account_id != null && token != null) {
+        await getRechargeRule(account_id, token)
+      } else {
+        alert("Bạn chưa đăng nhập. Đang chuyển hướng sang trang đăng nhập.")
+        window.location.href = "login.php"
+      }
+    })
+  </script>
 </html>

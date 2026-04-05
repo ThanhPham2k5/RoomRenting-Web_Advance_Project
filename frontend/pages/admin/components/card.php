@@ -19,7 +19,7 @@ if (!empty($cardData['postImages']) && is_array($cardData['postImages'])) {
 ?>
 
 <div class="card" onclick="showDetail('<?php echo $id ?>')">
-    <img class="post-img" src="<?php echo "http://127.0.0.1:8000" . htmlspecialchars($thumbnailUrl); ?>" alt="">
+    <img class="post-img" src="<?php echo "http://backend.test" . htmlspecialchars($thumbnailUrl); ?>" alt="">
     <p class="title"><?php echo htmlspecialchars($title); ?></p>
     <div class="location">
         <svg width="16" height="20" viewBox="0 0 16 20" fill="none" xmlns="http://www.w3.org/2000/svg">

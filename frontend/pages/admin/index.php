@@ -29,7 +29,7 @@ if (isset($_GET['filter'])) {
 switch ($page) {
     case 'account':
         $apiRole = ($currentTable === '1') ? 'user' : 'employee';
-        $apiResult = call_api("http://127.0.0.1:8000/api/accounts?per_page=4&page={$pageNum}&filter[role]={$apiRole}" . $filterQuery);
+        $apiResult = call_api("http://backend.test/api/accounts?per_page=4&page={$pageNum}&filter[role]={$apiRole}" . $filterQuery);
         $pageData['accounts'] = $apiResult['data'] ?? [];
         $pageData['paginationMeta'] = [
             'current_page' => $apiResult['meta']['current_page'] ?? 1,
@@ -38,7 +38,7 @@ switch ($page) {
         ];
         break;
     case 'comment':
-        $apiResult = call_api("http://127.0.0.1:8000/api/comments?per_page=4&page={$pageNum}&include=account" . $filterQuery);
+        $apiResult = call_api("http://backend.test/api/comments?per_page=4&page={$pageNum}&include=account" . $filterQuery);
         $pageData['comments'] = $apiResult['data'] ?? [];
         $pageData['paginationMeta'] = [
             'current_page' => $apiResult['meta']['current_page'] ?? 1,
@@ -55,7 +55,7 @@ switch ($page) {
             '5' => 'failed',
             default => 'completed'
         };
-        $apiResult = call_api("http://127.0.0.1:8000/api/posts?per_page=8&page={$pageNum}&include=postImages&filter[status]={$apiSt}" . $filterQuery);
+        $apiResult = call_api("http://backend.test/api/posts?per_page=8&page={$pageNum}&include=postImages&filter[status]={$apiSt}" . $filterQuery);
         $pageData['posts'] = $apiResult['data'] ?? [];
         $pageData['paginationMeta'] = [
             'current_page' => $apiResult['meta']['current_page'] ?? 1,
@@ -69,7 +69,7 @@ switch ($page) {
             '2' => 'rechargeRules',
             default => 'payRules'
         };
-        $apiResult = call_api("http://127.0.0.1:8000/api/{$apiType}?per_page=4&page={$pageNum}" . $filterQuery);
+        $apiResult = call_api("http://backend.test/api/{$apiType}?per_page=4&page={$pageNum}" . $filterQuery);
         $pageData['rules'] = $apiResult['data'] ?? [];
         $pageData['paginationMeta'] = [
             'current_page' => $apiResult['meta']['current_page'] ?? 1,
@@ -88,7 +88,7 @@ switch ($page) {
             '2' => 'account',
             default => 'account,post'
         };
-        $apiResult = call_api("http://127.0.0.1:8000/api/{$apiType}?per_page=4&page={$pageNum}&include={$apiInclude}" . $filterQuery);
+        $apiResult = call_api("http://backend.test/api/{$apiType}?per_page=4&page={$pageNum}&include={$apiInclude}" . $filterQuery);
         $pageData['bills'] = $apiResult['data'] ?? [];
         $pageData['paginationMeta'] = [
             'current_page' => $apiResult['meta']['current_page'] ?? 1,
@@ -97,7 +97,7 @@ switch ($page) {
         ];
         break;
     case 'permission':
-        $apiResult = call_api("http://127.0.0.1:8000/api/roles?per_page=4&page={$pageNum}" . $filterQuery);
+        $apiResult = call_api("http://backend.test/api/roles?per_page=4&page={$pageNum}" . $filterQuery);
         $pageData['permissions'] = $apiResult['data'] ?? [];
         $pageData['paginationMeta'] = [
             'current_page' => $apiResult['meta']['current_page'] ?? 1,
@@ -106,7 +106,7 @@ switch ($page) {
         ];
         break;
     case 'setting':
-        $apiResult = call_api("http://127.0.0.1:8000/api/personalInfos/$adminId");
+        $apiResult = call_api("http://backend.test/api/personalInfos/$adminId");
         $pageData['info'] = $apiResult['data'] ?? [];
         $pageData['id'] = $adminId ?? "";
         break;
@@ -1285,7 +1285,7 @@ switch ($page) {
                 document.getElementById('reason').textContent = data.reason ?? "Lý do: Không có"
                 
                 // Cấu hình đường dẫn mặc định
-                const baseUrl = "http://127.0.0.1:8000";
+                const baseUrl = "http://backend.test";
                 const defaultImg = "../../assets/admin/images/post_img.png";
 
                 // ==========================================
@@ -1423,7 +1423,8 @@ switch ($page) {
         }
     }
     function restoreImages(postImages) {
-        const defaultImg = '../../assets/admin/images/post_img.png';
+        const baseUrl = "http://backend.test";
+        const defaultImg = "../../assets/admin/images/post_img.png";
         const slots = ['main', 'sub_1', 'sub_2', 'sub_3'];
 
         // 1. DỌN SẠCH ẢNH TẠM (Phòng khi user lỡ đổi ảnh mới nhưng lại bấm Hủy)

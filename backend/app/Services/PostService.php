@@ -219,7 +219,6 @@ class PostService{
     public function postPayment(Post $post)
     {
         $user = $post->user;
-        $payRule = PayRule::first();
         $points = $payRule->points;
         $payRule = PayRule::firstOrFail();
 

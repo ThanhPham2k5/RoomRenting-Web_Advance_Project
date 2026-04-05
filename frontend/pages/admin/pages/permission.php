@@ -520,21 +520,30 @@ function validatePermissionMaster(form) {
     return isValid;
 }
 document.addEventListener('DOMContentLoaded', function() {
-    const permissions = document.querySelectorAll('input[name="permissions[]"]');
+    // Dùng Event Delegation: Lắng nghe sự kiện change trên toàn bộ body
+    // Cách này giúp code chạy mượt kể cả khi Form Thêm của bạn được sinh ra sau bằng AJAX
+    document.body.addEventListener('change', function(e) {
+        
+        // Kiểm tra xem thẻ vừa click có đúng là checkbox quyền không
+        if (e.target && e.target.name === 'permissions[]') {
+            const checkbox = e.target;
+            
+            // TÌM PHẠM VI FORM: Tìm cái khung (form hoặc modal) đang chứa checkbox này
+            // Bạn có thể đổi 'form' thành '.modal' hoặc '.accordion-item' tùy cấu trúc HTML
+            const formContainer = checkbox.closest('form') || document; 
 
-    const setCheck = (valName, state) => {
-        const cb = document.querySelector(`input[value="${valName}"]`);
-        if (cb) cb.checked = state;
-    };
+            // Hàm setCheck mới: Chỉ tìm bên trong phạm vi formContainer
+            const setCheck = (valName, state) => {
+                const cb = formContainer.querySelector(`input[value="${valName}"]`);
+                if (cb) cb.checked = state;
+            };
 
-    const viewPerms = ['get', 'getAll'];
-    const actionPerms = ['create', 'update', 'delete', 'restore'];
-
-    permissions.forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-            const val = this.value;
-            const isChecked = this.checked;
+            const val = checkbox.value;
+            const isChecked = checkbox.checked;
             const [module, action] = val.split('.');
+
+            const viewPerms = ['get', 'getAll'];
+            const actionPerms = ['create', 'update', 'delete', 'restore'];
 
             // ==========================================
             // 1. NHÓM HÓA ĐƠN: payBill và rechargeBill
@@ -571,17 +580,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (viewPerms.includes(action)) ruleGets.forEach(v => setCheck(v, true));
                     if (action === 'create') {
                         ruleCreates.forEach(v => setCheck(v, true));
-                        ruleGets.forEach(v => setCheck(v, true)); // Thêm thì phải Xem được
+                        ruleGets.forEach(v => setCheck(v, true)); 
                     }
                     if (action === 'restore') {
                         ruleRestores.forEach(v => setCheck(v, true));
-                        ruleGets.forEach(v => setCheck(v, true)); // Khôi phục thì phải Xem được
+                        ruleGets.forEach(v => setCheck(v, true)); 
                     }
                 } else {
                     if (viewPerms.includes(action)) {
                         ruleGets.forEach(v => setCheck(v, false));
-                        ruleCreates.forEach(v => setCheck(v, false)); // Mất Xem -> Hủy Thêm
-                        ruleRestores.forEach(v => setCheck(v, false)); // Mất Xem -> Hủy Khôi phục
+                        ruleCreates.forEach(v => setCheck(v, false)); 
+                        ruleRestores.forEach(v => setCheck(v, false)); 
                     }
                     if (action === 'create') ruleCreates.forEach(v => setCheck(v, false));
                     if (action === 'restore') ruleRestores.forEach(v => setCheck(v, false));
@@ -590,7 +599,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // ==========================================
-            // 3. LOGIC MẶC ĐỊNH CHO CÁC MODULE CÒN LẠI (Account, Post, Comment...)
+            // 3. LOGIC MẶC ĐỊNH (Account, Post, Comment...)
             // ==========================================
             if (isChecked) {
                 if (viewPerms.includes(action)) {
@@ -607,7 +616,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     actionPerms.forEach(act => setCheck(`${module}.${act}`, false));
                 }
             }
-        });
+        }
     });
 });
 </script>

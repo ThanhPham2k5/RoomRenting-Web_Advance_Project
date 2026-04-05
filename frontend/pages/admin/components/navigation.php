@@ -17,6 +17,7 @@ $currentPage = $currentPage ?? "overview";
                 <p>Tổng quan</p>
             </a>
         </div>
+        <?php if(checkPermission('post.getAll')) { ?>
         <div class="item <?php echo ($currentPage === 'post') ? 'active' : ''; ?>">
             <a href="index.php?page=post&table=1">
                 <svg width="20" height="22" viewBox="0 0 20 22" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -25,6 +26,9 @@ $currentPage = $currentPage ?? "overview";
                 <p>Bài đăng</p>
             </a>
         </div>
+        <?php } ?>
+
+        <?php if(checkPermission('account.getAll')) { ?>
         <div class="item <?php echo ($currentPage === 'account') ? 'active' : ''; ?>">
             <a href="index.php?page=account&table=1">
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -33,6 +37,9 @@ $currentPage = $currentPage ?? "overview";
                 <p>Tài khoản</p>
             </a>
         </div>
+        <?php } ?>
+
+        <?php if(checkPermission('role.getAll')) { ?>
         <div class="item <?php echo ($currentPage === 'permission') ? 'active' : ''; ?>">
             <a href="index.php?page=permission">
                 <svg width="20" height="16" viewBox="0 0 20 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -41,6 +48,9 @@ $currentPage = $currentPage ?? "overview";
                 <p>Phân quyền</p>
             </a>
         </div>
+        <?php } ?>
+
+        <?php if(checkPermission('comment.getAll')) { ?>
         <div class="item <?php echo ($currentPage === 'comment') ? 'active' : ''; ?>">
             <a href="index.php?page=comment">
                 <svg width="20" height="18" viewBox="0 0 20 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -49,6 +59,9 @@ $currentPage = $currentPage ?? "overview";
                 <p>Bình luận</p>
             </a>
         </div>
+        <?php } ?>
+
+        <?php if(checkPermission('payBill.getAll') || checkPermission('rechargeBill.getAll')) { ?>
         <div class="item <?php echo ($currentPage === 'bill') ? 'active' : ''; ?>">
             <a href="index.php?page=bill&table=1">
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -57,6 +70,9 @@ $currentPage = $currentPage ?? "overview";
                 <p>Hóa đơn</p>
             </a>
         </div>
+        <?php } ?>
+
+        <?php if(checkPermission('payRule.getAll') || checkPermission('rechargeRule.getAll')) { ?>
         <div class="item <?php echo ($currentPage === 'price') ? 'active' : ''; ?>">
             <a href="index.php?page=price&table=1">
                 <svg width="23" height="20" viewBox="0 0 23 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -67,7 +83,9 @@ $currentPage = $currentPage ?? "overview";
         </div>
         <div class="item linenav">
         </div>
+        <?php } ?>
         
+        <?php if(checkPermission('personalInfo.getAll')) { ?>
         <div class="item <?php echo ($currentPage === 'setting') ? 'active' : ''; ?>">
             <a href="index.php?page=setting">
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -76,6 +94,8 @@ $currentPage = $currentPage ?? "overview";
                 <p>Cài đặt</p>
             </a>
         </div>
+        <?php } ?>
+
         <div class="item">
             <a href="logout.php">
                 <div class="dangxuat">

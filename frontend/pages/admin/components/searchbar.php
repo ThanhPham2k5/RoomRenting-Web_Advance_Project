@@ -59,16 +59,19 @@ $keyword = $keyword ?? '';
                                 <label>Loại phòng</label>
                                 <select name="room_type" class="filter-input">
                                     <option value="">Chọn loại phòng</option>
-                                    <option value="phong_tro">Phòng trọ</option>
-                                    <option value="nha_nguyen_can">Nhà nguyên căn</option>
-                                    <option value="can_ho">Căn hộ</option>
+                                    <option value="room">Trọ khép kín</option>
+                                    <option value="apartment">Chung cư mini</option>
+                                    <option value="dorm">Ở ghép</option>
                                 </select>
                             </div>
                             <div class="filter-group">
                                 <label>Số người ở tối đa</label>
                                 <input type="number" name="max_people" class="filter-input" placeholder="Nhập vào số người ở tối đa">
                             </div>
-                            <button type="submit" class="btn-apply-filter">Áp dụng</button>
+                            <div class="filter-actions">
+                                <button type="reset" class="btn-reset-filter">Thiết lập lại</button>
+                                <button type="submit" class="btn-apply-filter">Áp dụng</button>
+                            </div>
                         </form>
                     </div>
                 </div>

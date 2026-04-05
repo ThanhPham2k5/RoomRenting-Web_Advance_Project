@@ -29,7 +29,7 @@ use App\Http\Controllers\StatisticController;
 */
 
 //Account
-Route::middleware(['auth:sanctum', 'permission:account.get'])
+Route::middleware(['auth:sanctum'])
     ->get('/accounts/{account}', [AccountController::class, 'show'])
     ->withTrashed();
 

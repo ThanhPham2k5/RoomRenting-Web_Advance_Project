@@ -136,6 +136,8 @@
     box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
     padding: 16px;
     z-index: 1000;
+    height: 400px;
+    overflow: auto;
     
     /* Mặc định ẩn, sẽ thêm class .show bằng JS để hiện */
     opacity: 0;
@@ -208,4 +210,33 @@
 
 .btn-apply-filter:hover {
     background-color: #ea580c;
+}
+.filter-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.btn-reset-filter {
+    flex: 1; /* Chia đều 50% không gian */
+    padding: 12px;
+    background-color: #f3f4f6;
+    color: #4b5563;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-reset-filter:hover {
+    background-color: #e5e7eb;
+    color: #111827;
+}
+
+/* Sửa lại xíu cho nút Áp dụng để nó chia đều 50% với nút Reset */
+.btn-apply-filter {
+    flex: 1; 
+    margin-top: 0; /* Xóa margin cũ */
 }

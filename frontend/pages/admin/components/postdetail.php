@@ -74,8 +74,8 @@
                     <p id="detail-user-id">ID người đăng bài: 123</p>
                     <p id="detail-employee-id">ID nhân viên duyệt bài: 123</p>
                     <p>Lịch sử thanh toán</p>
+                    <p id="reason">Lý do</p>
                     <div class="post-info-btn">
-                        <button class="handle">Xử lý</button>
                         <button class="handle" style="background-color: #3B82F6;" onclick="switchToEdit()">Chỉnh sửa</button>
                     </div>
                 </div>

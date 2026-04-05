@@ -37,11 +37,27 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $fields = $request->validate([
-            'username' => 'required|string|min:3|max:30',
+            'login' => 'required|string',
             'password' => 'required|string|min:8|max:255',
         ]);
 
-        $account = Account::where('username', $fields['username'])->first();
+        $loginValue = $fields['login'];
+
+        $account = Account::where(function ($query) use ($loginValue) {
+            $query->where('username', $loginValue)
+                  ->orWhereHas('user', function ($query) use ($loginValue) {
+                      $query->whereHas('personalInfo', function ($query) use ($loginValue) {
+                          $query->where('email', $loginValue)
+                                ->orWhere('phone_number', $loginValue);
+                      });
+                  })
+                  ->orWhereHas('employee', function ($query) use ($loginValue) {
+                      $query->whereHas('personalInfo', function ($query) use ($loginValue) {
+                          $query->where('email', $loginValue)
+                                ->orWhere('phone_number', $loginValue);
+                      });
+                  });
+        })->first();
 
         if (!$account || !Hash::check($fields['password'], $account->password)) {
             return response()->json(['message' => 'Invalid credentials'], 401);
@@ -49,7 +65,7 @@ class AuthController extends Controller
         
         $existedToken = PersonalAccessToken::where('tokenable_id', $account->id)->first();
         if(!$existedToken){
-            $token = $account->createToken($fields['username']);
+            $token = $account->createToken($account->username . '_token');
 
             return response()->json([
                 'account' => $account,
@@ -58,7 +74,7 @@ class AuthController extends Controller
         }else{
             return response()->json([
                 'message' => 'account has already logged in'
-            ]);
+            ], 403);
         }
     }
 

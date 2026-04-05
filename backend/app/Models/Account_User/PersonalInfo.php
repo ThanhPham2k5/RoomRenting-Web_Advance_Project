@@ -38,6 +38,7 @@ class PersonalInfo extends Model
         'province',
         'email',
         'phone_number',
+        'profile_url',
         'pid'
     ];
 

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Api\Posts;
 
-use _PHPStan_781aefaf6\Composer\XdebugHandler\Status;
-use App\Listeners\SendStatusPostNotification;
+use App\Models\Payments\PayRule;
+use App\Models\Payments\PayBill;
 use App\Models\Posts\Post;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePostRequest;
@@ -11,20 +11,14 @@ use App\Http\Requests\UpdatePostRequest;
 use App\Http\Resources\Posts\PostCollection;
 use App\Http\Resources\Posts\PostResource;
 use Illuminate\Http\Request;
-use Spatie\QueryBuilder\AllowedFilter;
-use Spatie\QueryBuilder\AllowedSort;
-use Spatie\QueryBuilder\Enums\FilterOperator;
-use Spatie\QueryBuilder\QueryBuilder;
-use App\Events\PostCreated;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Events\StatusPostCreated;
-use App\Filter\AllColumnFilter;
-use App\Filter\DateFilter;
 use App\Models\Account_User\Account;
 use App\Models\Form;
 use App\Services\PostService;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
+use App\Events\PayBillCreated;
+
 
 class PostController extends Controller
 {
@@ -88,6 +82,9 @@ class PostController extends Controller
             // remove images from validated data to prevent mass assignment error
             unset($validated['images']);
             unset($validated['orders']);
+            
+            // set reason to null if not exist to prevent mass assignment error
+            $validated['reason'] = null;
 
             // Create post
             $post = Post::create($validated);
@@ -117,7 +114,7 @@ class PostController extends Controller
             }
 
             // Fire create post event
-            event(new StatusPostCreated($post, $request['content'], $request['title']));
+            event(new StatusPostCreated($post, $request['titleNotification'] ?? null));
 
             return response()->json([
                 'message' => 'Post created successfully',
@@ -152,12 +149,6 @@ class PostController extends Controller
         $this->authorize('update', $post);
 
         $validated = $request->validated();
-        
-        // if ($request->status === $post->status) {
-        //     return response()->json([
-        //         'message' => 'Can not update post with similiar status'
-        //     ]);            
-        // }
 
         return DB::transaction(function () use ($request, $post, $validated) {
 
@@ -175,42 +166,11 @@ class PostController extends Controller
                     ];
                 })->toArray();
 
-                // delete old images if exist
-                // foreach($post->postImages as $postImage){
-                //     if(in_array($postImage->order, $orders)){ // if order in request, delete file of said order
-                //         // delete file
-                //         Storage::disk('public')->delete($postImage->image_post_url);
-
-                //         // delete DB record
-                //         $postImage->delete();
-                //     }
-                // }
-                
-                // store new images
-                // foreach($images as $imageData){
-                //     $file = $imageData['file'];
-                //     $order = $imageData['order'];
-                 
-                //     // rename to order
-                //     $filename = $order . '.' . $file->getClientOriginalExtension();
-
-                //     // save file
-                //     $path = $file->storeAs(
-                //         "posts/{$post->id}/images",
-                //         $filename,
-                //         "public"
-                //     );
-
-                //     $newImages[] = [
-                //         'image_post_url' => $path,
-                //         'order' => $order,
-                //     ];
-                // }
 
                 $newImages = [];
                 foreach ($files as $key => $file) {
                     $newImages[] = [
-                        'file' => $file, // Truyền trực tiếp đối tượng UploadedFile
+                        'file' => $file,
                         'order' => $orders[$key]
                     ];
                 }
@@ -220,9 +180,9 @@ class PostController extends Controller
 
             }
 
-        $post = $this->postService->updatePost($post, $validated);
-        
-        // event(new StatusPostCreated($post, $request->comment));
+            $post = $this->postService->updatePost($post, $validated);
+
+            event(new StatusPostCreated($post, $request['titleNotification'] ?? null));
 
             return response()->json([
                 'message' => 'Post updated successfully',
@@ -272,5 +232,21 @@ class PostController extends Controller
         }
 
         return new PostCollection($posts);
+    }
+
+    public function postPayment(Post $post)
+    {
+        $this->authorize('update', $post);
+
+        if ($post->status !== 'expired') {
+            return response()->json([
+                'message' => 'Chỉ thanh toán được những bài đăng quá hạn.'
+            ], 400);
+        }
+
+        $result = $this->postService->postPayment($post);
+
+        return response()->json($result);
+
     }
 }

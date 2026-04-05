@@ -74,8 +74,20 @@
 
             <h3 class="left-deposit"></h3>
 
+            <div class="left-room">
+                <h3>Loại phòng: </h3>
+
+                <div class="left-room-info"></div>
+            </div>
+
+            <div class="left-occupants">
+                <h3>Số người tối đa: </h3>
+
+                <div class="left-occupants-info"></div>
+            </div>
+
             <div class="left-desc">
-                <h3>Mô tả chi tiết</h3>
+                <h3>Mô tả chi tiết: </h3>
 
                 <div class="left-desc-info"></div>
             </div>
@@ -221,11 +233,19 @@
                     }
 
                     // update post info
+                    // console.log(data.data)
                     document.querySelector(".left-main-text").textContent = data.data.title
                     document.querySelector(".left-address-text").textContent = data.data.houseNumber + ", " + data.data.ward + ", " + data.data.province
                     document.querySelector(".left-info-money").textContent = Number(data.data.price).toLocaleString("vi-VN") + " VND/tháng"
                     document.querySelector(".left-info-square").textContent = Number(data.data.area).toLocaleString("vi-VN") + " m2"
                     document.querySelector(".left-deposit").textContent = "Số tiền cọc: " + Number(data.data.deposit).toLocaleString("vi-VN") + " VND"
+                    if(data.data.roomType === "room")
+                        document.querySelector(".left-room-info").textContent = "Phòng đơn"
+                    if(data.data.roomType === "apartment")
+                        document.querySelector(".left-room-info").textContent = "Căn hộ"
+                    if(data.data.roomType === "dorm")
+                        document.querySelector(".left-room-info").textContent = "Ký túc xá"
+                    document.querySelector(".left-occupants-info").textContent = data.data.maxOccupants + " người"
                     document.querySelector(".left-desc-info").textContent = data.data.description
 
                     // update favorite ico

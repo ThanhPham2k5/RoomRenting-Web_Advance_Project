@@ -149,7 +149,9 @@
   color: #10b981;
 }
 
-.left-desc {
+.left-desc,
+.left-room,
+.left-occupants {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -157,7 +159,13 @@
   margin: 20px 0;
 }
 
-.left-desc-info {
+.left-room,
+.left-occupants {
+}
+
+.left-desc-info,
+.left-room-info,
+.left-occupants-info {
   margin-top: 10px;
   color: #626687;
   text-align: justify;

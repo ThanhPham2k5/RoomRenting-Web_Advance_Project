@@ -118,13 +118,13 @@
         <form class="right-account" id="panel-account" style="display: none; flex-direction: column;" onsubmit="handleSavePassword(event)">
             <p>Thay đổi mật khẩu</p>
             <div class="item">
-                <input type="password" name="current_password" placeholder="Mật khẩu hiện tại" style="margin-bottom: 10px;" required>
+                <input type="password" name="current_password" placeholder="Mật khẩu hiện tại" style="margin-bottom: 10px;">
             </div>
             <div class="item">
-                <input type="password" name="new_password" placeholder="Mật khẩu mới" style="margin-bottom: 10px;" required>
+                <input type="password" name="new_password" placeholder="Mật khẩu mới" style="margin-bottom: 10px;">
             </div>
             <div class="item">
-                <input type="password" name="new_password_confirmation" placeholder="Xác nhận mật khẩu mới" required>
+                <input type="password" name="new_password_confirmation" placeholder="Xác nhận mật khẩu mới">
             </div>
             <button type="submit" class="btn-save">Cập nhật mật khẩu</button>
         </form>
@@ -150,33 +150,83 @@
             document.getElementById('panel-account').style.display = 'flex';
         }
     }
+
+    // ==========================================
+    // 1. HÀM XỬ LÝ LƯU HỒ SƠ CÁ NHÂN
+    // ==========================================
     function handleSaveSettings(event) {
         event.preventDefault(); // Ngăn chặn form load lại trang
-        
         const formElement = event.target;
+
+        // --- BƯỚC 1: VALIDATION (KIỂM TRA DỮ LIỆU) ---
+        const avatarInput = formElement.querySelector('input[type="file"]#upload-avatar');
+        const nameInput = formElement.querySelector('input[name="name"]');
+        const phoneInput = formElement.querySelector('input[name="phoneNumber"]');
+        const addressInput = formElement.querySelector('input[name="houseNumber"]');
+        const provinceSelect = formElement.querySelector('select[name="province"]');
+        const wardSelect = formElement.querySelector('select[name="ward"]');
+        const pidInput = formElement.querySelector('input[name="pid"]');
+        const genderSelect = formElement.querySelector('select[name="gender"]');
+        const dobInput = formElement.querySelector('input[name="dateOfBirth"]');
+
+        // Xóa lỗi cũ
+        [avatarInput, nameInput, phoneInput, addressInput, provinceSelect, wardSelect, pidInput, genderSelect, dobInput].forEach(input => {
+            if (input) Validator.clearError(input);
+        });
+
+        let isValid = true;
+
+        if (avatarInput && avatarInput.files.length > 0) {
+            const avatarErr = Validator.checkImage(avatarInput, false); 
+            if (avatarErr) { Validator.showError(avatarInput, avatarErr); isValid = false; }
+        }
+
+        const nameValue = nameInput ? nameInput.value.trim() : '';
+        const nameErr = Validator.isRequired(nameValue, 'Họ và tên không được để trống!') || Validator.checkLength(nameValue, 3, 255, 'Họ và tên');
+        if (nameErr) { Validator.showError(nameInput, nameErr); isValid = false; }
+
+        const phoneValue = phoneInput ? phoneInput.value.trim() : '';
+        const phoneErr = Validator.isRequired(phoneValue, 'Số điện thoại không được để trống!') || Validator.isPhone(phoneValue);
+        if (phoneErr) { Validator.showError(phoneInput, phoneErr); isValid = false; }
+
+        const addressValue = addressInput ? addressInput.value.trim() : '';
+        const addressErr = Validator.isRequired(addressValue, 'Địa chỉ không được để trống!') || Validator.checkLength(addressValue, 3, 255, 'Địa chỉ');
+        if (addressErr) { Validator.showError(addressInput, addressErr); isValid = false; }
+
+        const provinceErr = Validator.isRequired(provinceSelect?.value, 'Vui lòng chọn Tỉnh/Thành phố!');
+        if (provinceErr) { Validator.showError(provinceSelect, provinceErr); isValid = false; }
+
+        const wardErr = Validator.isRequired(wardSelect?.value, 'Vui lòng chọn Phường/Xã!');
+        if (wardErr) { Validator.showError(wardSelect, wardErr); isValid = false; }
+
+        const pidValue = pidInput ? pidInput.value.trim() : '';
+        const pidErr = Validator.isRequired(pidValue, 'Căn cước công dân không được để trống!') || Validator.isCCCD(pidValue);
+        if (pidErr) { Validator.showError(pidInput, pidErr); isValid = false; }
+
+        const genderErr = Validator.isRequired(genderSelect?.value, 'Vui lòng chọn Giới tính!');
+        if (genderErr) { Validator.showError(genderSelect, genderErr); isValid = false; }
+
+        const dobValue = dobInput ? dobInput.value.trim() : '';
+        const dobErr = Validator.isRequired(dobValue, 'Ngày sinh không được để trống!') || Validator.isDate(dobValue);
+        if (dobErr) { Validator.showError(dobInput, dobErr); isValid = false; }
+
+        // NẾU CÓ LỖI THÌ DỪNG LẠI NGAY, KHÔNG GỌI API
+        if (!isValid) return; 
+
+        // --- BƯỚC 2: GỌI API LƯU DỮ LIỆU ---
         let formData = new FormData(formElement);
 
-        // 1. KIỂM TRA XEM CÓ TẢI LÊN AVATAR MỚI KHÔNG
-        const avatarInput = document.getElementById('upload-avatar');
         if (avatarInput && avatarInput.files.length > 0) {
-            // 'profileUrl' hoặc 'avatar' tùy thuộc vào Backend của bạn yêu cầu key là gì
             formData.append('profile_url', avatarInput.files[0]); 
         }
 
-        // 2. CẤU HÌNH GỌI API QUA PROXY
-        // Tận dụng adminId đã được truyền từ PHP ở các bước trước
         const adminId = <?php echo $id; ?>; 
-        
-        // Laravel yêu cầu gửi _method=PUT hoặc PATCH qua POST request để có thể nhận File
         formData.append('_method', 'PUT'); 
         formData.append('target_endpoint', `personalInfos/${adminId}`);
 
-        // 3. GỌI FETCH
-        fetch('core/api_proxy.php', { // Chỉnh lại đường dẫn proxy nếu cần
+        fetch('core/api_proxy.php', {
             method: 'POST',
-            headers: {
-                "Accept": "application/json"
-            },
+            headers: { "Accept": "application/json" },
             body: formData
         })
         .then(async response => {
@@ -192,7 +242,7 @@
         })
         .then(result => {
             alert("Cập nhật thông tin thành công!");
-            window.location.reload(); // Load lại trang để thấy dữ liệu/ảnh mới
+            window.location.reload(); 
         })
         .catch(error => {
             console.error("Lỗi cập nhật:", error);
@@ -200,6 +250,7 @@
         });
     }
 
+    // Đổi Avatar Preview
     document.getElementById('upload-avatar').addEventListener('change', function(event) {
         const file = event.target.files[0];
         if (file) {
@@ -211,40 +262,62 @@
         }
     });
 
+    // ==========================================
+    // 2. HÀM XỬ LÝ ĐỔI MẬT KHẨU
+    // ==========================================
     function handleSavePassword(event) {
         event.preventDefault(); 
-        
         const formElement = event.target;
-        let formData = new FormData(formElement);
 
-        // 1. KIỂM TRA MẬT KHẨU XÁC NHẬN Ở FRONTEND
-        const newPass = formData.get('new_password');
-        const confirmPass = formData.get('new_password_confirmation');
-        
-        if (newPass !== confirmPass) {
-            alert("Lỗi: Mật khẩu xác nhận không khớp với mật khẩu mới!");
-            return; // Dừng lại ngay, không gọi API nữa
+        // --- BƯỚC 1: VALIDATION ---
+        const currentPassInput = formElement.querySelector('input[name="current_password"]');
+        const newPassInput = formElement.querySelector('input[name="new_password"]');
+        const confirmPassInput = formElement.querySelector('input[name="new_password_confirmation"]');
+
+        [currentPassInput, newPassInput, confirmPassInput].forEach(input => {
+            if (input) Validator.clearError(input);
+        });
+
+        let isValid = true;
+
+        const currPassErr = Validator.isRequired(currentPassInput?.value, 'Vui lòng nhập mật khẩu hiện tại!');
+        if (currPassErr) { Validator.showError(currentPassInput, currPassErr); isValid = false; }
+
+        const newPassValue = newPassInput ? newPassInput.value.trim() : '';
+        if (newPassValue === '') {
+            Validator.showError(newPassInput, 'Mật khẩu mới không được để trống!');
+            isValid = false;
+        } else {
+            const passLenErr = Validator.checkLength(newPassValue, 8, 255, 'Mật khẩu mới');
+            if (passLenErr) { Validator.showError(newPassInput, passLenErr); isValid = false; }
         }
 
-        // 2. CẤU HÌNH GỌI API QUA PROXY
+        const confirmPassValue = confirmPassInput ? confirmPassInput.value.trim() : '';
+        if (confirmPassValue === '') {
+            Validator.showError(confirmPassInput, 'Vui lòng xác nhận mật khẩu mới!');
+            isValid = false;
+        } else if (confirmPassValue !== newPassValue) {
+            Validator.showError(confirmPassInput, 'Mật khẩu xác nhận không khớp!');
+            isValid = false;
+        }
+
+        // Dừng nếu có lỗi
+        if (!isValid) return;
+
+        // --- BƯỚC 2: GỌI API ---
+        let formData = new FormData(formElement);
         const adminId = <?php echo $id; ?>; 
         
-        // Gắn đường dẫn API (Ví dụ: accounts/10/change-password)
         formData.append('target_endpoint', `accounts/${adminId}/change-password`);
         fetch('core/api_proxy.php', {
             method: 'POST',
-            headers: {
-                "Accept": "application/json"
-            },
+            headers: { "Accept": "application/json" },
             body: formData
         })
         .then(async response => {
             const result = await response.json();
-            
-            // Bắt lỗi từ Backend (Sai pass hiện tại, pass quá ngắn...)
             if (!response.ok || result.errors || result.status === 'error') {
                 let errorMsg = result.message || "Lỗi cập nhật mật khẩu!";
-                // Gom các chi tiết lỗi (Validation) từ Laravel để thông báo cho User
                 if (result.errors) {
                     errorMsg += "\n" + Object.values(result.errors).map(e => e.join(", ")).join("\n");
                 }
@@ -253,7 +326,6 @@
             return result;
         })
         .then(result => {
-            // Đổi pass thành công thì nên bắt người dùng đăng nhập lại
             alert("Đổi mật khẩu thành công! Hệ thống sẽ yêu cầu đăng nhập lại.");
             window.location.href = 'logout.php'; 
         })
@@ -262,32 +334,31 @@
             alert(error.message);
         });
     }
+
+    // ==========================================
+    // 3. XỬ LÝ LOAD TỈNH THÀNH / PHƯỜNG XÃ
+    // ==========================================
     document.addEventListener('DOMContentLoaded', function() {
         const citySelect = document.getElementById('city-select');
         const wardSelect = document.getElementById('ward-select');
 
         if (citySelect && wardSelect) {
-            
-            // 1. TẠO RA DỮ LIỆU "DATA" TỪ PHP CHO JS (Giống như biến data bên Post)
             const userProvince = "<?php echo htmlspecialchars($info['province'] ?? ''); ?>";
             const userWard = "<?php echo htmlspecialchars($info['ward'] ?? ''); ?>";
 
-            // 2. FILL DỮ LIỆU Y HỆT NHƯ HÀM fillFormEditData
             if (userProvince) {
-                citySelect.value = userProvince; // Tự động chọn Tỉnh
-                
+                citySelect.value = userProvince; 
                 if (citySelect.value) {
-                    // Tự động gọi API lấy Phường và fill Phường cũ vào
-                    loadWards(userProvince, userWard); 
+                    // Đảm bảo bạn đã khai báo hàm loadWards ở đâu đó trong dự án nhé
+                    if (typeof loadWards === 'function') {
+                        loadWards(userProvince, userWard); 
+                    }
                 }
             }
 
-            // 3. XỬ LÝ KHI NGƯỜI DÙNG TỰ ĐỔI TỈNH
             citySelect.addEventListener('change', function() {
                 const selectedProvince = this.value; 
-                
-                if (selectedProvince) {
-                    // Tỉnh mới thì truyền null để reset Phường
+                if (selectedProvince && typeof loadWards === 'function') {
                     loadWards(selectedProvince, null); 
                 } else {
                     wardSelect.innerHTML = '<option value="">-- Chọn Phường/Xã --</option>';

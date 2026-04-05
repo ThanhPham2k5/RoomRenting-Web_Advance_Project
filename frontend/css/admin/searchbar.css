@@ -100,3 +100,112 @@
     border-radius: 15px;
     background-color: #626687;
 }
+/* Container bao bọc, thiết lập relative để panel con canh theo nó */
+.filter-dropdown-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+/* Nút bấm mở bộ lọc */
+.btn-toggle-filter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background-color: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    color: #374151;
+}
+
+.btn-toggle-filter:hover {
+    background-color: #f3f4f6;
+}
+
+/* Khung panel bộ lọc thả xuống */
+.filter-dropdown-panel {
+    position: absolute;
+    top: 110%; /* Nằm ngay dưới nút bấm */
+    right: 0;  /* Canh phải so với nút bấm (hoặc đổi thành left: 0 tùy layout) */
+    width: 320px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    padding: 16px;
+    z-index: 1000;
+    
+    /* Mặc định ẩn, sẽ thêm class .show bằng JS để hiện */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.2s ease-in-out;
+}
+
+/* Class để JS gọi hiện panel lên */
+.filter-dropdown-panel.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.filter-header h4 {
+    margin: 0 0 16px 0;
+    text-align: center;
+    font-size: 16px;
+    color: #111827;
+    border-bottom: 2px solid #3b82f6; /* Đường line xanh giống ảnh */
+    padding-bottom: 8px;
+}
+
+.filter-group {
+    margin-bottom: 16px;
+}
+
+.filter-group label {
+    display: block;
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 8px;
+    text-align: center; /* Chữ Khu vực, Giá cả canh giữa giống ảnh */
+    color: #4b5563;
+}
+
+.filter-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #4b5563;
+    box-sizing: border-box;
+}
+
+.filter-input:focus {
+    outline: none;
+    border-color: #f97316; /* Màu cam khi click */
+}
+
+.input-row {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-apply-filter {
+    width: 100%;
+    padding: 12px;
+    background-color: #f97316; /* Màu cam giống ảnh */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 15px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.btn-apply-filter:hover {
+    background-color: #ea580c;
+}

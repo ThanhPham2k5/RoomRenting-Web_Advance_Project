@@ -36,7 +36,7 @@ class UpdatePostRequest extends FormRequest
             'user_id' => 'sometimes|exists:users,id',
             'employee_id' => 'nullable|exists:employees,id',
             'authorized' => 'sometimes|boolean',
-            'reason' => 'nullable|string|max:20000',
+            'reason' => 'nullable|sometimes|string|max:20000',
             'next_payment_date' => 'nullable|date',
             'images' => 'sometimes|array',
             'images.*' => 'image|mimes:jpg,jpeg,png|max:2048',

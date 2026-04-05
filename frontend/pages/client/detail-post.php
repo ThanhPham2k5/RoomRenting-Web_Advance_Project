@@ -29,6 +29,8 @@
       href='<?php echo BASE_URL . "/assets/favicon/apple-touch-icon.png"?>'
     />
     <link rel="manifest" href='<?php echo BASE_URL . "/assets/favicon/site.webmanifest" ?>'/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <title>Detail Post Page | RoomRenting</title>
   </head>
   <body>
@@ -95,7 +97,7 @@
             <div class="left-map">
                 <h3>Xem trên bản đồ</h3>
 
-                <div class="left-map-api">
+                <div class="left-map-api" id="map">
                     <!-- place map api here -->
                      <img src='<?php echo BASE_URL . "/assets/img/map-api.png"?>' alt="map.png" class="left-map-img">
                 </div>
@@ -186,6 +188,49 @@
         document.querySelector(".image-background").style.display = "none"
     })
 
+    async function showMap(houseNumber, ward, province) {
+        const fullAddress = `${houseNumber}, ${ward}, ${province}, Việt Nam`
+        const data = await geocode(fullAddress)
+        if (data.length > 0) {
+            renderMap(data[0].lat, data[0].lon, 17, `${houseNumber}, ${ward}, ${province}`)
+            return
+        }
+
+        const wardAddress = `${ward}, ${province}, Việt Nam`
+        const wardData = await geocode(wardAddress)
+        if (wardData.length > 0) {
+            renderMap(wardData[0].lat, wardData[0].lon, 15, `${ward}, ${province}`)
+            return
+        }
+
+        const provinceData = await geocode(`${province}, Việt Nam`)
+        if (provinceData.length > 0) {
+            renderMap(provinceData[0].lat, provinceData[0].lon, 12, province)
+        }
+    }
+
+    async function geocode(address) {
+        try {
+            const response = await fetch(
+                `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`
+            )
+            return await response.json()
+        } catch (err) {
+            return []
+        }
+    }
+
+    function renderMap(lat, lon, zoom, popupText) {
+        const map = L.map("map").setView([lat, lon], zoom)
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            attribution: "© OpenStreetMap"
+        }).addTo(map)
+        L.marker([lat, lon])
+            .addTo(map)
+            .bindPopup(popupText)
+            .openPopup()
+    }
+
     async function updateDetailPost(account_id, token) {
         try {
             const [response, comments, personalInfo] = await Promise.all([fetch("http://backend.test/api/posts/" + post_id + "?include=postImages,user.personalInfo,favorites.account", {
@@ -236,8 +281,11 @@
                     // console.log(data.data)
                     if(data.data.title)
                         document.querySelector(".left-main-text").textContent = data.data.title
-                    if(data.data.houseNumber && data.data.ward && data.data.province)
+                    if(data.data.houseNumber && data.data.ward && data.data.province) {
                         document.querySelector(".left-address-text").textContent = data.data.houseNumber + ", " + data.data.ward + ", " + data.data.province
+                        // update map
+                        showMap(data.data.houseNumber, data.data.ward, data.data.province)
+                    }
                     if(data.data.price)
                         document.querySelector(".left-info-money").textContent = Number(data.data.price).toLocaleString("vi-VN") + " VND/tháng"
                     if(data.data.area)

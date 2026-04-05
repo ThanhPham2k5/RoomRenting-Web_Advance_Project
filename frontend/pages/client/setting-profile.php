@@ -702,7 +702,7 @@
         }
 
         const province_regex = /^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\s]{3,255}$/
-        if(!province_regex.test(document.querySelector(".filter-province-lb-text").textContent.trim())) {
+        if(!province_regex.test(document.querySelector(".filter-province-lb-text").textContent.trim()) || document.querySelector(".filter-province-lb-text").textContent.trim() === "Chọn tỉnh thành") {
             if(isValid) {
                 // document.querySelector(".profile-province-input").focus()
             }
@@ -714,7 +714,7 @@
         }
 
         const district_regex = /^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\s]{3,255}$/
-        if(!district_regex.test(document.querySelector(".filter-district-lb-text").textContent.trim())) {
+        if(!district_regex.test(document.querySelector(".filter-district-lb-text").textContent.trim()) || document.querySelector(".filter-district-lb-text").textContent.trim() === "Chọn phường xã") {
             if(isValid) {
                 // document.querySelector(".profile-district-input").focus()
             }

@@ -87,5 +87,5 @@
     <?php 
         $commentDetailData = ob_get_clean();
     ?>
-    <?php renderComponent("form",false,['title' => 'Chi tiết bình luận', 'idModal' => $commentDetailForm, 'formData' => $commentDetailData]) ?>
+    <?php renderComponent("form",false,['title' => 'Chi tiết bình luận', 'idModal' => $commentDetailForm, 'formData' => $commentDetailData, 'save' => false]) ?>
 </div>

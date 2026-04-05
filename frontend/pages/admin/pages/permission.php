@@ -438,7 +438,7 @@
     <?php renderComponent("form",false,['title' => 'Thêm quyền', 'idModal' => $permissionInsertForm, 'formData' => $formInsertData]) ?>
     <?php renderComponent("form",false,['title' => 'Sửa quyền', 'idModal' => $permissionEditForm, 'formData' => $editPermissionData]) ?>
     <?php renderComponent("form",false,['title' => 'Danh sách nhân viên', 'idModal' => $permissionListAccountForm, 'formData' => $formListAccountData]) ?>
-    <?php renderComponent("form",false,['title' => 'Chi tiết quyền', 'idModal' => $permissionDetailForm, 'formData' => $formDetailData]) ?>
+    <?php renderComponent("form",false,['title' => 'Chi tiết quyền', 'idModal' => $permissionDetailForm, 'formData' => $formDetailData, 'save' => false]) ?>
 </div>
 <script>
 function validatePermissionMaster(form) {

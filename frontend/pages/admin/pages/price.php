@@ -139,7 +139,7 @@
     <?php 
         $pricingDetailData = ob_get_clean();
     ?>
-    <?php renderComponent("form",false,['title' => 'Thêm giá quy đổi', 'idModal' => $pricingDetailForm, 'formData' => $pricingDetailData]) ?>
+    <?php renderComponent("form",false,['title' => 'Chi tiết giá đăng bài', 'idModal' => $pricingDetailForm, 'formData' => $pricingDetailData, 'save' => false]) ?>
     <?php
     ob_start();
     ?>
@@ -197,7 +197,7 @@
     <?php 
         $exchangeDetailData = ob_get_clean();
     ?>
-    <?php renderComponent("form",false,['title' => 'Thêm giá quy đổi', 'idModal' => $exchangeDetailForm, 'formData' => $exchangeDetailData]) ?>
+    <?php renderComponent("form",false,['title' => 'Chi tiết giá quy đổi', 'idModal' => $exchangeDetailForm, 'formData' => $exchangeDetailData, 'save' => false]) ?>
 </div>
 <script>
 function validatePricingMaster(form) {

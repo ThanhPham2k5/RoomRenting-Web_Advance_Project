@@ -40,14 +40,14 @@
                 <img src='<?php echo BASE_URL . "/assets/img/avatar-test.png"?>' alt="avatar.png" class="user-avatar">
 
                 <div class="user-profile-info">
-                    <div class="user-name">Po Pici</div>
+                    <div class="user-name">Người dùng</div>
 
                     <div class="user-point-section">
                         <div class="user-point-info">
                         Điểm
 
                         <div class="user-point-value">
-                            100.000
+                            0
 
                             <img src='<?php echo BASE_URL . "/assets/img/point.png"?>' alt="point.png" class="user-point-img">
                         </div>

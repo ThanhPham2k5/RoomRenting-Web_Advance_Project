@@ -928,6 +928,10 @@
           window.location.href = "index.php"
         } else {
           console.error(data)
+          localStorage.removeItem("account_id")
+          localStorage.removeItem("token")
+          alert("Phiên đăng nhập đã hết hạn.")
+          window.location.href = "index.php"
         }
       } catch (err) {
         console.error(err)

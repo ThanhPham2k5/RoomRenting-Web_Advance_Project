@@ -30,7 +30,7 @@ class SendStatusPostNotification
             'rejected' => 'Bài đăng bị từ chối',
             'completed' => 'Bài đăng đã được duyệt',
             'pending'   => 'Bài đăng đang được xét duyệt.',
-            'failed'    => 'Bài đăng đã bị từ chối.',
+            'failed'    => 'Bài đăng đã xóa.',
             default     => $event->titleNotification ?? 'Cập nhật bài đăng',
         };
 

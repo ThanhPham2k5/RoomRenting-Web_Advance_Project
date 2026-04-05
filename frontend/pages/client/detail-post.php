@@ -469,6 +469,88 @@
         }
     })
 
+    const badWords = [
+        // Chửi thề tiếng Việt phổ biến
+        "đ.m", "đmm", "đm", "vkl", "vcl", "clm", "đcm", "đcmm",
+        "mẹ mày", "mẹ m", "con chó", "thằng chó", "đồ chó",
+        "thằng khốn", "đồ khốn", "khốn nạn", "đồ ngu", "thằng ngu",
+        "con ngu", "ngu vl", "ngu vcl", "óc chó", "não cá vàng",
+        "đồ điên", "thằng điên", "con điên", "mày điên",
+        "thằng lồn", "con lồn", "cái lồn", "con cặc",
+        "địt mẹ", "địt con", "đụ mẹ", "đụ má",
+        "má mày", "bố mày", "tổ cha mày",
+        "thằng chết", "con chết", "đồ chết tiệt",
+        "đồ súc vật", "súc sinh", "đồ súc sinh",
+        "thằng súc vật", "con súc vật",
+        "mặt l", "mặt c", "thằng mặt l",
+        "đồ phản bội", "thằng hèn", "con hèn", "đồ hèn",
+        "thằng bần tiện", "đồ bần tiện", "bần tiện",
+        "thằng vô học", "đồ vô học", "vô học",
+        "thằng vô liêm sỉ", "đồ vô liêm sỉ", "vô liêm sỉ",
+        "đồ mất dạy", "thằng mất dạy", "con mất dạy", "mất dạy",
+        "đồ láo", "thằng láo", "con láo",
+        "đồ lưu manh", "thằng lưu manh", "lưu manh",
+        "đồ đểu", "thằng đểu", "con đểu", "đểu cáng",
+        "thằng ăn cướp", "đồ ăn cướp",
+        "thằng ăn trộm", "đồ ăn trộm",
+        "thằng lừa đảo", "đồ lừa đảo",
+        "thằng phản động", "đồ phản động",
+        "nói láo", "nói dối", "kẻ dối trá",
+        "thằng bẩn", "con bẩn", "đồ bẩn thỉu",
+        "thằng khùng", "con khùng", "đồ khùng",
+        "thằng dở hơi", "con dở hơi", "dở hơi",
+        "thằng đần", "con đần", "đồ đần độn", "đần độn",
+        "thằng tâm thần", "con tâm thần",
+        "thằng điên khùng", "con điên khùng",
+        "đồ vô dụng", "thằng vô dụng", "vô dụng",
+        "thằng ăn hại", "đồ ăn hại", "ăn hại",
+        "thằng phá hoại", "đồ phá hoại",
+        "đồ cặn bã", "cặn bã xã hội",
+        "thằng rác rưởi", "đồ rác rưởi", "rác rưởi",
+        "đồ thối nát", "thối nát",
+        "thằng hèn mọn", "đồ hèn mọn", "hèn mọn",
+        "thằng ti tiện", "đồ ti tiện", "ti tiện",
+        "đồ đê tiện", "thằng đê tiện", "đê tiện",
+        "thằng bịp bợm", "đồ bịp bợm", "bịp bợm",
+        "thằng lố bịch", "đồ lố bịch", "lố bịch",
+        "thằng tởm", "con tởm", "đồ tởm",
+        "ghê tởm", "kinh tởm",
+        "thằng bệnh hoạn", "đồ bệnh hoạn", "bệnh hoạn",
+        "thằng biến thái", "đồ biến thái", "biến thái",
+        "thằng biến chất", "đồ biến chất",
+        "thằng tồi tệ", "đồ tồi tệ", "tồi tệ",
+        "đồ đáng khinh", "kẻ đáng khinh",
+        "thằng hạ tiện", "đồ hạ tiện", "hạ tiện",
+        "đồ bỉ ổi", "thằng bỉ ổi", "bỉ ổi",
+        "đồ xấu xa", "thằng xấu xa", "xấu xa",
+        "thằng nhơ bẩn", "đồ nhơ bẩn", "nhơ bẩn",
+        "thằng tanh hôi", "đồ tanh hôi",
+        "đồ chó đẻ", "chó đẻ",
+        "đồ dơ bẩn", "dơ bẩn",
+        "thằng ký sinh", "đồ ký sinh", "ký sinh",
+        "kẻ thù", "quân thù",
+        "tên tội phạm", "tên cướp", "tên trộm",
+        "mày", "tao", "ngu", "cút", "xéo",
+        "dốt", "gà vcl", "chết",
+
+        // Tiếng Anh
+        "fuck", "shit", "bitch", "asshole", "bastard",
+        "idiot", "stupid", "moron", "dumb", "loser",
+        "wtf", "stfu", "gtfo", "kys",
+        "retard", "faggot", "nigger", "whore", "slut",
+        "cunt", "dick", "cock", "pussy", "ass",
+        "motherfucker", "fucker", "bullshit",
+        "dumbass", "jackass", "dipshit",
+        "scumbag", "trash", "garbage", "worthless",
+        "piece of shit", "son of a bitch",
+        "go to hell", "drop dead",
+    ]
+
+    function containsBadWords(text) {
+        const lowerText = text.toLowerCase()
+        return badWords.some(word => lowerText.includes(word.toLowerCase()))
+    }
+
     // send comment
     document.querySelector(".user-submit-ico").addEventListener("click", async (e) => {
         var account_id = localStorage.getItem("account_id")
@@ -478,6 +560,11 @@
             const content = document.querySelector(".user-input").value.trim()
             if(!content) {
                 alert("Vui lòng nhập bình luận!")
+                return
+            }
+
+            if(containsBadWords(content)) {
+                alert("Bình luận chứa nội dung không phù hợp. Vui lòng chỉnh sửa lại!!")
                 return
             }
 

@@ -434,11 +434,11 @@
       }
 
       if(document.querySelector(".filter-min-price").value.trim() && numbRegex.test(document.querySelector(".filter-min-price").value.trim()) && document.querySelector(".filter-min-price").value.trim() > 0) {
-        filterCondition += "&filter[price][gte]=" + document.querySelector(".filter-min-price").value.trim()
+        filterCondition += "&filter[price][]=>=" + document.querySelector(".filter-min-price").value.trim()
       }
 
       if(document.querySelector(".filter-max-price").value.trim() && numbRegex.test(document.querySelector(".filter-max-price").value.trim()) && document.querySelector(".filter-max-price").value.trim() > 0) {
-        filterCondition += "&filter[price][lte]=" + document.querySelector(".filter-max-price").value.trim()
+        filterCondition += "&filter[price][]=<=" + document.querySelector(".filter-max-price").value.trim()
       }
 
       if(document.querySelector(".filter-square-number").value.trim() && numbRegex.test(document.querySelector(".filter-square-number").value.trim()) && document.querySelector(".filter-square-number").value.trim() > 0) {

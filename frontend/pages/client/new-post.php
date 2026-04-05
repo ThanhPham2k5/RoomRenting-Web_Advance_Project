@@ -378,7 +378,7 @@
               document.querySelector(".profile-address-input").focus()
           }
           isValid = false
-          document.querySelector(".address-error").textContent = "Số nhà phải có từ 1 kí tự trở lên."
+          document.querySelector(".address-error").textContent = "Số nhà phải có từ 1 - 255 kí tự."
           document.querySelector(".address-error").style.display = "flex"
       } else {            
           document.querySelector(".address-error").style.display = "none"
@@ -427,7 +427,7 @@
         if(isValid)
           document.querySelector(".profile-square-input").focus()
         isValid = false
-        document.querySelector(".square-error").textContent = "Diện tích phải là số và nhỏ nhất là 1."
+        document.querySelector(".square-error").textContent = "Diện tích phải là số và nhỏ nhất là 1.00"
         document.querySelector(".square-error").style.display = "flex"
       } else {            
           document.querySelector(".square-error").style.display = "none"
@@ -459,6 +459,12 @@
         isValid = false
         document.querySelector(".deposit-error").textContent = "Giá cọc phải là số."
         document.querySelector(".deposit-error").style.display = "flex"
+      } else if (Number(document.querySelector(".profile-deposit-input").value.trim()) > Number(document.querySelector(".profile-price-input").value.trim())) {
+        if(isValid)
+          document.querySelector(".profile-deposit-input").focus()
+        isValid = false
+        document.querySelector(".deposit-error").textContent = "Giá cọc phải nhỏ hơn giá thuê."
+        document.querySelector(".deposit-error").style.display = "flex"
       } else {            
           document.querySelector(".deposit-error").style.display = "none"
       }
@@ -470,7 +476,7 @@
               document.querySelector(".profile-post-input").focus()
           }
           isValid = false
-          document.querySelector(".post-error").textContent = "Tiêu đề bài đăng phải có từ 3 kí tự trở lên."
+          document.querySelector(".post-error").textContent = "Tiêu đề bài đăng phải có từ 3 - 100 kí tự."
           document.querySelector(".post-error").style.display = "flex"
       } else {            
           document.querySelector(".post-error").style.display = "none"
@@ -481,7 +487,7 @@
               document.querySelector(".profile-post-textarea").focus()
           }
           isValid = false
-          document.querySelector(".post-textarea-error").textContent = "Mô tả bài đăng phải có từ 3 kí tự trở lên."
+          document.querySelector(".post-textarea-error").textContent = "Mô tả bài đăng phải có từ 3 - 1000 kí tự."
           document.querySelector(".post-textarea-error").style.display = "flex"
       } else {            
           document.querySelector(".post-textarea-error").style.display = "none"

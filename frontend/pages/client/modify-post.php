@@ -522,6 +522,12 @@
         isValid = false
         document.querySelector(".deposit-error").textContent = "Giá cọc phải là số."
         document.querySelector(".deposit-error").style.display = "flex"
+      } else if (Number(document.querySelector(".profile-deposit-input").value.trim()) > Number(document.querySelector(".profile-price-input").value.trim())) {
+        if(isValid)
+          document.querySelector(".profile-deposit-input").focus()
+        isValid = false
+        document.querySelector(".deposit-error").textContent = "Giá cọc phải nhỏ hơn giá thuê."
+        document.querySelector(".deposit-error").style.display = "flex"
       } else {            
           document.querySelector(".deposit-error").style.display = "none"
       }
@@ -570,9 +576,11 @@
         //   return
         // }
 
-        selectedFiles.forEach((file, index) => {
-          formData.append("images[" + index + "]", file)
-          formData.append("orders[" + index + "]", index + 1)
+        selectedFiles.forEach((item, index) => {
+          if(item.file === "file") {
+            formData.append("images[" + index + "]", item.file)
+            formData.append("orders[" + index + "]", index + 1)
+          }
         })
 
         if(document.querySelector(".filter-room-lb-text").textContent.trim() === "Phòng đơn")

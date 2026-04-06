@@ -318,6 +318,7 @@
                 }
             } else {
                 console.error(data)
+                alert("Tải thông tin tỉnh thành thất bại.")
             }
         } catch (err) {
             console.error(err)
@@ -369,6 +370,7 @@
                 }
             } else {
                 console.error(data)
+                alert("Tải thông tin phường xã thất bại.")
             }
         } catch (err) {
             console.error(err)
@@ -668,6 +670,7 @@
           }
         } else {
           console.error(data)
+          alert("Lấy bài đăng thất bại.")
         }
       } catch (err) {
         console.error(err)
@@ -778,6 +781,7 @@
                     }
                   } else {
                     console.error(data)
+                    alert("Yêu thích bài đăng thất bại.")
                   }
                 } catch (err) {
                   console.error(err)
@@ -807,6 +811,7 @@
                     // console.log(data)
                   } else {
                     console.error(data)
+                    alert("Hủy yêu thích bài đăng thất bại.")
                   }
                 } catch (err) {
                   console.error(err)

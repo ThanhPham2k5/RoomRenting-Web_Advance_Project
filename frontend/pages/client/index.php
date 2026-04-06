@@ -190,6 +190,7 @@
           }
         } else {
           console.error(data)
+          alert("Tải danh sách bài đăng thất bại.")
         }
       } catch (err) {
         console.error(err)
@@ -215,6 +216,7 @@
           }
         } else {
           console.error(data)
+          alert("Tải danh sách bài đăng đề xuất thất bại.")
         }
       } catch (err) {
         console.error(err)
@@ -249,6 +251,7 @@
             }
           } else {
             console.error(data)
+            alert("Kiểm tra form đề xuất thất bại.")
           }
         } catch (err) {
           console.error(err)
@@ -372,6 +375,7 @@
                     }
                   } else {
                     console.error(err)
+                    alert("Yêu thích bài đăng thất bại.")
                   }
                 } catch (err) {
                   console.error(err)
@@ -401,6 +405,7 @@
                     // console.log(data)
                   } else {
                     console.error(err)
+                    alert("Hủy yêu thích bài đăng thất bại.")
                   }
                 } catch (err) {
                   console.error(err)
@@ -518,6 +523,7 @@
                     }
                   } else {
                     console.error(err)
+                    alert("Yêu thích bài đăng thất bại.")
                   }
                 } catch (err) {
                   console.error(err)
@@ -547,6 +553,7 @@
                     // console.log(data)
                   } else {
                     console.error(err)
+                    alert("Hủy yêu thích bài đăng thất bại.")
                   }
                 } catch (err) {
                   console.error(err)

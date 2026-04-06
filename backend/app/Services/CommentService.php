@@ -14,6 +14,7 @@ class CommentService{
     private $allowedIncludes = [
         'account',
         'post',
+        'account.user.personalInfo',
     ];
 
     private $allColFilter = [
@@ -22,7 +23,7 @@ class CommentService{
     ];
 
     public function buildGetAllQuery(){
-       $query = QueryBuilder::for(Comment::withTrashed())
+       $query = QueryBuilder::for(Comment::class)
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
             //generic search

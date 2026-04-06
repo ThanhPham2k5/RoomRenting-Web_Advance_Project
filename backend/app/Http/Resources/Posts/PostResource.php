@@ -34,6 +34,7 @@ class PostResource extends JsonResource
             'maxOccupants' => $this->max_occupants,
             'deletedAt' => $this->deleted_at,
             'createdAt' => $this -> created_at,
+            'reason' => $this -> reason,
             'user' => UserResource::make(
                 $this->whenLoaded('user')
             ),

@@ -28,6 +28,7 @@ class PersonalInfoResource extends JsonResource
                 : null,
             'name' => $this->name,
             'pid' => $this->pid,
+            'email' => $this->email,
             'createdAt' => $this -> created_at,
             'user' => UserResource::make(
                 $this->whenLoaded('user')

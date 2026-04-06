@@ -57,6 +57,7 @@ class FavoriteService{
             'id',
             AllowedSort::custom('postPrice', new PostRelatedSort('price')),
             AllowedSort::field('createdAt', 'created_at'),
+            'post.price',
         ]);
 
         return $query;
@@ -89,7 +90,7 @@ class FavoriteService{
     }
 
     public function deleteFavorite($favorite){
-        $favorite->delete();
+        $favorite->forceDelete();
 
         return [
             'message' => 'Favorite deleted successfully'

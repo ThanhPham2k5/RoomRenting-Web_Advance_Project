@@ -100,7 +100,7 @@ class PostService{
                 $image = $post->postImages()->where('order', $orderToDelete)->first();
                 if ($image) {
                     Storage::disk('public')->delete($image->image_post_url);
-                    $image->delete();
+                    $image->forceDelete();
                 }
             }
         }
@@ -219,7 +219,6 @@ class PostService{
     public function postPayment(Post $post)
     {
         $user = $post->user;
-        $payRule = PayRule::first();
         $points = $payRule->points;
         $payRule = PayRule::firstOrFail();
 

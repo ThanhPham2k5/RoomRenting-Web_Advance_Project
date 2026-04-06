@@ -29,8 +29,9 @@ use App\Http\Controllers\StatisticController;
 */
 
 //Account
-Route::middleware(['auth:sanctum', 'permission:account.get'])
-    ->get('/accounts/{account}', [AccountController::class, 'show']);
+Route::middleware(['auth:sanctum'])
+    ->get('/accounts/{account}', [AccountController::class, 'show'])
+    ->withTrashed();
 
 Route::middleware(['auth:sanctum', 'permission:account.getAll'])
     ->get('/accounts', [AccountController::class, 'index']);
@@ -39,7 +40,8 @@ Route::middleware(['auth:sanctum', 'permission:account.create'])
     ->post('/accounts', [AccountController::class, 'store']);
 
 Route::middleware(['auth:sanctum', 'permission:account.update'])
-    ->put('/accounts/{account}', [AccountController::class, 'update']);
+    ->put('/accounts/{account}', [AccountController::class, 'update'])
+    ->withTrashed();
 
 Route::middleware(['auth:sanctum', 'permission:account.delete'])
     ->delete('/accounts/{account}', [AccountController::class, 'destroy']);
@@ -260,7 +262,8 @@ Route::middleware(['auth:sanctum', 'permission:payBill.restore'])
 
 //PayRule
 Route::middleware(['auth:sanctum', 'permission:payRule.get'])
-->get('/payRules/{payRule}', [PayRuleController::class, 'show']);
+->get('/payRules/{payRule}', [PayRuleController::class, 'show'])
+->withTrashed();
     
 Route::middleware(['auth:sanctum', 'permission:payRule.getAll'])
 ->get('/payRules', [PayRuleController::class, 'index']);
@@ -302,7 +305,8 @@ Route::middleware(['auth:sanctum', 'permission:rechargeBill.restore'])
 
 //RechargeRule
 Route::middleware(['auth:sanctum', 'permission:rechargeRule.get'])
-->get('/rechargeRules/{rechargeRule}', [RechargeRuleController::class, 'show']);
+->get('/rechargeRules/{rechargeRule}', [RechargeRuleController::class, 'show'])
+->withTrashed();
     
 Route::middleware(['auth:sanctum', 'permission:rechargeRule.getAll'])
 ->get('/rechargeRules', [RechargeRuleController::class, 'index']);

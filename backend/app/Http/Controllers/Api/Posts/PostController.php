@@ -149,7 +149,7 @@ class PostController extends Controller
         $this->authorize('update', $post);
 
         $validated = $request->validated();
-
+        
         return DB::transaction(function () use ($request, $post, $validated) {
 
             // process images if exist
@@ -178,6 +178,10 @@ class PostController extends Controller
                 $validated['postImages'] = $newImages;
                 $validated['deleted_orders'] = $request->input('deleted_orders', []); // get orders to delete from request
 
+            }
+
+            if($validated['status'] === 'completed' && $post['next_payment_date'] === null){
+                $validated['next_payment_date'] = now()->addMonth();
             }
 
             $post = $this->postService->updatePost($post, $validated);

@@ -12,7 +12,7 @@ use Spatie\QueryBuilder\QueryBuilder;
 class RoleService{
     private $allowedIncludes = [
         'permissions',
-        'account'
+        'accounts'
     ];
 
     private $allColFilter = [

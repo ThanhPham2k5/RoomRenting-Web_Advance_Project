@@ -773,7 +773,13 @@
 
                     // delete button
                     document.querySelectorAll(".post-btn-del").forEach(btn => {
+                        var isLoading = false
                         btn.addEventListener("click", async (e) => {
+                            if(isLoading) return
+                            isLoading = true
+                            btn.disable = true
+                            btn.textContent = "Đang xóa"
+
                             const isConfirm = confirm("Bạn có chắc muốn xóa bài đăng này không?")
 
                             if(isConfirm) {
@@ -806,6 +812,10 @@
                                     console.error(err)
                                 }
                             }
+                            
+                            isLoading = false
+                            btn.disable = false
+                            btn.textContent = "Xóa bài"
                         })
                     })
 
@@ -842,7 +852,13 @@
 
                     // resend button
                     document.querySelectorAll(".post-btn-resend").forEach(btn => {
+                        var isLoading = false
                         btn.addEventListener("click", async (e) => {
+                            if(isLoading) return
+                            isLoading = true
+                            btn.disable = true
+                            btn.textContent = "Đang gửi"
+
                             const isConfirm = confirm("Bạn muốn đăng duyệt lại?")
                             if(isConfirm) {
                                 const post_id = btn.classList[1]
@@ -865,7 +881,7 @@
                                     if(response.ok) {
                                         console.log(data.message)
                                         if(data.message === "Post updated successfully") {
-                                            console.log(".post-id-" + post_id)
+                                            // console.log(".post-id-" + post_id)
                                             document.querySelector(".post-id-" + post_id).style.display = "none"
                                         }
                                     } else {
@@ -875,12 +891,22 @@
                                     console.error(err)
                                 }
                             }
+
+                            isLoading = false
+                            btn.disable = false
+                            btn.textContent = "Gửi duyệt lại"
                         })
                     })
 
                     // pay button
                     document.querySelectorAll(".post-btn-paid").forEach(btn => {
+                        var isLoading = false
                         btn.addEventListener("click", async (e) => {
+                            if(isLoading) return
+                            isLoading = true
+                            btn.disable = true
+                            btn.textContent = "Đang thanh toán"
+
                             const isConfirm = confirm("Bạn muốn tiếp tục thanh toán bài đăng này?")
                             if(isConfirm) {
                                 const post_id = btn.classList[1]
@@ -903,18 +929,25 @@
                                         if(data.message === "Thanh toán thành công.") {
                                             document.querySelector(".post-id-" + post_id).style.display = "none"
                                             alert("Đã thanh toán thành công!")
-                                        }
-                                    } else {
-                                        console.error(data)
-                                        if(data.message === "Tài khoản của bạn không đủ điểm.") {
+                                        } else if(data.message === "Tài khoản của bạn không đủ điểm.") {
                                             alert("Bạn không có đủ điểm. Chuyển hướng tới trang nạp điểm.")
                                             window.location.href = "recharge.php"
                                         }
+                                    } else {
+                                        console.error(data)
                                     }
                                 } catch (err) {
                                     console.error(err)
                                 }
                             }
+                            
+                            isLoading = false
+                            btn.disable = false
+                            btn.innerHTML = `
+                                <img src='<?php echo BASE_URL . "/assets/img/paid-img.png"?>' alt="paid-img.png" class="post-btn-paid-img">
+
+                                Cần thanh toán
+                            `
                         })
                     })
 

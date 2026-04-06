@@ -17,10 +17,15 @@ use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedSort;
 use Spatie\QueryBuilder\QueryBuilder;
 use Illuminate\Support\Facades\Hash;
+use App\Services\PostService;
 
 class AccountService
 {
-
+    private PostService $postService;
+    public function __construct(PostService $postService)
+    {
+        $this->postService = $postService;
+    }
     private $allowedIncludes = [
         'form',
         'user',
@@ -131,6 +136,9 @@ class AccountService
             if ($account->user) {
                 $account->form->delete();
                 $account->user->personalInfo->delete();
+                $account->user->posts->each(function ($post) {
+                    $this->postService->deletePost($post);
+                });
                 $account->user->delete();
                 $account->comments()->delete();
                 $account->favorites()->delete();
@@ -158,21 +166,15 @@ class AccountService
                 $user = $account->user()->withTrashed()->first();
                 $user->restore();
 
-                if ($user->posts()->withTrashed()){
-                    $user->posts()->withTrashed()->restore();
-                }
+                $user->posts()->withTrashed()->each(function ($post) {
+                    $this->postService->restorePost($post->id);
+                });
 
                 $user->personalInfo()->withTrashed()->restore();
-
-                if ($account->comments()->withTrashed()){
-                    $account->comments()->withTrashed()->restore();
-                }
-
-                if ($account->favorites()->withTrashed()){
-                    $account->favorites()->withTrashed()->restore();
-                }
-                
+                $account->comments()->withTrashed()->restore();
+                $account->favorites()->withTrashed()->restore();
                 $account->form()->withTrashed()->restore();
+
             }
 
             // Restore Employee

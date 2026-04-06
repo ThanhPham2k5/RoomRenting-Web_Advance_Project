@@ -342,7 +342,7 @@
                 roomType = "Căn hộ"
               if(data.data.roomType === "dorm")
                 roomType = "Ký túc xá"
-              document.querySelector(".filter-district-room-text").textContent = roomType
+              document.querySelector(".filter-room-lb-text").textContent = roomType
             }
 
             if(data.data.priceMin)
@@ -363,7 +363,13 @@
     }
 
     // save button
+    var isLoading = false
     document.querySelector(".filter-apply").addEventListener("click", async (e) => {
+      if(isLoading) return
+      isLoading = true
+      document.querySelector(".filter-apply").disable = true
+      document.querySelector(".filter-apply").textContent = "Đang lưu"
+
       // validate
       var isValid = true
       var province = ""
@@ -395,7 +401,8 @@
         document.querySelector(".district-error").style.display = "flex"
       }
 
-      if((document.querySelector(".filter-room-lb-text").textContent.trim() && stringRegex.test(document.querySelector(".filter-room-lb-text").textContent.trim()))) {
+      const validRooms = ["Phòng đơn", "Căn hộ", "Ký túc xá"]
+      if((document.querySelector(".filter-room-lb-text").textContent.trim() && validRooms.includes(document.querySelector(".filter-room-lb-text").textContent.trim()))) {
         if(document.querySelector(".filter-room-lb-text").textContent.trim() !== "Chọn loại phòng") {
           roomType = document.querySelector(".filter-room-lb-text").textContent.trim()
         }
@@ -481,6 +488,10 @@
           }
         } catch (err) {
           console.error(err)
+        } finally {
+          isLoading = false
+          document.querySelector(".filter-apply").disable = false
+          document.querySelector(".filter-apply").textContent = "Lưu"
         }
       }
     })

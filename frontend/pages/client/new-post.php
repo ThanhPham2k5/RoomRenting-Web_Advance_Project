@@ -368,7 +368,13 @@
     })
 
     // create button
+    var isLoading = false
     document.querySelector(".new-submit").addEventListener("click", async (e) => {
+      if(isLoading) return
+      isLoading = true
+      document.querySelector(".new-submit").disabled = true
+      document.querySelector(".new-submit").textContent = "Đang tạo bài"
+
       // validation
       var isValid = true
 
@@ -531,48 +537,74 @@
         const account_id = localStorage.getItem("account_id")
 
         try {
-          const response = await fetch("http://backend.test/api/accounts/" + account_id + "?include=user", {
-            method: "GET",
-            headers: {
-              "Accept": "application/json",
-              "Authorization": "Bearer " + token
-            }
+          const [response_account, response_personal] = await Promise.all([
+              fetch("http://backend.test/api/accounts/" + account_id + "?include=user", {
+                  method: "GET",
+                  headers: {
+                      "Accept": "application/json",
+                      "Authorization": "Bearer " + token
+                  }
+              }),
+              fetch("http://backend.test/api/personalInfos/byAccount/" + account_id, {
+                  method: "GET",
+                  headers: {
+                      "Accept": "application/json",
+                      "Authorization": "Bearer " + token
+                  }
+              })
+          ])
+
+          const data_personal = await response_personal.json()
+          if (response_personal.ok) {
+              if (data_personal.data?.name == null) {
+                  alert("Vui lòng cập nhật thông tin cá nhân để tiếp tục đăng bài.")
+                  window.location.href = "setting-profile.php"
+                  return
+              }
+          } else {
+              console.error(data_personal)
+              return
+          }
+
+          const data_account = await response_account.json()
+          if (response_account.ok) {
+              if (data_account.data) {
+                  formData.append("user_id", data_account.data.user.id)
+              }
+          } else {
+              console.error(data_account)
+              return
+          }
+
+          const response_post = await fetch("http://backend.test/api/posts", {
+              method: "POST",
+              headers: {
+                  "Accept": "application/json",
+                  "Authorization": "Bearer " + token
+              },
+              body: formData
           })
 
-          const data = await response.json()
-          if(response.ok) {
-            if(data.data) {
-              formData.append("user_id", data.data.user.id)
-            }
+          const data_post = await response_post.json()
+          if (response_post.ok) {
+              if (data_post.message === "Post created successfully") {
+                  alert("Tạo bài đăng thành công.")
+                  window.location.href = "manage-post.php"
+              }
           } else {
-            console.error(data)
+              console.error(data_post)
           }
         } catch (err) {
-          console.error(err)
+            console.error(err)
+        } finally {
+          isLoading = false
+          document.querySelector(".new-submit").disabled = false
+          document.querySelector(".new-submit").textContent = "Đăng bài"
         }
-
-        try {
-          const response = await fetch("http://backend.test/api/posts", {
-            method: "POST",
-            headers: {
-              "Accept": "application/json",
-              "Authorization": "Bearer " + token
-            },
-            body: formData
-          })
-
-          const data = await response.json()
-          if(response.ok) {
-            if(data.message === "Post created successfully") {
-              alert("Tạo bài đăng thành công.")
-              window.location.href = "manage-post.php"
-            }
-          } else {
-            console.error(data)
-          }
-        } catch (err) {
-          console.error(err)
-        }
+      } else {
+        isLoading = false
+        document.querySelector(".new-submit").disabled = false
+        document.querySelector(".new-submit").textContent = "Đăng bài"
       }
     })
 

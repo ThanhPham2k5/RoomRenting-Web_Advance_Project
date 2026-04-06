@@ -255,7 +255,9 @@
 
             const data = await response.json()
             if(response.ok) {
-                if(data.data && data.data.status === "completed") {
+                console.log("status:", data.data.status)
+                console.log("deletedAt:", data.data.deletedAt)
+                if(data.data && data.data.status === "completed" && data.data.deletedAt == null) {
                     // update post image
                     if(data.data.postImages) {
                         if(data.data.postImages[0]) {
@@ -418,9 +420,10 @@
                                 commentList.data.forEach(comment => {
                                     var date = new Date(comment.createdAt).toLocaleString()
                                     var author = data.data.user.id === comment.account.user.id ? " - tác giả" : ""
+                                    var commentAvatar = comment.account.user.personalInfo.profileUrl ? comment.account.user.personalInfo.profileUrl : '<?php echo BASE_URL . "/assets/img/avatar-test.png"?>'
                                     html += `
                                         <div class="user-comment">
-                                            <img src=${comment.account.user.personalInfo.profileUrl} alt="other-avatar.png" class="other-avatar">
+                                            <img src=${commentAvatar} alt="other-avatar.png" class="other-avatar">
 
                                             <div class="other-comment">
                                                 <div class="other-name">${comment.account.username}${author}</div>
@@ -458,6 +461,8 @@
                 }
             } else {
                 console.error(data)
+                alert("Bài đăng không tồn tại.")
+                window.location.href = "index.php"
             }
         } catch (err) {
             console.error(err)
@@ -611,7 +616,11 @@
     }
 
     // send comment
+    var isLoading = false
     document.querySelector(".user-submit-ico").addEventListener("click", async (e) => {
+        if(isLoading) return
+        isLoading = true
+
         var account_id = localStorage.getItem("account_id")
         var token = localStorage.getItem("token")
 
@@ -619,11 +628,13 @@
             const content = document.querySelector(".user-input").value.trim()
             if(!content) {
                 alert("Vui lòng nhập bình luận!")
+                isLoading = false
                 return
             }
 
             if(containsBadWords(content)) {
                 alert("Bình luận chứa nội dung không phù hợp. Vui lòng chỉnh sửa lại!!")
+                isLoading = false
                 return
             }
 
@@ -662,13 +673,20 @@
                                 </div>
                             </div>
                         `
+
                         document.querySelector(".comment-section").innerHTML = html + document.querySelector(".comment-section").innerHTML
+
+                        // show comment section
+                        document.querySelector(".comment-box-true").style.display = "flex"
+                        document.querySelector(".comment-box-false").style.display = "none"
                     }
                 } else {
                     console.error(response)
                 }
             } catch (err) {
                 console.error(err)
+            } finally {
+                isLoading = false
             }
         } else {
             alert("Bạn chưa đăng nhập. Đang chuyển hướng sang trang đăng nhập.")

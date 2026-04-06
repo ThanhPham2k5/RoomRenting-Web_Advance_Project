@@ -572,7 +572,13 @@
     })
 
     // update new password
+    var isPasswordLoading = false
     document.querySelector(".profile-pass-save").addEventListener("click", async (e) => {
+        if(isPasswordLoading) return
+        isPasswordLoading = true
+        document.querySelector(".profile-pass-save").disabled = true
+        document.querySelector(".profile-pass-save").textContent = "Đang lưu"
+
         // validation
         var isValid = true
         const password_regex = /^\S{8,255}$/
@@ -658,12 +664,26 @@
                 }
             } catch (err) {
                 console.error(err)
+            } finally {
+                isPasswordLoading = false
+                document.querySelector(".profile-pass-save").disabled = false
+                document.querySelector(".profile-pass-save").textContent = "Lưu thay đổi"
             }
+        } else {
+            isPasswordLoading = false
+            document.querySelector(".profile-pass-save").disabled = false
+            document.querySelector(".profile-pass-save").textContent = "Lưu thay đổi"
         }
     })
 
     // update personal data
+    var isPersonalLoading = false
     document.querySelector(".profile-save").addEventListener("click", async (e) => {
+        if(isPersonalLoading) return
+        isPersonalLoading = true
+        document.querySelector(".profile-save").disabled = true
+        document.querySelector(".profile-save").textContent = "Đang lưu"
+
         // validation
         var isValid = true
 
@@ -807,7 +827,15 @@
             } catch (err) {
                 console.error(err)
                 alert("Lỗi kết nối!")
+            } finally {
+                isPersonalLoading = false
+                document.querySelector(".profile-save").disabled = false
+                document.querySelector(".profile-save").textContent = "Lưu thay đổi"
             }
+        } else {        
+            isPersonalLoading = false
+            document.querySelector(".profile-save").disabled = false
+            document.querySelector(".profile-save").textContent = "Lưu thay đổi"
         }
     })
   </script>

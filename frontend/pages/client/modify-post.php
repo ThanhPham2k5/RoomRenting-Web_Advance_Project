@@ -172,7 +172,7 @@
 
           <div class="profile-error post-textarea-error">Số nhà không hợp lệ</div>
 
-          <button type="button" class="new-submit">Đăng bài</button>
+          <button type="button" class="new-submit">Sửa bài</button>
         </div>
       </div>
     </div>
@@ -431,7 +431,13 @@
     })
 
     // update button
+    var isLoading = false
     document.querySelector(".new-submit").addEventListener("click", async (e) => {
+      if(isLoading) return
+      isLoading = true
+      document.querySelector(".new-submit").disabled = true
+      document.querySelector(".new-submit").textContent = "Đang sửa bài"
+
       // validation
       var isValid = true
 
@@ -638,7 +644,15 @@
           }
         } catch (err) {
           console.error(err)
+        } finally {
+          isLoading = false
+          document.querySelector(".new-submit").disabled = false
+          document.querySelector(".new-submit").textContent = "Sửa bài"
         }
+      } else {
+        isLoading = false
+        document.querySelector(".new-submit").disabled = false
+        document.querySelector(".new-submit").textContent = "Sửa bài"
       }
     })
 

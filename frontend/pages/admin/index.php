@@ -8,7 +8,7 @@ $adminName = $_SESSION['admin_user'] ?? "";
 $adminRole = $_SESSION['admin_role'] ?? "";
 $adminId = $_SESSION['admin_id'] ?? "";
 require_once __DIR__ . '/core/function.php';
-$accountData = call_api("http://127.0.0.1:8000/api/accounts/$adminId?include=roles.permissions");
+$accountData = call_api("http://backend.test/api/accounts/$adminId?include=roles.permissions");
 $userPermissions = [];
 if (isset($accountData['data']['roles'][0]['permissions'])) {
     $userPermissions = $accountData['data']['roles'][0]['permissions'];
@@ -88,7 +88,7 @@ switch ($page) {
             '2' => 'account',
             default => 'account,post'
         };
-        $apiResult = call_api("http://backend.test/api/{$apiType}?per_page=4&page={$pageNum}&include={$apiInclude}" . $filterQuery);
+        $apiResult = call_api("http://backend.test/api/{$apiType}?per_page=4&page={$pageNum}&include={$apiInclude}&sort=-createdAt" . $filterQuery);
         $pageData['bills'] = $apiResult['data'] ?? [];
         $pageData['paginationMeta'] = [
             'current_page' => $apiResult['meta']['current_page'] ?? 1,
@@ -175,7 +175,7 @@ switch ($page) {
 </html>
 <script src="./core/validate.js"></script>
 <script>
-    const baseUrl = 'http://127.0.0.1:8000';
+    const baseUrl = 'http://backend.test';
     const defaultPlaceholderImg = '../../assets/admin/images/post_img.png';
     let currentPostData = null;
     let newUploadedFiles = {
@@ -1956,7 +1956,7 @@ switch ($page) {
         if (!cityName) return;
 
         try {
-            const response = await fetch(`http://127.0.0.1:8000/api/address/provinces/name/${encodeURIComponent(cityName)}/wards`);
+            const response = await fetch(`http://backend.test/api/address/provinces/name/${encodeURIComponent(cityName)}/wards`);
             const result = await response.json();
             
             const wards = result.data || result; 

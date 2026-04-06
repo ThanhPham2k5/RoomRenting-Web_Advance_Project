@@ -1,7 +1,7 @@
 <?php
-    $apiRole = call_api("http://127.0.0.1:8000/api/address/provinces");
+    $apiRole = call_api("http://backend.test/api/address/provinces");
     $provinces= $apiRole['data'] ?? [];
-    $apiRole = call_api("http://127.0.0.1:8000/api/address/wards");
+    $apiRole = call_api("http://backend.test/api/address/wards");
     $wards= $apiRole['data'] ?? [];
     $titleData = ['titleContent' => "Cài đặt", 'group' => false, 'insert' => false, 'edit' => false, 'delete' => false, 'handle' => false];
     

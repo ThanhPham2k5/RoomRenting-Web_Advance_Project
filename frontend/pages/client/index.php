@@ -175,7 +175,7 @@
     // get all posts to posts section (do not require token)
     async function getNewPost() {
       try {
-        const response = await fetch("http://backend.test/api/posts?per_page=5&filter[status]=completed&include=postImages,favorites.account&sort=-createdAt", {
+        const response = await fetch("http://backend.test/api/posts?per_page=5&filter[status]=completed&include=postImages,favorites.account&sort=-createdAt&[trashed]=without", {
           method: "GET",
           headers: {
             "Accept": "application/json"

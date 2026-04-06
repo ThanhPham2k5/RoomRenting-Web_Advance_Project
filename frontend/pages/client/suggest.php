@@ -173,6 +173,7 @@
                 }
             } else {
                 console.error(data)
+                alert("Tải thông tin tỉnh thành thất bại.")
             }
         } catch (err) {
             console.error(err)
@@ -224,6 +225,7 @@
                 }
             } else {
                 console.error(data)
+                alert("Tải thông tin phường xã thất bại.")
             }
         } catch (err) {
             console.error(err)
@@ -275,6 +277,7 @@
                 }
             } else {
                 console.error(data)
+                alert("Tải thông tin phường xã theo tên tỉnh thành thất bại.")
             }
         } catch (err) {
             console.error(err)
@@ -342,7 +345,7 @@
                 roomType = "Căn hộ"
               if(data.data.roomType === "dorm")
                 roomType = "Ký túc xá"
-              document.querySelector(".filter-district-room-text").textContent = roomType
+              document.querySelector(".filter-room-lb-text").textContent = roomType
             }
 
             if(data.data.priceMin)
@@ -356,6 +359,7 @@
           }
         } else {
           console.error(data)
+          alert("Tải thông tin thất bại.")
         }
       } catch (err) {
         console.error(err)
@@ -363,7 +367,13 @@
     }
 
     // save button
+    var isLoading = false
     document.querySelector(".filter-apply").addEventListener("click", async (e) => {
+      if(isLoading) return
+      isLoading = true
+      document.querySelector(".filter-apply").disable = true
+      document.querySelector(".filter-apply").textContent = "Đang lưu"
+
       // validate
       var isValid = true
       var province = ""
@@ -395,7 +405,8 @@
         document.querySelector(".district-error").style.display = "flex"
       }
 
-      if((document.querySelector(".filter-room-lb-text").textContent.trim() && stringRegex.test(document.querySelector(".filter-room-lb-text").textContent.trim()))) {
+      const validRooms = ["Phòng đơn", "Căn hộ", "Ký túc xá"]
+      if((document.querySelector(".filter-room-lb-text").textContent.trim() && validRooms.includes(document.querySelector(".filter-room-lb-text").textContent.trim())) || document.querySelector(".filter-room-lb-text").textContent.trim() === "Chọn loại phòng") {
         if(document.querySelector(".filter-room-lb-text").textContent.trim() !== "Chọn loại phòng") {
           roomType = document.querySelector(".filter-room-lb-text").textContent.trim()
         }
@@ -478,9 +489,14 @@
             }
           } else {
             console.error(data)
+            alert("Lưu thông tin thất bại.")
           }
         } catch (err) {
           console.error(err)
+        } finally {
+          isLoading = false
+          document.querySelector(".filter-apply").disable = false
+          document.querySelector(".filter-apply").textContent = "Lưu"
         }
       }
     })

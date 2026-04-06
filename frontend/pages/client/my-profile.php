@@ -122,6 +122,14 @@
 
         <!-- <div class="filter-line"></div> -->
 
+        <div class="filter-occupants">Số người ở tối đa</div>
+
+        <input type="number" name="filter-occupants-number" id="filter-occupants-number" 
+        placeholder="Nhập số người" 
+        min="1" class="filter-occupants-number">
+
+        <!-- <div class="filter-line"></div> -->
+
         <button type="button" class="filter-apply">Áp dụng</button>
       </div>
     </div>
@@ -305,6 +313,7 @@
                 }
             } else {
                 console.error(data)
+                alert("Tải thông tin tỉnh thành thất bại.")
             }
         } catch (err) {
             console.error(err)
@@ -356,6 +365,7 @@
                 }
             } else {
                 console.error(data)
+                alert("Tải thông tin phường xã thất bại.")
             }
         } catch (err) {
             console.error(err)
@@ -437,6 +447,10 @@
 
       if(document.querySelector(".filter-square-number").value.trim() && numbRegex.test(document.querySelector(".filter-square-number").value.trim()) && document.querySelector(".filter-square-number").value.trim() > 0) {
         filterCondition += "&filter[area]=" + document.querySelector(".filter-square-number").value.trim()
+      }
+
+      if(document.querySelector(".filter-occupants-number").value.trim() && numbRegex.test(document.querySelector(".filter-occupants-number").value.trim()) && document.querySelector(".filter-occupants-number").value.trim() > 0) {
+        filterCondition += "&filter[maxOccupants][eq]=" + document.querySelector(".filter-occupants-number").value.trim()
       }
 
       page = 1
@@ -611,6 +625,7 @@
           }
         } else {
           console.error(data)
+          alert("Tải danh sách bài đăng thất bại.")
         }
       } catch (err) {
         console.error(err)

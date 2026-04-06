@@ -172,7 +172,7 @@
 
           <div class="profile-error post-textarea-error">Số nhà không hợp lệ</div>
 
-          <button type="button" class="new-submit">Đăng bài</button>
+          <button type="button" class="new-submit">Sửa bài</button>
         </div>
       </div>
     </div>
@@ -231,6 +231,7 @@
                 }
             } else {
                 console.error(data)
+                alert("Tải thông tin tỉnh thành thất bại.")
             }
         } catch (err) {
             console.error(err)
@@ -282,6 +283,7 @@
                 }
             } else {
                 console.error(data)
+                alert("Tải thông tin phường xã thất bại.")
             }
         } catch (err) {
             console.error(err)
@@ -333,6 +335,7 @@
                 }
             } else {
                 console.error(data)
+                alert("Tải thông tin phường xã theo tên tỉnh thành thất bại.")
             }
         } catch (err) {
             console.error(err)
@@ -431,7 +434,13 @@
     })
 
     // update button
+    var isLoading = false
     document.querySelector(".new-submit").addEventListener("click", async (e) => {
+      if(isLoading) return
+      isLoading = true
+      document.querySelector(".new-submit").disabled = true
+      document.querySelector(".new-submit").textContent = "Đang sửa bài"
+
       // validation
       var isValid = true
 
@@ -612,6 +621,7 @@
             }
           } else {
             console.error(data)
+            alert("Lấy thông tin tài khoản thất bại.")
           }
         } catch (err) {
           console.error(err)
@@ -635,10 +645,19 @@
             }
           } else {
             console.error(data)
+            alert("Cập nhật thông tin bài đăng thất bại.")
           }
         } catch (err) {
           console.error(err)
+        } finally {
+          isLoading = false
+          document.querySelector(".new-submit").disabled = false
+          document.querySelector(".new-submit").textContent = "Sửa bài"
         }
+      } else {
+        isLoading = false
+        document.querySelector(".new-submit").disabled = false
+        document.querySelector(".new-submit").textContent = "Sửa bài"
       }
     })
 
@@ -691,6 +710,7 @@
           }
         } else {
           console.error(data)
+          alert("Tải thông tin bài đăng thất bại.")
         }
       } catch (err) {
         console.error(err)

@@ -208,6 +208,7 @@
             }
           } else {
             console.error(data)
+            alert("Nạp điểm thất bại.")
           }
         } catch (err) {
           console.error(err)
@@ -246,6 +247,7 @@
           }
         } else {
           console.error(data)
+          alert("Tải thông tin quy đổi thất bại.")
         }
       } catch (err) {
         console.error(err)

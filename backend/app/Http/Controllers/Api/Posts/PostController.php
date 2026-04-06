@@ -180,6 +180,10 @@ class PostController extends Controller
 
             }
 
+            if($validated['status'] === 'completed' && $post['next_payment_date'] === null){
+                $validated['next_payment_date'] = now()->addMonth();
+            }
+
             $post = $this->postService->updatePost($post, $validated);
 
             event(new StatusPostCreated($post, $request['titleNotification'] ?? null));

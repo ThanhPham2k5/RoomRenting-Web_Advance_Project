@@ -36,4 +36,10 @@ class StoreAccountRequest extends FormRequest
             'roles.*' => 'exists:roles,name'
         ];
     }
+    public function messages(){
+        return [
+            'username.unique' => 'Tên tài khoản đã được sử dụng',
+            'email.unique' => 'Email này đã được sử dụng',
+        ];
+    }
 }

@@ -260,6 +260,7 @@
                 }
             } else {
                 console.error(data)
+                alert("Tải lịch sử thanh toán thất bại.")
             }
         } catch (err) {
             console.error(err)
@@ -284,6 +285,11 @@
                 histories.forEach(history => {
                     var point = Number(history.points).toLocaleString("vi-VN")
                     var date = new Date(history.createdAt).toLocaleString("vi-VN")
+                    var notifyInfo = document.querySelector(".history-recharge").classList.contains("history-selected") ? `
+                        <div class="notify-value ${valueItem}">+${point} Điểm ( Nạp thêm điểm thành công )</div>
+                    ` : `
+                        <div class="notify-value ${valueItem}">-${point} Điểm ( Trừ điểm dịch vụ )</div>
+                    `
 
                     html += `
                         <div class="notify-item">
@@ -293,7 +299,7 @@
                             <div class="notify-info">${billTitle} vào tài khoản thành công</div>
 
                             <!-- using for transaction -->
-                            <div class="notify-value ${valueItem}">+${point} Điểm ( Nạp thêm điểm thành công )</div>
+                            ${notifyInfo}
 
                             <div class="notify-time">${date}</div>
                             </div>

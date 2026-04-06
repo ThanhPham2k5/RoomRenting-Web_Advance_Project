@@ -8,12 +8,13 @@ $adminName = $_SESSION['admin_user'] ?? "";
 $adminRole = $_SESSION['admin_role'] ?? "";
 $adminId = $_SESSION['admin_id'] ?? "";
 require_once __DIR__ . '/core/function.php';
-$accountData = call_api("http://backend.test/api/accounts/$adminId?include=roles.permissions");
+$accountData = call_api("http://backend.test/api/accounts/$adminId?include=roles.permissions,employee.personalInfo");
 $userPermissions = [];
 if (isset($accountData['data']['roles'][0]['permissions'])) {
     $userPermissions = $accountData['data']['roles'][0]['permissions'];
 }
 $_SESSION['user_permissions'] = $userPermissions;
+$_SESSION['user_avatar'] = $accountData['data']['employee']['personalInfo']['profileUrl'];
 $pageData = [];
 $page = $_GET['page'] ?? 'overview';
 $validPage = ['overview', 'account', 'bill', 'comment', 'permission', 'post', 'price', 'setting'];
@@ -655,7 +656,10 @@ switch ($page) {
             data.permissions.forEach(p => {
                 const permName = typeof p === 'object' ? p.name : p;
                 const checkbox = form.querySelector(`input[value="${permName}"]`);
-                if (checkbox) checkbox.checked = true;
+                if (checkbox){
+                    checkbox.checked = true;
+                    checkbox.dispatchEvent(new Event('change'));
+                }
             });
         }
     }
@@ -1612,12 +1616,10 @@ switch ($page) {
     // Hàm vẽ toàn bộ biểu đồ
     async function renderMonthlyPostChart() {
         try {
-            // 1. GỌI API LẤY DỮ LIỆU BÀI ĐĂNG THEO THÁNG
-            const response = await fetch('../admin/core/api_proxy.php?target_endpoint=statistic/posts/month_data&year=2025', {
+            const apiUrl = `../admin/core/api_proxy.php?target_endpoint=statistic/posts/month_data&year=2025`;
+            const response = await fetch(apiUrl, {
                 method: 'GET',
-                headers: {
-                    "Accept": "application/json"
-                }
+                headers: { "Accept": "application/json" }
             });
 
             const result = await response.json();
@@ -1686,12 +1688,10 @@ switch ($page) {
     }
     async function renderRoomChart() {
         try {
-            // 1. GỌI QUA PROXY ĐỂ TỰ ĐỘNG GẮN TOKEN
-            const response = await fetch('../admin/core/api_proxy.php?target_endpoint=statistic/posts/room_data', {
+            const apiUrl = `../admin/core/api_proxy.php?target_endpoint=statistic/posts/room_data`;
+            const response = await fetch(apiUrl, {
                 method: 'GET',
-                headers: {
-                    "Accept": "application/json"
-                }
+                headers: { "Accept": "application/json" }
             });
             
             const result = await response.json();
@@ -1762,17 +1762,13 @@ switch ($page) {
         } catch (error) {
             console.error("Lỗi khi tải dữ liệu biểu đồ phòng:", error);
         }
-
-        
     }
     async function renderWardChart() {
         try {
-            // 1. Gọi API lấy dữ liệu phường/xã
-            const response = await fetch('../admin/core/api_proxy.php?target_endpoint=statistic/posts/ward_data&province=38', {
+            const apiUrl = `../admin/core/api_proxy.php?target_endpoint=statistic/posts/ward_data&province=38`;
+            const response = await fetch(apiUrl, {
                 method: 'GET',
-                headers: {
-                    "Accept": "application/json"
-                }
+                headers: { "Accept": "application/json" }
             });
 
             const result = await response.json();
@@ -1836,12 +1832,10 @@ switch ($page) {
     }
     async function renderRevenueChart() {
         try {
-            // 1. GỌI API LẤY DỮ LIỆU DOANH THU
-            const response = await fetch('../admin/core/api_proxy.php?target_endpoint=statistic/revenue&year=2025&with_taxes=true&compare_year=2024', {
+            const apiUrl = `../admin/core/api_proxy.php?target_endpoint=statistic/revenue&year=2025&with_taxes=true&compare_year=2024`;
+            const response = await fetch(apiUrl, {
                 method: 'GET',
-                headers: {
-                    "Accept": "application/json"
-                }
+                headers: { "Accept": "application/json" }
             });
 
             const result = await response.json();
@@ -1956,7 +1950,7 @@ switch ($page) {
         if (!cityName) return;
 
         try {
-            const response = await fetch(`http://backend.test/api/address/provinces/name/${encodeURIComponent(cityName)}/wards`);
+            const response = await fetch(`http://127.0.0.1:8000/api/address/provinces/name/${encodeURIComponent(cityName)}/wards`);
             const result = await response.json();
             
             const wards = result.data || result; 
@@ -1974,7 +1968,7 @@ switch ($page) {
                 }
             }
         } catch (error) {
-            console.error("Lỗi khi tải danh sách Phường/Xã:", error);
+            console.error("Lỗi khi lấy danh sách Phường/Xã:", error);
         }
     }
     document.addEventListener('DOMContentLoaded', function() {

@@ -219,8 +219,8 @@ class PostService{
     public function postPayment(Post $post)
     {
         $user = $post->user;
-        $points = $payRule->points;
         $payRule = PayRule::firstOrFail();
+        $points = $payRule->points;
 
         if ($user->points > $points) {
             $user->decrement('points', $points);

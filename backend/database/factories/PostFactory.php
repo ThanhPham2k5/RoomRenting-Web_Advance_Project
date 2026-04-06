@@ -73,6 +73,16 @@ class PostFactory extends Factory
             'status' => $status,
             'authorized' => $status === 'completed',
 
+            'reason' => $status === 'rejected'
+                ? fake()->randomElement([
+                    'Thông tin không đầy đủ',
+                    'Hình ảnh không rõ ràng',
+                    'Nội dung vi phạm chính sách',
+                    'Giá cả không hợp lý',
+                    'Địa chỉ không chính xác'
+                ])
+                : null,
+
             'room_type' => fake()->randomElement(['room', 'apartment', 'dorm']),
 
             'next_payment_date' => $status === 'completed'

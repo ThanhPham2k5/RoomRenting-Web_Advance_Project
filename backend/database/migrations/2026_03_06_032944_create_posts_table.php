@@ -25,6 +25,7 @@ return new class extends Migration
             $table->boolean('authorized');
             $table->enum('room_type', ['room', 'apartment', 'dorm']);
             $table->integer('max_occupants');
+            $table->string('reason')->nullable();
             $table->date('next_payment_date')->nullable();
 
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();

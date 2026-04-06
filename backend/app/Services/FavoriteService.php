@@ -52,6 +52,7 @@ class FavoriteService{
             AllowedFilter::exact('post.roomType', 'room_type'),
             AllowedFilter::operator('post.maxOccupants', FilterOperator::DYNAMIC, '', 'max_occupants'), // =, <>, >, <, >=, <=
             AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
+            AllowedFilter::trashed(),
         ])
         ->allowedSorts([
             'id',

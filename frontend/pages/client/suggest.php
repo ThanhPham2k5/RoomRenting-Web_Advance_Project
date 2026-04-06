@@ -402,7 +402,7 @@
       }
 
       const validRooms = ["Phòng đơn", "Căn hộ", "Ký túc xá"]
-      if((document.querySelector(".filter-room-lb-text").textContent.trim() && validRooms.includes(document.querySelector(".filter-room-lb-text").textContent.trim()))) {
+      if((document.querySelector(".filter-room-lb-text").textContent.trim() && validRooms.includes(document.querySelector(".filter-room-lb-text").textContent.trim())) || document.querySelector(".filter-room-lb-text").textContent.trim() === "Chọn loại phòng") {
         if(document.querySelector(".filter-room-lb-text").textContent.trim() !== "Chọn loại phòng") {
           roomType = document.querySelector(".filter-room-lb-text").textContent.trim()
         }

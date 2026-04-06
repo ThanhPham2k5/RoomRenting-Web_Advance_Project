@@ -204,6 +204,7 @@ class PostService{
             AllowedFilter::exact('roomType', 'room_type'),
             AllowedFilter::operator('maxOccupants', FilterOperator::DYNAMIC, '', 'max_occupants'), // =, <>, >, <, >=, <=
             AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
+            AllowedFilter::trashed(),
         ])
         ->allowedSorts([
             'id',

@@ -646,7 +646,7 @@
     async function getPost(sortCondition, filterCondition, searchCondition, page) {
       try {
         // page = 2 to test pagination
-        const response = await fetch("http://backend.test/api/posts?per_page=10&filter[status]=completed&include=postImages,favorites.account&sort=" + sortCondition + filterCondition + searchCondition + "&page=" + page, {
+        const response = await fetch("http://backend.test/api/posts?per_page=10&filter[status]=completed&include=postImages,favorites.account&sort=" + sortCondition + filterCondition + searchCondition + "&page=" + page + "&filter[trashed]=without", {
           method: "GET",
           headers: {
             "Accept": "application/json"

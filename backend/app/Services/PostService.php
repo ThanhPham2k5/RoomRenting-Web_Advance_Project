@@ -63,6 +63,7 @@ class PostService{
             AllowedFilter::exact('status'),
             AllowedFilter::operator('authorized', FilterOperator::DYNAMIC), // =, <>
             AllowedFilter::exact('roomType', 'room_type'),
+            AllowedFilter::trashed(),
             AllowedFilter::operator('maxOccupants', FilterOperator::DYNAMIC, '', 'max_occupants'), // =, <>, >, <, >=, <=
             AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
         ])

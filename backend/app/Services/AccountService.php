@@ -131,7 +131,6 @@ class AccountService
             if ($account->user) {
                 $account->form->delete();
                 $account->user->personalInfo->delete();
-                $account->user->posts()->delete();
                 $account->user->delete();
                 $account->comments()->delete();
                 $account->favorites()->delete();

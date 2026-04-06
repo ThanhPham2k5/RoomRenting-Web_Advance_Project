@@ -158,7 +158,9 @@
     ob_start();
     ?>
         <div class="detail-profile-header">
-            <div class="avatar-placeholder" id="view-avatar-text">A</div>
+            <div class="avatar-placeholder" id="view-avatar-text">
+                <img src="" alt="avatar">
+            </div>
             <div class="profile-title">
                 <h3 id="view-username">Tên tài khoản</h3>
                 <span class="badge-detail badge-detail-role" id="view-role">Chức vụ</span>

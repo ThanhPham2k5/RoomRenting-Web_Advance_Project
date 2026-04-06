@@ -248,7 +248,12 @@
             return result;
         })
         .then(result => {
-            alert("Cập nhật thông tin thành công!");
+            showToast({
+                title: "Thành công!",
+                message: "Cập nhật thông tin thành công.",
+                type: "success",
+                duration: 3000
+            });
             window.location.reload(); 
         })
         .catch(error => {
@@ -313,7 +318,7 @@
 
         // --- BƯỚC 2: GỌI API ---
         let formData = new FormData(formElement);
-        const adminId = <?php echo $id; ?>; 
+        const adminId = "<?php echo $id ?? ''; ?>";    
         
         formData.append('target_endpoint', `accounts/${adminId}/change-password`);
         fetch('core/api_proxy.php', {
@@ -323,22 +328,33 @@
         })
         .then(async response => {
             const result = await response.json();
-            if (!response.ok || result.errors || result.status === 'error') {
-                let errorMsg = result.message || "Lỗi cập nhật mật khẩu!";
-                if (result.errors) {
-                    errorMsg += "\n" + Object.values(result.errors).map(e => e.join(", ")).join("\n");
-                }
-                throw new Error(errorMsg);
+            if (!result.success) {
+                showToast({
+                    title: "Thất bại!",
+                    message: result.message,
+                    type: "error",
+                    duration: 4000
+                });
+                return;
             }
-            return result;
-        })
-        .then(result => {
-            alert("Đổi mật khẩu thành công! Hệ thống sẽ yêu cầu đăng nhập lại.");
-            window.location.href = 'logout.php'; 
+            showToast({
+                title: "Thành công!",
+                message: "Đổi mật khẩu thành công! Hệ thống sẽ yêu cầu đăng nhập lại.",
+                type: "success",
+                duration: 2000
+            });
+            setTimeout(() => {
+                window.location.href = 'logout.php'; 
+            }, 2000);
         })
         .catch(error => {
             console.error("Lỗi:", error);
-            alert(error.message);
+            showToast({
+                title: "Lỗi hệ thống",
+                message: "Không thể kết nối đến máy chủ.",
+                type: "error",
+                duration: 4000
+            });
         });
     }
 
@@ -358,7 +374,8 @@
                 if (citySelect.value) {
                     // Đảm bảo bạn đã khai báo hàm loadWards ở đâu đó trong dự án nhé
                     if (typeof loadWards === 'function') {
-                        loadWards(userProvince, userWard); 
+                        // ĐÃ SỬA: Thêm biến wardSelect vào giữa
+                        loadWards(userProvince, wardSelect, userWard); 
                     }
                 }
             }
@@ -366,7 +383,8 @@
             citySelect.addEventListener('change', function() {
                 const selectedProvince = this.value; 
                 if (selectedProvince && typeof loadWards === 'function') {
-                    loadWards(selectedProvince, null); 
+                    // ĐÃ SỬA: Thêm biến wardSelect vào giữa
+                    loadWards(selectedProvince, wardSelect, null); 
                 } else {
                     wardSelect.innerHTML = '<option value="">-- Chọn Phường/Xã --</option>';
                 }

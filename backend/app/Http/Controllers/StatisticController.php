@@ -6,6 +6,7 @@ use App\Helpers\VietnamAddress;
 use App\Http\Controllers\Controller;
 use App\Models\Payments\RechargeBill;
 use App\Models\Posts\Post;
+use App\Models\Account_User\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -197,5 +198,100 @@ class StatisticController extends Controller
             ->pluck('totalRevenue', 'month') // chỉ lấy 2 cột này
             ->toArray();
         }
+    }
+
+    public function getProvinceStatistic(Request $request)
+    {
+        // Truy vấn lấy top 10 tỉnh/thành phố có nhiều bài đăng nhất
+        $data = Post::select(
+                'province', 
+                DB::raw('COUNT(*) as total')
+            )
+            ->whereNotNull('province') // Bỏ qua các bài đăng bị lỗi không có tỉnh
+            ->where('province', '!=', '')
+            ->groupBy('province')
+            ->orderBy('total', 'desc')
+            ->take(10)
+            ->get();
+
+        $provinceStats = [];
+        $top10Total = 0;
+
+        foreach ($data as $item) {
+            $provinceStats[] = [
+                'province' => $item->province,
+                'total' => $item->total
+            ];
+            $top10Total += $item->total;
+        }
+
+        // Lấy tổng số lượng bài đăng của TOÀN QUỐC (để sau này nếu bạn muốn làm tỷ lệ % hoặc mục "Khác")
+        $allPostsTotal = Post::whereNotNull('province')->where('province', '!=', '')->count();
+
+        // Nếu tổng cả nước lớn hơn top 10, gộp phần còn lại vào mục "Khác"
+        if ($allPostsTotal > $top10Total) {
+            $provinceStats[] = [
+                'province' => 'Khác',
+                'total' => $allPostsTotal - $top10Total
+            ];
+        }
+
+        return response()->json([
+            'totalPosts' => $allPostsTotal,      // Tổng số bài đăng toàn quốc
+            'top10Total' => $top10Total,         // Tổng số bài đăng của riêng Top 10
+            'provinceDetails' => $provinceStats  // Mảng chi tiết vẽ biểu đồ
+        ]);
+    }
+
+    public function getDashboardSummary(Request $request)
+    {
+        $currentMonth = Carbon::now()->month;
+        $currentYear = Carbon::now()->year;
+        
+        $lastMonth = Carbon::now()->subMonth()->month;
+        $lastMonthYear = Carbon::now()->subMonth()->year;
+
+        // 1. Thống kê User mới
+        $usersThisMonth = User::whereMonth('created_at', $currentMonth)->whereYear('created_at', $currentYear)->count();
+        $usersLastMonth = User::whereMonth('created_at', $lastMonth)->whereYear('created_at', $lastMonthYear)->count();
+        $userTrend = $this->calculateTrend($usersThisMonth, $usersLastMonth);
+
+        // 2. Thống kê Tin đang hoạt động (Status = active)
+        // Tùy nghiệp vụ, có thể tin đang hoạt động không cần so sánh với tháng trước
+        $activePostsThisMonth = Post::where('status', 'completed')->count();
+        $activePostsLastMonth = Post::where('status', 'completed')->whereMonth('created_at', $lastMonth)->count(); // Ví dụ
+        $postTrend = $this->calculateTrend($activePostsThisMonth, $activePostsLastMonth);
+
+        // 3. Thống kê Doanh thu tháng này
+        $revenueThisMonth = RechargeBill::where('status', 'completed')->whereMonth('created_at', $currentMonth)->whereYear('created_at', $currentYear)->sum('total_money');
+        $revenueLastMonth = RechargeBill::where('status', 'completed')->whereMonth('created_at', $lastMonth)->whereYear('created_at', $lastMonthYear)->sum('total_money');
+        $revenueTrend = $this->calculateTrend($revenueThisMonth, $revenueLastMonth);
+
+        // 4. Thống kê Tin chờ duyệt
+        $pendingPosts = Post::where('status', 'pending')->count(); // Chỉ đếm số lượng hiện tại cần làm
+
+        return response()->json([
+            'users' => [
+                'total' => $usersThisMonth,
+                'trend' => $userTrend // Trả về số % (VD: 8.2)
+            ],
+            'active_posts' => [
+                'total' => $activePostsThisMonth,
+                'trend' => $postTrend
+            ],
+            'revenue' => [
+                'total' => $revenueThisMonth,
+                'trend' => $revenueTrend
+            ],
+            'pending_posts' => [
+                'total' => $pendingPosts
+            ]
+        ]);
+    }
+
+    // Hàm tính toán % chênh lệch (Viết private để dùng chung)
+    private function calculateTrend($current, $last) {
+        if ($last == 0) return $current > 0 ? 100 : 0;
+        return round((($current - $last) / $last) * 100, 1);
     }
 }

@@ -35,12 +35,19 @@
     line-height: 4rem;
 }
 .title-component .group{
+    width: 100%;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     gap: 30px;
+    margin-right: 30px;
+
 }
 .title-component .group .item{
+    flex: 1;
+    justify-content: space-between;
+    min-width: 0;
+    height: 122px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -128,5 +135,68 @@
     background-color: #FEF3C7;
     color: #B45309;
     transform: translateY(-2px);
-    box-shadow: 0 4px 6px -1px rgba(217, 119, 6, 0.15);
+    box-shadow: 0 
+    4px 6px -1px rgba(217, 119, 6, 0.15);
+}
+/* =========================================
+   BỔ SUNG CSS CHO THẺ INFO & TREND
+   ========================================= */
+.title-component .group .item .info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px; /* Khoảng cách dọc giữa các dòng chữ */
+    min-width: 140px; /* Đảm bảo chữ không bị rớt dòng khi số quá to */
+    flex: 1; /* Cho phép khối text chiếm hết không gian còn lại */
+    min-width: 0;
+}
+
+.title-component .group .item .info .main-number {
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: #0F172A; /* Màu đen nhám sang trọng */
+    margin: 0;
+    line-height: 1.2;
+}
+
+.title-component .group .item .info .trend {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: #64748B; /* Màu xám cho chữ "so với T3" */
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Các trạng thái màu sắc của Trend */
+.title-component .group .item .info .trend span {
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+}
+.title-component .group .item .info .trend.positive span { color: #10B981; } /* Tăng = Xanh lá */
+.title-component .group .item .info .trend.negative span { color: #EF4444; } /* Giảm = Đỏ */
+.title-component .group .item .info .trend.warning span { color: #F59E0B; } /* Cảnh báo = Cam */
+
+/* =========================================
+   BỔ SUNG CSS CHO NỀN ICON TRONG THẺ
+   ========================================= */
+/* Ghi đè nhẹ lại kích thước icon của bạn để vừa với viền bo tròn */
+.title-component .group .item .icon {
+    width: 52px !important; 
+    height: 52px !important;
+    border-radius: 14px;
+}
+
+/* Tone màu nền nhạt (Pastel) mix với màu icon đậm */
+.title-component .group .item .icon.blue { background-color: #EFF6FF; color: #3B82F6; }
+.title-component .group .item .icon.purple { background-color: #F5F3FF; color: #8B5CF6; }
+.title-component .group .item .icon.green { background-color: #ECFDF5; color: #10B981; }
+.title-component .group .item .icon.orange { background-color: #FFF7ED; color: #F97316; }
+/* Chống tràn dòng cho tiêu đề và chữ số */
+.title-component .group .item .info .sub-info,
+.title-component .group .item .info .main-number,
+.title-component .group .item .info .trend {
+    white-space: nowrap; /* Không cho rớt dòng */
+    text-overflow: ellipsis; /* Biến phần bị giấu thành dấu 3 chấm (...) */
 }

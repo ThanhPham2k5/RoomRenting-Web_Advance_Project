@@ -1,3 +1,10 @@
+<?php
+    $apiRole = call_api("http://backend.test/api/address/provinces");
+    $provinces= $apiRole['data'] ?? [];
+    $apiRole = call_api("http://backend.test/api/address/wards");
+    $wards= $apiRole['data'] ?? [];
+?>
+
 <div class="post-detail-component-overlay view-mode" id="post-detail-modal">
     <div class="post-detail-component-content">
         <div class="post-img">
@@ -67,8 +74,8 @@
                     <p id="detail-user-id">ID người đăng bài: 123</p>
                     <p id="detail-employee-id">ID nhân viên duyệt bài: 123</p>
                     <p>Lịch sử thanh toán</p>
+                    <p id="reason">Lý do</p>
                     <div class="post-info-btn">
-                        <button class="handle">Xử lý</button>
                         <button class="handle" style="background-color: #3B82F6;" onclick="switchToEdit()">Chỉnh sửa</button>
                     </div>
                 </div>
@@ -100,14 +107,19 @@
                             
                             <div class="input-group">
                                 <label>Tỉnh, Thành Phố</label>
-                                <select name="city_id" id="city-select">
+                                <select name="province" id="city-select">
                                     <option value="">-- Chọn Tỉnh/Thành phố --</option>
-                                    </select>
+                                    <?php foreach ($provinces as $province): ?>
+                                        <option value="<?php echo htmlspecialchars($province['name'] ?? ''); ?>" data-name="<?php echo htmlspecialchars($province['name'] ?? ''); ?>">
+                                            <?php echo htmlspecialchars($province['name'] ?? ''); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
                             </div>
 
                             <div class="input-group">
                                 <label>Quận, Huyện, Phường, Xã</label>
-                                <select name="ward_id" id="ward-select">
+                                <select name="ward" id="ward-select">
                                     <option value="">-- Chọn Phường/Xã --</option>
                                     </select>
                             </div>
@@ -116,9 +128,9 @@
                                 <label>Kiểu phòng</label>
                                 <select name="room_type">
                                     <option value="">-- Chọn kiểu phòng --</option>
-                                    <option value="tro_khep_kin">Phòng trọ khép kín</option>
-                                    <option value="Chung_cu_mini">Chung cư mini</option>
-                                    <option value="nha_nguyen_can">Nhà nguyên căn</option>
+                                    <option value="room">Phòng trọ khép kín</option>
+                                    <option value="apartment">Chung cư mini</option>
+                                    <option value="dorm">Ở ghép</option>
                                 </select>
                             </div>
                             

@@ -27,12 +27,13 @@
 
 .filter-return-block {
   display: flex;
-  justify-content: start;
+  justify-content: space-between;
   align-items: center;
   width: 100%;
 }
 
-.filter-return {
+.filter-return,
+.filter-reset {
   display: flex;
   justify-content: start;
   align-items: center;
@@ -44,8 +45,14 @@
   transition: all 0.1s linear;
 }
 
-.filter-return:hover {
+.filter-return:hover,
+.filter-reset:hover {
   transform: translateX(1px);
+}
+
+.filter-reset-ico {
+  width: 18px;
+  height: 18px;
 }
 
 .filter-line {
@@ -380,6 +387,7 @@
 
 .post {
   width: 250px;
+  height: 400px;
   position: relative;
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 12px;
@@ -387,6 +395,7 @@
   text-decoration: none;
   color: #000;
   transition: all ease 0.2s;
+  overflow: hidden;
 }
 
 .post:hover {
@@ -411,13 +420,17 @@
   transform: scale(1.08);
 }
 
-.post-img {
-  width: 250px;
-  border-radius: 12px;
-}
-
 .post-body {
   text-decoration: none;
+  color: #000;
+}
+
+.post-img {
+  width: 250px;
+  height: 220px;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 12px;
 }
 
 .post-title {
@@ -425,19 +438,25 @@
   font-size: inherit;
   text-align: justify;
   margin: 0 10px;
-  color: #000;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .post-address {
   display: flex;
   justify-content: center;
   align-items: center;
+
+  overflow: hidden;
 }
 
 .address-ico {
   width: 24px;
   height: 24px;
   padding: 12px;
+  flex-shrink: 0;
 }
 
 .address-info {
@@ -446,6 +465,10 @@
   text-align: justify;
   color: var(--gray);
   margin-right: 10px;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .post-info {

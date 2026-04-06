@@ -67,7 +67,10 @@ class RoleController extends Controller
     {
         $validate = $request->validate([
             'name' => 'required|string|unique:roles,name,' . $role->id,
-            'description' => 'sometimes|string'
+            'guard_name' => 'sometimes|string',
+            'description' => 'sometimes|string',
+            'permissions' => 'sometimes|array',
+            'permissions.*' => 'exists:permissions,name'
         ]);
 
         $result = $this->roleService->updateRole($role, $validate);
@@ -93,6 +96,20 @@ class RoleController extends Controller
 
         return response()->json([
             'message' => 'Permissions assigned to role'
+        ]);
+    }
+
+    public function revokePermissionsFromRole(Request $request, Role $role)
+    {
+        $request->validate([
+            'permissions' => 'required|array',
+            'permissions.*' => 'exists:permissions,name'
+        ]);
+
+        $role->revokePermissionTo($request->permissions);
+
+        return response()->json([
+            'message' => 'Permissions revoked from role'
         ]);
     }
 }

@@ -60,6 +60,9 @@
 .new-pic-4 {
   width: 200px;
   height: 200px;
+  border-radius: 12px;
+  object-fit: cover;
+  object-position: center;
 }
 
 .new-pic-del {
@@ -85,7 +88,9 @@
 .profile-square,
 .profile-price,
 .profile-deposit,
-.profile-post {
+.profile-post,
+.profile-room,
+.profile-occupants {
   margin: 10px 0;
 }
 
@@ -94,7 +99,8 @@
 .profile-price-input,
 .profile-deposit-input,
 .profile-post-input,
-.profile-post-textarea {
+.profile-post-textarea,
+.profile-occupants-input {
   background-color: #fff;
   border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 12px;
@@ -119,7 +125,8 @@
 .profile-price-input::placeholder,
 .profile-deposit-input::placeholder,
 .profile-post-input::placeholder,
-.profile-post-textarea::placeholder {
+.profile-post-textarea::placeholder,
+.profile-occupants-input::placeholder {
   color: rgba(0, 0, 0, 0.4);
 }
 
@@ -131,31 +138,40 @@
   color: #fd5454;
   margin-top: 10px;
   text-align: justify;
+  display: none;
 }
 
 .filter-province,
-.filter-district {
+.filter-district,
+.filter-room {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   margin-top: 20px;
   width: 100%;
 }
 
 .filter-district {
+  z-index: 2;
+}
+
+.filter-room {
+  margin-top: 0;
   z-index: 1;
 }
 
 .filter-province-cb,
-.filter-district-cb {
+.filter-district-cb,
+.filter-room-cb {
   display: none;
 }
 
 .filter-province-lb,
-.filter-district-lb {
+.filter-district-lb,
+.filter-room-lb {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: #626687;
+  color: #000;
   padding: 10px;
   border-radius: 12px;
   border: 1px solid rgba(0, 0, 0, 0.2);
@@ -166,14 +182,15 @@
 }
 
 .filter-province-list,
-.filter-district-list {
+.filter-district-list,
+.filter-room-list {
   position: absolute;
   top: 80%;
   left: 0;
   right: 0;
   display: none;
   flex-direction: column;
-  justify-content: center;
+  justify-content: start;
   align-items: center;
   border: 1px solid #626687;
   border-top: none;
@@ -187,12 +204,14 @@
 }
 
 .filter-province-cb:checked ~ .filter-province-list,
-.filter-district-cb:checked ~ .filter-district-list {
+.filter-district-cb:checked ~ .filter-district-list,
+.filter-room-cb:checked ~ .filter-room-list {
   display: flex;
 }
 
 .filter-province-item,
-.filter-district-item {
+.filter-district-item,
+.filter-room-item {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -203,8 +222,13 @@
 }
 
 .filter-province-item:hover,
-.filter-district-item:hover {
+.filter-district-item:hover,
+.filter-room-item:hover {
   background-color: rgba(0, 0, 0, 0.1);
+}
+
+.filter-arrow {
+  transition: all 0.1s linear;
 }
 
 .new-submit {

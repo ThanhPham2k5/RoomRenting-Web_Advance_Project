@@ -386,11 +386,24 @@
     var notifyCache = {
       news: null,
       transaction: null,
-    newsExpiredAt: null,
-    transactionExpiredAt: null
+      newsExpiredAt: null,
+      transactionExpiredAt: null
     }
 
     const CACHE_TTL = 30 * 1000
+
+    function timeAgo(dateString) {
+      const now = new Date()
+      const date = new Date(dateString)
+      const diff = Math.floor((now - date) / 1000) // seconds
+
+      if (diff < 60) return "Vừa xong"
+      if (diff < 3600) return Math.floor(diff / 60) + " phút trước"
+      if (diff < 86400) return Math.floor(diff / 3600) + " giờ trước"
+      if (diff < 2592000) return Math.floor(diff / 86400) + " ngày trước"
+      if (diff < 31536000) return Math.floor(diff / 2592000) + " tháng trước"
+      return Math.floor(diff / 31536000) + " năm trước"
+    }
 
     async function checkUnreadNotification(account_id, token) {
       const newsUnread = notifyCache.news?.unread?.length > 0
@@ -436,13 +449,13 @@
         if(!notifyCache.news || Date.now() > notifyCache.newsExpiredAt) {
           try {
             // get unread & read notify in news
-            const [response_unread, response_read] = await Promise.all([fetch("http://backend.test/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=unread&filter[notificationType]=news", {
+            const [response_unread, response_read] = await Promise.all([fetch("http://backend.test/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=unread&filter[notificationType]=news&sort=-createdAt", {
               method: "GET",
               headers: {
                 "Accept": "application/json",
                 "Authorization": "Bearer " + token
               }
-            }),fetch("http://backend.test/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=read&filter[notificationType]=news", {
+            }),fetch("http://backend.test/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=read&filter[notificationType]=news&sort=-createdAt", {
               method: "GET",
               headers: {
                 "Accept": "application/json",
@@ -515,7 +528,7 @@
           if(isUnread) {
             unread_notifyList.forEach(notify => {
               html += `
-                <a href='<?php echo BASE_URL ?>/pages/client/detail-post.php?post_id=${notify.notifiable.id}' class="notify-item notify-item-unread notify-id-${notify.id}">
+                <a href='<?php echo BASE_URL ?>/pages/client/manage-post.php?post_id=${notify.notifiable.id}' class="notify-item notify-item-unread notify-id-${notify.id}">
                   <img src='http://backend.test${notify.notifiable.postImages[0].imagePostUrl}' alt="item-img.png" class="notify-item-img">
 
                   <div class="notify-content">
@@ -523,6 +536,8 @@
 
                     <!-- using for transaction -->
                     <div class="notify-value">${notify.content}</div>
+                    
+                    <div class="notify-time">${timeAgo(notify.createdAt)}</div>
                   </div>
                 </a>
               `
@@ -532,7 +547,7 @@
           if(isRead) {
             read_notifyList.forEach(notify => {
               html += `
-                <a href='<?php echo BASE_URL ?>/pages/client/detail-post.php?post_id=${notify.notifiable.id}' class="notify-item notify-id-${notify.id}">
+                <a href='<?php echo BASE_URL ?>/pages/client/manage-post.php?post_id=${notify.notifiable.id}' class="notify-item notify-id-${notify.id}">
                   <img src='http://backend.test${notify.notifiable.postImages[0].imagePostUrl}' alt="item-img.png" class="notify-item-img">
 
                   <div class="notify-content">
@@ -540,6 +555,8 @@
 
                     <!-- using for transaction -->
                     <div class="notify-value">${notify.content}</div>
+                    
+                    <div class="notify-time">${timeAgo(notify.createdAt)}</div>
                   </div>
                 </a>
               `
@@ -607,13 +624,13 @@
         if(!notifyCache.transaction || Date.now() > notifyCache.transactionExpiredAt) {
           try {
             // get unread & read notify in transaction
-            const [response_unread, response_read] = await Promise.all([fetch("http://backend.test/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=unread&filter[notificationType]=transaction", {
+            const [response_unread, response_read] = await Promise.all([fetch("http://backend.test/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=unread&filter[notificationType]=transaction&sort=-createdAt", {
               method: "GET",
               headers: {
                 "Accept": "application/json",
                 "Authorization": "Bearer " + token
               }
-            }),fetch("http://backend.test/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=read&filter[notificationType]=transaction", {
+            }),fetch("http://backend.test/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=read&filter[notificationType]=transaction&sort=-createdAt", {
               method: "GET",
               headers: {
                 "Accept": "application/json",
@@ -699,6 +716,8 @@
 
                     <!-- using for transaction -->
                     <div class="notify-value ${notifyValue}">${notify.content}</div>
+                    
+                    <div class="notify-time">${timeAgo(notify.createdAt)}</div>
                   </div>
                 </a>
               `
@@ -721,6 +740,8 @@
 
                     <!-- using for transaction -->
                     <div class="notify-value ${notifyValue}">${notify.content}</div>
+                    
+                    <div class="notify-time">${timeAgo(notify.createdAt)}</div>
                   </div>
                 </a>
               `
@@ -829,44 +850,58 @@
       await getNotification(account_id, token)
     })
 
-    var isLoadingNotify = false
+    document.querySelector(".sidebar-notify-block").addEventListener("click", async (e) => {
+      // reset cache
+      // notifyCache.news = null
+      // notifyCache.transaction = null
 
-    document.querySelector(".notify-news").addEventListener("click", async (e) => {
-      if(isLoadingNotify) return
-      if (!document.querySelector(".notify-news").classList.contains("notify-selected")) {
-        isLoadingNotify = true
-        document.querySelector(".notify-list").style.display = "none"
-        document.querySelector(".notify-title").style.display = "none" 
-        document.querySelector(".notify-news").classList.add("notify-selected")
-        document.querySelector(".notify-transaction").classList.remove("notify-selected")
-
-        const account_id = localStorage.getItem("account_id")
-        const token = localStorage.getItem("token")
-        await getNotification(account_id, token)
-        document.querySelector(".notify-list").style.display = "flex"
-        document.querySelector(".notify-title").textContent = "Thông báo tin tức gần đây"
-        document.querySelector(".notify-title").style.display = "flex" 
-        isLoadingNotify = false
-      }
+      const account_id = localStorage.getItem("account_id")
+      const token = localStorage.getItem("token")
+      await getNotification(account_id, token)
     })
 
-    document.querySelector(".notify-transaction").addEventListener("click", async (e) => {
-      if(isLoadingNotify) return
-      if (!document.querySelector(".notify-transaction").classList.contains("notify-selected")) {
-        isLoadingNotify = true
-        document.querySelector(".notify-list").style.display = "none"
-        document.querySelector(".notify-title").style.display = "none" 
-        document.querySelector(".notify-transaction").classList.add("notify-selected")
-        document.querySelector(".notify-news").classList.remove("notify-selected")
+    var isLoadingNotify = false
 
-        const account_id = localStorage.getItem("account_id")
-        const token = localStorage.getItem("token")
-        await getNotification(account_id, token)
-        document.querySelector(".notify-list").style.display = "flex"
-        document.querySelector(".notify-title").textContent = "Thông báo giao dịch gần đây"
-        document.querySelector(".notify-title").style.display = "flex" 
-        isLoadingNotify = false
-      }
+    document.querySelectorAll(".notify-news").forEach(item => {
+      item.addEventListener("click", async (e) => {
+        if(isLoadingNotify) return
+        if (!document.querySelector(".notify-news").classList.contains("notify-selected")) {
+          isLoadingNotify = true
+          document.querySelector(".notify-list").style.display = "none"
+          document.querySelector(".notify-title").style.display = "none" 
+          document.querySelector(".notify-news").classList.add("notify-selected")
+          document.querySelector(".notify-transaction").classList.remove("notify-selected")
+
+          const account_id = localStorage.getItem("account_id")
+          const token = localStorage.getItem("token")
+          await getNotification(account_id, token)
+          document.querySelector(".notify-list").style.display = "flex"
+          document.querySelector(".notify-title").textContent = "Thông báo tin tức gần đây"
+          document.querySelector(".notify-title").style.display = "flex" 
+          isLoadingNotify = false
+        }
+      })
+    })
+
+    document.querySelectorAll(".notify-transaction").forEach(item => {
+      item.addEventListener("click", async (e) => {
+        if(isLoadingNotify) return
+        if (!document.querySelector(".notify-transaction").classList.contains("notify-selected")) {
+          isLoadingNotify = true
+          document.querySelector(".notify-list").style.display = "none"
+          document.querySelector(".notify-title").style.display = "none" 
+          document.querySelector(".notify-transaction").classList.add("notify-selected")
+          document.querySelector(".notify-news").classList.remove("notify-selected")
+
+          const account_id = localStorage.getItem("account_id")
+          const token = localStorage.getItem("token")
+          await getNotification(account_id, token)
+          document.querySelector(".notify-list").style.display = "flex"
+          document.querySelector(".notify-title").textContent = "Thông báo giao dịch gần đây"
+          document.querySelector(".notify-title").style.display = "flex" 
+          isLoadingNotify = false
+        }
+      })
     })
 
     // log out button
@@ -893,6 +928,10 @@
           window.location.href = "index.php"
         } else {
           console.error(data)
+          localStorage.removeItem("account_id")
+          localStorage.removeItem("token")
+          alert("Phiên đăng nhập đã hết hạn.")
+          window.location.href = "index.php"
         }
       } catch (err) {
         console.error(err)

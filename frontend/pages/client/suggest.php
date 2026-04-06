@@ -160,9 +160,11 @@
                             }
                             province_text.classList.add("provinceCode-" + item.classList[1])
 
-
                             document.querySelector(".filter-province-cb").checked = false
                             document.querySelector(".filter-province-lb .filter-arrow").style.rotate = "0deg"
+
+                            // reset ward value
+                            document.querySelector(".filter-district-lb-text").textContent = "Chọn phường xã"
 
                             const provinceCode = item.classList[1]
                             await autoWard(account_id, token, provinceCode)
@@ -340,7 +342,7 @@
                 roomType = "Căn hộ"
               if(data.data.roomType === "dorm")
                 roomType = "Ký túc xá"
-              document.querySelector(".filter-district-room-text").textContent = roomType
+              document.querySelector(".filter-room-lb-text").textContent = roomType
             }
 
             if(data.data.priceMin)
@@ -361,7 +363,13 @@
     }
 
     // save button
+    var isLoading = false
     document.querySelector(".filter-apply").addEventListener("click", async (e) => {
+      if(isLoading) return
+      isLoading = true
+      document.querySelector(".filter-apply").disable = true
+      document.querySelector(".filter-apply").textContent = "Đang lưu"
+
       // validate
       var isValid = true
       var province = ""
@@ -393,7 +401,8 @@
         document.querySelector(".district-error").style.display = "flex"
       }
 
-      if((document.querySelector(".filter-room-lb-text").textContent.trim() && stringRegex.test(document.querySelector(".filter-room-lb-text").textContent.trim()))) {
+      const validRooms = ["Phòng đơn", "Căn hộ", "Ký túc xá"]
+      if((document.querySelector(".filter-room-lb-text").textContent.trim() && validRooms.includes(document.querySelector(".filter-room-lb-text").textContent.trim()))) {
         if(document.querySelector(".filter-room-lb-text").textContent.trim() !== "Chọn loại phòng") {
           roomType = document.querySelector(".filter-room-lb-text").textContent.trim()
         }
@@ -479,6 +488,10 @@
           }
         } catch (err) {
           console.error(err)
+        } finally {
+          isLoading = false
+          document.querySelector(".filter-apply").disable = false
+          document.querySelector(".filter-apply").textContent = "Lưu"
         }
       }
     })
@@ -488,7 +501,12 @@
       var account_id = localStorage.getItem("account_id")
       var token = localStorage.getItem("token")
 
-      await Promise.all([autoFillProvince(account_id, token), autoFillForm(account_id, token)])
+      if(account_id != null && token != null) {
+        await Promise.all([autoFillProvince(account_id, token), autoFillForm(account_id, token)])
+      } else {
+        alert("Bạn chưa đăng nhập. Đang chuyển hướng sang trang đăng nhập.")
+        window.location.href = "login.php"
+      }
     })
   </script>
 </html>

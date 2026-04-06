@@ -166,9 +166,17 @@
       document.querySelector(".recharge-sum-value").textContent = Math.ceil((input * money / point) * 110 / 100).toLocaleString("vi-VN") + " VND"
     })
 
+    var isLoading = false
+
     // submit button
     document.querySelector(".recharge-pay").addEventListener("click", async (e) => {
       e.preventDefault()
+
+      if(isLoading) return
+      isLoading = true
+      document.querySelector(".recharge-pay").disabled = true
+      document.querySelector(".recharge-pay").textContent = "Đang xử lý..."
+
       var account_id = localStorage.getItem("account_id")
       var token = localStorage.getItem("token")
       const input = Number(document.querySelector(".recharge-point-input").value.trim())
@@ -203,6 +211,11 @@
           }
         } catch (err) {
           console.error(err)
+        }
+        finally {
+          isLoading = false
+          document.querySelector(".recharge-pay").disabled = false
+          document.querySelector(".recharge-pay").textContent = "Thanh toán"
         }
       }
     })

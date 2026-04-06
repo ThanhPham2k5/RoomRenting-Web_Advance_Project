@@ -40,14 +40,14 @@
                 <img src='<?php echo BASE_URL . "/assets/img/avatar-test.png"?>' alt="avatar.png" class="user-avatar">
 
                 <div class="user-profile-info">
-                    <div class="user-name">Po Pici</div>
+                    <div class="user-name">Người dùng</div>
 
                     <div class="user-point-section">
                         <div class="user-point-info">
                         Điểm
 
                         <div class="user-point-value">
-                            100.000
+                            0
 
                             <img src='<?php echo BASE_URL . "/assets/img/point.png"?>' alt="point.png" class="user-point-img">
                         </div>
@@ -284,6 +284,11 @@
                 histories.forEach(history => {
                     var point = Number(history.points).toLocaleString("vi-VN")
                     var date = new Date(history.createdAt).toLocaleString("vi-VN")
+                    var notifyInfo = document.querySelector(".history-recharge").classList.contains("history-selected") ? `
+                        <div class="notify-value ${valueItem}">+${point} Điểm ( Nạp thêm điểm thành công )</div>
+                    ` : `
+                        <div class="notify-value ${valueItem}">-${point} Điểm ( Trừ điểm dịch vụ )</div>
+                    `
 
                     html += `
                         <div class="notify-item">
@@ -293,7 +298,7 @@
                             <div class="notify-info">${billTitle} vào tài khoản thành công</div>
 
                             <!-- using for transaction -->
-                            <div class="notify-value ${valueItem}">+${point} Điểm ( Nạp thêm điểm thành công )</div>
+                            ${notifyInfo}
 
                             <div class="notify-time">${date}</div>
                             </div>

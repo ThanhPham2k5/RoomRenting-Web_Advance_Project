@@ -29,10 +29,20 @@
       href='<?php echo BASE_URL . "/assets/favicon/apple-touch-icon.png"?>'
     />
     <link rel="manifest" href='<?php echo BASE_URL . "/assets/favicon/site.webmanifest" ?>'/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <title>Detail Post Page | RoomRenting</title>
   </head>
   <body>
     <?php include(__DIR__ . "/components/header.php"); ?>
+
+    <div class="image-background">
+        <div class="image-block">
+            <div class="image-close">x</div>
+
+            <img src='<?php echo BASE_URL . "/assets/img/left-img.png"?>' alt="image.png" class="image-img">
+        </div>
+    </div>
 
     <div class="content">
         <div class="content-left">
@@ -47,7 +57,7 @@
             </div>
 
             <div class="left-title">
-                <h2 class="left-main-text">Phòng giá 5 tỷ/ tháng, đường Trương Phước Phan, phường Bình Trị Đông, quận Bình Tân</h2>
+                <h2 class="left-main-text"></h2>
 
                 <img src='<?php echo BASE_URL . "/assets/img/favour.png" ?>' alt="favourite.png" class="left-favourite">
             </div>
@@ -55,27 +65,39 @@
             <div class="left-address">
                 <img src='<?php echo BASE_URL . "/assets/img/address.png"?>' alt="left-address-ico.png" class="left-address-ico">
 
-                <div class="left-address-text">Phường Bình Trị Đông, Tp Hồ Chí Minh</div>
+                <div class="left-address-text"></div>
             </div>
 
             <div class="left-info">
-                <h3 class="left-info-money">5 tỷ/tháng</h3>
+                <h3 class="left-info-money"></h3>
 
-                <div class="left-info-square">57,5m2</div>
+                <div class="left-info-square"></div>
             </div>
 
-            <h3 class="left-deposit">Số tiến cọc: 3 tỷ</h3>
+            <h3 class="left-deposit"></h3>
+
+            <div class="left-room">
+                <h3>Loại phòng: </h3>
+
+                <div class="left-room-info"></div>
+            </div>
+
+            <div class="left-occupants">
+                <h3>Số người tối đa: </h3>
+
+                <div class="left-occupants-info"></div>
+            </div>
 
             <div class="left-desc">
-                <h3>Mô tả chi tiết</h3>
+                <h3>Mô tả chi tiết: </h3>
 
-                <div class="left-desc-info">Địa chỉ: Đường Tân Nhất 13 , Phường Tân Thới Nhất , Quận 12. Phòng ngay trục đường Trường Chinh QUẬN 12 , thuận tiện di chuyển qua Tân Bình , Gv, ...Cách trường HUFLIT Hốc Môn 4km. Cổng vân tay, camera an ninh. Giờ giấc tự do, không chung chủ. Có Thang máy và Sân Thượng.</div>
+                <div class="left-desc-info"></div>
             </div>
 
             <div class="left-map">
                 <h3>Xem trên bản đồ</h3>
 
-                <div class="left-map-api">
+                <div class="left-map-api" id="map">
                     <!-- place map api here -->
                      <img src='<?php echo BASE_URL . "/assets/img/map-api.png"?>' alt="map.png" class="left-map-img">
                 </div>
@@ -87,13 +109,13 @@
                 <div class="owner-info">
                     <img src='<?php echo BASE_URL . "/assets/img/avatar-test.png"?>' alt="owner-avatar.png" class="owner-avatar">
 
-                    <div class="owner-name">Popici</div>
+                    <div class="owner-name">Người dùng</div>
                 </div>
 
                 <button type="button" class="owner-phone">
                     <img src='<?php echo BASE_URL . "/assets/img/phone-ico.png"?>' alt="phone-ico.png" class="phone-ico">
 
-                    <div class="phone-info">Liên hệ tôi: 1234567890</div>
+                    <div class="phone-info">Liên hệ tôi: xxxxxxxxxx</div>
                 </button>
             </div>
 
@@ -109,20 +131,10 @@
 
                 <!-- using when exsits comments -->
                  <div class="comment-box-true">
-                    <!-- a comment example -->
-                    <?php for ($i = 1; $i <= 20; $i++) { ?>
-                    <div class="user-comment">
-                        <img src='<?php echo BASE_URL . "/assets/img/avatar-test.png"?>' alt="other-avatar.png" class="other-avatar">
-
-                     <div class="other-comment">
-                        <div class="other-name">Popici</div>
-
-                        <div class="other-comment-text">Nà ná na na</div>
-
-                        <div class="other-comment-time">03:36 AM - 01/01/2026</div>
-                     </div>
+                    <div class="comment-section">
                     </div>
-                    <?php } ?>
+
+                    <div class="more">Xem thêm</div>
                  </div>
 
                  <div class="comment-line"></div>
@@ -145,12 +157,542 @@
     <?php include(__DIR__ . "/components/footer.php") ?>
   </body>
   <script>
-    const params = URLSearchParams(window.location.search)
+    const params = new URLSearchParams(window.location.search)
     const post_id = params.get("post_id")
+    var post_owner_id = null
+    var page = 1
+
+    // choose image
+    document.querySelector(".left-img").addEventListener("click", (e) => {
+        document.querySelector(".image-img").src = document.querySelector(".left-img").src
+        document.querySelector(".image-background").style.display = "flex"
+    })
+    
+    document.querySelector(".left-img-1").addEventListener("click", (e) => {
+        document.querySelector(".image-img").src = document.querySelector(".left-img-1").src
+        document.querySelector(".image-background").style.display = "flex"
+    })
+    
+    document.querySelector(".left-img-2").addEventListener("click", (e) => {
+        document.querySelector(".image-img").src = document.querySelector(".left-img-2").src
+        document.querySelector(".image-background").style.display = "flex"
+    })
+    
+    document.querySelector(".left-img-3").addEventListener("click", (e) => {
+        document.querySelector(".image-img").src = document.querySelector(".left-img-3").src
+        document.querySelector(".image-background").style.display = "flex"
+    })
+
+    // close image
+    document.querySelector(".image-close").addEventListener("click", (e) => {
+        document.querySelector(".image-background").style.display = "none"
+    })
+
+    async function showMap(houseNumber, ward, province) {
+        const fullAddress = `${houseNumber}, ${ward}, ${province}, Việt Nam`
+        const data = await geocode(fullAddress)
+        if (data.length > 0) {
+            renderMap(data[0].lat, data[0].lon, 17, `${houseNumber}, ${ward}, ${province}`)
+            return
+        }
+
+        const wardAddress = `${ward}, ${province}, Việt Nam`
+        const wardData = await geocode(wardAddress)
+        if (wardData.length > 0) {
+            renderMap(wardData[0].lat, wardData[0].lon, 15, `${ward}, ${province}`)
+            return
+        }
+
+        const provinceData = await geocode(`${province}, Việt Nam`)
+        if (provinceData.length > 0) {
+            renderMap(provinceData[0].lat, provinceData[0].lon, 12, province)
+        }
+    }
+
+    async function geocode(address) {
+        try {
+            const response = await fetch(
+                `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`
+            )
+            return await response.json()
+        } catch (err) {
+            return []
+        }
+    }
+
+    function renderMap(lat, lon, zoom, popupText) {
+        const map = L.map("map").setView([lat, lon], zoom)
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            attribution: "© OpenStreetMap"
+        }).addTo(map)
+        L.marker([lat, lon])
+            .addTo(map)
+            .bindPopup(popupText)
+            .openPopup()
+    }
 
     async function updateDetailPost(account_id, token) {
-        
+        try {
+            const [response, comments, personalInfo] = await Promise.all([fetch("http://backend.test/api/posts/" + post_id + "?include=postImages,user.personalInfo,favorites.account", {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json",
+                    "Authorization": "Bearer " + token
+                }
+            }), fetch("http://backend.test/api/comments?include=account.user.personalInfo&per_page=5&filter[post.id]=" + post_id + "&page=" + page + "&sort=-createdAt", {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json",
+                    "Authorization": "Bearer " + token
+                }
+            }), fetch("http://backend.test/api/personalInfos/byAccount/" + account_id, {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json",
+                    "Authorization": "Bearer " + token
+                }
+            })])
+
+            const data = await response.json()
+            if(response.ok) {
+                console.log("status:", data.data.status)
+                console.log("deletedAt:", data.data.deletedAt)
+                if(data.data && data.data.status === "completed" && data.data.deletedAt == null) {
+                    // update post image
+                    if(data.data.postImages) {
+                        if(data.data.postImages[0]) {
+                            document.querySelector(".left-img").src = "http://backend.test" + data.data.postImages[0].imagePostUrl
+                        }
+                        
+                        if(data.data.postImages[1]) {
+                            document.querySelector(".left-img-1").src = "http://backend.test" + data.data.postImages[1].imagePostUrl
+                        }
+
+                        
+                        if(data.data.postImages[2]) {
+                            document.querySelector(".left-img-2").src = "http://backend.test" + data.data.postImages[2].imagePostUrl
+                        }
+
+                        
+                        if(data.data.postImages[3]) {
+                            document.querySelector(".left-img-3").src = "http://backend.test" + data.data.postImages[3].imagePostUrl
+                        }
+                    }
+
+                    // update post info
+                    // console.log(data.data)
+                    if(data.data.title)
+                        document.querySelector(".left-main-text").textContent = data.data.title
+                    if(data.data.houseNumber && data.data.ward && data.data.province) {
+                        document.querySelector(".left-address-text").textContent = data.data.houseNumber + ", " + data.data.ward + ", " + data.data.province
+                        // update map
+                        showMap(data.data.houseNumber, data.data.ward, data.data.province)
+                    }
+                    if(data.data.price)
+                        document.querySelector(".left-info-money").textContent = Number(data.data.price).toLocaleString("vi-VN") + " VND/tháng"
+                    if(data.data.area)
+                        document.querySelector(".left-info-square").textContent = Number(data.data.area).toLocaleString("vi-VN") + " m2"
+                    if(data.data.deposit)
+                        document.querySelector(".left-deposit").textContent = "Số tiền cọc: " + Number(data.data.deposit).toLocaleString("vi-VN") + " VND"
+                    if(data.data.roomType === "room")
+                        document.querySelector(".left-room-info").textContent = "Phòng đơn"
+                    if(data.data.roomType === "apartment")
+                        document.querySelector(".left-room-info").textContent = "Căn hộ"
+                    if(data.data.roomType === "dorm")
+                        document.querySelector(".left-room-info").textContent = "Ký túc xá"
+                    if(data.data.maxOccupants)
+                        document.querySelector(".left-occupants-info").textContent = data.data.maxOccupants + " người"
+                    if(data.data.description)
+                        document.querySelector(".left-desc-info").textContent = data.data.description
+
+                    // update favorite ico
+                    // check isFav or not
+                    var isFav = false
+                    var favId = ""
+                    data.data.favorites.forEach(favorite => {
+                        // console.log(favorite)
+                        if(favorite.account.id == account_id) {
+                            isFav = true
+                            favId = favorite.id
+                        }
+                    })
+                    var favIco = isFav ? "favour" : "unfavour"
+
+                    document.querySelector(".left-favourite").classList.add("post-id-" + post_id)
+                    document.querySelector(".left-favourite").classList.add("favourite-id-" + favId)
+                    document.querySelector(".left-favourite").classList.add(favIco)
+                    document.querySelector(".left-favourite").src = "<?php echo BASE_URL ?>/assets/img/" + favIco + ".png"
+
+                    document.querySelector(".left-favourite").addEventListener("click", async (e) => {
+                        var favIco = document.querySelector(".left-favourite").classList.contains("favour")
+                        const postClass = [...document.querySelector(".left-favourite").classList].find(c => c.startsWith("post-id-"))
+                        var post_id = postClass.replace("post-id-", "")
+
+                        // create new favorite
+                        if(!favIco) {
+                        document.querySelector(".left-favourite").classList.remove("unfavour")
+                        document.querySelector(".left-favourite").classList.add("favour")
+                        document.querySelector(".left-favourite").setAttribute("src", '<?php echo BASE_URL ?>/assets/img/favour.png')
+
+                        try {
+                            const response = await fetch("http://backend.test/api/favorites", {
+                            method: "POST",
+                            headers: {
+                                "Accept": "application/json",
+                                "Content-Type": "application/json",
+                                "Authorization": "Bearer " + token
+                            },
+                            body: JSON.stringify({
+                                "account_id": account_id,
+                                "post_id": post_id
+                            })
+                            })
+
+                            const data = await response.json()
+                            if(response.ok) {
+                            // console.log(data)
+                            if(data) {
+                                const favClass = [...document.querySelector(".left-favourite").classList].find(c => c.startsWith("favourite-id-"))
+                                if(favClass) {
+                                document.querySelector(".left-favourite").classList.remove(favClass)
+                                document.querySelector(".left-favourite").classList.add("favourite-id-" + data.favorite.id)
+                                }
+                            }
+                            } else {
+                            console.error(data)
+                            }
+                        } catch (err) {
+                            console.error(err)
+                        }
+                        }
+
+                        // delete favorite
+                        if(favIco) {
+                        document.querySelector(".left-favourite").classList.remove("favour")
+                        document.querySelector(".left-favourite").classList.add("unfavour")
+                        document.querySelector(".left-favourite").setAttribute("src", '<?php echo BASE_URL ?>/assets/img/unfavour.png')
+                        const favClass = [...document.querySelector(".left-favourite").classList].find(c => c.startsWith("favourite-id-"))
+                        var fav_id = favClass.replace("favourite-id-", "")
+
+                        try {
+                            const response = await fetch("http://backend.test/api/favorites/" + fav_id, {
+                            method: "DELETE",
+                            headers: {
+                                "Accept": "application/json",
+                                "Content-Type": "application/json",
+                                "Authorization": "Bearer " + token
+                            }
+                            })
+
+                            const data = await response.json()
+                            if(response.ok) {
+                            // console.log(data)
+                            } else {
+                            console.error(data)
+                            }
+                        } catch (err) {
+                            console.error(err)
+                        }
+                        }
+                    })
+
+                    // update post owner
+                    if(data.data.user.personalInfo.profileUrl)
+                        document.querySelector(".owner-avatar").src = data.data.user.personalInfo.profileUrl
+                    if(data.data.user.personalInfo.name)
+                        document.querySelector(".owner-name").textContent = data.data.user.personalInfo.name
+                    if(data.data.user.personalInfo.phoneNumber)
+                        document.querySelector(".phone-info").textContent = "Liên hệ tôi: " + data.data.user.personalInfo.phoneNumber
+                    if(data.data.user.id)
+                        post_owner_id = data.data.user.id
+
+                    // update comment section
+                    const commentList = await comments.json()
+                    if(comments.ok) {
+                        if(commentList) {
+                            if(commentList.data != null && commentList.data.length > 0) {
+                                document.querySelector(".comment-box-false").style.display = "none"
+                                document.querySelector(".comment-box-true").style.display = "flex"
+
+                                // comment list
+                                let html = ""
+
+                                commentList.data.forEach(comment => {
+                                    var date = new Date(comment.createdAt).toLocaleString()
+                                    var author = data.data.user.id === comment.account.user.id ? " - tác giả" : ""
+                                    var commentAvatar = comment.account.user.personalInfo.profileUrl ? comment.account.user.personalInfo.profileUrl : '<?php echo BASE_URL . "/assets/img/avatar-test.png"?>'
+                                    html += `
+                                        <div class="user-comment">
+                                            <img src=${commentAvatar} alt="other-avatar.png" class="other-avatar">
+
+                                            <div class="other-comment">
+                                                <div class="other-name">${comment.account.username}${author}</div>
+
+                                                <div class="other-comment-text">${comment.content}</div>
+
+                                                <div class="other-comment-time">${date}</div>
+                                            </div>
+                                        </div>
+                                    `
+                                })
+
+                                document.querySelector(".comment-section").innerHTML = html
+                            } else {
+                                document.querySelector(".comment-box-false").style.display = "flex"
+                                document.querySelector(".comment-box-true").style.display = "none"
+                            }
+                        }
+                    } else {
+                        console.error(comments)
+                    }
+
+                    // update comment input
+                    const info = await personalInfo.json()
+                    if(personalInfo.ok) {
+                        if(info.data.profileUrl) {
+                            document.querySelector(".comment-user-avatar").src = info.data.profileUrl
+                        }
+                    } else {
+                        console.error(info)
+                    }
+                } else {
+                    alert("Bài đăng không tồn tại.")
+                    window.location.href = "index.php"
+                }
+            } else {
+                console.error(data)
+                alert("Bài đăng không tồn tại.")
+                window.location.href = "index.php"
+            }
+        } catch (err) {
+            console.error(err)
+        }
     }
+
+    // more comment button
+    document.querySelector(".more").addEventListener("click", async (e) => {
+        var account_id = localStorage.getItem("account_id")
+        var token = localStorage.getItem("token")
+
+        if (account_id != null && token != null) {
+            page++
+
+            try {
+                const response = await fetch("http://backend.test/api/comments?include=account.user.personalInfo&per_page=5&filter[post.id]=" + post_id + "&page=" + page + "&sort=-createdAt", {
+                    method: "GET",
+                    headers: {
+                        "Accept": "application/json",
+                        "Authorization": "Bearer " + token
+                    }
+                })
+
+                const data = await response.json()
+                if(response.ok) {
+                    if(data) {
+                        // console.log(data)
+                        if(data.data != null && data.data.length > 0) {
+                            if(page === data.meta.last_page) {
+                                document.querySelector(".more").style.display = "none"
+                            }
+
+                            // comment list
+                            let html = ""
+
+                            data.data.forEach(comment => {
+                                var date = new Date(comment.createdAt).toLocaleString()
+                                var author = post_owner_id === comment.account.user.id ? " - tác giả" : ""
+                                html += `
+                                    <div class="user-comment">
+                                        <img src=${comment.account.user.personalInfo.profileUrl} alt="other-avatar.png" class="other-avatar">
+
+                                        <div class="other-comment">
+                                            <div class="other-name">${comment.account.username}${author}</div>
+
+                                            <div class="other-comment-text">${comment.content}</div>
+
+                                            <div class="other-comment-time">${date}</div>
+                                        </div>
+                                    </div>
+                                `
+                            })
+
+                            document.querySelector(".comment-section").innerHTML += html
+                        } else {
+                            document.querySelector(".more").style.display = "none"
+                        }
+                    }
+                } else {
+                    console.error(response)
+                }
+            } catch (err) {
+                console.error(err)
+            }
+        } else {
+            alert("Bạn chưa đăng nhập. Đang chuyển hướng sang trang đăng nhập.")
+            window.location.href = "login.php"
+        }
+    })
+
+    const badWords = [
+        // Chửi thề tiếng Việt phổ biến
+        "đ.m", "đmm", "đm", "vkl", "vcl", "clm", "đcm", "đcmm",
+        "mẹ mày", "mẹ m", "con chó", "thằng chó", "đồ chó",
+        "thằng khốn", "đồ khốn", "khốn nạn", "đồ ngu", "thằng ngu",
+        "con ngu", "ngu vl", "ngu vcl", "óc chó", "não cá vàng",
+        "đồ điên", "thằng điên", "con điên", "mày điên",
+        "thằng lồn", "con lồn", "cái lồn", "con cặc",
+        "địt mẹ", "địt con", "đụ mẹ", "đụ má",
+        "má mày", "bố mày", "tổ cha mày",
+        "thằng chết", "con chết", "đồ chết tiệt",
+        "đồ súc vật", "súc sinh", "đồ súc sinh",
+        "thằng súc vật", "con súc vật",
+        "mặt l", "mặt c", "thằng mặt l",
+        "đồ phản bội", "thằng hèn", "con hèn", "đồ hèn",
+        "thằng bần tiện", "đồ bần tiện", "bần tiện",
+        "thằng vô học", "đồ vô học", "vô học",
+        "thằng vô liêm sỉ", "đồ vô liêm sỉ", "vô liêm sỉ",
+        "đồ mất dạy", "thằng mất dạy", "con mất dạy", "mất dạy",
+        "đồ láo", "thằng láo", "con láo",
+        "đồ lưu manh", "thằng lưu manh", "lưu manh",
+        "đồ đểu", "thằng đểu", "con đểu", "đểu cáng",
+        "thằng ăn cướp", "đồ ăn cướp",
+        "thằng ăn trộm", "đồ ăn trộm",
+        "thằng lừa đảo", "đồ lừa đảo",
+        "thằng phản động", "đồ phản động",
+        "nói láo", "nói dối", "kẻ dối trá",
+        "thằng bẩn", "con bẩn", "đồ bẩn thỉu",
+        "thằng khùng", "con khùng", "đồ khùng",
+        "thằng dở hơi", "con dở hơi", "dở hơi",
+        "thằng đần", "con đần", "đồ đần độn", "đần độn",
+        "thằng tâm thần", "con tâm thần",
+        "thằng điên khùng", "con điên khùng",
+        "đồ vô dụng", "thằng vô dụng", "vô dụng",
+        "thằng ăn hại", "đồ ăn hại", "ăn hại",
+        "thằng phá hoại", "đồ phá hoại",
+        "đồ cặn bã", "cặn bã xã hội",
+        "thằng rác rưởi", "đồ rác rưởi", "rác rưởi",
+        "đồ thối nát", "thối nát",
+        "thằng hèn mọn", "đồ hèn mọn", "hèn mọn",
+        "thằng ti tiện", "đồ ti tiện", "ti tiện",
+        "đồ đê tiện", "thằng đê tiện", "đê tiện",
+        "thằng bịp bợm", "đồ bịp bợm", "bịp bợm",
+        "thằng lố bịch", "đồ lố bịch", "lố bịch",
+        "thằng tởm", "con tởm", "đồ tởm",
+        "ghê tởm", "kinh tởm",
+        "thằng bệnh hoạn", "đồ bệnh hoạn", "bệnh hoạn",
+        "thằng biến thái", "đồ biến thái", "biến thái",
+        "thằng biến chất", "đồ biến chất",
+        "thằng tồi tệ", "đồ tồi tệ", "tồi tệ",
+        "đồ đáng khinh", "kẻ đáng khinh",
+        "thằng hạ tiện", "đồ hạ tiện", "hạ tiện",
+        "đồ bỉ ổi", "thằng bỉ ổi", "bỉ ổi",
+        "đồ xấu xa", "thằng xấu xa", "xấu xa",
+        "thằng nhơ bẩn", "đồ nhơ bẩn", "nhơ bẩn",
+        "thằng tanh hôi", "đồ tanh hôi",
+        "đồ chó đẻ", "chó đẻ",
+        "đồ dơ bẩn", "dơ bẩn",
+        "thằng ký sinh", "đồ ký sinh", "ký sinh",
+        "kẻ thù", "quân thù",
+        "tên tội phạm", "tên cướp", "tên trộm",
+        "mày", "tao", "ngu", "cút", "xéo",
+        "dốt", "gà vcl", "chết",
+
+        // Tiếng Anh
+        "fuck", "shit", "bitch", "asshole", "bastard",
+        "idiot", "stupid", "moron", "dumb", "loser",
+        "wtf", "stfu", "gtfo", "kys",
+        "retard", "faggot", "nigger", "whore", "slut",
+        "cunt", "dick", "cock", "pussy", "ass",
+        "motherfucker", "fucker", "bullshit",
+        "dumbass", "jackass", "dipshit",
+        "scumbag", "trash", "garbage", "worthless",
+        "piece of shit", "son of a bitch",
+        "go to hell", "drop dead",
+    ]
+
+    function containsBadWords(text) {
+        const lowerText = text.toLowerCase()
+        return badWords.some(word => lowerText.includes(word.toLowerCase()))
+    }
+
+    // send comment
+    var isLoading = false
+    document.querySelector(".user-submit-ico").addEventListener("click", async (e) => {
+        if(isLoading) return
+        isLoading = true
+
+        var account_id = localStorage.getItem("account_id")
+        var token = localStorage.getItem("token")
+
+        if (account_id != null && token != null) {
+            const content = document.querySelector(".user-input").value.trim()
+            if(!content) {
+                alert("Vui lòng nhập bình luận!")
+                isLoading = false
+                return
+            }
+
+            if(containsBadWords(content)) {
+                alert("Bình luận chứa nội dung không phù hợp. Vui lòng chỉnh sửa lại!!")
+                isLoading = false
+                return
+            }
+
+            try {
+                const response = await fetch("http://backend.test/api/comments", {
+                    method: "POST",
+                    headers: {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + token
+                    },
+                    body: JSON.stringify({
+                        "content": content,
+                        "account_id": account_id,
+                        "post_id": post_id
+                    })
+                })
+
+                const data = await response.json()
+                if(response.ok) {
+                    if(data.message === "Comment created successfully") {
+                        document.querySelector(".user-input").value = ""
+
+                        // add new comment into the comment section
+                        let html = ""
+                        html = `
+                            <div class="user-comment">
+                                <img src=${document.querySelector(".comment-user-avatar").src} alt="other-avatar.png" class="other-avatar">
+
+                                <div class="other-comment">
+                                    <div class="other-name">${document.querySelector(".user-name").textContent}</div>
+
+                                    <div class="other-comment-text">${content}</div>
+
+                                    <div class="other-comment-time">${new Date().toLocaleString()}</div>
+                                </div>
+                            </div>
+                        `
+
+                        document.querySelector(".comment-section").innerHTML = html + document.querySelector(".comment-section").innerHTML
+
+                        // show comment section
+                        document.querySelector(".comment-box-true").style.display = "flex"
+                        document.querySelector(".comment-box-false").style.display = "none"
+                    }
+                } else {
+                    console.error(response)
+                }
+            } catch (err) {
+                console.error(err)
+            } finally {
+                isLoading = false
+            }
+        } else {
+            alert("Bạn chưa đăng nhập. Đang chuyển hướng sang trang đăng nhập.")
+            window.location.href = "login.php"
+        }
+    })
 
     // run once time every reload or load page
     document.addEventListener("DOMContentLoaded", async (e) => {

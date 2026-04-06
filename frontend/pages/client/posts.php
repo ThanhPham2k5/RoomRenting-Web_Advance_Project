@@ -42,6 +42,12 @@
 
             Quay lại
           </div>
+
+          <div class="filter-reset">
+            <img src='<?php echo BASE_URL . "/assets/img/filter-reset.png"?>' alt="reset-ico.png" class="filter-reset-ico">
+
+            Làm mới
+          </div>
         </div>
 
         <!-- <div class="filter-line"></div> -->
@@ -247,6 +253,12 @@
       }
     });
 
+    function formatPrice(price) {
+        if (price >= 1000000000) return (price / 1000000000).toFixed(1) + " tỷ"
+        if (price >= 1000000) return (price / 1000000).toFixed(1) + " triệu"
+        return Number(price).toLocaleString("vi-VN")
+    }
+
     // auto fill province list
     async function autoFillProvince(account_id, token) {
         try {
@@ -272,7 +284,7 @@
 
                     document.querySelector(".filter-province-list").innerHTML = html
 
-                    // auto update ward after choosing
+                    // auto update ward and reset after choosing
                     document.querySelectorAll(".filter-province-item").forEach(item => {
                         item.addEventListener("click", async (e) => {
                             const province_text = document.querySelector(".filter-province-lb-text")
@@ -288,6 +300,9 @@
 
                             document.querySelector(".filter-province-cb").checked = false
                             document.querySelector(".filter-province-lb .filter-arrow").style.rotate = "0deg"
+
+                            // reset ward value
+                            document.querySelector(".filter-district-lb-text").textContent = "Chọn phường xã"
 
                             const provinceCode = item.classList[1]
                             await autoWard(account_id, token, provinceCode)
@@ -385,7 +400,7 @@
 
     // filter & sort & page value
     var filterCondition = ""
-    var sortCondition = "createdAt" // default
+    var sortCondition = "-createdAt" // default
     var searchCondition = ""
     var page = 1
     var lastPage = 1
@@ -419,11 +434,11 @@
       }
 
       if(document.querySelector(".filter-min-price").value.trim() && numbRegex.test(document.querySelector(".filter-min-price").value.trim()) && document.querySelector(".filter-min-price").value.trim() > 0) {
-        filterCondition += "&filter[price][gte]=" + document.querySelector(".filter-min-price").value.trim()
+        filterCondition += "&filter[price][]=>=" + document.querySelector(".filter-min-price").value.trim()
       }
 
       if(document.querySelector(".filter-max-price").value.trim() && numbRegex.test(document.querySelector(".filter-max-price").value.trim()) && document.querySelector(".filter-max-price").value.trim() > 0) {
-        filterCondition += "&filter[price][lte]=" + document.querySelector(".filter-max-price").value.trim()
+        filterCondition += "&filter[price][]=<=" + document.querySelector(".filter-max-price").value.trim()
       }
 
       if(document.querySelector(".filter-square-number").value.trim() && numbRegex.test(document.querySelector(".filter-square-number").value.trim()) && document.querySelector(".filter-square-number").value.trim() > 0) {
@@ -432,6 +447,19 @@
 
       page = 1
       await updatePostsPage()
+      filter_return.click()
+    })
+
+    // reset filter
+    document.querySelector(".filter-reset").addEventListener("click", (e) => { 
+      filterCondition = ""
+      document.querySelector(".filter-province-lb-text").textContent = "Chọn tỉnh thành"
+      document.querySelector(".filter-district-lb-text").textContent = "Chọn phường xã"
+      document.querySelector(".filter-room-lb-text").textContent = "Chọn loại phòng"
+      document.querySelector(".filter-min-price").value = 0
+      document.querySelector(".filter-max-price").value = 0
+      document.querySelector(".filter-square-number").value = 0
+      document.querySelector(".filter-apply").click()
     })
 
     // sort button
@@ -479,7 +507,7 @@
       searchCondition = ""
 
       const stringRegex = /^[a-zA-Z0-9ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\s]{3,255}$/
-      if(document.querySelector(".search-bar").value.trim() && stringRegex.test(document.querySelector(".search-bar").value.trim())) {
+      if((document.querySelector(".search-bar").value.trim() && stringRegex.test(document.querySelector(".search-bar").value.trim())) || !document.querySelector(".search-bar").value.trim()) {
         searchCondition = "&filter[search]=" + document.querySelector(".search-bar").value.trim()
         page = 1
         await updatePostsPage()
@@ -487,12 +515,6 @@
 
       // reset all field
       document.querySelector(".search-bar").value = ""
-      // document.querySelector(".filter-province-lb-text").textContent = "Chọn tỉnh thành"
-      // document.querySelector(".filter-district-lb-text").textContent = "Chọn phường xã"
-      // document.querySelector(".filter-room-lb-text").textContent = "Chọn loại phòng"
-      // document.querySelector(".filter-min-price").value = 0
-      // document.querySelector(".filter-max-price").value = 0
-      // document.querySelector(".filter-square-number").value = 0
     })
 
     // pagination button
@@ -641,8 +663,6 @@
       if (account_id != null && token != null) {
         const posts = await getPost(sortCondition, filterCondition, searchCondition, page)
 
-        console.log(searchCondition)
-
         if(posts != null && posts.length > 0) {
           let html = ""
 
@@ -694,7 +714,7 @@
                   </div>
 
                   <div class="post-info">
-                    <h3 class="post-price">${money} VND/tháng</h3>
+                    <h3 class="post-price">${formatPrice(post.price)} VND/tháng</h3>
 
                     <div class="post-square">${post.area} m2</div>
                   </div>
@@ -835,7 +855,7 @@
                   </div>
 
                   <div class="post-info">
-                    <h3 class="post-price">${money} VND/tháng</h3>
+                    <h3 class="post-price">${formatPrice(post.price)} VND/tháng</h3>
 
                     <div class="post-square">${post.area} m2</div>
                   </div>

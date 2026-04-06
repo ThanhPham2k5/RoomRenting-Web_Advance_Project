@@ -301,7 +301,7 @@
         email_error.style.display = "none"
       }
 
-      var password_regex = /^.{8,255}$/
+      var password_regex = /^\S{8,255}$/
       const password_value = password_input.value.trim()
       if(!password_regex.test(password_value)) {
         if(isValid) 
@@ -313,7 +313,7 @@
         password_error.style.display = "none"
       }
 
-      var re_password_regex = /^.{8,255}$/
+      var re_password_regex = /^\S{8,255}$/
       const re_password_value = re_password_input.value.trim()
       if(!re_password_regex.test(re_password_value) || re_password_value != password_value) {
         if(isValid) 

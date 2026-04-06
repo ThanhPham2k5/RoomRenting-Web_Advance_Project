@@ -55,7 +55,15 @@ class AccountResource extends JsonResource
                 $this->whenLoaded('notifications')
             ),
             'roles' => $this->whenLoaded('roles', function () {
-                return $this->roles->pluck('name');
+                return $this->roles->map(function ($role) {
+                    return [
+                        'id' => $role->id,
+                        'name' => $role->name,
+                        'permissions' => $role->relationLoaded('permissions') 
+                                            ? $role->permissions->pluck('name') 
+                                            : []
+                    ];
+                });
             }),
         ];
     }

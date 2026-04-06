@@ -27,16 +27,16 @@ class SendStatusPostNotification
         $account = $event->post->user->account;
 
         $title = match($post['status']) {
-            'rejected' => 'Bài đăng bị từ chối',
+            'rejected' => 'Bài đăng bị từ chối.',
             'completed' => 'Bài đăng đã được duyệt',
             'pending'   => 'Bài đăng đang được xét duyệt.',
-            'failed'    => 'Bài đăng đã bị từ chối.',
+            'failed'    => 'Bài đăng đã bị xóa.',
             default     => $event->titleNotification ?? 'Cập nhật bài đăng',
         };
 
         Notification::create([
             'title'             => $title,
-            'content'           => $event->reason ?? 'Bài đăng của bạn đã được cập nhật.',
+            'content'           => $event->post->reason ?? 'Bài đăng của bạn đã được cập nhật.',
             'notification_type' => 'news',
             'status'            => 'unread',
             'account_id'        => $account->id,

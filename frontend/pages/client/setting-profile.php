@@ -321,9 +321,11 @@
                             }
                             province_text.classList.add("provinceCode-" + item.classList[1])
 
-
                             document.querySelector(".filter-province-cb").checked = false
                             document.querySelector(".filter-province-lb .filter-arrow").style.rotate = "0deg"
+
+                            // reset ward value
+                            document.querySelector(".filter-district-lb-text").textContent = "Chọn phường xã"
 
                             const provinceCode = item.classList[1]
                             await autoWard(account_id, token, provinceCode)
@@ -485,16 +487,26 @@
             if(response.ok) {
                 // console.log(data.data)
                 if(data.data) {
-                    document.querySelector(".profile-avatar-img").setAttribute("src", data.data.profileUrl)
-                    document.querySelector(".profile-fullname-input").setAttribute("value", data.data.name)
-                    document.querySelector(".profile-phone-input").setAttribute("value", data.data.phoneNumber)
-                    document.querySelector(".profile-address-input").setAttribute("value", data.data.houseNumber)
-                    document.querySelector(".filter-province-lb-text").textContent = data.data.province
-                    await autoWardByName(account_id, token, data.data.province)
-                    document.querySelector(".filter-district-lb-text").textContent = data.data.ward
-                    document.querySelector(".profile-id-card-input").setAttribute("value", data.data.pid)
-                    document.querySelector(".filter-gender-lb-text").textContent = data.data.gender
-                    document.querySelector(".profile-dob-input").setAttribute("value", data.data.dateOfBirth)
+                    if(data.data.profileUrl)
+                        document.querySelector(".profile-avatar-img").setAttribute("src", data.data.profileUrl)
+                    if(data.data.name)
+                        document.querySelector(".profile-fullname-input").value = data.data.name
+                    if(data.data.phoneNumber)
+                        document.querySelector(".profile-phone-input").value = data.data.phoneNumber
+                    if(data.data.houseNumber)
+                        document.querySelector(".profile-address-input").value = data.data.houseNumber
+                    if(data.data.province) {
+                        document.querySelector(".filter-province-lb-text").textContent = data.data.province
+                        await autoWardByName(account_id, token, data.data.province)
+                    }
+                    if(data.data.ward)  
+                        document.querySelector(".filter-district-lb-text").textContent = data.data.ward
+                    if(data.data.pid)
+                        document.querySelector(".profile-id-card-input").value = data.data.pid
+                    if(data.data.gender)
+                        document.querySelector(".filter-gender-lb-text").textContent = data.data.gender
+                    if(data.data.dateOfBirth)
+                        document.querySelector(".profile-dob-input").value = data.data.dateOfBirth
                 }
             } else {
                 console.error(data)
@@ -508,10 +520,15 @@
         const account_id = localStorage.getItem("account_id")
         const token = localStorage.getItem("token")
 
-        await Promise.all([
-            autoFillProvince(account_id, token),
-            autoPersonalInfo(account_id,token)
-        ])
+        if(account_id != null && token != null) {
+            await Promise.all([
+                autoFillProvince(account_id, token),
+                autoPersonalInfo(account_id,token)
+            ])
+        } else {
+            alert("Bạn chưa đăng nhập. Đang chuyển hướng sang trang đăng nhập.")
+            window.location.href = "login.php"
+        }
     }
 
     // run once time every reload or load page
@@ -555,15 +572,21 @@
     })
 
     // update new password
+    var isPasswordLoading = false
     document.querySelector(".profile-pass-save").addEventListener("click", async (e) => {
+        if(isPasswordLoading) return
+        isPasswordLoading = true
+        document.querySelector(".profile-pass-save").disabled = true
+        document.querySelector(".profile-pass-save").textContent = "Đang lưu"
+
         // validation
         var isValid = true
-        const password_regex = /^[a-zA-Z0-9!@#$%^&*]{8,255}$/
+        const password_regex = /^\S{8,255}$/
 
         if(!password_regex.test(document.querySelector(".profile-cur-pass-input").value.trim())) {
             isValid = false
             document.querySelector(".profile-cur-pass-input").focus()
-            document.querySelector(".cur-pass-error").textContent = "Mật khẩu phải có từ 8 - 255 kí tự."
+            document.querySelector(".cur-pass-error").textContent = "Mật khẩu phải có từ 8 - 255 kí tự (bao gồm !@#$%^&*)."
             document.querySelector(".cur-pass-error").style.display = "flex"
         } else {
             document.querySelector(".cur-pass-error").style.display = "none"
@@ -574,7 +597,7 @@
                 document.querySelector(".profile-new-pass-input").focus()
             }
             isValid = false
-            document.querySelector(".new-pass-error").textContent = "Mật khẩu mới phải có từ 8 - 255 kí tự."
+            document.querySelector(".new-pass-error").textContent = "Mật khẩu mới phải có từ 8 - 255 kí tự (bao gồm !@#$%^&*)."
             document.querySelector(".new-pass-error").style.display = "flex"
         } else {
             document.querySelector(".new-pass-error").style.display = "none"
@@ -641,12 +664,26 @@
                 }
             } catch (err) {
                 console.error(err)
+            } finally {
+                isPasswordLoading = false
+                document.querySelector(".profile-pass-save").disabled = false
+                document.querySelector(".profile-pass-save").textContent = "Lưu thay đổi"
             }
+        } else {
+            isPasswordLoading = false
+            document.querySelector(".profile-pass-save").disabled = false
+            document.querySelector(".profile-pass-save").textContent = "Lưu thay đổi"
         }
     })
 
     // update personal data
+    var isPersonalLoading = false
     document.querySelector(".profile-save").addEventListener("click", async (e) => {
+        if(isPersonalLoading) return
+        isPersonalLoading = true
+        document.querySelector(".profile-save").disabled = true
+        document.querySelector(".profile-save").textContent = "Đang lưu"
+
         // validation
         var isValid = true
 
@@ -685,7 +722,7 @@
         }
 
         const province_regex = /^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\s]{3,255}$/
-        if(!province_regex.test(document.querySelector(".filter-province-lb-text").textContent.trim())) {
+        if(!province_regex.test(document.querySelector(".filter-province-lb-text").textContent.trim()) || document.querySelector(".filter-province-lb-text").textContent.trim() === "Chọn tỉnh thành") {
             if(isValid) {
                 // document.querySelector(".profile-province-input").focus()
             }
@@ -697,7 +734,7 @@
         }
 
         const district_regex = /^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\s]{3,255}$/
-        if(!district_regex.test(document.querySelector(".filter-district-lb-text").textContent.trim())) {
+        if(!district_regex.test(document.querySelector(".filter-district-lb-text").textContent.trim()) || document.querySelector(".filter-district-lb-text").textContent.trim() === "Chọn phường xã") {
             if(isValid) {
                 // document.querySelector(".profile-district-input").focus()
             }
@@ -758,12 +795,12 @@
             formData.append("phone_number", document.querySelector(".profile-phone-input").value.trim())
             formData.append("name", document.querySelector(".profile-fullname-input").value.trim())
             formData.append("pid", document.querySelector(".profile-id-card-input").value.trim())
+            formData.append("_method", "PUT")
 
             // user avatar
             const avatarFile = document.querySelector("#profile-avatar-input").files[0]
             if (avatarFile) {
-                formData.append("profile_url", avatarFile),
-                formData.append("_method", "PUT") // put img
+                formData.append("profile_url", avatarFile)
             }
 
             try {
@@ -780,6 +817,7 @@
                 if (response.ok) {
                     if (data.personalInfo) {
                         alert("Cập nhật thành công!")
+                        console.log(data.personalInfo)
                         window.location.reload()
                     }
                 } else {
@@ -789,7 +827,15 @@
             } catch (err) {
                 console.error(err)
                 alert("Lỗi kết nối!")
+            } finally {
+                isPersonalLoading = false
+                document.querySelector(".profile-save").disabled = false
+                document.querySelector(".profile-save").textContent = "Lưu thay đổi"
             }
+        } else {        
+            isPersonalLoading = false
+            document.querySelector(".profile-save").disabled = false
+            document.querySelector(".profile-save").textContent = "Lưu thay đổi"
         }
     })
   </script>

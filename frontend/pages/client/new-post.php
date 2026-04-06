@@ -39,33 +39,34 @@
         <div class="new-pic">
           <h3 class="new-pic-title">Hình ảnh</h3>
 
+          <input type="file" name="new-post-file-input" id="new-post-file-input" accept=".jpg,.jpeg,.png" multiple style="display: none;">
           <button type="button" class="new-post-upload">
             <img src='<?php echo BASE_URL . "/assets/img/upload-img.png"?>' alt="upload-img.png" class="new-post-upload-img">
           </button>
 
           <div class="new-pic-list">
-            <div class="new-pic-box">
+            <div class="new-pic-box pic-box-1">
               <img src='<?php echo BASE_URL . "/assets/img/post.png"?>' alt="pic-1.png" class="new-pic-1">
 
-              <img src='<?php echo BASE_URL . "/assets/img/pic-del.png"?>' alt="pic-del.png" class="new-pic-del">
+              <img src='<?php echo BASE_URL . "/assets/img/pic-del.png"?>' alt="pic-del.png" class="new-pic-del new-pic-del-1">
             </div>
 
-            <div class="new-pic-box">
+            <div class="new-pic-box pic-box-2">
               <img src='<?php echo BASE_URL . "/assets/img/post.png"?>' alt="pic-2.png" class="new-pic-2">
 
-              <img src='<?php echo BASE_URL . "/assets/img/pic-del.png"?>' alt="pic-del.png" class="new-pic-del">
+              <img src='<?php echo BASE_URL . "/assets/img/pic-del.png"?>' alt="pic-del.png" class="new-pic-del new-pic-del-2">
             </div>
 
-            <div class="new-pic-box">
+            <div class="new-pic-box pic-box-3">
               <img src='<?php echo BASE_URL . "/assets/img/post.png"?>' alt="pic-3.png" class="new-pic-3">
 
-              <img src='<?php echo BASE_URL . "/assets/img/pic-del.png"?>' alt="pic-del.png" class="new-pic-del">
+              <img src='<?php echo BASE_URL . "/assets/img/pic-del.png"?>' alt="pic-del.png" class="new-pic-del new-pic-del-3">
             </div>
 
-            <div class="new-pic-box">
+            <div class="new-pic-box pic-box-4">
               <img src='<?php echo BASE_URL . "/assets/img/post.png"?>' alt="pic-4.png" class="new-pic-4">
 
-              <img src='<?php echo BASE_URL . "/assets/img/pic-del.png"?>' alt="pic-del.png" class="new-pic-del">
+              <img src='<?php echo BASE_URL . "/assets/img/pic-del.png"?>' alt="pic-del.png" class="new-pic-del new-pic-del-4">
             </div>
           </div>
         </div>
@@ -82,16 +83,12 @@
               <input type="checkbox" name="filter-province-cb" id="filter-province-cb" class="filter-province-cb">
 
               <label for="filter-province-cb" class="filter-province-lb">
-                  Chọn tỉnh thành
+                <div class="filter-province-lb-text">Chọn tỉnh thành</div> 
 
                   <img src='<?php echo BASE_URL . "/assets/img/arrow_bold.png"?>' alt="arrow.png" class="filter-arrow">
               </label>
 
               <ul class="filter-province-list">
-                  <!-- an example item -->
-                  <?php for ($i = 1; $i <= 10; $i++) { ?>
-                  <li class="filter-province-item">Thành phố Hồ Chí Minh</li>
-                  <?php } ?>
               </ul>
           </div>
 
@@ -101,14 +98,12 @@
               <input type="checkbox" name="filter-district-cb" id="filter-district-cb" class="filter-district-cb">
 
               <label for="filter-district-cb" class="filter-district-lb">
-                  Chọn phường xã
+                <div class="filter-district-lb-text">Chọn phường xã</div> 
 
                   <img src='<?php echo BASE_URL . "/assets/img/arrow_bold.png"?>' alt="arrow.png" class="filter-arrow">
               </label>
 
               <ul class="filter-district-list">
-                  <!-- an example item -->
-                  <li class="filter-district-item">Phường Sài Gòn</li>
               </ul>
           </div>
 
@@ -116,10 +111,38 @@
 
           <label for="profile-square-input" class="profile-square"><h3>Diện tích</h3></label>
 
-          <input type="text" name="profile-square-input" id="profile-square-input" class="profile-square-input"
-          placeholder="Nhập diện tích (VD: 35m2)">
+          <input type="number" name="profile-square-input" id="profile-square-input" class="profile-square-input"
+          placeholder="Nhập diện tích (VD: 35.2) m2" min="1">
 
           <div class="profile-error square-error">Số nhà không hợp lệ</div>
+          
+          <label for="profile-room-input" class="profile-room"><h3>Loại phòng</h3></label>
+
+          <div class="filter-room">
+              <input type="checkbox" name="filter-room-cb" id="filter-room-cb" class="filter-room-cb">
+
+              <label for="filter-room-cb" class="filter-room-lb">
+                <div class="filter-room-lb-text">Chọn loại phòng</div> 
+
+                  <img src='<?php echo BASE_URL . "/assets/img/arrow_bold.png"?>' alt="arrow.png" class="filter-arrow">
+              </label>
+
+              <ul class="filter-room-list">
+                <li class="filter-room-item">Phòng đơn</li>
+                <li class="filter-room-item">Căn hộ</li>
+                <li class="filter-room-item">Ký túc xá</li>
+              </ul>
+          </div>
+
+          <div class="profile-error room-error">Số nhà không hợp lệ</div>
+
+          <label for="profile-occupants-input" class="profile-occupants"><h3>Số người ở tối đa</h3></label>
+
+          <input type="number" name="profile-occupants-input" id="profile-occupants-input" class="profile-occupants-input"
+          placeholder="Nhập số lượng"
+          min="1">
+
+          <div class="profile-error occupants-error">Số nhà không hợp lệ</div>
 
           <label for="profile-price-input" class="profile-price"><h3>Giá thuê</h3></label>
 
@@ -156,4 +179,446 @@
 
     <?php include(__DIR__ . "/components/footer.php") ?>
   </body>
+  <script>
+    // auto fill province list
+    async function autoFillProvince(account_id, token) {
+        try {
+            const response = await fetch("http://backend.test/api/address/provinces", {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json",
+                    "Authorization": "Bearer " + token
+                }
+            })
+
+            const data = await response.json()
+            if(response.ok) {
+                // console.log(data)
+                if(data.data) {
+                    let html = ""
+
+                    data.data.forEach(item => {
+                        html += `
+                            <li class="filter-province-item ${item.provinceCode}">${item.name}</li>
+                        `
+                    })
+
+                    document.querySelector(".filter-province-list").innerHTML = html
+
+                    // auto update ward after choosing
+                    document.querySelectorAll(".filter-province-item").forEach(item => {
+                        item.addEventListener("click", async (e) => {
+                            const province_text = document.querySelector(".filter-province-lb-text")
+                            
+                            province_text.textContent = item.textContent
+
+                            const province_id = [...province_text.classList].find(c => c.startsWith("provinceCode-"))
+                            if(province_id) {
+                                province_text.classList.remove(province_id)
+                            }
+                            province_text.classList.add("provinceCode-" + item.classList[1])
+
+                            document.querySelector(".filter-province-cb").checked = false
+                            document.querySelector(".filter-province-lb .filter-arrow").style.rotate = "0deg"
+
+                            // reset ward value
+                            document.querySelector(".filter-district-lb-text").textContent = "Chọn phường xã"
+
+                            const provinceCode = item.classList[1]
+                            await autoWard(account_id, token, provinceCode)
+                        })
+                    })
+                }
+            } else {
+                console.error(data)
+            }
+        } catch (err) {
+            console.error(err)
+        }
+    }
+
+    // auto fill district list with provinceCode
+    async function autoWard(account_id, token, provinceCode) {
+        try {
+            const response = await fetch("http://backend.test/api/address/provinces/" + provinceCode + "/wards", {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json",
+                    "Authorization": "Bearer " + token
+                }
+            })
+
+            const data = await response.json()
+            if(response.ok) {
+                // console.log(data)
+                if(data.data) {
+                    let html = ""
+
+                    data.data.forEach(item => {
+                        html += `
+                            <li class="filter-district-item ${item.wardCode}">${item.name}</li>
+                        `
+                    })
+
+                    document.querySelector(".filter-district-list").innerHTML = html
+
+                    // auto update text after choosing
+                    document.querySelectorAll(".filter-district-item").forEach(item => {
+                        item.addEventListener("click", async (e) => {
+                            const district_text = document.querySelector(".filter-district-lb-text")    
+
+                            district_text.textContent = item.textContent
+
+                            const district_id = [...district_text.classList].find(c => c.startsWith("districtCode-"))
+                            if(district_id) {
+                                district_text.classList.remove(district_id)
+                            }
+                            district_text.classList.add("districtCode-" + item.classList[1])
+
+                            document.querySelector(".filter-district-cb").checked = false
+                            document.querySelector(".filter-district-lb .filter-arrow").style.rotate = "0deg"
+                        })
+                    })
+                }
+            } else {
+                console.error(data)
+            }
+        } catch (err) {
+            console.error(err)
+        }
+    }
+
+    // auto update text after choosing
+    document.querySelectorAll(".filter-room-item").forEach(item => {
+        item.addEventListener("click", async (e) => {
+            const room_text = document.querySelector(".filter-room-lb-text")    
+
+            room_text.textContent = item.textContent
+
+            document.querySelector(".filter-room-cb").checked = false
+            document.querySelector(".filter-room-lb .filter-arrow").style.rotate = "0deg"
+        })
+    })
+
+    // province button (arrow animation)
+    document.querySelector(".filter-province-cb").addEventListener("change", (e) => {
+        const arrow = document.querySelector(".filter-province-lb .filter-arrow");
+        arrow.style.rotate = e.target.checked ? "180deg" : "0deg";
+    });
+
+    // ward button
+    document.querySelector(".filter-district-cb").addEventListener("change", (e) => {
+        const arrow = document.querySelector(".filter-district-lb .filter-arrow");
+        arrow.style.rotate = e.target.checked ? "180deg" : "0deg";
+    });
+
+    // room button
+    document.querySelector(".filter-room-cb").addEventListener("change", (e) => {
+        const arrow = document.querySelector(".filter-room-lb .filter-arrow");
+        arrow.style.rotate = e.target.checked ? "180deg" : "0deg";
+    });
+
+    // image button
+    var selectedFiles = []
+
+    document.querySelector(".new-post-upload").addEventListener("click", (e) => {
+      document.querySelector("#new-post-file-input").click()
+    })
+
+    document.querySelector("#new-post-file-input").addEventListener("change", (e) => {
+      Array.from(e.target.files).forEach((file, index) => {
+        if(selectedFiles.length >= 4) {
+          selectedFiles.shift()
+        }
+        selectedFiles.push(file)
+      })
+
+      e.target.value = ""
+
+      for(let i = 0; i < 4; i++) {
+          document.querySelector(".new-pic-" + (i + 1)).setAttribute("src", '<?= BASE_URL ?>/assets/img/post.png')
+      }
+
+      selectedFiles.forEach((file, i) => {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          document.querySelector(".new-pic-" + (i + 1)).setAttribute("src", e.target.result)
+        }
+        reader.readAsDataURL(file)
+      })
+    })
+
+    //  delete temp img
+    document.querySelectorAll(".new-pic-del").forEach((btn, index) => {
+      btn.addEventListener("click", (e) => {
+        selectedFiles.splice(index, 1)
+
+        for(let i = 0; i < 4; i++) {
+          document.querySelector(".new-pic-" + (i + 1)).setAttribute("src", '<?= BASE_URL ?>/assets/img/post.png')
+        }
+
+        selectedFiles.forEach((file, i) => {
+            const reader = new FileReader()
+            reader.onload = (e) => {
+                document.querySelector(".new-pic-" + (i + 1)).setAttribute("src", e.target.result)
+            }
+            reader.readAsDataURL(file)
+        })
+      })
+    })
+
+    // create button
+    var isLoading = false
+    document.querySelector(".new-submit").addEventListener("click", async (e) => {
+      if(isLoading) return
+      isLoading = true
+      document.querySelector(".new-submit").disabled = true
+      document.querySelector(".new-submit").textContent = "Đang tạo bài"
+
+      // validation
+      var isValid = true
+
+      const address_regex = /^[a-zA-Z0-9ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\s\/,\.]{1,255}$/
+      if(!address_regex.test(document.querySelector(".profile-address-input").value.trim())) {
+          if(isValid) {
+              document.querySelector(".profile-address-input").focus()
+          }
+          isValid = false
+          document.querySelector(".address-error").textContent = "Số nhà phải có từ 1 - 255 kí tự."
+          document.querySelector(".address-error").style.display = "flex"
+      } else {            
+          document.querySelector(".address-error").style.display = "none"
+      }
+
+      const province_regex = /^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\s]{3,255}$/
+      if(!province_regex.test(document.querySelector(".filter-province-lb-text").textContent.trim()) || document.querySelector(".filter-province-lb-text").textContent.trim() === "Chọn tỉnh thành") {
+          if(isValid) {
+              // document.querySelector(".profile-province-input").focus()
+          }
+          isValid = false
+          document.querySelector(".province-error").textContent = "Tỉnh thành không được trống."
+          document.querySelector(".province-error").style.display = "flex"
+      } else {            
+          document.querySelector(".province-error").style.display = "none"
+      }
+
+      const district_regex = /^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\s]{3,255}$/
+      if(!district_regex.test(document.querySelector(".filter-district-lb-text").textContent.trim()) || document.querySelector(".filter-district-lb-text").textContent.trim() === "Chọn phường xã") {
+          if(isValid) {
+              // document.querySelector(".profile-district-input").focus()
+          }
+          isValid = false
+          document.querySelector(".district-error").textContent = "Phường xã không được trống."
+          document.querySelector(".district-error").style.display = "flex"
+      } else {            
+          document.querySelector(".district-error").style.display = "none"
+      }
+
+      const validRooms = ["Phòng đơn", "Căn hộ", "Ký túc xá"]
+      if(!validRooms.includes(document.querySelector(".filter-room-lb-text").textContent.trim())) {
+          if(isValid) {
+              // document.querySelector(".profile-room-input").focus()
+          }
+          isValid = false
+          document.querySelector(".room-error").textContent = "Loại phòng không được trống."
+          document.querySelector(".room-error").style.display = "flex"
+      } else {            
+          document.querySelector(".room-error").style.display = "none"
+      }
+
+      const numbRegex = /^\d{1,}$/
+
+      const squareRegex = /^\d+([.,]\d+)?$/
+      if(!squareRegex.test(document.querySelector(".profile-square-input").value.trim())) {
+        if(isValid)
+          document.querySelector(".profile-square-input").focus()
+        isValid = false
+        document.querySelector(".square-error").textContent = "Diện tích phải là số và nhỏ nhất là 1.00"
+        document.querySelector(".square-error").style.display = "flex"
+      } else {            
+          document.querySelector(".square-error").style.display = "none"
+      }
+      
+      if(!numbRegex.test(document.querySelector(".profile-occupants-input").value.trim())) {
+        if(isValid)
+          document.querySelector(".profile-occupants-input").focus()
+        isValid = false
+        document.querySelector(".occupants-error").textContent = "Số người ở phải là số và nhỏ nhất là 1."
+        document.querySelector(".occupants-error").style.display = "flex"
+      } else {            
+          document.querySelector(".occupants-error").style.display = "none"
+      }
+      
+      if(!numbRegex.test(document.querySelector(".profile-price-input").value.trim())) {
+        if(isValid)
+          document.querySelector(".profile-price-input").focus()
+        isValid = false
+        document.querySelector(".price-error").textContent = "Giá thuê phải là số."
+        document.querySelector(".price-error").style.display = "flex"
+      } else {            
+          document.querySelector(".price-error").style.display = "none"
+      }
+      
+      if(!numbRegex.test(document.querySelector(".profile-deposit-input").value.trim())) {
+        if(isValid)
+          document.querySelector(".profile-deposit-input").focus()
+        isValid = false
+        document.querySelector(".deposit-error").textContent = "Giá cọc phải là số."
+        document.querySelector(".deposit-error").style.display = "flex"
+      } else if (Number(document.querySelector(".profile-deposit-input").value.trim()) > Number(document.querySelector(".profile-price-input").value.trim())) {
+        if(isValid)
+          document.querySelector(".profile-deposit-input").focus()
+        isValid = false
+        document.querySelector(".deposit-error").textContent = "Giá cọc phải nhỏ hơn giá thuê."
+        document.querySelector(".deposit-error").style.display = "flex"
+      } else {            
+          document.querySelector(".deposit-error").style.display = "none"
+      }
+
+      const title_regex = /^.{3,100}$/
+      const desc_regex = /^.{3,1000}$/
+      if(!title_regex.test(document.querySelector(".profile-post-input").value.trim())) {
+          if(isValid) {
+              document.querySelector(".profile-post-input").focus()
+          }
+          isValid = false
+          document.querySelector(".post-error").textContent = "Tiêu đề bài đăng phải có từ 3 - 100 kí tự."
+          document.querySelector(".post-error").style.display = "flex"
+      } else {            
+          document.querySelector(".post-error").style.display = "none"
+      }
+      
+      if(!desc_regex.test(document.querySelector(".profile-post-textarea").value.trim())) {
+          if(isValid) {
+              document.querySelector(".profile-post-textarea").focus()
+          }
+          isValid = false
+          document.querySelector(".post-textarea-error").textContent = "Mô tả bài đăng phải có từ 3 - 1000 kí tự."
+          document.querySelector(".post-textarea-error").style.display = "flex"
+      } else {            
+          document.querySelector(".post-textarea-error").style.display = "none"
+      }
+
+      if(isValid) {
+        const formData = new FormData()
+        formData.append("title", document.querySelector(".profile-post-input").value.trim())
+        formData.append("price", document.querySelector(".profile-price-input").value.trim())
+        const areaValue = document.querySelector(".profile-square-input").value.trim().replace(",", ".")
+        const area = parseFloat(areaValue)
+        formData.append("area", area)
+        formData.append("house_number", document.querySelector(".profile-address-input").value.trim())
+        formData.append("ward", document.querySelector(".filter-district-lb-text").textContent.trim())
+        formData.append("province", document.querySelector(".filter-province-lb-text").textContent.trim())
+        formData.append("description", document.querySelector(".profile-post-textarea").value.trim())
+        formData.append("deposit", document.querySelector(".profile-deposit-input").value.trim())
+        formData.append("status", "pending")
+        formData.append("authorized", 0)
+
+        if(selectedFiles.length == null || selectedFiles.length <= 0) {
+          alert("Vui lòng chọn 1 ảnh bài đăng!")
+          return
+        }
+
+        selectedFiles.forEach((file, index) => {
+          formData.append("images[" + index + "]", file)
+          formData.append("orders[" + index + "]", index + 1)
+        })
+
+        if(document.querySelector(".filter-room-lb-text").textContent.trim() === "Phòng đơn")
+          formData.append("room_type", "room")
+        if(document.querySelector(".filter-room-lb-text").textContent.trim() === "Căn hộ")
+          formData.append("room_type", "apartment")
+        if(document.querySelector(".filter-room-lb-text").textContent.trim() === "Ký túc xá")
+          formData.append("room_type", "dorm")
+
+        formData.append("max_occupants", document.querySelector(".profile-occupants-input").value.trim())
+        
+        const token = localStorage.getItem("token")
+        const account_id = localStorage.getItem("account_id")
+
+        try {
+          const [response_account, response_personal] = await Promise.all([
+              fetch("http://backend.test/api/accounts/" + account_id + "?include=user", {
+                  method: "GET",
+                  headers: {
+                      "Accept": "application/json",
+                      "Authorization": "Bearer " + token
+                  }
+              }),
+              fetch("http://backend.test/api/personalInfos/byAccount/" + account_id, {
+                  method: "GET",
+                  headers: {
+                      "Accept": "application/json",
+                      "Authorization": "Bearer " + token
+                  }
+              })
+          ])
+
+          const data_personal = await response_personal.json()
+          if (response_personal.ok) {
+              if (data_personal.data?.name == null) {
+                  alert("Vui lòng cập nhật thông tin cá nhân để tiếp tục đăng bài.")
+                  window.location.href = "setting-profile.php"
+                  return
+              }
+          } else {
+              console.error(data_personal)
+              return
+          }
+
+          const data_account = await response_account.json()
+          if (response_account.ok) {
+              if (data_account.data) {
+                  formData.append("user_id", data_account.data.user.id)
+              }
+          } else {
+              console.error(data_account)
+              return
+          }
+
+          const response_post = await fetch("http://backend.test/api/posts", {
+              method: "POST",
+              headers: {
+                  "Accept": "application/json",
+                  "Authorization": "Bearer " + token
+              },
+              body: formData
+          })
+
+          const data_post = await response_post.json()
+          if (response_post.ok) {
+              if (data_post.message === "Post created successfully") {
+                  alert("Tạo bài đăng thành công.")
+                  window.location.href = "manage-post.php"
+              }
+          } else {
+              console.error(data_post)
+          }
+        } catch (err) {
+            console.error(err)
+        } finally {
+          isLoading = false
+          document.querySelector(".new-submit").disabled = false
+          document.querySelector(".new-submit").textContent = "Đăng bài"
+        }
+      } else {
+        isLoading = false
+        document.querySelector(".new-submit").disabled = false
+        document.querySelector(".new-submit").textContent = "Đăng bài"
+      }
+    })
+
+    // run once time every reload or load page
+    document.addEventListener("DOMContentLoaded", async (e) => {
+      var account_id = localStorage.getItem("account_id")
+      var token = localStorage.getItem("token")
+
+      if(account_id != null && token != null) {
+        await autoFillProvince(account_id, token)
+      } else {
+        alert("Bạn chưa đăng nhập. Đang chuyển hướng sang trang đăng nhập.")
+        window.location.href = "login.php"
+      }
+    })
+  </script>
 </html>

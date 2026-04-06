@@ -53,7 +53,7 @@
     // Lấy dữ liệu từ form
     const form = event.target;
     const payload = {
-        username: form.username.value,
+        login: form.username.value,
         password: form.password.value,
         target_endpoint: 'login'
     };

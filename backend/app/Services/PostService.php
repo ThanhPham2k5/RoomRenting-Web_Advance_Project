@@ -2,10 +2,13 @@
 
 namespace App\Services;
 
+use App\Events\PayBillCreated;
 use App\Events\PostCreated;
 use App\Filter\AllColumnFilter;
 use App\Filter\DateFilter;
 use App\Http\Resources\Posts\PostResource;
+use App\Models\Payments\PayBill;
+use App\Models\Payments\PayRule;
 use App\Models\Posts\Post;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -17,6 +20,7 @@ use Spatie\QueryBuilder\QueryBuilder;
 class PostService{
     private $allowedIncludes = [
         'user',
+        'user.personalInfo',
         'employee',
         'postImages',
         'comments',
@@ -210,6 +214,38 @@ class PostService{
         ]);
 
         return $query;
+    }
+
+    public function postPayment(Post $post)
+    {
+        $user = $post->user;
+        $payRule = PayRule::firstOrFail();
+        $points = $payRule->points;
+
+        if ($user->points > $points) {
+            $user->decrement('points', $points);
+                $paybill = PayBill::create([
+                    'account_id' => $user->account->id,
+                    'status' => 'completed',
+                    'points' => $points,
+                    'pay_rule_id' => $payRule->id,
+                    'post_id' => $post->id,
+                ]);
+
+            $post->update(['status' => 'completed',
+                'next_payment_date' => now()->addMonth()]);
+            event(new PayBillCreated($paybill));
+
+        } else {
+            return [
+                'message' => 'Tài khoản của bạn không đủ điểm.'
+            ];
+        }
+
+        return [
+            'message' => 'Thanh toán thành công.',
+        ];
+
     }
 }
 ?>

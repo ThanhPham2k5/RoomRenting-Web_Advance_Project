@@ -45,3 +45,26 @@
     text-decoration: none;
     color: black;
 }
+/* Avatar Icon cho form Cấu hình giá (Màu Tím/Xanh chàm) */
+.avatar-placeholder.pricing-icon {
+    background: linear-gradient(135deg, #E0E7FF 0%, #C7D2FE 100%);
+    color: #4F46E5;
+    border: 2px solid #EEF2FF;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.1);
+}
+
+/* Format mức điểm phí đăng bài */
+.pricing-points {
+    color: #4F46E5 !important; 
+    font-size: 2.2rem !important;
+    font-weight: 800 !important;
+}
+/* Avatar Icon cho form Gói quy đổi (Màu Xanh Teal) */
+.avatar-placeholder.exchange-icon {
+    background: linear-gradient(135deg, #CCFBF1 0%, #99F6E4 100%);
+    color: #0F766E;
+    border: 2px solid #F0FDFA;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(15, 118, 110, 0.1);
+}

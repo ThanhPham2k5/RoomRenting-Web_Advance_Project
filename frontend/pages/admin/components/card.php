@@ -33,18 +33,38 @@ if (!empty($cardData['postImages']) && is_array($cardData['postImages'])) {
     </div>
     <div class="cta">
         <?php if($status === "pending"){ ?>
-            <button class="green" onclick="handleUpdateStatus(event, <?php echo $id; ?>, 'completed')">Duyệt bài</button>
-            <button class="yellow" onclick="handleUpdateStatus(event, <?php echo $id; ?>, 'rejected')">Từ chối</button>
+            <button class="green" onclick="handleUpdateStatus(event, <?php echo $id; ?>, 'completed', '<?php echo $title; ?>')">Duyệt bài</button>
+            <button class="yellow" onclick="handleUpdateStatus(event, <?php echo $id; ?>, 'rejected', '<?php echo $title; ?>')">Từ chối</button>
 
         <?php }else if($status === "rejected"){ ?>
-            <button class="blue" onclick="openReasonModal(event, <?php echo $id; ?>)">Xem lý do</button>
-            <button class="red" onclick="handleUpdateStatus(event, <?php echo $id; ?>, 'failed')">Gỡ bài</button>
+            <button class="blue" onclick="handleViewReason(event, '<?php echo htmlspecialchars($cardData['reason'] ?? '', ENT_QUOTES, 'UTF-8'); ?>', '<?php echo $id; ?>')">Xem lý do</button>
+            <button class="red" onclick="handleUpdateStatus(event, <?php echo $id; ?>, 'failed', '<?php echo $title; ?>')">Gỡ bài</button>
 
         <?php }else if($status === "completed"){ ?>    
-            <button class="red" onclick="handleUpdateStatus(event, <?php echo $id; ?>, 'failed')">Gỡ bài</button>
+            <button class="red" onclick="handleUpdateStatus(event, <?php echo $id; ?>, 'failed', '<?php echo $title; ?>')">Gỡ bài</button>
 
         <?php }else if($status === "failed"){ ?>
-            <button class="blue" onclick="openReasonModal(event, <?php echo $id; ?>)">Xem lý do</button>
+            <button class="blue" onclick="handleViewReason(event, '<?php echo htmlspecialchars($cardData['reason'] ?? '', ENT_QUOTES, 'UTF-8'); ?>', '<?php echo $id; ?>')">Xem lý do</button>
         <?php } ?>
     </div>
+    <?php
+    ob_start();
+    ?>
+        <div class="input-group" style="margin-bottom: 0;">
+            <label style="font-weight: 600; color: #374151; margin-bottom: 8px; display: block;">
+                Chi tiết lý do
+            </label>
+            
+            <textarea 
+                id="reason-display-<?php echo $id; ?>" 
+                rows="5" 
+                readonly 
+                placeholder="Không có thông tin lý do..."
+                style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; background-color: #f3f4f6; color: #4b5563; resize: none; font-family: inherit; font-size: 14px; line-height: 1.5;"
+            ></textarea>
+        </div>
+    <?php 
+        $formReasonForm = ob_get_clean();
+    ?>
+    <?php renderComponent("form", false, ['title' => 'Lý do xử lý bài đăng', 'idModal' => 'modal-xem-ly-do-' . $id, 'formData' => $formReasonForm, 'save' => false]); ?>
 </div>

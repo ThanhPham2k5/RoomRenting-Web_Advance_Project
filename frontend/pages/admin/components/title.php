@@ -1,4 +1,4 @@
-<?php 
+<?php
     $titleContent = $titleContent ?? "";
     $group = $group ?? false;
     $insert = $insert ?? false;
@@ -11,6 +11,31 @@
     $targetModal2 = $targetModal2 ?? 'default-modal';
     $currentTable = $_GET['table'] ?? "1";
     $currentPage = $_GET['page'] ?? 'overview';
+    $moduleName = $moduleName ?? $currentPage;
+
+    // ==========================================
+    // 1. MAPPING TÊN QUYỀN THEO TRANG VÀ TABLE
+    // ==========================================
+    $permissionPrefix = $currentPage; // Mặc định tên quyền giống tên trang (account, post...)
+
+    if ($currentPage === 'price') {
+        $permissionPrefix = ($currentTable === '2') ? 'rechargeRule' : 'payRule';
+    } 
+    elseif ($currentPage === 'bill') {
+        $permissionPrefix = ($currentTable === '2') ? 'rechargeBill' : 'payBill';
+    }
+    elseif ($currentPage === 'permission') {
+        $permissionPrefix = 'role';
+    }
+
+    // ==========================================
+    // 2. KIỂM TRA QUYỀN (Dùng $permissionPrefix đã map)
+    // ==========================================
+    $canInsert  = $insert  && checkPermission($permissionPrefix . '.create');
+    $canEdit    = $edit    && checkPermission($permissionPrefix . '.update');
+    $canHandle  = $handle  && checkPermission($permissionPrefix . '.update'); 
+    $canDelete  = $delete  && checkPermission($permissionPrefix . '.delete');
+    $canRestore = $restore && checkPermission($permissionPrefix . '.restore');
 ?>
 
 <div class="title-component">
@@ -63,11 +88,13 @@
     }
     ?>
     <?php 
-    if($insert || $edit || $handle || $delete || $restore) { 
+    // 3. CHỈ IN RA KHUNG <div class="cta"> NẾU ÍT NHẤT CÓ 1 NÚT ĐƯỢC HIỂN THỊ
+    if($canInsert || $canEdit || $canHandle || $canDelete || $canRestore) { 
     ?>
         <div class="cta">
             <?php 
-                if($insert && $currentPage !== "account"){
+                // XỬ LÝ NÚT THÊM
+                if($canInsert && $currentPage !== "account"){
                     $actualModal = ($currentTable == '1') ? $targetModal : $targetModal2;        
             ?> 
                 <div class="btn_insert" onclick="openModal('<?php echo $actualModal ?>')">
@@ -77,10 +104,7 @@
                     <p>Thêm</p>
                 </div>
             <?php 
-            }
-            ?>
-            <?php 
-                if($insert && $currentPage === "account"){     
+                } else if($canInsert && $currentPage === "account"){     
             ?> 
                 <div class="btn_insert" onclick="openModal('<?php echo $targetModal ?>')">
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -88,27 +112,23 @@
                     </svg>
                     <p>Thêm</p>
                 </div>
+            <?php } ?>
+
             <?php 
-            }
-            ?>
-            <?php 
-                if($edit || $handle){
+                // XỬ LÝ NÚT SỬA / XỬ LÝ
+                if($canEdit || $canHandle){
             ?> 
-            <div class="btn_edit" onclick="handleEdit('<?php echo $targetModal1 ?>')">
+                <div class="btn_edit" onclick="handleEdit('<?php echo $targetModal1 ?>')">
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M8 3.00011L11 6.00011M12.385 4.58511C12.7788 4.19126 13.0001 3.65709 13.0001 3.10011C13.0001 2.54312 12.7788 2.00895 12.385 1.61511C11.9912 1.22126 11.457 1 10.9 1C10.343 1 9.80885 1.22126 9.415 1.61511L1 10.0001V13.0001H4L12.385 4.58511Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
-                    <p><?php if($edit) {
-                        echo "Sửa";
-                    }else{
-                        echo "Xử lý";
-                    } ?></p>
+                    <p><?php echo $canEdit ? "Sửa" : "Xử lý"; ?></p>
                 </div>
+            <?php } ?>
+
             <?php 
-            }
-            ?>
-            <?php 
-                if($delete){        
+                // XỬ LÝ NÚT XÓA
+                if($canDelete){        
             ?> 
                 <div class="btn_delete" onclick="handleDelete()">
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -116,24 +136,20 @@
                     </svg>
                     <p>Xóa</p>
                 </div>
+            <?php } ?>
+
             <?php 
-            }
-            ?>
-            <?php 
-                if($restore){        
+                // XỬ LÝ NÚT KHÔI PHỤC
+                if($canRestore){        
             ?> 
-                <div class="btn_delete" onclick="handleRestore()">
+                <div class="btn_restore" onclick="handleRestore()">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M3.49999 20.344H6.48499V17.5M17.515 6.5V3.656L20.5 3.5M15 2.458C13.256 1.90997 11.3953 1.85047 9.61986 2.28594C7.84447 2.72141 6.22241 3.63521 4.92999 4.928C1.02399 8.834 1.02399 15.166 4.92999 19.071C5.26865 19.411 5.62466 19.7207 5.99799 20M8.99999 21.541C10.7441 22.0892 12.6051 22.1488 14.3807 21.7134C16.1562 21.2779 17.7785 20.364 19.071 19.071C22.977 15.166 22.977 8.834 19.071 4.929C18.7317 4.589 18.3753 4.27933 18.002 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                     <path d="M12 11.5C12.663 11.5 13.2989 11.2366 13.7678 10.7678C14.2366 10.2989 14.5 9.66304 14.5 9C14.5 8.33696 14.2366 7.70107 13.7678 7.23223C13.2989 6.76339 12.663 6.5 12 6.5C11.337 6.5 10.7011 6.76339 10.2322 7.23223C9.76339 7.70107 9.5 8.33696 9.5 9C9.5 9.66304 9.76339 10.2989 10.2322 10.7678C10.7011 11.2366 11.337 11.5 12 11.5ZM12 11.5C10.9391 11.5 9.92172 11.9214 9.17157 12.6716C8.42143 13.4217 8 14.4391 8 15.5M12 11.5C13.0609 11.5 14.0783 11.9214 14.8284 12.6716C15.5786 13.4217 16 14.4391 16 15.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                     <p>Khôi phục</p>
                 </div>
-            <?php 
-            }
-            ?>
+            <?php } ?>
         </div>    
-    <?php 
-        } 
-    ?>
+    <?php } ?>
 </div>

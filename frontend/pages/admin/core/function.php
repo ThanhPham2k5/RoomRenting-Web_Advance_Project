@@ -1,4 +1,7 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 function renderComponent($componentName, $isPage, $props = []) {
     extract($props); 
     
@@ -68,5 +71,13 @@ function call_api($url, $method = 'GET', $data = []) {
         $decoded = json_decode($response, true);
         return $decoded ?? [];
     }
+}
+// Hàm này sẽ kiểm tra chuỗi quyền, ví dụ: checkPermission('account.create')
+function checkPermission($permissionName) {
+    // Giả sử mảng quyền của user đang đăng nhập được lưu trong Session
+    $userPermissions = $_SESSION['user_permissions'] ?? []; 
+
+    // Kiểm tra xem quyền yêu cầu có nằm trong mảng quyền của user không
+    return in_array($permissionName, $userPermissions);
 }
 ?>

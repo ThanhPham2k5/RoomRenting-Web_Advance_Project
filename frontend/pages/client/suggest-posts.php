@@ -42,6 +42,12 @@
 
             Quay lại
           </div>
+
+          <div class="filter-reset">
+            <img src='<?php echo BASE_URL . "/assets/img/filter-reset.png"?>' alt="reset-ico.png" class="filter-reset-ico">
+
+            Làm mới
+          </div>
         </div>
 
         <!-- <div class="filter-line"></div> -->
@@ -247,6 +253,12 @@
       }
     });
 
+    function formatPrice(price) {
+        if (price >= 1000000000) return (price / 1000000000).toFixed(1) + " tỷ"
+        if (price >= 1000000) return (price / 1000000).toFixed(1) + " triệu"
+        return Number(price).toLocaleString("vi-VN")
+    }
+
     // auto fill province list
     async function autoFillProvince(account_id, token) {
         try {
@@ -285,9 +297,11 @@
                             }
                             province_text.classList.add("provinceCode-" + item.classList[1])
 
-
                             document.querySelector(".filter-province-cb").checked = false
                             document.querySelector(".filter-province-lb .filter-arrow").style.rotate = "0deg"
+
+                            // reset ward value
+                            document.querySelector(".filter-district-lb-text").textContent = "Chọn phường xã"
 
                             const provinceCode = item.classList[1]
                             await autoWard(account_id, token, provinceCode)
@@ -385,7 +399,7 @@
 
     // filter & sort & page value
     var filterCondition = ""
-    var sortCondition = "createdAt" // default
+    var sortCondition = "-createdAt" // default
     var searchCondition = ""
     var page = 1
     var lastPage = 1
@@ -419,11 +433,11 @@
       }
 
       if(document.querySelector(".filter-min-price").value.trim() && numbRegex.test(document.querySelector(".filter-min-price").value.trim()) && document.querySelector(".filter-min-price").value.trim() > 0) {
-        filterCondition += "&filter[price][gte]=" + document.querySelector(".filter-min-price").value.trim()
+        filterCondition += "&filter[price][]=>=" + document.querySelector(".filter-min-price").value.trim()
       }
 
       if(document.querySelector(".filter-max-price").value.trim() && numbRegex.test(document.querySelector(".filter-max-price").value.trim()) && document.querySelector(".filter-max-price").value.trim() > 0) {
-        filterCondition += "&filter[price][lte]=" + document.querySelector(".filter-max-price").value.trim()
+        filterCondition += "&filter[price][]=<=" + document.querySelector(".filter-max-price").value.trim()
       }
 
       if(document.querySelector(".filter-square-number").value.trim() && numbRegex.test(document.querySelector(".filter-square-number").value.trim()) && document.querySelector(".filter-square-number").value.trim() > 0) {
@@ -432,6 +446,19 @@
 
       page = 1
       await updatePostsPage()
+      filter_return.click()
+    })
+
+    // reset filter
+    document.querySelector(".filter-reset").addEventListener("click", (e) => { 
+      filterCondition = ""
+      document.querySelector(".filter-province-lb-text").textContent = "Chọn tỉnh thành"
+      document.querySelector(".filter-district-lb-text").textContent = "Chọn phường xã"
+      document.querySelector(".filter-room-lb-text").textContent = "Chọn loại phòng"
+      document.querySelector(".filter-min-price").value = 0
+      document.querySelector(".filter-max-price").value = 0
+      document.querySelector(".filter-square-number").value = 0
+      document.querySelector(".filter-apply").click()
     })
 
     // sort button
@@ -479,7 +506,7 @@
       searchCondition = ""
 
       const stringRegex = /^[a-zA-Z0-9ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\s]{3,255}$/
-      if(document.querySelector(".search-bar").value.trim() && stringRegex.test(document.querySelector(".search-bar").value.trim())) {
+      if((document.querySelector(".search-bar").value.trim() && stringRegex.test(document.querySelector(".search-bar").value.trim())) || !document.querySelector(".search-bar").value.trim()) {
         searchCondition = "&filter[search]=" + document.querySelector(".search-bar").value.trim()
         page = 1
         await updatePostsPage()
@@ -487,12 +514,12 @@
 
       // reset all field
       document.querySelector(".search-bar").value = ""
-      document.querySelector(".filter-province-lb-text").textContent = "Chọn tỉnh thành"
-      document.querySelector(".filter-district-lb-text").textContent = "Chọn phường xã"
-      document.querySelector(".filter-room-lb-text").textContent = "Chọn loại phòng"
-      document.querySelector(".filter-min-price").value = 0
-      document.querySelector(".filter-max-price").value = 0
-      document.querySelector(".filter-square-number").value = 0
+      // document.querySelector(".filter-province-lb-text").textContent = "Chọn tỉnh thành"
+      // document.querySelector(".filter-district-lb-text").textContent = "Chọn phường xã"
+      // document.querySelector(".filter-room-lb-text").textContent = "Chọn loại phòng"
+      // document.querySelector(".filter-min-price").value = 0
+      // document.querySelector(".filter-max-price").value = 0
+      // document.querySelector(".filter-square-number").value = 0
     })
 
     // pagination button
@@ -647,146 +674,153 @@
       if (account_id != null && token != null) {
         const posts = await getPost(sortCondition, filterCondition, searchCondition, page, account_id, token)
 
-        let html = ""
+        if(posts != null && posts.length > 0) {
+          let html = ""
 
-        posts.forEach(post => {
-          var money = Number(post.price).toLocaleString("vi-VN")
+          posts.forEach(post => {
+            var money = Number(post.price).toLocaleString("vi-VN")
 
-          // check isFav or not
-          var isFav = false
-          var favId = ""
-          post.favorites.forEach(favorite => {
-            // console.log(favorite)
-            if(favorite.account.id == account_id) {
-              isFav = true
-              favId = favorite.id
-            }
-          })
+            // check isFav or not
+            var isFav = false
+            var favId = ""
+            post.favorites.forEach(favorite => {
+              // console.log(favorite)
+              if(favorite.account.id == account_id) {
+                isFav = true
+                favId = favorite.id
+              }
+            })
 
-          var favIco = isFav ? "favour" : "unfavour"
+            var favIco = isFav ? "favour" : "unfavour"
 
-          html += `
-            <div class="post">
-              <div class="post-favour post-id-${post.id} favourite-id-${favId} ${favIco}">
-                <img
-                  src='<?php echo BASE_URL ?>/assets/img/${favIco}.png'
-                  alt="favour.png"
-                  class="post-favour-ico"
-                />
-              </div>
-
-              <a href='<?php echo BASE_URL ?>/pages/client/detail-post.php?post_id=${post.id}' class="post-body">
-                <img
-                  src='http://backend.test${post.postImages[0].imagePostUrl}'
-                  alt="post.png"
-                  class="post-img"
-                />
-
-                <div class="post-title">
-                  ${post.title}
+            html += `
+              <div class="post">
+                <div class="post-favour post-id-${post.id} favourite-id-${favId} ${favIco}">
+                  <img
+                    src='<?php echo BASE_URL ?>/assets/img/${favIco}.png'
+                    alt="favour.png"
+                    class="post-favour-ico"
+                  />
                 </div>
 
-                <div class="post-address">
+                <a href='<?php echo BASE_URL ?>/pages/client/detail-post.php?post_id=${post.id}' class="post-body">
                   <img
-                    src='<?php echo BASE_URL . "/assets/img/address.png" ?>'
-                    alt="address.png"
-                    class="address-ico"
+                    src='http://backend.test${post.postImages[0].imagePostUrl}'
+                    alt="post.png"
+                    class="post-img"
                   />
 
-                  <div class="address-info">${post.houseNumber}, ${post.ward}, ${post.province}</div>
-                </div>
+                  <div class="post-title">
+                    ${post.title}
+                  </div>
 
-                <div class="post-info">
-                  <h3 class="post-price">${money} VND/tháng</h3>
+                  <div class="post-address">
+                    <img
+                      src='<?php echo BASE_URL . "/assets/img/address.png" ?>'
+                      alt="address.png"
+                      class="address-ico"
+                    />
 
-                  <div class="post-square">${post.area} m2</div>
-                </div>
-              </a>
-            </div>
-          `
-        });
-        
-        // update post section (must have favour button)
-        document.querySelector(".newpost-postlist").innerHTML = html
+                    <div class="address-info">${post.houseNumber}, ${post.ward}, ${post.province}</div>
+                  </div>
 
-        // update favorite post when client clicked
-        document.querySelector(".newpost-postlist").querySelectorAll(".post-favour").forEach(item => {
-          item.addEventListener("click", async (e) => { 
-            // console.log(item.classList)
-            var favIco = item.classList.contains("favour")
-            const postClass = [...item.classList].find(c => c.startsWith("post-id-"))
-            var post_id = postClass.replace("post-id-", "")
+                  <div class="post-info">
+                    <h3 class="post-price">${formatPrice(post.price)} VND/tháng</h3>
 
-            // create new favorite
-            if(!favIco) {
-              item.classList.remove("unfavour")
-              item.classList.add("favour")
-              item.querySelector(".post-favour-ico").setAttribute("src", '<?php echo BASE_URL ?>/assets/img/favour.png')
+                    <div class="post-square">${post.area} m2</div>
+                  </div>
+                </a>
+              </div>
+            `
+          });
+          
+          // update post section (must have favour button)
+          document.querySelector(".newpost-postlist").innerHTML = html
 
-              try {
-                const response = await fetch("http://backend.test/api/favorites", {
-                  method: "POST",
-                  headers: {
-                    "Accept": "application/json",
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + token
-                  },
-                  body: JSON.stringify({
-                    "account_id": account_id,
-                    "post_id": post_id
+          // update favorite post when client clicked
+          document.querySelector(".newpost-postlist").querySelectorAll(".post-favour").forEach(item => {
+            item.addEventListener("click", async (e) => { 
+              // console.log(item.classList)
+              var favIco = item.classList.contains("favour")
+              const postClass = [...item.classList].find(c => c.startsWith("post-id-"))
+              var post_id = postClass.replace("post-id-", "")
+
+              // create new favorite
+              if(!favIco) {
+                item.classList.remove("unfavour")
+                item.classList.add("favour")
+                item.querySelector(".post-favour-ico").setAttribute("src", '<?php echo BASE_URL ?>/assets/img/favour.png')
+
+                try {
+                  const response = await fetch("http://backend.test/api/favorites", {
+                    method: "POST",
+                    headers: {
+                      "Accept": "application/json",
+                      "Content-Type": "application/json",
+                      "Authorization": "Bearer " + token
+                    },
+                    body: JSON.stringify({
+                      "account_id": account_id,
+                      "post_id": post_id
+                    })
                   })
-                })
 
-                const data = await response.json()
-                if(response.ok) {
-                  // console.log(data)
-                  if(data) {
-                    const favClass = [...item.classList].find(c => c.startsWith("favourite-id-"))
-                    if(favClass) {
-                      item.classList.remove(favClass)
-                      item.classList.add("favourite-id-" + data.favorite.id)
+                  const data = await response.json()
+                  if(response.ok) {
+                    // console.log(data)
+                    if(data) {
+                      const favClass = [...item.classList].find(c => c.startsWith("favourite-id-"))
+                      if(favClass) {
+                        item.classList.remove(favClass)
+                        item.classList.add("favourite-id-" + data.favorite.id)
+                      }
                     }
+                  } else {
+                    console.error(data)
                   }
-                } else {
-                  console.error(data)
+                } catch (err) {
+                  console.error(err)
                 }
-              } catch (err) {
-                console.error(err)
               }
-            }
 
-            // delete favorite
-            if(favIco) {
-              item.classList.remove("favour")
-              item.classList.add("unfavour")
-              item.querySelector(".post-favour-ico").setAttribute("src", '<?php echo BASE_URL ?>/assets/img/unfavour.png')
-              const favClass = [...item.classList].find(c => c.startsWith("favourite-id-"))
-              var fav_id = favClass.replace("favourite-id-", "")
+              // delete favorite
+              if(favIco) {
+                item.classList.remove("favour")
+                item.classList.add("unfavour")
+                item.querySelector(".post-favour-ico").setAttribute("src", '<?php echo BASE_URL ?>/assets/img/unfavour.png')
+                const favClass = [...item.classList].find(c => c.startsWith("favourite-id-"))
+                var fav_id = favClass.replace("favourite-id-", "")
 
-              try {
-                const response = await fetch("http://backend.test/api/favorites/" + fav_id, {
-                  method: "DELETE",
-                  headers: {
-                    "Accept": "application/json",
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + token
+                try {
+                  const response = await fetch("http://backend.test/api/favorites/" + fav_id, {
+                    method: "DELETE",
+                    headers: {
+                      "Accept": "application/json",
+                      "Content-Type": "application/json",
+                      "Authorization": "Bearer " + token
+                    }
+                  })
+
+                  const data = await response.json()
+                  if(response.ok) {
+                    // console.log(data)
+                  } else {
+                    console.error(data)
                   }
-                })
-
-                const data = await response.json()
-                if(response.ok) {
-                  // console.log(data)
-                } else {
-                  console.error(data)
+                } catch (err) {
+                  console.error(err)
                 }
-              } catch (err) {
-                console.error(err)
               }
-            }
+            })
           })
-        })
 
-        updatePageNumber()
+          updatePageNumber()
+        } else {
+          document.querySelector(".newpost-postlist").textContent = "Không tìm thấy kết quả phù hợp."
+        }
+      } else {
+        alert("Bạn chưa đăng nhập. Đang chuyển hướng sang trang đăng nhập.")
+        window.location.href = "login.php"
       }
     }
 

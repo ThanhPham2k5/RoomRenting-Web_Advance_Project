@@ -9,12 +9,16 @@ $adminRole = $_SESSION['admin_role'] ?? "";
 $adminId = $_SESSION['admin_id'] ?? "";
 require_once __DIR__ . '/core/function.php';
 $accountData = call_api("http://backend.test/api/accounts/$adminId?include=roles.permissions,employee.personalInfo");
+if (isset($accountData['message']) && $accountData['message'] === "Unauthenticated.") {
+    header('Location: logout.php');
+    exit;
+}
 $userPermissions = [];
 if (isset($accountData['data']['roles'][0]['permissions'])) {
     $userPermissions = $accountData['data']['roles'][0]['permissions'];
 }
 $_SESSION['user_permissions'] = $userPermissions;
-$_SESSION['user_avatar'] = $accountData['data']['employee']['personalInfo']['profileUrl'];
+$_SESSION['user_avatar'] = $accountData['data']['employee']['personalInfo']['profileUrl'] ?? "";
 $pageData = [];
 $page = $_GET['page'] ?? 'overview';
 $validPage = ['overview', 'account', 'bill', 'comment', 'permission', 'post', 'price', 'setting'];
@@ -674,10 +678,8 @@ switch ($page) {
             "Bạn có chắc chắn muốn xóa dữ liệu này không? Hành động này không thể hoàn tác!", 
             true 
         );
-
-        // BƯỚC 3: Kiểm tra kết quả
         if (!isConfirmed) {
-            return; // Người dùng bấm Hủy (hoặc phím ESC) thì thoát hàm
+            return;
         }
 
         const urlParams = new URLSearchParams(window.location.search);
@@ -866,19 +868,31 @@ switch ($page) {
             });
         });
     }
-    function handleUpdateStatus(event, id, newStatus, title) {
+    async function handleUpdateStatus(event, id, newStatus, title) {
         event.stopPropagation();
 
         // Xác nhận trước khi làm
         let actionName = newStatus === 'completed' ? 'Duyệt bài' : 
                         newStatus === 'rejected' ? 'Từ chối bài' : 'Gỡ bài';
-                        
-        if (!confirm(`Bạn có chắc chắn muốn ${actionName} này không?`)) return;
+
+        const isConfirmed = await showConfirm(
+            "Cảnh báo xóa", 
+            `Bạn có chắc chắn muốn ${actionName} này không?`, 
+            true 
+        );
+        if (!isConfirmed) {
+            return;
+        }
+
         let reasonText = "";
 
         // 2. TÍNH NĂNG NÂNG CAO: Cho phép nhập lý do nếu Từ chối/Gỡ bài
         if (newStatus === 'rejected' || newStatus === 'failed') {
-            let customReason = prompt(`Vui lòng nhập lý do ${actionName} (Tùy chọn):`);
+            let customReason = await showPrompt(
+                "Xác nhận hành động", 
+                `Vui lòng nhập lý do ${actionName} (Tùy chọn):`, 
+                "Nhập lý do của bạn vào đây..."
+            );
             
             // Nếu người dùng bấm "Cancel" ở ô nhập lý do -> Hủy hành động
             if (customReason === null) return; 
@@ -922,7 +936,7 @@ switch ($page) {
         .then(result => {
             showToast({
                 title: "Thành công!",
-                message: "Cập nhật trạng thái thành công.",
+                message: actionName + " thành công.",
                 type: "success",
                 duration: 2000
             });
@@ -940,7 +954,7 @@ switch ($page) {
             });
         });
     }
-    function handleRestore() {
+    async function handleRestore() {
         const selectedRadio = document.querySelector('input[name="selectedRow"]:checked');
         if (!selectedRadio) {
             showToast({
@@ -953,7 +967,12 @@ switch ($page) {
         }
 
         const id = selectedRadio.value;
-        if (!confirm("Bạn có chắc chắn muốn khôi phục dữ liệu này không?")) {
+        const isConfirmed = await showConfirm(
+            "Cảnh báo xóa", 
+            "Bạn có chắc chắn muốn khôi phục dữ liệu này không?", 
+            false 
+        );
+        if (!isConfirmed) {
             return;
         }
 
@@ -1699,7 +1718,7 @@ switch ($page) {
             }
         });
     }
-    function revokeRoleFromAccount(event, accountId, roleNameToRemove, encodedRoles, targetModel, roleId) {
+    async function revokeRoleFromAccount(event, accountId, roleNameToRemove, encodedRoles, targetModel, roleId) {
         event.stopPropagation();
         
         let currentRoles = [];
@@ -1709,7 +1728,14 @@ switch ($page) {
             currentRoles = [];
         }
 
-        if (!confirm(`Xác nhận tước quyền [${roleNameToRemove}]?`)) return;
+        const isConfirmed = await showConfirm(
+            "Cảnh báo xóa", 
+            `Xác nhận tước quyền [${roleNameToRemove}]?`, 
+            true 
+        );
+        if (!isConfirmed) {
+            return;
+        }
 
         // 1. Lọc mảng (Nếu tước hết, remainingRoles sẽ là [])
         let remainingRoles = currentRoles.filter(role => role !== roleNameToRemove);

@@ -179,14 +179,14 @@
     border: 1px solid #CBD5E1;
     border-radius: 8px;
     margin-bottom: 24px;
-    font-size: 1.05rem; /* Cỡ chữ to bằng với nội dung */
+    font-size: 1.4rem; /* Cỡ chữ to bằng với nội dung */
     outline: none;
     transition: border-color 0.2s;
 }
 
 /* 4. Tăng cỡ chữ và độ to của Nút bấm */
 .btn-dialog {
-    font-size: 1.6rem; /* Thêm cỡ chữ rõ ràng cho nút */
+    font-size: 1.4rem; /* Thêm cỡ chữ rõ ràng cho nút */
     padding: 10px 20px; /* Nút to ra và dễ bấm (hitbox lớn hơn) */
     border-radius: 8px;
     font-weight: 500;

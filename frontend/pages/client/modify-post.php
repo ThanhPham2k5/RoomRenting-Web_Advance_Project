@@ -231,6 +231,7 @@
                 }
             } else {
                 console.error(data)
+                alert("Tải thông tin tỉnh thành thất bại.")
             }
         } catch (err) {
             console.error(err)
@@ -282,6 +283,7 @@
                 }
             } else {
                 console.error(data)
+                alert("Tải thông tin phường xã thất bại.")
             }
         } catch (err) {
             console.error(err)
@@ -333,6 +335,7 @@
                 }
             } else {
                 console.error(data)
+                alert("Tải thông tin phường xã theo tên tỉnh thành thất bại.")
             }
         } catch (err) {
             console.error(err)
@@ -528,7 +531,7 @@
         isValid = false
         document.querySelector(".deposit-error").textContent = "Giá cọc phải là số."
         document.querySelector(".deposit-error").style.display = "flex"
-      } else if (Number(document.querySelector(".profile-deposit-input").value.trim()) > Number(document.querySelector(".profile-price-input").value.trim())) {
+      } else if (Number(document.querySelector(".profile-deposit-input").value.trim()) >= Number(document.querySelector(".profile-price-input").value.trim())) {
         if(isValid)
           document.querySelector(".profile-deposit-input").focus()
         isValid = false
@@ -618,6 +621,7 @@
             }
           } else {
             console.error(data)
+            alert("Lấy thông tin tài khoản thất bại.")
           }
         } catch (err) {
           console.error(err)
@@ -641,6 +645,7 @@
             }
           } else {
             console.error(data)
+            alert("Cập nhật thông tin bài đăng thất bại.")
           }
         } catch (err) {
           console.error(err)
@@ -705,6 +710,7 @@
           }
         } else {
           console.error(data)
+          alert("Tải thông tin bài đăng thất bại.")
         }
       } catch (err) {
         console.error(err)

@@ -16,3 +16,110 @@
 .index-content .nav::-webkit-scrollbar {
     width: 0px;
 }
+/* =========================================
+   HỆ THỐNG TOAST MESSAGE
+   ========================================= */
+#toast-container {
+    position: fixed;
+    top: 32px;
+    right: 32px;
+    z-index: 999999; /* Luôn nổi trên cùng, kể cả Modal */
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.toast-msg {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 16px 20px;
+    min-width: 320px;
+    max-width: 450px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    border-left: 6px solid; /* Vạch màu phân loại */
+    animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1), fadeOut 0.4s linear forwards;
+    animation-delay: 0s, var(--delay); /* Fade out sau thời gian chỉ định */
+    position: relative;
+    overflow: hidden;
+}
+
+/* Các loại màu sắc Toast */
+.toast-msg.success { border-color: #10B981; }
+.toast-msg.error { border-color: #EF4444; }
+.toast-msg.warning { border-color: #F59E0B; }
+.toast-msg.info { border-color: #3B82F6; }
+
+/* Icon bên trái */
+.toast-msg .toast-icon {
+    font-size: 2.4rem;
+    margin-right: 16px;
+    display: flex;
+    align-items: center;
+}
+.toast-msg.success .toast-icon { color: #10B981; }
+.toast-msg.error .toast-icon { color: #EF4444; }
+.toast-msg.warning .toast-icon { color: #F59E0B; }
+.toast-msg.info .toast-icon { color: #3B82F6; }
+
+/* Nội dung chữ */
+.toast-msg .toast-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.toast-msg .toast-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #1E293B;
+    margin: 0;
+}
+.toast-msg .toast-desc {
+    font-size: 1.4rem;
+    color: #64748B;
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* Nút tắt thủ công */
+.toast-msg .toast-close {
+    padding: 0 8px;
+    font-size: 2rem;
+    color: #94A3B8;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    transition: color 0.2s;
+}
+.toast-msg .toast-close:hover { color: #0F172A; }
+
+/* Thanh chạy đếm ngược (Tiến trình) */
+.toast-msg::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    width: 100%;
+    background-color: inherit;
+    animation: progress linear forwards;
+    animation-duration: var(--duration);
+}
+.toast-msg.success::after { background-color: #10B981; }
+.toast-msg.error::after { background-color: #EF4444; }
+.toast-msg.warning::after { background-color: #F59E0B; }
+.toast-msg.info::after { background-color: #3B82F6; }
+
+/* Các khung hình hoạt ảnh (Keyframes) */
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(100%); }
+    to { opacity: 1; transform: translateX(0); }
+}
+@keyframes fadeOut {
+    to { opacity: 0; transform: translateY(-20px); visibility: hidden; }
+}
+@keyframes progress {
+    to { width: 0; }
+}

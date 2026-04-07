@@ -50,7 +50,9 @@
     ob_start();
     ?>
         <div class="detail-profile-header">
-            <div class="avatar-placeholder comment-icon" id="view-comment-avatar-text">U</div>
+            <div class="avatar-placeholder comment-icon" id="view-comment-avatar-text">
+                <img src="" alt="avatar">
+            </div>
             <div class="profile-title">
                 <h3 id="view-comment-username">Tên người dùng</h3>
                 <span class="badge-detail badge-detail-role" id="view-comment-role">Vai trò</span>

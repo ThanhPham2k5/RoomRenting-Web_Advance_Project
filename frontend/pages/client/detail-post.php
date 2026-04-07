@@ -360,6 +360,7 @@
                             }
                             } else {
                             console.error(data)
+                            alert("Yêu thích bài đăng thất bại.")
                             }
                         } catch (err) {
                             console.error(err)
@@ -389,6 +390,7 @@
                             // console.log(data)
                             } else {
                             console.error(data)
+                            alert("Hủy yêu thích bài đăng thất bại.")
                             }
                         } catch (err) {
                             console.error(err)
@@ -523,6 +525,7 @@
                     }
                 } else {
                     console.error(response)
+                    alert("Tải thêm bình luận thất bại.")
                 }
             } catch (err) {
                 console.error(err)
@@ -682,6 +685,7 @@
                     }
                 } else {
                     console.error(response)
+                    alert("Gửi bình luận thất bại.")
                 }
             } catch (err) {
                 console.error(err)

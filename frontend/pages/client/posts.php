@@ -122,6 +122,14 @@
 
         <!-- <div class="filter-line"></div> -->
 
+        <div class="filter-occupants">Số người ở tối đa</div>
+
+        <input type="number" name="filter-occupants-number" id="filter-occupants-number" 
+        placeholder="Nhập số người" 
+        min="1" class="filter-occupants-number">
+
+        <!-- <div class="filter-line"></div> -->
+
         <button type="button" class="filter-apply">Áp dụng</button>
       </div>
     </div>
@@ -311,6 +319,7 @@
                 }
             } else {
                 console.error(data)
+                alert("Tải thông tin tỉnh thành thất bại.")
             }
         } catch (err) {
             console.error(err)
@@ -362,6 +371,7 @@
                 }
             } else {
                 console.error(data)
+                alert("Tải thông tin phường xã thất bại.")
             }
         } catch (err) {
             console.error(err)
@@ -445,6 +455,10 @@
         filterCondition += "&filter[area]=" + document.querySelector(".filter-square-number").value.trim()
       }
 
+      if(document.querySelector(".filter-occupants-number").value.trim() && numbRegex.test(document.querySelector(".filter-occupants-number").value.trim()) && document.querySelector(".filter-occupants-number").value.trim() > 0) {
+        filterCondition += "&filter[maxOccupants][eq]=" + document.querySelector(".filter-occupants-number").value.trim()
+      }
+
       page = 1
       await updatePostsPage()
       filter_return.click()
@@ -456,9 +470,10 @@
       document.querySelector(".filter-province-lb-text").textContent = "Chọn tỉnh thành"
       document.querySelector(".filter-district-lb-text").textContent = "Chọn phường xã"
       document.querySelector(".filter-room-lb-text").textContent = "Chọn loại phòng"
-      document.querySelector(".filter-min-price").value = 0
-      document.querySelector(".filter-max-price").value = 0
-      document.querySelector(".filter-square-number").value = 0
+      document.querySelector(".filter-min-price").value = ""
+      document.querySelector(".filter-max-price").value = ""
+      document.querySelector(".filter-square-number").value = ""
+      document.querySelector(".filter-occupants-number").value = ""
       document.querySelector(".filter-apply").click()
     })
 
@@ -634,7 +649,7 @@
     async function getPost(sortCondition, filterCondition, searchCondition, page) {
       try {
         // page = 2 to test pagination
-        const response = await fetch("http://backend.test/api/posts?per_page=10&filter[status]=completed&include=postImages,favorites.account&sort=" + sortCondition + filterCondition + searchCondition + "&page=" + page, {
+        const response = await fetch("http://backend.test/api/posts?per_page=10&filter[status]=completed&include=postImages,favorites.account&sort=" + sortCondition + filterCondition + searchCondition + "&page=" + page + "&filter[trashed]=without", {
           method: "GET",
           headers: {
             "Accept": "application/json"
@@ -650,6 +665,7 @@
           }
         } else {
           console.error(data)
+          alert("Tải danh sách bài đăng thất bại.")
         }
       } catch (err) {
         console.error(err)
@@ -766,6 +782,7 @@
                     }
                   } else {
                     console.error(data)
+                    alert("Yêu thích bài đăng thành công.")
                   }
                 } catch (err) {
                   console.error(err)
@@ -795,6 +812,7 @@
                     // console.log(data)
                   } else {
                     console.error(data)
+                    alert("Hủy yêu thích thất bại.")
                   }
                 } catch (err) {
                   console.error(err)

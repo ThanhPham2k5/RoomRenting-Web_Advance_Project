@@ -410,3 +410,6 @@ Route::middleware(['auth:sanctum'])
 
 Route::middleware(['auth:sanctum'])
     ->get('/statistic/revenue', [StatisticController::class, 'getRevenueStatistic']);
+
+Route::get('statistic/posts/province_data', [StatisticController::class, 'getProvinceStatistic']);
+Route::get('statistic/summary', [StatisticController::class, 'getDashboardSummary']);

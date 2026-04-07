@@ -195,7 +195,7 @@
 
       if(isValid) {
         try {
-          const response = await fetch("http://backend.test/api/login", {
+          const response = await fetch("http://backend.test/api/login/user", {
             method: "POST",
             headers: {
               "Accept": "application/json",

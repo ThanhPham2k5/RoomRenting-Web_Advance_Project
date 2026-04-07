@@ -122,6 +122,14 @@
 
             <!-- <div class="filter-line"></div> -->
 
+            <div class="filter-occupants">Số người ở tối đa</div>
+
+            <input type="number" name="filter-occupants-number" id="filter-occupants-number" 
+            placeholder="Nhập số người" 
+            min="1" class="filter-occupants-number">
+
+            <!-- <div class="filter-line"></div> -->
+
             <button type="button" class="filter-apply">Áp dụng</button>
         </div>
         </div>
@@ -309,6 +317,7 @@
                     }
                 } else {
                     console.error(data)
+                    alert("Tải thông tin tỉnh thành thất bại.")
                 }
             } catch (err) {
                 console.error(err)
@@ -360,6 +369,7 @@
                     }
                 } else {
                     console.error(data)
+                    alert("Tải thông tin phường xã thất bại.")
                 }
             } catch (err) {
                 console.error(err)
@@ -443,6 +453,10 @@
             if(document.querySelector(".filter-square-number").value.trim() && numbRegex.test(document.querySelector(".filter-square-number").value.trim()) && document.querySelector(".filter-square-number").value.trim() > 0) {
                 filterCondition += "&filter[area]=" + document.querySelector(".filter-square-number").value.trim()
             }
+            
+            if(document.querySelector(".filter-occupants-number").value.trim() && numbRegex.test(document.querySelector(".filter-occupants-number").value.trim()) && document.querySelector(".filter-occupants-number").value.trim() > 0) {
+                filterCondition += "&filter[maxOccupants][eq]=" + document.querySelector(".filter-occupants-number").value.trim()
+            }
 
             page = 1
             await updatePostsPage()
@@ -455,9 +469,10 @@
             document.querySelector(".filter-province-lb-text").textContent = "Chọn tỉnh thành"
             document.querySelector(".filter-district-lb-text").textContent = "Chọn phường xã"
             document.querySelector(".filter-room-lb-text").textContent = "Chọn loại phòng"
-            document.querySelector(".filter-min-price").value = 0
-            document.querySelector(".filter-max-price").value = 0
-            document.querySelector(".filter-square-number").value = 0
+            document.querySelector(".filter-min-price").value = ""
+            document.querySelector(".filter-max-price").value = ""
+            document.querySelector(".filter-square-number").value = ""
+            document.querySelector(".filter-occupants-number").value = ""
             document.querySelector(".filter-apply").click()
         })
 
@@ -661,6 +676,7 @@
                 }
                 } else {
                 console.error(data)
+                alert("Tải danh sách bài đăng thất bại.")
                 }
             } catch (err) {
                 console.error(err)
@@ -807,6 +823,7 @@
                                         }
                                     } else {
                                         console.error(data)
+                                        alert("Xóa bài đăng thất bại")
                                     }
                                 } catch (err) {
                                     console.error(err)
@@ -843,6 +860,7 @@
                                     }
                                 } else {
                                     console.error(data)
+                                    alert("Tải lý do từ chối thất bại.")
                                 }
                             } catch (err) {
                                 console.error(err)
@@ -886,6 +904,7 @@
                                         }
                                     } else {
                                         console.error(data)
+                                        alert("Đăng duyệt lại bài đăng thất bại.")
                                     }
                                 } catch (err) {
                                     console.error(err)
@@ -935,6 +954,7 @@
                                         }
                                     } else {
                                         console.error(data)
+                                        alert("Thanh toán bài đăng thất bại.")
                                     }
                                 } catch (err) {
                                     console.error(err)

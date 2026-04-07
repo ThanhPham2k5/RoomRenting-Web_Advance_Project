@@ -1,58 +1,130 @@
-.navigation-component .main-content{
-    width: 240px;
-    margin-right: auto;
-    margin-left: auto;
+/* =========================================
+   1. BỐ CỤC CHÍNH CỦA THANH ĐIỀU HƯỚNG
+   ========================================= */
+.navigation-component {
+    height: 100vh; /* [MỚI] Kéo dài sidebar full màn hình */
+    background-color: #FFFFFF;
+    border-right: 1px solid #E2E8F0; /* [MỚI] Thêm viền xám nhạt để tách biệt với nội dung bên phải */
+}
+
+.navigation-component .main-content {
+    width: 260px; /* [SỬA] Mở rộng thêm 20px để các menu có không gian "thở" */
+    margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 50px;
-    padding: 20px 0;
+    gap: 8px; /* [SỬA] Giảm khoảng cách (50px cũ là quá lớn), dùng padding ở trong item sẽ đẹp hơn */
+    padding: 24px 16px; /* [SỬA] Lề trên dưới 24px, lề trái phải 16px */
     height: 100%;
 }
-.navigation-component .logo img{
+
+/* =========================================
+   2. KHU VỰC LOGO
+   ========================================= */
+.navigation-component .logo {
+    display: flex;
+    justify-content: flex-start; /* [SỬA] Căn trái thay vì căn giữa để đồng bộ với menu */
+    align-items: center;
+    gap: 12px;
+    padding: 0 12px; /* Thụt vào 1 chút cho thẳng hàng với chữ menu */
+    margin-bottom: 24px; /* [MỚI] Đẩy các menu xuống 1 đoạn */
+}
+
+.navigation-component .logo img {
     height: 40px;
     width: 40px;
     object-fit: cover;
 }
-.navigation-component .logo p{
-    font-size: 2.4rem;
-    line-height: 3.2rem;
-    font-weight: 600;
+
+.navigation-component .logo p {
+    font-size: 1.8rem; /* [SỬA] 2.4rem hơi to so với Sidebar, giảm xuống 1.8rem nhìn sẽ "sang" hơn */
+    line-height: 2.8rem;
+    font-weight: 700;
+    color: #0F172A; /* Màu đen nhám */
 }
-.navigation-component .logo{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.navigation-component .item{
+
+/* =========================================
+   3. CÁC NÚT MENU (ITEM) & HIỆU ỨNG TRANSITION
+   ========================================= */
+.navigation-component .item {
     position: relative;
+    list-style: none;
 }
-.navigation-component .item a{
+
+.navigation-component .item a {
     text-decoration: none;
-    color: #1F2937;
+    color: #475569; /* [SỬA] Màu xám mờ cho các menu chưa active */
     display: flex;
-    justify-content: center;
+    justify-content: flex-start; /* [SỬA] Chuyển sang căn trái để các icon và chữ thẳng tắp 1 hàng dọc */
     align-items: center;
-    gap: 10px;
+    gap: 16px; /* [SỬA] Khoảng cách giữa icon và chữ */
+    padding: 14px 16px; /* [MỚI] Thêm padding để tạo thành 1 khối (Block) dễ bấm */
+    border-radius: 12px; /* [MỚI] Bo góc khối menu */
+    font-size: 1.6rem;
+    font-weight: 500;
+    
+    /* [MỚI] TÍNH NĂNG TRANSITION (Chuyển động mượt khi hover) */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.navigation-component .item.active a::before{
+
+/* Hiệu ứng chuyển động mượt cho Icon */
+.navigation-component .item a svg {
+    transition: transform 0.3s ease; /* [MỚI] Transition riêng cho Icon */
+}
+
+/* 3.1 - TRẠNG THÁI HOVER (Khi lia chuột qua) */
+.navigation-component .item a:hover {
+    background-color: #F8FAFC; /* [MỚI] Đổ nền xám siêu nhạt */
+    color: #F97316; /* Chuyển chữ sang cam */
+    transform: translateX(4px); /* [MỚI] Hiệu ứng: Khối menu trượt nhẹ sang phải 4px */
+}
+
+.navigation-component .item a:hover svg {
+    transform: scale(1.15); /* [MỚI] Hiệu ứng: Icon phình to ra một chút (pop-up) */
+}
+
+/* 3.2 - TRẠNG THÁI ACTIVE (Trang hiện tại) */
+.navigation-component .item.active a {
+    background-color: #FFF7ED; /* [MỚI] Đổ nền màu cam cực nhạt (Pastel) */
+    color: #EA580C; /* Màu cam đậm hơn một chút để dễ đọc */
+    font-weight: 600; /* In đậm nhẹ */
+}
+
+/* Cột line màu cam báo hiệu Active */
+.navigation-component .item.active a::before {
     content: "";
-    width: 2px;
+    width: 4px; /* [SỬA] Cho vạch cam to hơn một chút */
     height: 24px;
     background-color: #F97316;
-    border-radius: 15px;
+    border-radius: 0 4px 4px 0; /* Bo góc vạch cam */
     position: absolute;
-    left: 0;
+    left: 0; /* Nằm dính sát mép trái */
 }
-.navigation-component .item a:hover,
-.navigation-component .item.active a{
-    color: #F97316;
+
+/* =========================================
+   4. THÀNH PHẦN PHỤ CỦA MENU
+   ========================================= */
+/* Đường kẻ ngang (Dùng giữa Giá cả & Cài đặt) */
+.navigation-component .item.linenav {
+    height: 1px;
+    background-color: #E2E8F0; /* [SỬA] Đổi xám đen thành xám nhạt hiện đại */
+    margin: 8px 16px; /* [MỚI] Co ngắn 2 đầu lại cho đẹp */
 }
-.navigation-component .item .dangxuat{
+
+/* Cụm SVG của riêng nút Đăng xuất */
+.navigation-component .item .dangxuat {
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 2px;
 }
-.navigation-component .item.linenav{
-    height: 1px;
-    background-color: #979797;
+
+/* 4.1 - NÚT ĐĂNG XUẤT NẰM DƯỚI CÙNG */
+.navigation-component .item:last-child {
+    margin-top: auto; /* [MỚI] CỰC KỲ QUAN TRỌNG: Tự động đẩy nút Đăng xuất dính xuống đáy màn hình */
+}
+
+/* Đổi màu đỏ cảnh báo khi hover vào Đăng xuất */
+.navigation-component .item:last-child a:hover {
+    background-color: #FEF2F2;
+    color: #DC2626;
 }

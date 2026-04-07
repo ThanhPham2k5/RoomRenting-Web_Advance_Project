@@ -39,48 +39,77 @@
 ?>
 
 <div class="title-component">
-    <p class="content"><?php echo $titleContent ?></p>
+    <?php if (!empty(trim($titleContent))): ?>
+        <p class="content"><?php echo htmlspecialchars($titleContent); ?></p>
+    <?php endif; ?>
     <?php  
     if($group){
     ?>
         <div class="group">
             <div class="item">
                 <div class="info">
-                    <p class="sub-info">Tổng lượt truy cập</p>
-                    <p>40,689</p>
+                    <p class="sub-info">Khách hàng mới</p>
+                    <p class="main-number" id="kpi-users-total">Đang tải</p>
+                    <p class="trend positive" id="kpi-users-trend">
+                        <span>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>
+                            Đang tải
+                        </span> 
+                        so với tháng trước
+                    </p>
                 </div>
-                <div class="icon">
-                    <svg width="45" height="48" viewBox="0 0 45 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M11.25 11.25C11.25 17.4525 16.2975 22.5 22.5 22.5C28.7025 22.5 33.75 17.4525 33.75 11.25C33.75 5.0475 28.7025 0 22.5 0C16.2975 0 11.25 5.0475 11.25 11.25ZM42.5 47.5H45V45C45 35.3525 37.1475 27.5 27.5 27.5H17.5C7.85 27.5 0 35.3525 0 45V47.5H42.5Z" fill="currentColor"/>
-                    </svg>
-                </div>
-            </div>
-            <div class="item">
-                <div class="info">
-                    <p class="sub-info">Tổng số tin đăng</p>
-                    <p>40,689</p>
-                </div>
-                <div class="icon">
-                    <svg width="45" height="45" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M40 45H5C3.625 45 2.44833 44.5108 1.47 43.5325C0.491667 42.5542 0.00166667 41.3767 0 40V5C0 3.625 0.49 2.44833 1.47 1.47C2.45 0.491667 3.62667 0.00166667 5 0H40C41.375 0 42.5525 0.49 43.5325 1.47C44.5125 2.45 45.0017 3.62667 45 5V40C45 41.375 44.5108 42.5525 43.5325 43.5325C42.5542 44.5125 41.3767 45.0017 40 45ZM37.5 35H7.5V38.75H37.5V35ZM7.5 31.25H37.5V27.5H7.5V31.25ZM7.5 22.5H37.5V7.5H7.5V22.5Z" fill="currentColor"/>
-                    </svg>
+                <div class="icon blue">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
                 </div>
             </div>
+
             <div class="item">
                 <div class="info">
-                    <p class="sub-info">Tổng doanh thu</p>
-                    <p>40,689</p>
+                    <p class="sub-info">Tin đang hoạt động</p>
+                    <p class="main-number" id="kpi-posts-total">Đang tải</p>
+                    <p class="trend positive" id="kpi-posts-trend">
+                        <span>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>
+                            Đang tải
+                        </span> 
+                        so với tháng trước
+                    </p>
                 </div>
-                <div class="icon">
-                    <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M2.5 2.5V42.5C2.5 43.8261 3.02678 45.0979 3.96447 46.0355C4.90215 46.9732 6.17392 47.5 7.5 47.5H47.5" stroke="currentColor" stroke-width="5" stroke-miterlimit="5.759" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    <svg class="part2" width="40" height="20" viewBox="0 0 40 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M2.5 17.5L12.5 7.5L22.5 17.5L37.5 2.5" stroke="currentColor" stroke-width="5" stroke-miterlimit="5.759" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    <svg class="part3" width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M2.5 2.5H10V10" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+                <div class="icon purple">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="info">
+                    <p class="sub-info">Doanh thu tháng này</p>
+                    <p class="main-number" id="kpi-revenue-total">Đang tải</p>
+                    <p class="trend negative" id="kpi-revenue-trend">
+                        <span>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
+                            -Đang tải
+                        </span> 
+                        so với tháng trước
+                    </p>
+                </div>
+                <div class="icon green">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="info">
+                    <p class="sub-info">Tin chờ kiểm duyệt</p>
+                    <p class="main-number" id="kpi-pending-total">Đang tải</p>
+                    <p class="trend warning" id="kpi-pending-trend">
+                        <span>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+                            Cần xử lý ngay
+                        </span> 
+                    </p>
+                </div>
+                <div class="icon orange">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
                 </div>
             </div>
         </div>
@@ -88,7 +117,6 @@
     }
     ?>
     <?php 
-    // 3. CHỈ IN RA KHUNG <div class="cta"> NẾU ÍT NHẤT CÓ 1 NÚT ĐƯỢC HIỂN THỊ
     if($canInsert || $canEdit || $canHandle || $canDelete || $canRestore) { 
     ?>
         <div class="cta">

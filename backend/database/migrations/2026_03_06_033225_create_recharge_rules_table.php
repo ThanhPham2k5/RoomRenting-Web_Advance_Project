@@ -16,7 +16,7 @@ return new class extends Migration
 
             // $table->enum('status', ['active', 'inactive']);
             $table->integer('points');
-            $table->decimal('money', 12, 0);
+            $table->decimal('money', 65, 0);
             
             $table->softDeletes();
             $table->timestamps();

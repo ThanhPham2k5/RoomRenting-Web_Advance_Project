@@ -32,6 +32,8 @@ class FavoriteService{
 
     public function buildGetAllQuery(){
         $query = QueryBuilder::for(Favorite::withTrashed())
+        ->join('posts', 'favorites.post_id', '=', 'posts.id')
+        ->select('favorites.*')
         ->allowedIncludes($this->allowedIncludes)
         ->allowedFilters([
             AllowedFilter::custom('search', new AllColumnFilter($this->allColFilter)),
@@ -43,14 +45,14 @@ class FavoriteService{
             AllowedFilter::partial('post.title'),
             AllowedFilter::operator('post.price', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
             AllowedFilter::operator('post.area', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
-            AllowedFilter::partial('post.houseNumber', 'house_number'),
+            AllowedFilter::partial('post.houseNumber', 'posts.house_number'),
             AllowedFilter::partial('post.ward'),
             AllowedFilter::partial('post.province'),
             AllowedFilter::partial('post.description'),
             AllowedFilter::operator('post.deposit', FilterOperator::DYNAMIC), // =, <>, >, <, >=, <=
             AllowedFilter::operator('post.authorized', FilterOperator::DYNAMIC), // =, <>
-            AllowedFilter::exact('post.roomType', 'room_type'),
-            AllowedFilter::operator('post.maxOccupants', FilterOperator::DYNAMIC, '', 'max_occupants'), // =, <>, >, <, >=, <=
+            AllowedFilter::exact('post.roomType', 'post.room_type'),
+            AllowedFilter::operator('post.maxOccupants', FilterOperator::DYNAMIC, 'and', 'posts.max_occupants', false), // =, <>, >, <, >=, <=
             AllowedFilter::custom('createdAt', new DateFilter(), 'created_at'),
         ])
         ->allowedSorts([

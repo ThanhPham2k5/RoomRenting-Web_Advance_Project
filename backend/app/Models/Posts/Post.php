@@ -55,45 +55,37 @@ class Post extends Model
     
     public function scopeMatchWithForm($query, $form)
     {
-        $margin = 0.35; // Sai số 35%
 
-        return $query->where(function ($q) use ($form, $margin) {
-            // 1. Luôn ưu tiên cùng Tỉnh/Thành phố (Điều kiện này nên giữ là AND để tránh gợi ý quá xa)
+        return $query->where(function ($q) use ($form) {
             $q->where('province', 'like', "%{$form->province}%");
 
-            // 2. Các yếu tố còn lại dùng OR để "vét" bài đăng
-            $q->where(function ($sub) use ($form, $margin) {
+            $q->where(function ($sub) use ($form) {
+
                 // Khớp Phường/Xã
                 if ($form->ward) {
-                    $sub->orWhere('ward', 'like', "%{$form->ward}%");
+                    $sub->where('ward', 'like', "%{$form->ward}%");
                 }
 
                 // Khớp loại phòng
                 if ($form->room_type) {
-                    $sub->orWhere('room_type', $form->room_type);
+                    $sub->where('room_type', $form->room_type);
                 }
 
                 // Khớp trong khoảng giá (có sai số)
                 if ($form->price_min || $form->price_max) {
-                    $min = $form->price_min ? $form->price_min * (1 - $margin) : 0;
-                    $max = $form->price_max ? $form->price_max * (1 + $margin) : 9999999999;
-                    $sub->orWhereBetween('price', [$min, $max]);
+                    $min = $form->price_min ?? 0;
+                    $max = $form->price_max ?? PHP_FLOAT_MAX;
+                    $sub->whereBetween('price', [$min, $max]);
                 }
 
                 // Khớp diện tích (có sai số)
                 if ($form->area) {
-                    $sub->orWhereBetween('area', [
-                        $form->area * (1 - $margin), 
-                        $form->area * (1 + $margin)
-                    ]);
+                    $sub->where('area', $form->area);
                 }
 
                 // Khớp số người ở
                 if ($form->max_occupants) {
-                    $sub->orWhereBetween('max_occupants', [
-                        $form->max_occupants - 1, 
-                        $form->max_occupants + 1
-                    ]);
+                    $sub->where('max_occupants', $form->max_occupants);
                 }
             });
         });

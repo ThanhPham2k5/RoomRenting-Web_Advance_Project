@@ -14,13 +14,13 @@ return new class extends Migration
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->decimal('price', 12, 0);
-            $table->decimal('area', 8, 2);
+            $table->decimal('price', 65, 0);
+            $table->decimal('area', 65, 2);
             $table->string('house_number');
             $table->string('ward');
             $table->string('province');
             $table->text('description');
-            $table->decimal('deposit', 12, 0);
+            $table->decimal('deposit', 65, 0);
             $table->enum('status', ['rejected', 'pending', 'expired', 'completed', 'failed']);
             $table->boolean('authorized');
             $table->enum('room_type', ['room', 'apartment', 'dorm']);

@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('forms', function (Blueprint $table) {
             $table->id();
-            $table->decimal('price_max', 12, 0)->nullable();
-            $table->decimal('price_min', 12, 0)->nullable();
-            $table->decimal('area', 8, 2)->nullable();
+            $table->decimal('price_max', 65, 0)->nullable();
+            $table->decimal('price_min', 65, 0)->nullable();
+            $table->decimal('area', 65, 2)->nullable();
             $table->string('ward')->nullable();
             $table->string('province')->nullable();
             $table->enum('room_type', ['room', 'apartment', 'dorm'])->nullable();

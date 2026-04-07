@@ -73,7 +73,31 @@
                         Có Thang máy và Sân Thượng</p>
                     <p id="detail-user-id">ID người đăng bài: 123</p>
                     <p id="detail-employee-id">ID nhân viên duyệt bài: 123</p>
-                    <p>Lịch sử thanh toán</p>
+                    <div class="payment-history">
+                        <p class="section-title">Lịch sử thanh toán</p>
+                        <div class="history-list">
+                            <div class="history-item">
+                                <div class="hist-icon success">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                </div>
+                                <div class="hist-info">
+                                    <span class="hist-desc">Thanh toán đẩy tin VIP 3 ngày</span>
+                                    <span class="hist-date">06/04/2026 - 14:30</span>
+                                </div>
+                                <span class="hist-amount minus">- 150.000đ</span>
+                            </div>
+                            <div class="history-item">
+                                <div class="hist-icon success">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                </div>
+                                <div class="hist-info">
+                                    <span class="hist-desc">Đăng tin phòng trọ (Gói cơ bản)</span>
+                                    <span class="hist-date">01/04/2026 - 09:15</span>
+                                </div>
+                                <span class="hist-amount minus">- 20.000đ</span>
+                            </div>
+                        </div>
+                    </div>
                     <p id="reason">Lý do</p>
                     <div class="post-info-btn">
                         <button class="handle" style="background-color: #3B82F6;" onclick="switchToEdit()">Chỉnh sửa</button>
@@ -82,6 +106,7 @@
 
                 <div class="post-edit" id="info-edit">
                     <form onsubmit="handleSave(event, this)" method="POST" id="form-edit-post" action="">
+                        <input type="hidden" name="action" value="editPost">
                         <div class="post-edit-body">
                             <input type="hidden" name="id" value="">
 
@@ -126,7 +151,7 @@
                             
                             <div class="input-group">
                                 <label>Kiểu phòng</label>
-                                <select name="room_type">
+                                <select name="roomType">
                                     <option value="">-- Chọn kiểu phòng --</option>
                                     <option value="room">Phòng trọ khép kín</option>
                                     <option value="apartment">Chung cư mini</option>
@@ -136,7 +161,7 @@
                             
                             <div class="input-group">
                                 <label>Số người ở tối đa</label>
-                                <input type="number" name="max_occupants" value="" placeholder="Ví dụ: 2" min="1">
+                                <input type="number" name="maxOccupants" value="" placeholder="Ví dụ: 2">
                             </div>
                             
                             <div class="input-group" style="grid-column: 1 / -1;"> <label>Mô tả chi tiết</label>
@@ -154,3 +179,147 @@
         </div>
     </div>
 </div>
+<script>
+function validatePostForm(form) {
+    let hasError = false;
+    
+    // Khởi tạo mảng các rule cần kiểm tra cho Form Bài Đăng
+    const rules = [
+        // 1. Tiêu đề
+        {
+            input: form.title,
+            checks: [
+                () => Validator.isRequired(form.title.value, "Tiêu đề không được để trống."),
+                () => Validator.checkLength(form.title.value, 0, 255, "Tiêu đề")
+            ]
+        },
+        // 2. Giá thuê
+        {
+            input: form.price,
+            checks: [
+                () => Validator.isRequired(form.price.value, "Giá thuê không được để trống."),
+                () => (Number(form.price.value) <= 0 ? "Giá thuê phải lớn hơn 0." : undefined)
+            ]
+        },
+        // 3. Tiền đặt cọc
+        {
+            input: form.deposit,
+            checks: [
+                () => Validator.isRequired(form.deposit.value, "Tiền đặt cọc không được để trống."),
+                () => (Number(form.deposit.value) < 0 ? "Tiền đặt cọc không được là số âm." : undefined),
+                // Luật so sánh: Cọc phải nhỏ hơn Giá thuê
+                () => {
+                    const priceVal = form.price.value;
+                    const depositVal = form.deposit.value;
+                    // Chỉ so sánh khi cả Giá và Cọc đều đã được người dùng nhập
+                    if (priceVal && depositVal) {
+                        if (Number(depositVal) >= Number(priceVal)) {
+                            return "Tiền đặt cọc phải nhỏ hơn giá thuê.";
+                        }
+                    }
+                    return undefined;
+                }
+            ]
+        },
+        // 4. Diện tích
+        {
+            input: form.area,
+            checks: [() => Validator.isRequired(form.area.value, "Diện tích không được để trống.")]
+        },
+        // 5. Tỉnh/Thành phố
+        {
+            input: form.province,
+            checks: [() => Validator.isRequired(form.province.value, "Tỉnh, Thành phố không được để trống.")]
+        },
+        // 6. Phường/Xã
+        {
+            input: form.ward,
+            checks: [() => Validator.isRequired(form.ward.value, "Quận, Huyện, Phường, Xã không được để trống.")]
+        },
+        // 7. Kiểu phòng
+        {
+            input: form.room_type,
+            checks: [() => Validator.isRequired(form.room_type.value, "Kiểu phòng không được để trống.")]
+        },
+        // 8. Số người ở tối đa
+        {
+            input: form.max_occupants,
+            checks: [
+                () => Validator.isRequired(form.max_occupants.value, "Số người ở tối đa không được để trống."),
+                // Luật số người không được âm (Thực tế số người ở tối thiểu phải là 1)
+                () => (Number(form.max_occupants.value) <= 0 ? "Số người ở tối đa phải lớn hơn 0." : undefined)
+            ]
+        },
+        // 9. Mô tả chi tiết
+        {
+            input: form.description,
+            checks: [
+                () => Validator.checkLength(form.description.value, 0, 255, "Mô tả")
+            ]
+        }
+    ];
+
+    // Chạy vòng lặp kiểm tra toàn bộ các trường text/select
+    rules.forEach(item => {
+        if (!item.input) return; // Bỏ qua nếu field không tồn tại trong form
+        
+        Validator.clearError(item.input); // Dọn lỗi cũ đi trước
+        let errorMsg = undefined;
+
+        // Chạy qua từng luật (Ví dụ Tiêu đề chạy qua 2 luật: isRequired và checkLength)
+        for (let checkFunc of item.checks) {
+            errorMsg = checkFunc();
+            if (errorMsg) break; // Nếu đụng 1 lỗi thì dừng lại, không check tiếp luật sau
+        }
+
+        if (errorMsg) {
+            Validator.showError(item.input, errorMsg);
+            hasError = true;
+        }
+    });
+
+    // ===============================================
+    // 10. KIỂM TRA ĐẶC BIỆT DÀNH CHO ẢNH TRONG FORM SỬA
+    // ===============================================
+    const mainImageHidden = document.querySelector('input[name="existing_images[main]"]');
+    const fileInput = document.getElementById('hidden-file-input');
+    
+    // Nếu có fileInput (tức form có thẻ chọn ảnh)
+    if (fileInput) {
+        Validator.clearError(fileInput); 
+        
+        let hasImage = false;
+        
+        // 10.1 - Check xem có ảnh cũ không
+        if (mainImageHidden && mainImageHidden.value.trim() !== '') {
+            hasImage = true;
+        }
+
+        // 10.2 - Nếu có tải ảnh mới lên thì check dung lượng, định dạng
+        if (fileInput.files && fileInput.files.length > 0) {
+            hasImage = true; 
+            const imgError = Validator.checkImage(fileInput, false); // true hay false không quan trọng vì có hasImage lo rồi
+            if (imgError) {
+                Validator.showError(fileInput, imgError);
+                hasError = true;
+                // Nếu bạn giấu thẻ input file, bạn nên gán lỗi này vào một cái label bao bọc ảnh để hiển thị
+            }
+        }
+
+        // 10.3 - Chốt lại nếu xóa hết ảnh cũ mà cũng không up ảnh mới
+        if (!hasImage) {
+            // Mẹo: Gán lỗi vào khu vực chứa ảnh chính để người dùng dễ nhìn thấy
+            const imgWrapper = document.querySelector('.main-image-wrapper');
+            if (imgWrapper) {
+                Validator.showError(imgWrapper, "Bắt buộc phải có ít nhất 1 ảnh đại diện (Ảnh chính).");
+            } else {
+                Validator.showError(fileInput, "Bắt buộc phải có ít nhất 1 ảnh đại diện (Ảnh chính).");
+            }
+            hasError = true;
+        }
+    }
+
+    // Nếu CÓ lỗi thì trả về false (ngăn chặn submit form)
+    return !hasError; 
+}
+</script>

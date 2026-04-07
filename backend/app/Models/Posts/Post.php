@@ -55,7 +55,6 @@ class Post extends Model
     
     public function scopeMatchWithForm($query, $form)
     {
-        // $margin = 0.35; // Sai số 35%
 
         return $query->where(function ($q) use ($form) {
             $q->where('province', 'like', "%{$form->province}%");
@@ -74,8 +73,8 @@ class Post extends Model
 
                 // Khớp trong khoảng giá (có sai số)
                 if ($form->price_min || $form->price_max) {
-                    $min = $form->price_min;
-                    $max = $form->price_max;
+                    $min = $form->price_min ?? 0;
+                    $max = $form->price_max ?? PHP_FLOAT_MAX;
                     $sub->whereBetween('price', [$min, $max]);
                 }
 

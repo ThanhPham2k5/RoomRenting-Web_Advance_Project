@@ -329,7 +329,9 @@ Route::middleware(['auth:sanctum', 'permission:rechargeRule.restore'])
 */
 Route::post('/register', [AuthController::class, 'register']);
 
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login/user', [AuthController::class, 'loginUser']);
+
+Route::post('/login/employee', [AuthController::class, 'loginEmployee']);
 
 Route::post('/logout', [AuthController::class, 'logout'])
     ->middleware('auth:sanctum');
@@ -408,3 +410,6 @@ Route::middleware(['auth:sanctum'])
 
 Route::middleware(['auth:sanctum'])
     ->get('/statistic/revenue', [StatisticController::class, 'getRevenueStatistic']);
+
+Route::get('statistic/posts/province_data', [StatisticController::class, 'getProvinceStatistic']);
+Route::get('statistic/summary', [StatisticController::class, 'getDashboardSummary']);

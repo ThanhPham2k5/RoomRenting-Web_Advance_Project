@@ -104,7 +104,7 @@ if ($targetEndpoint === 'login' && isset($apiResponse['token'])) {
     
     // Gán thêm status để JS dễ kiểm tra
     $apiResponse['status'] = 'success';
-    $apiResponse['message'] = "Đăng nhập thành công!";
+    $apiResponse['message'] = "Đăng nhập thành công.";
 }
 
 echo json_encode($apiResponse);

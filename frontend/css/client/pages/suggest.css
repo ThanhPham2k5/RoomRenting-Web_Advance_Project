@@ -30,7 +30,8 @@
 .filter-area,
 .filter-price,
 .filter-square,
-.filter-room {
+.filter-room,
+.filter-occupants {
   width: 100%;
   color: #000;
   text-align: center;
@@ -127,7 +128,8 @@
 
 .filter-min-price,
 .filter-max-price,
-.filter-square-number {
+.filter-square-number,
+.filter-occupants-number {
   padding: 10px;
   border-radius: 12px;
   border: 1px solid #626687;
@@ -143,7 +145,8 @@
 
 .filter-min-price::placeholder,
 .filter-max-price::placeholder,
-.filter-square-number::placeholder {
+.filter-square-number::placeholder,
+.filter-occupants-number::placeholder {
   color: rgba(0, 0, 0, 0.4);
 }
 
@@ -158,7 +161,8 @@
   display: none;
 }
 
-.filter-apply {
+.filter-apply,
+.filter-reset {
   background-color: var(--orange);
   color: #fff;
   padding: 10px;
@@ -173,7 +177,15 @@
   transition: all 0.1s linear;
 }
 
-.filter-apply:hover {
+.filter-reset {
+  background-color: transparent;
+  color: var(--orange);
+  border: 1px solid var(--orange);
+  margin-top: 10px;
+}
+
+.filter-apply:hover,
+.filter-reset:hover {
   transform: translateY(-1px);
 }
 

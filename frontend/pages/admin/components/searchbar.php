@@ -1,6 +1,10 @@
 <?php
-$type = $type ?? '';
-$keyword = $keyword ?? '';
+    $apiRole = call_api("http://backend.test/api/address/provinces");
+    $provinces= $apiRole['data'] ?? [];
+    $apiRole = call_api("http://backend.test/api/address/wards");
+    $wards= $apiRole['data'] ?? [];
+    $type = $type ?? '';
+    $keyword = $keyword ?? '';
 ?>
 
 <div class="searchbar-component">
@@ -38,7 +42,12 @@ $keyword = $keyword ?? '';
                             <div class="filter-group">
                                 <label>Khu vực</label>
                                 <select name="province" class="filter-input">
-                                    <option value="">Chọn tỉnh thành</option>
+                                    <option value="">-- Chọn Tỉnh/Thành phố --</option>
+                                    <?php foreach ($provinces as $province): ?>
+                                        <option value="<?php echo htmlspecialchars($province['name'] ?? ''); ?>" data-name="<?php echo htmlspecialchars($province['name'] ?? ''); ?>">
+                                            <?php echo htmlspecialchars($province['name'] ?? ''); ?>
+                                        </option>
+                                    <?php endforeach; ?>
                                 </select>
                                 <select name="ward" class="filter-input" style="margin-top: 10px;">
                                     <option value="">Chọn phường xã</option>
@@ -82,3 +91,57 @@ $keyword = $keyword ?? '';
         </div>
     </div>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // ==========================================
+        // LOGIC CHỌN TỈNH/PHƯỜNG CHO BỘ LỌC
+        // ==========================================
+        const filterProvince = document.querySelector('#filterForm select[name="province"]');
+        const filterWard = document.querySelector('#filterForm select[name="ward"]');
+
+        if (filterProvince && filterWard) {
+
+            // 1. BẮT SỰ KIỆN KHI NGƯỜI DÙNG THAY ĐỔI TỈNH/THÀNH Ở BỘ LỌC
+            filterProvince.addEventListener('change', function() {
+                const cityName = this.value; // Lấy value của Tỉnh (Ví dụ: "Hà Nội")
+                
+                if (cityName) {
+                    // Gọi hàm loadWards (truyền 3 tham số: Tên tỉnh, Thẻ Select Phường, null)
+                    if (typeof loadWards === 'function') {
+                        loadWards(cityName, filterWard, null); 
+                    }
+                } else {
+                    // Nếu chọn về "Chọn tỉnh thành" (value rỗng) thì xóa trắng ô Phường
+                    filterWard.innerHTML = '<option value="">Chọn phường xã</option>';
+                }
+            });
+
+            // 2. TỰ ĐỘNG LOAD LẠI DỮ LIỆU KHI VỪA VÀO TRANG (Giữ lại bộ lọc cũ từ URL)
+            // Giả sử bạn đang lưu params trên URL dạng ?filter[province]=Hà Nội&filter[ward]=Phường 1
+            const urlParams = new URLSearchParams(window.location.search);
+            const savedProvince = urlParams.get('filter[province]') || urlParams.get('province'); // Tùy cách bạn đặt tên trên URL
+            const savedWard = urlParams.get('filter[ward]') || urlParams.get('ward');
+
+            if (savedProvince) {
+                // Tự động tick lại Tỉnh/Thành
+                filterProvince.value = savedProvince;
+                
+                // Tự động load Phường/Xã và tick sẵn Phường cũ
+                if (typeof loadWards === 'function') {
+                    loadWards(savedProvince, filterWard, savedWard); 
+                }
+            }
+        }
+
+        // 3. XỬ LÝ NÚT "THIẾT LẬP LẠI" (Reset Form)
+        const btnResetFilter = document.querySelector('.btn-reset-filter');
+        if (btnResetFilter) {
+            btnResetFilter.addEventListener('click', function() {
+                // Khi form bị reset, trả ô Phường về trạng thái gốc
+                setTimeout(() => {
+                    filterWard.innerHTML = '<option value="">Chọn phường xã</option>';
+                }, 10);
+            });
+        }
+    });
+</script>

@@ -467,7 +467,7 @@
         isValid = false
         document.querySelector(".deposit-error").textContent = "Giá cọc phải là số."
         document.querySelector(".deposit-error").style.display = "flex"
-      } else if (Number(document.querySelector(".profile-deposit-input").value.trim()) > Number(document.querySelector(".profile-price-input").value.trim())) {
+      } else if (Number(document.querySelector(".profile-deposit-input").value.trim()) >= Number(document.querySelector(".profile-price-input").value.trim())) {
         if(isValid)
           document.querySelector(".profile-deposit-input").focus()
         isValid = false
@@ -518,6 +518,9 @@
 
         if(selectedFiles.length == null || selectedFiles.length <= 0) {
           alert("Vui lòng chọn 1 ảnh bài đăng!")
+          isLoading = false
+          document.querySelector(".new-submit").disabled = false
+          document.querySelector(".new-submit").textContent = "Đăng bài"
           return
         }
 
@@ -595,6 +598,7 @@
               }
           } else {
               console.error(data_post)
+              alert("Tạo bài đăng thất bại.")
           }
         } catch (err) {
             console.error(err)

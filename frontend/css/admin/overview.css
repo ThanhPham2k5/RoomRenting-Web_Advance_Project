@@ -1,80 +1,198 @@
+/* =========================================
+   1. BỐ CỤC TỔNG THỂ (OVERVIEW PAGE)
+   ========================================= */
 .overview-page {
-    width: 1200px;
-    margin-right: auto;
-    margin-left: auto;
+    max-width: 1200px; 
+    width: 100%;
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 30px;
-    padding: 30px;
+    gap: 32px;
+    padding-bottom: 30px;
 }
-.overview-page .thongke{
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+    width: 100%;
+    padding: 0 30px;
+}
+
+/* =========================================
+   2. THẺ CARD THỐNG KÊ (DATA BỘC)
+   ========================================= */
+.overview-page .thongke {
     width: 100%;
 }
-.overview-page .thongke .data{
+
+.overview-page .thongke .data {
+    background-color: #FFFFFF;
     padding: 24px;
-    border: #F1F5F9 solid 1px;
-    border-radius: 16px;
+    border: 1px solid #E2E8F0; 
+    border-radius: 20px; 
     display: flex;
     flex-direction: column;
-    justify-content: start;
-    align-items: center;
     gap: 20px;
     height: 420px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -2px rgba(0, 0, 0, 0.02);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
 .overview-page .thongke .data:hover {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
-    transform: translateY(-2px);
+    border-color: #CBD5E1;
+    box-shadow: 0 12px 24px -8px rgba(15, 23, 42, 0.08), 0 4px 6px -2px rgba(15, 23, 42, 0.04);
+    transform: translateY(-4px); 
 }
-.overview-page .thongke .data .title{
+
+/* =========================================
+   3. PHẦN HEADER CỦA CARD (TITLE)
+   ========================================= */
+.overview-page .thongke .data .title {
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #F1F5F9; 
 }
-.overview-page .thongke .data input{
-    border: #E0E3EB solid 1px;
-    border-radius: 8px;
-    height: 35px;
-    padding: 0px 0px 0px 15px;
-    text-align: center;
-    vertical-align: middle;
-    font-size: 1.6rem;
+
+.overview-page .thongke .data .title .content {
+    font-weight: 700;
+    font-size: 1.8rem; 
+    color: #0F172A; 
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+/* =========================================
+   4. Ô NHẬP NĂM & CHỌN TỈNH THÀNH
+   ========================================= */
+/* Dùng chung màu nền, border, font chữ */
+.overview-page .thongke .data input,
+.overview-page .thongke .data select {
+    background-color: #F8FAFC; 
+    border: 1px solid #E2E8F0;
+    border-radius: 10px;
+    height: 42px; 
+    padding: 0px 16px; 
+    font-size: 1.45rem; 
     font-family: 'Roboto', sans-serif;
-    font-weight: 500;
-    line-height: 2.4rem;
-    width: 210px;
+    font-weight: 600;
+    color: #334155;
     outline: none;
     transition: all 0.2s ease;
 }
-.overview-page .thongke .data input:focus {
+
+.overview-page .thongke .data input:hover,
+.overview-page .thongke .data select:hover {
+    background-color: #FFFFFF;
+    border-color: #CBD5E1;
+}
+
+.overview-page .thongke .data input:focus,
+.overview-page .thongke .data select:focus {
     background-color: #FFFFFF;
     border-color: #3B82F6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
 }
-.overview-page .thongke .data .title .content{
+
+/* 4.1. Thiết kế riêng cho SELECT (Dropdown Tỉnh/Thành) */
+.overview-page .thongke .data select {
+    text-align: left; 
+    width: 205px;
+    min-width: 160px;
+    cursor: pointer;
+    appearance: none;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23475569%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+    background-repeat: no-repeat; 
+    background-size: 12px; 
+    background-position: right 14px center;
+}
+
+/* 4.2. Thiết kế riêng cho INPUT (Ô nhập năm) */
+.overview-page .thongke .data input[type="number"] {
+    text-align: center;
+    width: 120px; /* Rộng vừa đủ hiển thị 4 số */
+    padding: 0 10px;
+}
+
+/* Ẩn mũi tên lên xuống mặc định của input number cho đẹp */
+.overview-page .thongke .data input[type="number"]::-webkit-outer-spin-button,
+.overview-page .thongke .data input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.overview-page .thongke .data input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+/* =========================================
+   5. CỤM LỌC DOANH THU & KPI (CHART 4)
+   ========================================= */
+.revenue-filters {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Ép lại size cho ô nhập năm của Doanh thu để chữ "so với" không bị chen ép */
+.overview-page .thongke .data input.chart4input {
+    width: 90px !important; 
+    min-width: unset !important;
+}
+
+.revenue-kpi {
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
+    padding-bottom: 10px;
+}
+
+.kpi-amount {
+    font-size: 3.2rem;
+    font-weight: 800;
+    color: #0F172A;
+    line-height: 1;
+    letter-spacing: -1px;
+}
+
+.kpi-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 1.4rem;
     font-weight: 600;
-    font-size: 2.4rem;
-    line-height: 3.2rem;
 }
-.overview-page .thongke .data .chart{
+
+.kpi-badge.positive { background-color: #DCFCE7; color: #16A34A; }
+.kpi-badge.negative { background-color: #FEE2E2; color: #DC2626; }
+
+/* =========================================
+   6. KHU VỰC VẼ BIỂU ĐỒ (CHART.JS)
+   ========================================= */
+.overview-page .thongke .data .chart {
     width: 100%;
     flex: 1;
     position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
+    min-height: 0; 
 }
+
 .overview-page .chart canvas {
     max-width: 100%;
     max-height: 100%;
 }
-.dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
-    width: 100%;
+
+/* =========================================
+   7. ĐÁP ỨNG THIẾT BỊ DI ĐỘNG (RESPONSIVE)
+   ========================================= */
+@media (max-width: 1024px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
 }

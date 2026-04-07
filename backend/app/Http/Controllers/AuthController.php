@@ -34,13 +34,85 @@ class AuthController extends Controller
         ], 201);
     }
 
-    public function login(Request $request)
+    public function loginUser(Request $request)
     {
         $fields = $request->validate([
             'login' => 'required|string',
             'password' => 'required|string|min:8|max:255',
         ]);
 
+        $account = $this->getAccount($fields);
+
+        if($account && $account->employee){
+            return response()->json(['message' => 'Employee account cannot login here'], 403);
+        }
+
+        //check if account is deleted or not
+        if ($account && $account->deleted_at) {
+            return response()->json(['message' => 'Tài khoản đã bị khóa.'], 403);
+        }
+
+        if (!$account || !Hash::check($fields['password'], $account->password)) {
+            return response()->json(['message' => 'Tài khoản hoặc mật khẩu không đúng.'], 401);
+        }
+
+        $token = $this->createToken($account, $fields);
+
+        return response()->json([
+            'account' => $account,
+            'token' => $token,
+        ]);
+    }
+
+    public function loginEmployee(Request $request)
+    {
+        $fields = $request->validate([
+            'login' => 'required|string',
+            'password' => 'required|string|min:8|max:255',
+        ]);
+
+        $account = $this->getAccount($fields);
+
+        if($account && $account->user){
+            return response()->json(['message' => 'User account cannot login here'], 403);
+        }
+
+        //check if account is deleted or not
+        if ($account && $account->deleted_at) {
+            return response()->json(['message' => 'Tài khoản đã bị khóa'], 403);
+        }
+
+        if (!$account || !Hash::check($fields['password'], $account->password)) {
+            return response()->json(['message' => 'Invalid credentials'], 401);
+        }
+
+        $token = $this->createToken($account, $fields);
+
+        return response()->json([
+            'account' => $account,
+            'token' => $token,
+        ]);
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        // Check if the token was successfully deleted
+        if (!$request->user()->currentAccessToken()) {
+            return response()->json(['message' => 'Failed to log out'], 500);
+        }
+
+        return response()->json(['message' => 'Logged out successfully']);
+    }
+
+    public function ForgotPassword(Request $request)
+    {
+        // Implement forgot password logic here
+    }
+
+    public function getAccount($fields)
+    {
         $loginValue = $fields['login'];
 
         $account = Account::withTrashed()->where(function ($query) use ($loginValue) {
@@ -59,45 +131,21 @@ class AuthController extends Controller
                   });
         })->first();
 
-        //check if account is deleted or not
-        if ($account && $account->deleted_at) {
-            return response()->json(['message' => 'Tài khoản đã bị khóa'], 403);
-        }
+        return $account;
+    }
 
-        if (!$account || !Hash::check($fields['password'], $account->password)) {
-            return response()->json(['message' => 'Invalid credentials'], 401);
-        }
+    public function createToken($account){
         
         $existedToken = PersonalAccessToken::where('tokenable_id', $account->id)->first();
         if(!$existedToken){
             $token = $account->createToken($account->username . '_token');
-
-            return response()->json([
-                'account' => $account,
-                'token' => $token->plainTextToken,
-            ]);
         }else{
-            return response()->json([
-                'message' => 'account has already logged in'
-            ], 403);
-        }
-    }
-
-    public function logout(Request $request)
-    {
-        $request->user()->currentAccessToken()->delete();
-
-        // Check if the token was successfully deleted
-        if (!$request->user()->currentAccessToken()) {
-            return response()->json(['message' => 'Failed to log out'], 500);
+            // replace old token with new one
+            $existedToken->delete();
+            $token = $account->createToken($account->username . '_token');
         }
 
-        return response()->json(['message' => 'Logged out successfully']);
-    }
-
-    public function ForgotPassword(Request $request)
-    {
-        // Implement forgot password logic here
+        return $token->plainTextToken;
     }
 
 }

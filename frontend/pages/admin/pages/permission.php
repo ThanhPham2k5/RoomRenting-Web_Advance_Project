@@ -199,54 +199,6 @@
                     </tr>
                 </thead>
                 <tbody id="role-account-list-body">
-                    <tr>
-                        <td>1</td>
-                        <td style="font-weight: 500;">Tuan</td>
-                        <td>tuanvietcode@gmail.com</td>
-                        <td class="text-center">
-                            <button class="table-btn red" type="button" onclick="alert('Mô phỏng tước quyền')">Tước quyền</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td style="font-weight: 500;">Nguyễn Văn A</td>
-                        <td>nguyen.a@example.com</td>
-                        <td class="text-center">
-                            <button class="table-btn red" type="button" onclick="alert('Mô phỏng tước quyền')">Tước quyền</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td style="font-weight: 500;">Tuan</td>
-                        <td>tuanvietcode@gmail.com</td>
-                        <td class="text-center">
-                            <button class="table-btn red" type="button" onclick="alert('Mô phỏng tước quyền')">Tước quyền</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td style="font-weight: 500;">Nguyễn Văn A</td>
-                        <td>nguyen.a@example.com</td>
-                        <td class="text-center">
-                            <button class="table-btn red" type="button" onclick="alert('Mô phỏng tước quyền')">Tước quyền</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>5</td>
-                        <td style="font-weight: 500;">Tuan</td>
-                        <td>tuanvietcode@gmail.com</td>
-                        <td class="text-center">
-                            <button class="table-btn red" type="button" onclick="alert('Mô phỏng tước quyền')">Tước quyền</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>6</td>
-                        <td style="font-weight: 500;">Nguyễn Văn A</td>
-                        <td>nguyen.a@example.com</td>
-                        <td class="text-center">
-                            <button class="table-btn red" type="button" onclick="alert('Mô phỏng tước quyền')">Tước quyền</button>
-                        </td>
-                    </tr>
                 </tbody>
             </table>
         </div>

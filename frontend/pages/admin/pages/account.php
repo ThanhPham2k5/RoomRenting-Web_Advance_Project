@@ -10,6 +10,7 @@
     $titleData = ['targetModal' => $accountInsertForm, 'targetModal1' => $accountEditForm, 'titleContent' => "Tài khoản", 'group' => false, 'insert' => true, 'edit' => true, 'delete' => true, 'handle' => false, 'restore' => true];
     $tableHeader = ['Id', 'Tên tài khoản', 'Chức vụ', 'Tình trạng', 'Chi tiết'];
     $type = ['type' => "1"];
+    $query = $paginationMeta['query'] ?? '';
     ob_start(); 
     if(empty($accounts)){
         echo '<tr><td colspan="5" style="text-align:center;">Không có dữ liệu hoặc lỗi kết nối máy chủ</td></tr>';
@@ -52,8 +53,8 @@
         <?php renderComponent("searchbar",false,$type) ?>
         <div class="line"></div>
         <div class="tab-pane">
-            <a href="index.php?page=account&table=1" class="item <?php echo ($currentTable === '1') ? 'active' : ''; ?>">KHÁCH HÀNG</a>
-            <a href="index.php?page=account&table=2" class="item <?php echo ($currentTable === '2') ? 'active' : ''; ?>">NHÂN VIÊN</a>
+            <a href="index.php?page=account&table=1<?php if(isset($query)) echo '&' . $query; ?>" class="item <?php echo ($currentTable === '1') ? 'active' : ''; ?>">KHÁCH HÀNG</a>
+            <a href="index.php?page=account&table=2<?php if(isset($query)) echo '&' . $query; ?>" class="item <?php echo ($currentTable === '2') ? 'active' : ''; ?>">NHÂN VIÊN</a>
         </div>
     </div>
     <?php renderComponent("table",false,$tableData) ?>
@@ -158,7 +159,9 @@
     ob_start();
     ?>
         <div class="detail-profile-header">
-            <div class="avatar-placeholder" id="view-avatar-text">A</div>
+            <div class="avatar-placeholder" id="view-avatar-text">
+                <img src="" alt="avatar">
+            </div>
             <div class="profile-title">
                 <h3 id="view-username">Tên tài khoản</h3>
                 <span class="badge-detail badge-detail-role" id="view-role">Chức vụ</span>

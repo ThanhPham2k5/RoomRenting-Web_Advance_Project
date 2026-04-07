@@ -464,9 +464,10 @@
       document.querySelector(".filter-province-lb-text").textContent = "Chọn tỉnh thành"
       document.querySelector(".filter-district-lb-text").textContent = "Chọn phường xã"
       document.querySelector(".filter-room-lb-text").textContent = "Chọn loại phòng"
-      document.querySelector(".filter-min-price").value = 0
-      document.querySelector(".filter-max-price").value = 0
-      document.querySelector(".filter-square-number").value = 0
+      document.querySelector(".filter-min-price").value = ""
+      document.querySelector(".filter-max-price").value = ""
+      document.querySelector(".filter-square-number").value = ""
+      document.querySelector(".filter-occupants-number").value = ""
       document.querySelector(".filter-apply").click()
     })
 

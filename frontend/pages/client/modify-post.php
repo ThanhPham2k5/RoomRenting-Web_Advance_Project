@@ -531,7 +531,7 @@
         isValid = false
         document.querySelector(".deposit-error").textContent = "Giá cọc phải là số."
         document.querySelector(".deposit-error").style.display = "flex"
-      } else if (Number(document.querySelector(".profile-deposit-input").value.trim()) > Number(document.querySelector(".profile-price-input").value.trim())) {
+      } else if (Number(document.querySelector(".profile-deposit-input").value.trim()) >= Number(document.querySelector(".profile-price-input").value.trim())) {
         if(isValid)
           document.querySelector(".profile-deposit-input").focus()
         isValid = false

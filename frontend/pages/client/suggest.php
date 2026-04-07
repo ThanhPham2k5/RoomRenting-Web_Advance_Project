@@ -114,7 +114,18 @@
 
         <div class="filter-line"></div>
 
+        <div class="filter-occupants"><h3>Số người ở tối đa</h3></div>
+
+        <input type="number" name="filter-occupants-number" id="filter-occupants-number" 
+        placeholder="Nhập số người" 
+        min="0" class="filter-occupants-number">
+        <div class="filter-error occupants-error">Số nhà không hợp lệ</div>
+
+        <div class="filter-line"></div>
+
         <button type="button" class="filter-apply">Lưu</button>
+
+        <button type="button" class="filter-reset">Làm mới</button>
       </div>
     </div>
 
@@ -376,6 +387,7 @@
 
       // validate
       var isValid = true
+      var isNull = true
       var province = ""
       var ward = ""
       var roomType = ""
@@ -386,6 +398,7 @@
       if((document.querySelector(".filter-province-lb-text").textContent.trim() && stringRegex.test(document.querySelector(".filter-province-lb-text").textContent.trim()))) {
         if(document.querySelector(".filter-province-lb-text").textContent.trim() !== "Chọn tỉnh thành") {
           province = document.querySelector(".filter-province-lb-text").textContent.trim()
+          isNull = false
         }
         document.querySelector(".province-error").style.display = "none"
       } else {
@@ -397,6 +410,7 @@
       if((document.querySelector(".filter-district-lb-text").textContent.trim() && stringRegex.test(document.querySelector(".filter-district-lb-text").textContent.trim()))) {
         if(document.querySelector(".filter-district-lb-text").textContent.trim() !== "Chọn phường xã") {
           ward = document.querySelector(".filter-district-lb-text").textContent.trim()
+          isNull = false
         }
         document.querySelector(".district-error").style.display = "none"
       } else {
@@ -409,6 +423,7 @@
       if((document.querySelector(".filter-room-lb-text").textContent.trim() && validRooms.includes(document.querySelector(".filter-room-lb-text").textContent.trim())) || document.querySelector(".filter-room-lb-text").textContent.trim() === "Chọn loại phòng") {
         if(document.querySelector(".filter-room-lb-text").textContent.trim() !== "Chọn loại phòng") {
           roomType = document.querySelector(".filter-room-lb-text").textContent.trim()
+          isNull = false
         }
         document.querySelector(".rooms-error").style.display = "none"
       } else {
@@ -417,9 +432,12 @@
         document.querySelector(".rooms-error").style.display = "flex"
       }
 
-      if((document.querySelector(".filter-min-price").value.trim() && numbRegex.test(document.querySelector(".filter-min-price").value.trim()) && document.querySelector(".filter-min-price").value.trim() >= 0)
-      || !document.querySelector(".filter-min-price").value.trim()) {
+      const minPrice = document.querySelector(".filter-min-price").value.trim()
+      const maxPrice = document.querySelector(".filter-max-price").value.trim()
+      if((minPrice && numbRegex.test(minPrice) && minPrice >= 0) || !minPrice) {
         document.querySelector(".min-price-error").style.display = "none"
+        if ((minPrice && numbRegex.test(minPrice) && minPrice >= 0)) 
+          isNull = false
       } else {
         if(isValid)
           document.querySelector(".filter-min-price").focus()
@@ -428,9 +446,16 @@
         document.querySelector(".min-price-error").style.display = "flex"
       }
 
-      if((document.querySelector(".filter-max-price").value.trim() && numbRegex.test(document.querySelector(".filter-max-price").value.trim()) && document.querySelector(".filter-max-price").value.trim() > 0)
-      || !document.querySelector(".filter-max-price").value.trim()) {
+      if((maxPrice && numbRegex.test(maxPrice) && maxPrice > 0 && minPrice && maxPrice > minPrice) || !maxPrice) {
         document.querySelector(".max-price-error").style.display = "none"
+        if((maxPrice && numbRegex.test(maxPrice) && maxPrice > 0)) 
+          isNull = false
+      } else if (maxPrice && minPrice && maxPrice < minPrice) {
+        if(isValid)
+          document.querySelector(".filter-max-price").focus()
+        isValid = false
+        document.querySelector(".max-price-error").textContent = "Giá lớn nhất phải lớn hơn giá nhỏ nhất."
+        document.querySelector(".max-price-error").style.display = "flex"
       } else {
         if(isValid)
           document.querySelector(".filter-max-price").focus()
@@ -442,12 +467,33 @@
       if((document.querySelector(".filter-square-number").value.trim() && numbRegex.test(document.querySelector(".filter-square-number").value.trim()) && document.querySelector(".filter-square-number").value.trim() > 0)
       || !document.querySelector(".filter-square-number").value.trim()) {
         document.querySelector(".square-error").style.display = "none"
+        if((document.querySelector(".filter-square-number").value.trim() && numbRegex.test(document.querySelector(".filter-square-number").value.trim()) && document.querySelector(".filter-square-number").value.trim() > 0)) isNull = false
       } else {
         if(isValid)
           document.querySelector(".filter-square-number").focus()
         isValid = false
         document.querySelector(".square-error").textContent = "Diện tích không hợp lệ."
         document.querySelector(".square-error").style.display = "flex"
+      }
+
+      if((document.querySelector(".filter-occupants-number").value.trim() && numbRegex.test(document.querySelector(".filter-occupants-number").value.trim()) && document.querySelector(".filter-occupants-number").value.trim() > 0)
+      || !document.querySelector(".filter-occupants-number").value.trim()) {
+        document.querySelector(".occupants-error").style.display = "none"
+        if((document.querySelector(".filter-occupants-number").value.trim() && numbRegex.test(document.querySelector(".filter-occupants-number").value.trim()) && document.querySelector(".filter-occupants-number").value.trim() > 0)) isNull = false
+      } else {
+        if(isValid)
+          document.querySelector(".filter-occupants-number").focus()
+        isValid = false
+        document.querySelector(".occupants-error").textContent = "Số người không hợp lệ."
+        document.querySelector(".occupants-error").style.display = "flex"
+      }
+
+      if(isNull) {
+        alert("Vui lòng điền ít nhất 1 thông tin để lưu.")
+        isLoading = false
+        document.querySelector(".filter-apply").disable = false
+        document.querySelector(".filter-apply").textContent = "Lưu"
+        return
       }
 
       if(isValid) {
@@ -498,7 +544,23 @@
           document.querySelector(".filter-apply").disable = false
           document.querySelector(".filter-apply").textContent = "Lưu"
         }
+      } else {
+        isLoading = false
+        document.querySelector(".filter-apply").disable = false
+        document.querySelector(".filter-apply").textContent = "Lưu"
       }
+    })
+
+    // reset filter
+    document.querySelector(".filter-reset").addEventListener("click", (e) => { 
+      filterCondition = ""
+      document.querySelector(".filter-province-lb-text").textContent = "Chọn tỉnh thành"
+      document.querySelector(".filter-district-lb-text").textContent = "Chọn phường xã"
+      document.querySelector(".filter-room-lb-text").textContent = "Chọn loại phòng"
+      document.querySelector(".filter-min-price").value = ""
+      document.querySelector(".filter-max-price").value = ""
+      document.querySelector(".filter-square-number").value = ""
+      document.querySelector(".filter-occupants-number").value = ""
     })
 
     // run once time every reload or load page

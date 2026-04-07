@@ -446,15 +446,15 @@
         document.querySelector(".min-price-error").style.display = "flex"
       }
 
-      if((maxPrice && numbRegex.test(maxPrice) && maxPrice > 0 && minPrice && maxPrice > minPrice) || !maxPrice) {
+      if(!maxPrice || (maxPrice && minPrice && numbRegex.test(maxPrice) && numbRegex.test(minPrice) && maxPrice > 0 && minPrice > 0 && maxPrice >= minPrice) || (maxPrice && !minPrice && numbRegex.test(maxPrice) && maxPrice > 0)) {
         document.querySelector(".max-price-error").style.display = "none"
-        if((maxPrice && numbRegex.test(maxPrice) && maxPrice > 0)) 
+        if((maxPrice && minPrice && numbRegex.test(maxPrice) && numbRegex.test(minPrice) && maxPrice > 0 && minPrice > 0 && maxPrice >= minPrice) || (maxPrice && !minPrice && numbRegex.test(maxPrice) && maxPrice > 0))
           isNull = false
-      } else if (maxPrice && minPrice && maxPrice < minPrice) {
+      } else if (maxPrice && minPrice && numbRegex.test(maxPrice) && numbRegex.test(minPrice) && maxPrice > 0 && minPrice > 0 && maxPrice < minPrice) {
         if(isValid)
           document.querySelector(".filter-max-price").focus()
         isValid = false
-        document.querySelector(".max-price-error").textContent = "Giá lớn nhất phải lớn hơn giá nhỏ nhất."
+        document.querySelector(".max-price-error").textContent = "Giá lớn nhất phải lớn hơn hoặc bằng giá nhỏ nhất."
         document.querySelector(".max-price-error").style.display = "flex"
       } else {
         if(isValid)

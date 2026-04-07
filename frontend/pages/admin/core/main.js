@@ -161,3 +161,119 @@ function showToast({ title = '', message = '', type = 'info', duration = 3000 })
         main.appendChild(toast);
     }
 }
+// ===============================================
+// 1. HÀM HIỂN THỊ CONFIRM (CÓ / KHÔNG)
+// ===============================================
+function showConfirm(title, message, isDanger = false) {
+    return new Promise((resolve) => {
+        const overlay = document.createElement('div');
+        overlay.className = 'custom-dialog-overlay';
+        
+        const confirmBtnClass = isDanger ? 'danger' : 'confirm';
+        const confirmText = isDanger ? 'Xóa' : 'Xác nhận';
+
+        overlay.innerHTML = `
+            <div class="custom-dialog-box">
+                <div class="custom-dialog-title">${title}</div>
+                <div class="custom-dialog-message">${message}</div>
+                <div class="custom-dialog-actions">
+                    <button class="btn-dialog cancel" id="dialog-btn-cancel">Hủy (ESC)</button>
+                    <button class="btn-dialog ${confirmBtnClass}" id="dialog-btn-confirm">${confirmText} (Enter)</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+        setTimeout(() => overlay.classList.add('show'), 10);
+
+        const btnCancel = overlay.querySelector('#dialog-btn-cancel');
+        const btnConfirm = overlay.querySelector('#dialog-btn-confirm');
+
+        // Bắt sự kiện bàn phím
+        const handleKeyDown = (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault(); // Ngăn hành vi mặc định của Enter (ví dụ: submit form nếu lỡ nằm trong form)
+                btnConfirm.click();
+            } else if (e.key === 'Escape') {
+                e.preventDefault();
+                btnCancel.click();
+            }
+        };
+        document.addEventListener('keydown', handleKeyDown);
+
+        const closeDialog = () => {
+            overlay.classList.remove('show');
+            document.removeEventListener('keydown', handleKeyDown); // Dọn dẹp sự kiện phím
+            setTimeout(() => overlay.remove(), 200);
+        };
+
+        btnCancel.addEventListener('click', () => {
+            closeDialog();
+            resolve(false);
+        });
+
+        btnConfirm.addEventListener('click', () => {
+            closeDialog();
+            resolve(true);
+        });
+    });
+}
+
+// ===============================================
+// 2. HÀM HIỂN THỊ PROMPT (NHẬP DỮ LIỆU)
+// ===============================================
+function showPrompt(title, message, placeholder = "") {
+    return new Promise((resolve) => {
+        const overlay = document.createElement('div');
+        overlay.className = 'custom-dialog-overlay';
+
+        overlay.innerHTML = `
+            <div class="custom-dialog-box">
+                <div class="custom-dialog-title">${title}</div>
+                <div class="custom-dialog-message">${message}</div>
+                <input type="text" class="custom-dialog-input" placeholder="${placeholder}" id="dialog-input">
+                <div class="custom-dialog-actions">
+                    <button class="btn-dialog cancel" id="dialog-btn-cancel">Hủy (ESC)</button>
+                    <button class="btn-dialog confirm" id="dialog-btn-confirm">Xác nhận (Enter)</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+        setTimeout(() => overlay.classList.add('show'), 10);
+
+        const inputField = overlay.querySelector('#dialog-input');
+        inputField.focus(); 
+
+        const btnCancel = overlay.querySelector('#dialog-btn-cancel');
+        const btnConfirm = overlay.querySelector('#dialog-btn-confirm');
+
+        // Bắt sự kiện bàn phím
+        const handleKeyDown = (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                btnConfirm.click();
+            } else if (e.key === 'Escape') {
+                e.preventDefault();
+                btnCancel.click();
+            }
+        };
+        document.addEventListener('keydown', handleKeyDown);
+
+        const closeDialog = () => {
+            overlay.classList.remove('show');
+            document.removeEventListener('keydown', handleKeyDown); // Dọn dẹp sự kiện phím
+            setTimeout(() => overlay.remove(), 200);
+        };
+
+        btnCancel.addEventListener('click', () => {
+            closeDialog();
+            resolve(null); 
+        });
+
+        btnConfirm.addEventListener('click', () => {
+            closeDialog();
+            resolve(inputField.value); 
+        });
+    });
+}

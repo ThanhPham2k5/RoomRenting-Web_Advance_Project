@@ -87,7 +87,7 @@ $apiUrl = "http://backend.test/api/" . $targetEndpoint;
 // có thể nhận diện nếu $payload là mảng JSON thì set Header Content-Type tương ứng.
 $apiResponse = call_api($apiUrl, $method, $payload);
 
-if ($targetEndpoint === 'login' && isset($apiResponse['token'])) {
+if ($targetEndpoint === 'login/employee' && isset($apiResponse['token'])) {
     // 1. Lưu Token vào Session để các API sau sử dụng
     $_SESSION['api_token'] = $apiResponse['token'];
     

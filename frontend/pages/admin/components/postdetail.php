@@ -98,7 +98,7 @@
                             </div>
                         </div>
                     </div>
-                    <p id="reason">Lý do</p>
+                    <p id="reason"></p>
                     <div class="post-info-btn">
                         <button class="handle" style="background-color: #3B82F6;" onclick="switchToEdit()">Chỉnh sửa</button>
                     </div>
@@ -279,47 +279,104 @@ function validatePostForm(form) {
     });
 
     // ===============================================
-    // 10. KIỂM TRA ĐẶC BIỆT DÀNH CHO ẢNH TRONG FORM SỬA
+    // 10. KIỂM TRA ẢNH ĐẠI DIỆN CHÍNH (GIAO DIỆN CLICK TO EDIT)
     // ===============================================
-    const mainImageHidden = document.querySelector('input[name="existing_images[main]"]');
-    const fileInput = document.getElementById('hidden-file-input');
+    const imgMain = document.getElementById('img-main');
+    const mainImgWrapper = document.querySelector('.main-image-wrapper');
     
-    // Nếu có fileInput (tức form có thẻ chọn ảnh)
-    if (fileInput) {
-        Validator.clearError(fileInput); 
-        
-        let hasImage = false;
-        
-        // 10.1 - Check xem có ảnh cũ không
-        if (mainImageHidden && mainImageHidden.value.trim() !== '') {
-            hasImage = true;
-        }
+    // Dọn dẹp lỗi cũ (nếu có)
+    if (mainImgWrapper) Validator.clearError(mainImgWrapper);
+    
+    let hasMainImage = false;
 
-        // 10.2 - Nếu có tải ảnh mới lên thì check dung lượng, định dạng
-        if (fileInput.files && fileInput.files.length > 0) {
-            hasImage = true; 
-            const imgError = Validator.checkImage(fileInput, false); // true hay false không quan trọng vì có hasImage lo rồi
-            if (imgError) {
-                Validator.showError(fileInput, imgError);
-                hasError = true;
-                // Nếu bạn giấu thẻ input file, bạn nên gán lỗi này vào một cái label bao bọc ảnh để hiển thị
-            }
-        }
+    // Kiểm tra xem hình ảnh hiện tại có phải là hình mặc định không
+    // Nếu src không chứa chữ 'post_img.png' -> Tức là đã có ảnh thật (ảnh cũ từ DB hoặc ảnh vừa tải lên)
+    if (imgMain && imgMain.src && !imgMain.src.includes('post_img.png')) {
+        hasMainImage = true;
+    }
 
-        // 10.3 - Chốt lại nếu xóa hết ảnh cũ mà cũng không up ảnh mới
-        if (!hasImage) {
-            // Mẹo: Gán lỗi vào khu vực chứa ảnh chính để người dùng dễ nhìn thấy
-            const imgWrapper = document.querySelector('.main-image-wrapper');
-            if (imgWrapper) {
-                Validator.showError(imgWrapper, "Bắt buộc phải có ít nhất 1 ảnh đại diện (Ảnh chính).");
-            } else {
-                Validator.showError(fileInput, "Bắt buộc phải có ít nhất 1 ảnh đại diện (Ảnh chính).");
-            }
-            hasError = true;
+    // Nếu không có ảnh -> Gán lỗi thẳng vào cái khung bao bọc ảnh chính
+    if (!hasMainImage) {
+        if (mainImgWrapper) {
+            Validator.showError(mainImgWrapper, "Bắt buộc phải có ảnh đại diện (Ảnh chính).");
         }
+        hasError = true;
     }
 
     // Nếu CÓ lỗi thì trả về false (ngăn chặn submit form)
     return !hasError; 
+}
+// Hàm đổ dữ liệu Lịch sử thanh toán
+function renderPaymentHistory(payBills) {
+    const listContainer = document.querySelector('.history-list');
+    
+    // Nếu không tìm thấy vùng chứa HTML, thoát luôn
+    if (!listContainer) return;
+
+    // Nếu mảng rỗng (không có lịch sử)
+    if (!payBills || payBills.length === 0) {
+        listContainer.innerHTML = '<p style="text-align:center; color:#94A3B8; padding: 10px 0;">Chưa có lịch sử thanh toán nào.</p>';
+        return;
+    }
+
+    // Xóa sạch dữ liệu mẫu (HTML cứng)
+    listContainer.innerHTML = '';
+
+    let htmlContent = '';
+
+    payBills.forEach(bill => {
+        // 1. Xử lý format ngày tháng (từ 2026-04-05T02... -> 05/04/2026 - 09:04)
+        const dateObj = new Date(bill.createdAt);
+        const day = String(dateObj.getDate()).padStart(2, '0');
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const year = dateObj.getFullYear();
+        const hours = String(dateObj.getHours()).padStart(2, '0');
+        const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+        const formattedDate = `${day}/${month}/${year} - ${hours}:${minutes}`;
+
+        // 2. Chuẩn bị Icon và Màu sắc tương ứng với Status
+        let iconSvg = '';
+        let statusClass = '';
+        let statusText = '';
+
+        switch (bill.status) {
+            case 'completed': // Thành công (Màu Xanh lá)
+                statusClass = 'success';
+                statusText = 'Thanh toán thành công';
+                iconSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+                break;
+            case 'failed': // Thất bại (Màu Đỏ)
+                statusClass = 'error';
+                statusText = 'Thanh toán thất bại';
+                iconSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+                break;
+            case 'pending': // Đang chờ (Màu Cam)
+                statusClass = 'warning';
+                statusText = 'Đang chờ xử lý';
+                iconSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`;
+                break;
+            default:
+                statusClass = 'info';
+                statusText = 'Không xác định';
+                iconSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>`;
+        }
+
+        // 3. Nối HTML cho từng dòng (Gắn biến vào chuỗi bằng Dấu Backtick `)
+        htmlContent += `
+            <div class="history-item">
+                <div class="hist-icon ${statusClass}">
+                    ${iconSvg}
+                </div>
+                <div class="hist-info">
+                    <span class="hist-desc">${statusText} (Mã: #${bill.id})</span>
+                    <span class="hist-date">${formattedDate}</span>
+                </div>
+                <span class="hist-amount minus">- ${bill.points} điểm</span>
+            </div>
+        `;
+    });
+
+    // Bơm toàn bộ HTML vừa tạo vào vùng chứa
+    listContainer.innerHTML = htmlContent;
 }
 </script>

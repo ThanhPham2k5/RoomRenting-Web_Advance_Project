@@ -1,24 +1,75 @@
-.pagination-component .main-content{
-    width: 1140px;
-    height: 70px;
+/* =========================================
+   1. BỐ CỤC KHUNG PHÂN TRANG (CONTAINER)
+   ========================================= */
+.pagination-component {
+    width: 100%;
+    padding: 24px 0; /* Cách đều trên dưới */
+}
+
+.pagination-component .main-content {
+    max-width: 1140px; /* Dùng max-width thay vì width fix cứng để Responsive tốt hơn */
+    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 20px;
-    margin-left: auto;
-    margin-right: auto;
+    gap: 12px; /* Thu hẹp từ 20px xuống 12px giúp các nút gắn kết thành 1 cụm liền mạch */
+    margin: 0 auto;
 }
-.pagination-component .main-content .btn{
+
+/* =========================================
+   2. KÍCH THƯỚC VÀ KIỂU DÁNG CHUNG CHO CẢ NÚT VÀ ICON
+   ========================================= */
+/* Target chung vào thẻ <a> (nút bấm được) và <span> (nút bị vô hiệu hóa) */
+.pagination-component .main-content a,
+.pagination-component .main-content span {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px; 
     height: 40px;
-    width: 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 10px;
-    gap: 10px;
-    border-radius: 999px;
+    border-radius: 50%; /* Bo tròn hoàn toàn */
+    text-decoration: none !important; /* Ghi đè inline style nếu có */
+    color: #475569; /* Chữ màu xám đậm hiện đại */
+    font-size: 1.6rem;
+    font-weight: 600;
+    font-family: 'Roboto', sans-serif;
+    background-color: transparent;
+    
+    /* Hiệu ứng chuyển động mượt mà khi đổi màu hoặc nhấc lên */
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.pagination-component .main-content .active{
+
+/* =========================================
+   3. HIỆU ỨNG TƯƠNG TÁC KHI LƯỚT CHUỘT (HOVER)
+   ========================================= */
+/* Chỉ áp dụng cho thẻ <a>, bỏ qua các thẻ <span> đang bị vô hiệu hóa */
+.pagination-component .main-content a:hover {
+    background-color: #FFF7ED; /* Đổ nền cam siêu nhạt */
+    color: #F97316; /* Đổi icon/chữ sang cam đậm */
+    transform: translateY(-3px); /* Hiệu ứng nhấc bổng nút lên 3px */
+    box-shadow: 0 4px 6px -1px rgba(249, 115, 22, 0.15); /* Đổ bóng màu cam bên dưới */
+}
+
+/* Phóng to nhẹ icon SVG khi hover để tạo cảm giác bấm "sướng" hơn */
+.pagination-component .main-content a:hover svg {
+    transform: scale(1.15);
+    transition: transform 0.2s ease;
+}
+
+/* =========================================
+   4. TRẠNG THÁI ACTIVE (TRANG HIỆN TẠI)
+   ========================================= */
+.pagination-component .main-content a.active {
     background-color: #F97316;
-    color: #FFF;
+    color: #FFFFFF;
+    box-shadow: 0 4px 6px -1px rgba(249, 115, 22, 0.3); /* Bóng đậm hơn để nhấn mạnh */
+    pointer-events: none; /* Đang ở trang hiện tại rồi thì tắt luôn chức năng click cho an toàn */
+}
+
+/* =========================================
+   5. TRẠNG THÁI DISABLED (2 ĐẦU MÚT)
+   ========================================= */
+.pagination-component .main-content span {
+    color: #94A3B8; /* Màu xám nhạt cho icon không bấm được */
+    /* Lưu ý: Thuộc tính opacity: 0.3 và cursor: not-allowed bạn đã set inline trong HTML rồi nên sẽ tự nhận */
 }

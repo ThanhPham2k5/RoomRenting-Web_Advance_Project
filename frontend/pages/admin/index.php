@@ -9,12 +9,16 @@ $adminRole = $_SESSION['admin_role'] ?? "";
 $adminId = $_SESSION['admin_id'] ?? "";
 require_once __DIR__ . '/core/function.php';
 $accountData = call_api("http://backend.test/api/accounts/$adminId?include=roles.permissions,employee.personalInfo");
+if (isset($accountData['message']) && $accountData['message'] === "Unauthenticated.") {
+    header('Location: logout.php');
+    exit;
+}
 $userPermissions = [];
 if (isset($accountData['data']['roles'][0]['permissions'])) {
     $userPermissions = $accountData['data']['roles'][0]['permissions'];
 }
 $_SESSION['user_permissions'] = $userPermissions;
-$_SESSION['user_avatar'] = $accountData['data']['employee']['personalInfo']['profileUrl'];
+$_SESSION['user_avatar'] = $accountData['data']['employee']['personalInfo']['profileUrl'] ?? "";
 $pageData = [];
 $page = $_GET['page'] ?? 'overview';
 $validPage = ['overview', 'account', 'bill', 'comment', 'permission', 'post', 'price', 'setting'];
@@ -656,7 +660,7 @@ switch ($page) {
             });
         }
     }
-    function handleDelete() {
+    async function handleDelete() {
         const selectedRadio = document.querySelector('input[name="selectedRow"]:checked');
         if (!selectedRadio) {
             showToast({
@@ -669,7 +673,12 @@ switch ($page) {
         }
 
         const id = selectedRadio.value;
-        if (!confirm("Bạn có chắc chắn muốn xóa dữ liệu này không? Hành động này không thể hoàn tác!")) {
+        const isConfirmed = await showConfirm(
+            "Cảnh báo xóa", 
+            "Bạn có chắc chắn muốn xóa dữ liệu này không? Hành động này không thể hoàn tác!", 
+            true 
+        );
+        if (!isConfirmed) {
             return;
         }
 
@@ -689,7 +698,14 @@ switch ($page) {
             let msg = result.message || 
               (result.data && result.data.message) || 
               (result.original && result.original.message);
-            if (msg) {
+            if (msg == "Cannot delete this account") {
+                showToast({
+                    title: "Cảnh báo!",
+                    message: "Không thể xóa tài khoản của admin.",
+                    type: "warning",
+                    duration: 2000
+                });
+            }else{
                 showToast({
                     title: "Thành công!",
                     message: "Xóa thành công.",
@@ -737,37 +753,42 @@ switch ($page) {
             return; 
         }
 
+        // BÍ QUYẾT 1: KHOANH VÙNG TÌM KIẾM
         let formData = new FormData(formElement);
-
         const slotOrders = { 'main': 1, 'sub_1': 2, 'sub_2': 3, 'sub_3': 4 };
         const slotIndex = { 'main': 0, 'sub_1': 1, 'sub_2': 2, 'sub_3': 3 };
-
         // BÍ QUYẾT 1: KHOANH VÙNG TÌM KIẾM
         const parentContainer = formElement.closest('.modal-content') || document;
 
         // Lặp qua danh sách 4 ô ảnh
         ['main', 'sub_1', 'sub_2', 'sub_3'].forEach(slotName => {
             
-            // 1. TÌM DỮ LIỆU ẢNH CŨ
             const hiddenInput = parentContainer.querySelector(`.image-slot[data-slot="${slotName}"] input[type="hidden"]`);
             
-            if (hiddenInput) {
-                // NẾU GIÁ TRỊ RỖNG -> USER ĐÃ BẤM NÚT XÓA ẢNH NÀY
-                if (hiddenInput.value === "") {
-                    // Đẩy vào mảng deleted_orders theo đúng yêu cầu của Backend
-                    // Ví dụ: deleted_orders[0] = 1 (Xóa ảnh main)
-                    formData.append(`deleted_orders[${slotIndex[slotName]}]`, slotOrders[slotName]);
-                } else {
-                    // Nếu không xóa, ném trả lại ảnh cũ (để Backend biết đường mà giữ nguyên)
-                    formData.set(`existing_images[${slotName}]`, hiddenInput.value);
-                }
-            }
+            // Đặt cờ kiểm tra xem vị trí này CÓ FILE MỚI hay không
+            const hasNewFile = typeof newUploadedFiles !== 'undefined' && newUploadedFiles[slotName];
 
-            // 2. TÌM VÀ GOM DỮ LIỆU ẢNH MỚI (Nếu có tải lên file mới)
-            if (typeof newUploadedFiles !== 'undefined' && newUploadedFiles[slotName]) {
+            // ----------------------------------------------------
+            // TRƯỜNG HỢP 1: CÓ ẢNH MỚI TẢI LÊN (ƯU TIÊN SỐ 1)
+            // ----------------------------------------------------
+            if (hasNewFile) {
                 const file = newUploadedFiles[slotName];
                 formData.append(`images[${slotIndex[slotName]}]`, file);
                 formData.append(`orders[${slotIndex[slotName]}]`, slotOrders[slotName]);
+                
+                // NẾU ĐÃ GỬI ẢNH MỚI, CHÚNG TA BỎ QUA LUÔN THẺ HIDDEN CŨ (KHÔNG GỬI ĐI NỮA)
+            } 
+            // ----------------------------------------------------
+            // TRƯỜNG HỢP 2: KHÔNG CÓ ẢNH MỚI -> KIỂM TRA ẢNH CŨ
+            // ----------------------------------------------------
+            else if (hiddenInput) {
+                if (hiddenInput.value === "") {
+                    // Trường hợp user đã bấm nút tắt (x) để xóa ảnh cũ
+                    formData.append(`deleted_orders[${slotIndex[slotName]}]`, slotOrders[slotName]);
+                } else {
+                    // Trường hợp user không đụng chạm gì -> Giữ nguyên ảnh cũ
+                    formData.append(`existing_images[${slotName}]`, hiddenInput.value);
+                }
             }
         });
 
@@ -847,32 +868,38 @@ switch ($page) {
             });
         });
     }
-    function handleUpdateStatus(event, id, newStatus, title) {
+    async function handleUpdateStatus(event, id, newStatus, title) {
         event.stopPropagation();
 
         // Xác nhận trước khi làm
         let actionName = newStatus === 'completed' ? 'Duyệt bài' : 
                         newStatus === 'rejected' ? 'Từ chối bài' : 'Gỡ bài';
-                        
-        if (!confirm(`Bạn có chắc chắn muốn ${actionName} này không?`)) return;
-        const reasonMap = {
-            'completed': `Bài đăng "${title}" đã được duyệt.`,
-            'rejected': `Bài đăng "${title}" đã bị từ chối.`,
-            'pending': `Bài đăng "${title}" đang được xét duyệt.`,
-            'failed': `Bài đăng "${title}" đã bị gỡ/xóa.`
-        };
-        let reasonText = reasonMap[newStatus];
+
+        const isConfirmed = await showConfirm(
+            "Cảnh báo xóa", 
+            `Bạn có chắc chắn muốn ${actionName} này không?`, 
+            true 
+        );
+        if (!isConfirmed) {
+            return;
+        }
+
+        let reasonText = "";
 
         // 2. TÍNH NĂNG NÂNG CAO: Cho phép nhập lý do nếu Từ chối/Gỡ bài
         if (newStatus === 'rejected' || newStatus === 'failed') {
-            let customReason = prompt(`Vui lòng nhập lý do ${actionName} (Tùy chọn):`);
+            let customReason = await showPrompt(
+                "Xác nhận hành động", 
+                `Vui lòng nhập lý do ${actionName} (Tùy chọn):`, 
+                "Nhập lý do của bạn vào đây..."
+            );
             
             // Nếu người dùng bấm "Cancel" ở ô nhập lý do -> Hủy hành động
             if (customReason === null) return; 
             
             // Nếu có nhập chữ, nối thêm vào câu thông báo
             if (customReason.trim() !== '') {
-                reasonText += ` Lý do chi tiết: ${customReason.trim()}`;
+                reasonText += `${customReason.trim()}`;
             }
         }
 
@@ -909,7 +936,7 @@ switch ($page) {
         .then(result => {
             showToast({
                 title: "Thành công!",
-                message: "Cập nhật trạng thái thành công.",
+                message: actionName + " thành công.",
                 type: "success",
                 duration: 2000
             });
@@ -927,7 +954,7 @@ switch ($page) {
             });
         });
     }
-    function handleRestore() {
+    async function handleRestore() {
         const selectedRadio = document.querySelector('input[name="selectedRow"]:checked');
         if (!selectedRadio) {
             showToast({
@@ -940,7 +967,12 @@ switch ($page) {
         }
 
         const id = selectedRadio.value;
-        if (!confirm("Bạn có chắc chắn muốn khôi phục dữ liệu này không?")) {
+        const isConfirmed = await showConfirm(
+            "Cảnh báo xóa", 
+            "Bạn có chắc chắn muốn khôi phục dữ liệu này không?", 
+            false 
+        );
+        if (!isConfirmed) {
             return;
         }
 
@@ -1353,7 +1385,7 @@ switch ($page) {
         const modal = document.getElementById('post-detail-modal');
         if (modal) {
             document.body.style.cursor = 'wait';
-            const targetEndpoint = `posts/${postId}?include=postImages,user,employee`;
+            const targetEndpoint = `posts/${postId}?include=postImages,user.account,payBills,employee.account`;
             const proxyUrl = `../admin/core/api_proxy.php?target_endpoint=${encodeURIComponent(targetEndpoint)}`;
             fetch(proxyUrl, {
                 method: 'GET',
@@ -1376,7 +1408,12 @@ switch ($page) {
                 document.getElementById('room-type').textContent = "Kiểu phòng trọ: " + data.roomType;
                 document.getElementById('occupants-data').textContent = "Số lượng người tối đa: " + data.maxOccupants;
                 document.getElementById('detail-description').textContent = data.description;
-                document.getElementById('reason').textContent = data.reason ?? "Lý do: Không có"
+                if (data.payBills) {
+                    renderPaymentHistory(data.payBills);
+                }
+                if(data.reason){
+                    document.getElementById('reason').textContent = "Lý do vi phạm: " + data.reason;
+                }
                 
                 // Cấu hình đường dẫn mặc định
                 const baseUrl = "http://backend.test";
@@ -1441,8 +1478,8 @@ switch ($page) {
                     });
                 }
 
-                document.getElementById('detail-user-id').textContent = "ID người đăng bài: " + (data.user.id || 'Trống');
-                document.getElementById('detail-employee-id').textContent = "ID nhân viên duyệt: " + (data.employee?.id || 'Chưa có');
+                document.getElementById('detail-user-id').textContent = "Tài khoản đăng bài: " + (data.user.account.username || 'Trống');
+                document.getElementById('detail-employee-id').textContent = "Tài khoản nhân viên duyệt: " + (data.employee.account.username || 'Trống');
                 modal.style.display = 'flex';
             })
             .catch(error => {
@@ -1681,7 +1718,7 @@ switch ($page) {
             }
         });
     }
-    function revokeRoleFromAccount(event, accountId, roleNameToRemove, encodedRoles, targetModel, roleId) {
+    async function revokeRoleFromAccount(event, accountId, roleNameToRemove, encodedRoles, targetModel, roleId) {
         event.stopPropagation();
         
         let currentRoles = [];
@@ -1691,7 +1728,14 @@ switch ($page) {
             currentRoles = [];
         }
 
-        if (!confirm(`Xác nhận tước quyền [${roleNameToRemove}]?`)) return;
+        const isConfirmed = await showConfirm(
+            "Cảnh báo xóa", 
+            `Xác nhận tước quyền [${roleNameToRemove}]?`, 
+            true 
+        );
+        if (!isConfirmed) {
+            return;
+        }
 
         // 1. Lọc mảng (Nếu tước hết, remainingRoles sẽ là [])
         let remainingRoles = currentRoles.filter(role => role !== roleNameToRemove);
@@ -2238,42 +2282,18 @@ switch ($page) {
 
         window.location.href = url.toString();
     }
-    // Hàm tách lý do chi tiết từ chuỗi của Backend trả về
-    function extractReasonDetail(fullReason) {
-        if (!fullReason) return "Không có thông tin lý do.";
-
-        const keyword = "Lý do chi tiết: ";
-        
-        // Kiểm tra xem trong chuỗi có chứa từ khóa này không
-        if (fullReason.includes(keyword)) {
-            // Cắt chuỗi thành mảng gồm 2 phần, lấy phần thứ 2 (index 1)
-            const parts = fullReason.split(keyword);
-            return parts[1].trim(); // Trả về chữ "aaaa"
-        }
-        
-        // Nếu không có chữ "Lý do chi tiết", trả về toàn bộ câu gốc (đề phòng)
-        return fullReason; 
-    }
     // Thêm tham số postId vào cuối cùng
     function handleViewReason(event, fullReasonString, postId) {
-        // 1. Chặn click lan ra ngoài
         event.stopPropagation();
-
-        // 2. Cắt lấy lý do thực sự
-        const exactReason = extractReasonDetail(fullReasonString);
-
-        // 3. Tìm ĐÚNG thẻ textarea của bài đăng này (Nối thêm postId vào ID)
         const reasonDisplayEl = document.getElementById('reason-display-' + postId);
         
         if (reasonDisplayEl) {
             if (reasonDisplayEl.tagName === 'INPUT' || reasonDisplayEl.tagName === 'TEXTAREA') {
-                reasonDisplayEl.value = exactReason;
+                reasonDisplayEl.value = fullReasonString;
             } else {
-                reasonDisplayEl.innerText = exactReason;
+                reasonDisplayEl.innerText = fullReasonString;
             }
         }
-
-        // 4. Mở ĐÚNG cái Modal của bài đăng này
         openModal('modal-xem-ly-do-' + postId);
     }
 </script>

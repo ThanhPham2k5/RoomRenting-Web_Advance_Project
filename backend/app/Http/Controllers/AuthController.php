@@ -61,11 +61,11 @@ class AuthController extends Controller
 
         //check if account is deleted or not
         if ($account && $account->deleted_at) {
-            return response()->json(['message' => 'Tài khoản đã bị khóa'], 403);
+            return response()->json(['message' => 'Tài khoản đã bị khóa.'], 403);
         }
 
         if (!$account || !Hash::check($fields['password'], $account->password)) {
-            return response()->json(['message' => 'Invalid credentials'], 401);
+            return response()->json(['message' => 'Tài khoản hoặc mật khẩu không đúng.'], 401);
         }
         
         $existedToken = PersonalAccessToken::where('tokenable_id', $account->id)->first();
@@ -78,7 +78,7 @@ class AuthController extends Controller
             ]);
         }else{
             return response()->json([
-                'message' => 'account has already logged in'
+                'message' => 'Tài khoản đã được đăng nhập ở nơi khác.'
             ], 403);
         }
     }

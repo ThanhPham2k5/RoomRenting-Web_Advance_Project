@@ -35,7 +35,8 @@ switch ($page) {
         $pageData['paginationMeta'] = [
             'current_page' => $apiResult['meta']['current_page'] ?? 1,
             'last_page'    => $apiResult['meta']['last_page'] ?? 1,
-            'base_url'     => "index.php?page=account&table={$currentTable}" . $filterQuery
+            'base_url'     => "index.php?page=account&table={$currentTable}" . $filterQuery,
+            'query'        =>  $filterQuery
         ];
         break;
     case 'comment':
@@ -159,19 +160,6 @@ switch ($page) {
             ?>
         </div>
     </div>
-    <?php if (isset($_SESSION['flash_success'])): ?>
-        <script>
-            alert('<?php echo addslashes($_SESSION['flash_success']); ?>');
-        </script>
-        <?php unset($_SESSION['flash_success']); ?>
-    <?php endif; ?>
-
-    <?php if (isset($_SESSION['flash_error'])): ?>
-        <script>
-            alert('<?php echo addslashes($_SESSION['flash_error']); ?>');
-        </script>
-        <?php unset($_SESSION['flash_error']); ?>
-    <?php endif; ?>
 </body>
 <div id="toast-container"></div>
 </html>
@@ -572,7 +560,12 @@ switch ($page) {
     function handleEdit(modalId) {
         const selectedRadio = document.querySelector('input[name="selectedRow"]:checked');
         if (!selectedRadio) {
-            alert("Vui lòng chọn dòng dữ liệu để sửa!");
+            showToast({
+                title: "Cảnh báo!",
+                message: "Vui lòng chọn dòng dữ liệu để sửa.",
+                type: "warning",
+                duration: 4000
+            });
             return;
         }
 
@@ -609,7 +602,12 @@ switch ($page) {
         })
         .catch(error => {
             console.error(error);
-            alert("Có lỗi xảy ra khi lấy dữ liệu!");
+            showToast({
+                title: "Lỗi hệ thống",
+                message: "Không thể kết nối đến máy chủ.",
+                type: "error",
+                duration: 4000
+            });
         });
     }
     function fillAccountData(form, data) {
@@ -619,14 +617,6 @@ switch ($page) {
         const roleInput = form.querySelector('select[name="role"]');
         if (roleInput) roleInput.value = data.role;
 
-        const statusSelect = form.querySelector('select[name="status"]');
-        if (statusSelect) {
-            if (data.deletedAt === null) {
-                statusSelect.value = 'active';
-            } else {
-                statusSelect.value = 'inactive';
-            }
-        }
         const rolesSelect = form.querySelector('select[name="roles[]"]');
         if (rolesSelect) {
             Array.from(rolesSelect.options).forEach(option => {
@@ -634,8 +624,10 @@ switch ($page) {
             });
 
             if (data.roles && Array.isArray(data.roles)) {
+                const selectedRoleNames = data.roles.map(r => r.name);
+
                 Array.from(rolesSelect.options).forEach(option => {
-                    if (data.roles.includes(option.value)) {
+                    if (selectedRoleNames.includes(option.value)) {
                         option.selected = true;
                     }
                 });
@@ -667,7 +659,12 @@ switch ($page) {
     function handleDelete() {
         const selectedRadio = document.querySelector('input[name="selectedRow"]:checked');
         if (!selectedRadio) {
-            alert("Vui lòng chọn dòng dữ liệu để xóa!"); 
+            showToast({
+                title: "Cảnh báo!",
+                message: "Vui lòng chọn dòng dữ liệu để xóa.",
+                type: "warning",
+                duration: 4000
+            });
             return;
         }
 
@@ -693,15 +690,25 @@ switch ($page) {
               (result.data && result.data.message) || 
               (result.original && result.original.message);
             if (msg) {
-                alert("Xóa thành công");
-                window.location.reload();
-            } else {
-                throw new Error(result.error || "Không tìm thấy thông báo thành công từ server.");
+                showToast({
+                    title: "Thành công!",
+                    message: "Xóa thành công.",
+                    type: "success",
+                    duration: 2000
+                });
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
             }
         })
         .catch(error => {
             console.error("Lỗi xóa:", error);
-            alert(error.message || "Có lỗi xảy ra! Không thể xóa dữ liệu này.");
+            showToast({
+                title: "Lỗi hệ thống",
+                message: "Không thể kết nối đến máy chủ.",
+                type: "error",
+                duration: 4000
+            });
         });
     }
     function handleSave(event, formElement) {
@@ -729,9 +736,6 @@ switch ($page) {
             // Form có lỗi, viền đỏ đã hiện, ta return để ngăn không cho gọi API
             return; 
         }
-
-        // 3. --- GIỮ NGUYÊN CODE GỌI API CŨ CỦA BẠN Ở DƯỚI NÀY ---
-        console.log("Dữ liệu đã chuẩn 100%, bắt đầu gọi API lưu...");
 
         let formData = new FormData(formElement);
 
@@ -802,7 +806,13 @@ switch ($page) {
             return result;
         })
         .then(result => {
-            alert(isEdit ? "Cập nhật thành công!" : "Thêm mới thành công!");
+            const message = isEdit ? "Cập nhật thành công." : "Thêm mới thành công.";
+            showToast({
+                title: "Thành công!",
+                message: message,
+                type: "success",
+                duration: 2000
+            });
             if (typeof newUploadedFiles !== 'undefined') {
                 newUploadedFiles = { main: null, sub_1: null, sub_2: null, sub_3: null };
             }
@@ -823,11 +833,18 @@ switch ($page) {
                     }
                 }
             }   
-            window.location.reload();
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
         })
         .catch(error => {
             console.error("Lỗi lưu dữ liệu:", error);
-            alert(error.message);
+            showToast({
+                title: "Lỗi hệ thống",
+                message: "Không thể kết nối đến máy chủ.",
+                type: "error",
+                duration: 4000
+            });
         });
     }
     function handleUpdateStatus(event, id, newStatus, title) {
@@ -890,18 +907,35 @@ switch ($page) {
             return result;
         })
         .then(result => {
-            alert("Cập nhật trạng thái thành công!");
-            window.location.reload();
+            showToast({
+                title: "Thành công!",
+                message: "Cập nhật trạng thái thành công.",
+                type: "success",
+                duration: 2000
+            });
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
         })
         .catch(error => {
             console.error("Lỗi cập nhật trạng thái:", error);
-            alert(error.message);
+            showToast({
+                title: "Lỗi hệ thống",
+                message: "Không thể kết nối đến máy chủ.",
+                type: "error",
+                duration: 4000
+            });
         });
     }
     function handleRestore() {
         const selectedRadio = document.querySelector('input[name="selectedRow"]:checked');
         if (!selectedRadio) {
-            alert("Vui lòng chọn dòng dữ liệu để khôi phục!");
+            showToast({
+                title: "Lỗi hệ thống",
+                message: "Vui lòng chọn dòng dữ liệu để khôi phục.",
+                type: "warning",
+                duration: 4000
+            });
             return;
         }
 
@@ -929,15 +963,27 @@ switch ($page) {
                                  ? result.original.message 
                                  : result.message;
             if (successMessage) {
-                alert("Khôi phục thành công!");
-                window.location.reload();
+                showToast({
+                    title: "Thành công!",
+                    message: "Khôi phục thành công.",
+                    type: "success",
+                    duration: 2000
+                });
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
             } else {
                 throw new Error("Không nhận được phản hồi hợp lệ từ server.");
             }
         })
         .catch(error => {
             console.error("Lỗi khôi phục:", error);
-            alert(error.message || "Có lỗi xảy ra! Không thể khôi phục dữ liệu này.");
+            showToast({
+                title: "Lỗi hệ thống",
+                message: "Không thể kết nối đến máy chủ.",
+                type: "error",
+                duration: 4000
+            });
         });
     }
     // Thêm tham số id vào hàm
@@ -960,11 +1006,6 @@ switch ($page) {
         })
         .then(response => response.json())
         .then(result => {
-            if (result.status === 'error' || !result.data) {
-                alert("Lỗi: " + (result.message || "Không thể lấy dữ liệu"));
-                return;
-            }
-
             const data = result.data;
             
             // ========================================================
@@ -1289,8 +1330,12 @@ switch ($page) {
             openModal(targetModal);
         })
         .catch(error => {
-            alert("Lỗi tải chi tiết!");
-            console.error("Fetch error:", error);
+            showToast({
+                title: "Lỗi hệ thống",
+                message: "Không thể kết nối đến máy chủ.",
+                type: "error",
+                duration: 4000
+            });
         });
     }
     function handleSearch() {
@@ -1402,7 +1447,12 @@ switch ($page) {
             })
             .catch(error => {
                 console.error("Lỗi lấy chi tiết bài viết:", error);
-                alert("Không thể tải chi tiết bài viết lúc này!");
+                showToast({
+                    title: "Lỗi hệ thống",
+                    message: "Không thể kết nối đến máy chủ.",
+                    type: "error",
+                    duration: 4000
+                });
             })
             .finally(() => {
                 document.body.style.cursor = 'default';
@@ -1413,12 +1463,7 @@ switch ($page) {
         const modal = document.getElementById('post-detail-modal');
         modal.classList.remove('view-mode');
         modal.classList.add('edit-mode');
-
-        if (currentPostData) {
-            fillFormEditData(currentPostData);
-        } else {
-            alert("Không tìm thấy dữ liệu bài viết để chỉnh sửa!");
-        }
+        fillFormEditData(currentPostData);
     }
     function closePostDetail() {
         const modal = document.getElementById('post-detail-modal');
@@ -1602,7 +1647,12 @@ switch ($page) {
 
             tbody.innerHTML = accounts.map(account => {
                 // Lấy trực tiếp mảng roles (nếu API không trả về thì gán mảng rỗng)
-                let currentRoles = account.roles || [];
+                let currentRole = account.role ?? 'N/A'
+
+                const currentRoles = [];
+                if (account.roles && Array.isArray(data.roles)) {
+                    currentRoles = data.roles.map(r => r.name);
+                }
 
                 // Mã hóa mảng để truyền an toàn qua tham số onclick
                 let encodedRoles = encodeURIComponent(JSON.stringify(currentRoles));
@@ -1612,7 +1662,7 @@ switch ($page) {
                         <td>${account.id}</td>
                         <td style="font-weight: 500;">${account.username || account.name || 'N/A'}</td>
                         
-                        <td>${currentRoles.length > 0 ? currentRoles.join(', ') : 'N/A'}</td>
+                        <td>${currentRole}</td>
                         
                         <td class="text-center">
                             <button class="table-btn red" type="button" 
@@ -1667,15 +1717,30 @@ switch ($page) {
         .then(response => response.json())
         .then(result => {
             if (result.status === 'error' || result.errors) {
-                alert("Lỗi: " + (result.message || "Không thể thu hồi"));
+                showToast({
+                    title: "Lỗi hệ thống",
+                    message: "Lỗi: " + (result.message || "Không thể thu hồi"),
+                    type: "error",
+                    duration: 4000
+                });
                 return;
             }
-            alert("Thu hồi quyền thành công!");
+            showToast({
+                title: "Thành công!",
+                message: "Thu hồi quyền thành công.",
+                type: "success",
+                duration: 2000
+            });
             openAccountListModal(null, targetModel, roleNameToRemove, roleId);
         })
         .catch(error => {
             console.error("Fetch error:", error);
-            alert("Lỗi kết nối hệ thống!");
+            showToast({
+                title: "Lỗi hệ thống",
+                message: "Không thể kết nối đến máy chủ.",
+                type: "error",
+                duration: 4000
+            });
         });
     }
     // Hàm vẽ toàn bộ biểu đồ

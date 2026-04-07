@@ -252,13 +252,20 @@
                 title: "Thành công!",
                 message: "Cập nhật thông tin thành công.",
                 type: "success",
-                duration: 3000
+                duration: 2000
             });
-            window.location.reload(); 
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
         })
         .catch(error => {
             console.error("Lỗi cập nhật:", error);
-            alert(error.message);
+            showToast({
+                title: "Lỗi hệ thống",
+                message: "Không thể kết nối đến máy chủ.",
+                type: "error",
+                duration: 4000
+            });
         });
     }
 

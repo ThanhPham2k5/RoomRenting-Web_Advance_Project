@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="../../css/admin/reset.css" />
     <link rel="stylesheet" href="../../css/admin/main.css" />
     <link rel="stylesheet" href="../../css/admin/login.css" />
+    <link rel="stylesheet" href="../../css/admin/index.css" />
 </head>
 <body>
     <div class="admin-login-layout">
@@ -45,7 +46,9 @@
     </div>
     </div>
 </body>
+<div id="toast-container"></div>
 </html>
+<script src="./core/main.js"></script>
 <script>
     function handleAdminLogin(event) {
     event.preventDefault();
@@ -65,16 +68,34 @@
     })
     .then(res => res.json())
     .then(data => {
-        if (data.status === 'success' || data.token || data.message === "Đăng nhập thành công!") {
-            // Đăng nhập xong rồi, Proxy đã giữ Token, giờ chỉ việc đi thôi!
-            window.location.href = 'index.php';
+        console.log("Dữ liệu thực tế JS nhận được:", data);
+        if (data.account) {
+            showToast({
+                title: "Thành công!",
+                message: data.message,
+                type: "success",
+                duration: 2000
+            });
+            setTimeout(() => {
+                window.location.href = 'index.php';
+            }, 2000);
         } else {
-            alert(data.message || 'Tài khoản hoặc mật khẩu không đúng!');
+            showToast({
+                title: "Thất bại!",
+                message: data.message,
+                type: "error",
+                duration: 4000
+            });
         }
     })
     .catch(err => {
         console.error("Login Error:", err);
-        alert("Lỗi hệ thống, vui lòng thử lại!");
+        showToast({
+            title: "Lỗi hệ thống",
+            message: "Không thể kết nối đến máy chủ.",
+            type: "error",
+            duration: 4000
+        });
     });
 }
 </script>

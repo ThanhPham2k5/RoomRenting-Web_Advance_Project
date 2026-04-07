@@ -10,6 +10,7 @@
     $titleData = ['targetModal' => $accountInsertForm, 'targetModal1' => $accountEditForm, 'titleContent' => "Tài khoản", 'group' => false, 'insert' => true, 'edit' => true, 'delete' => true, 'handle' => false, 'restore' => true];
     $tableHeader = ['Id', 'Tên tài khoản', 'Chức vụ', 'Tình trạng', 'Chi tiết'];
     $type = ['type' => "1"];
+    $query = $paginationMeta['query'] ?? '';
     ob_start(); 
     if(empty($accounts)){
         echo '<tr><td colspan="5" style="text-align:center;">Không có dữ liệu hoặc lỗi kết nối máy chủ</td></tr>';
@@ -52,8 +53,8 @@
         <?php renderComponent("searchbar",false,$type) ?>
         <div class="line"></div>
         <div class="tab-pane">
-            <a href="index.php?page=account&table=1" class="item <?php echo ($currentTable === '1') ? 'active' : ''; ?>">KHÁCH HÀNG</a>
-            <a href="index.php?page=account&table=2" class="item <?php echo ($currentTable === '2') ? 'active' : ''; ?>">NHÂN VIÊN</a>
+            <a href="index.php?page=account&table=1<?php if(isset($query)) echo '&' . $query; ?>" class="item <?php echo ($currentTable === '1') ? 'active' : ''; ?>">KHÁCH HÀNG</a>
+            <a href="index.php?page=account&table=2<?php if(isset($query)) echo '&' . $query; ?>" class="item <?php echo ($currentTable === '2') ? 'active' : ''; ?>">NHÂN VIÊN</a>
         </div>
     </div>
     <?php renderComponent("table",false,$tableData) ?>

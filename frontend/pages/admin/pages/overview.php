@@ -125,7 +125,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
             // 2. Chặn lỗi logic: Năm so sánh trùng với năm hiện tại
             if (year !== '' && year === compareYear) {
-                alert("Năm so sánh không được trùng với năm hiện tại!");
+                showToast({
+                    title: "Thất bại!",
+                    message: "Năm so sánh không được trùng với năm hiện tại.",
+                    type: "error",
+                    duration: 4000
+                });
                 revCompareSelect.value = ""; // Reset ô so sánh
                 renderRevenueChart(year, "");
                 return;

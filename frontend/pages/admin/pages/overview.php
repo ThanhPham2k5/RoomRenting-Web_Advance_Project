@@ -186,7 +186,7 @@ function updateTrendElement(elementId, trendValue) {
     } else if (trendValue < 0) {
         el.className = 'trend negative';
         el.innerHTML = `<span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
-                        -1.5% ${trendValue}%</span> so với tháng trước`;
+                        ${trendValue}%</span> so với tháng trước`;
     } else {
         el.className = 'trend';
         el.innerHTML = `<span style="color:#64748B;">Không đổi</span> so với tháng trước`;

@@ -208,6 +208,9 @@
     margin-right: 12px;
 }
 .history-item .hist-icon.success { background-color: #DCFCE7; color: #16A34A; }
+.history-item .hist-icon.error { background-color: #FEE2E2; color: #DC2626; } /* Nền đỏ nhạt, chữ đỏ đậm */
+.history-item .hist-icon.warning { background-color: #FEF3C7; color: #D97706; } /* Nền cam nhạt, chữ cam đậm */
+.history-item .hist-icon.info { background-color: #EFF6FF; color: #2563EB; } /* Dành cho các trạng thái khác */
 .history-item .hist-info {
     flex: 1;
     display: flex;

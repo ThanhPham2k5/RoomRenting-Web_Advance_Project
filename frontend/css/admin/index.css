@@ -123,3 +123,103 @@
 @keyframes progress {
     to { width: 0; }
 }
+/* =========================================
+   CUSTOM DIALOG (CONFIRM & PROMPT)
+   ========================================= */
+.custom-dialog-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(15, 23, 42, 0.6); /* Nền tối mờ */
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.custom-dialog-overlay.show { opacity: 1; }
+
+.custom-dialog-box {
+    background: #FFFFFF;
+    width: 90%;
+    max-width: 400px;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    transform: scale(0.95) translateY(-20px);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.custom-dialog-overlay.show .custom-dialog-box {
+    transform: scale(1) translateY(0);
+}
+
+/* 1. Tăng cỡ chữ Tiêu đề (Từ 1.25rem lên 1.4rem) */
+.custom-dialog-title {
+    font-size: 1.8rem; 
+    font-weight: 600;
+    color: #1E293B;
+    margin-bottom: 10px; /* Tăng nhẹ khoảng cách bên dưới */
+}
+
+/* 2. Tăng cỡ chữ Nội dung thông báo (Từ 0.95rem lên 1.05rem) */
+.custom-dialog-message {
+    font-size: 1.4rem; 
+    color: #475569;
+    margin-bottom: 24px;
+    line-height: 1.6; /* Tăng khoảng cách dòng cho dễ đọc */
+}
+
+/* 3. Tăng cỡ chữ Ô nhập liệu của Prompt */
+.custom-dialog-input {
+    width: 100%;
+    padding: 12px 16px; /* Nới rộng form nhập liệu cho cân xứng với chữ to */
+    border: 1px solid #CBD5E1;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    font-size: 1.05rem; /* Cỡ chữ to bằng với nội dung */
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+/* 4. Tăng cỡ chữ và độ to của Nút bấm */
+.btn-dialog {
+    font-size: 1.6rem; /* Thêm cỡ chữ rõ ràng cho nút */
+    padding: 10px 20px; /* Nút to ra và dễ bấm (hitbox lớn hơn) */
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+}
+
+.custom-dialog-input:focus {
+    border-color: #F97316;
+}
+
+.custom-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.btn-dialog.cancel {
+    background-color: #F1F5F9;
+    color: #475569;
+}
+.btn-dialog.cancel:hover { background-color: #E2E8F0; }
+
+.btn-dialog.confirm {
+    background-color: #F97316; /* Tông màu cam chủ đạo của bạn */
+    color: white;
+}
+.btn-dialog.confirm:hover { background-color: #EA580C; }
+
+/* Dành cho hành động xóa/nguy hiểm */
+.btn-dialog.danger {
+    background-color: #EF4444;
+    color: white;
+}
+.btn-dialog.danger:hover { background-color: #DC2626; }

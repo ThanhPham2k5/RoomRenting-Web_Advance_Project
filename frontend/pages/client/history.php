@@ -260,6 +260,7 @@
                 }
             } else {
                 console.error(data)
+                alert("Tải lịch sử thanh toán thất bại.")
             }
         } catch (err) {
             console.error(err)

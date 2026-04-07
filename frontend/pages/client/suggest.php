@@ -173,6 +173,7 @@
                 }
             } else {
                 console.error(data)
+                alert("Tải thông tin tỉnh thành thất bại.")
             }
         } catch (err) {
             console.error(err)
@@ -224,6 +225,7 @@
                 }
             } else {
                 console.error(data)
+                alert("Tải thông tin phường xã thất bại.")
             }
         } catch (err) {
             console.error(err)
@@ -275,6 +277,7 @@
                 }
             } else {
                 console.error(data)
+                alert("Tải thông tin phường xã theo tên tỉnh thành thất bại.")
             }
         } catch (err) {
             console.error(err)
@@ -356,6 +359,7 @@
           }
         } else {
           console.error(data)
+          alert("Tải thông tin thất bại.")
         }
       } catch (err) {
         console.error(err)
@@ -402,7 +406,7 @@
       }
 
       const validRooms = ["Phòng đơn", "Căn hộ", "Ký túc xá"]
-      if((document.querySelector(".filter-room-lb-text").textContent.trim() && validRooms.includes(document.querySelector(".filter-room-lb-text").textContent.trim()))) {
+      if((document.querySelector(".filter-room-lb-text").textContent.trim() && validRooms.includes(document.querySelector(".filter-room-lb-text").textContent.trim())) || document.querySelector(".filter-room-lb-text").textContent.trim() === "Chọn loại phòng") {
         if(document.querySelector(".filter-room-lb-text").textContent.trim() !== "Chọn loại phòng") {
           roomType = document.querySelector(".filter-room-lb-text").textContent.trim()
         }
@@ -485,6 +489,7 @@
             }
           } else {
             console.error(data)
+            alert("Lưu thông tin thất bại.")
           }
         } catch (err) {
           console.error(err)

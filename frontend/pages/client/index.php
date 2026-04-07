@@ -175,7 +175,7 @@
     // get all posts to posts section (do not require token)
     async function getNewPost() {
       try {
-        const response = await fetch("http://backend.test/api/posts?per_page=5&filter[status]=completed&include=postImages,favorites.account&sort=-createdAt", {
+        const response = await fetch("http://backend.test/api/posts?per_page=5&filter[status]=completed&include=postImages,favorites.account&sort=-createdAt&filter[trashed]=without", {
           method: "GET",
           headers: {
             "Accept": "application/json"
@@ -190,6 +190,7 @@
           }
         } else {
           console.error(data)
+          alert("Tải danh sách bài đăng thất bại.")
         }
       } catch (err) {
         console.error(err)
@@ -199,7 +200,7 @@
     // get suggest posts to suggest posts section (require token)
     async function getSuggestPost(account_id, token) {
       try {
-        const response = await fetch("http://backend.test/api/posts/recommendations/" + account_id + "?per_page=5&filter[status]=completed&include=postImages,favorites.account&sort=-createdAt", {
+        const response = await fetch("http://backend.test/api/posts/recommendations/" + account_id + "?per_page=5&filter[status]=completed&include=postImages,favorites.account&sort=-createdAt&filter[trashed]=without", {
           method: "GET",
           headers: {
             "Accept": "application/json",
@@ -215,6 +216,7 @@
           }
         } else {
           console.error(data)
+          alert("Tải danh sách bài đăng đề xuất thất bại.")
         }
       } catch (err) {
         console.error(err)
@@ -249,6 +251,7 @@
             }
           } else {
             console.error(data)
+            alert("Kiểm tra form đề xuất thất bại.")
           }
         } catch (err) {
           console.error(err)
@@ -372,6 +375,7 @@
                     }
                   } else {
                     console.error(err)
+                    alert("Yêu thích bài đăng thất bại.")
                   }
                 } catch (err) {
                   console.error(err)
@@ -401,6 +405,7 @@
                     // console.log(data)
                   } else {
                     console.error(err)
+                    alert("Hủy yêu thích bài đăng thất bại.")
                   }
                 } catch (err) {
                   console.error(err)
@@ -518,6 +523,7 @@
                     }
                   } else {
                     console.error(err)
+                    alert("Yêu thích bài đăng thất bại.")
                   }
                 } catch (err) {
                   console.error(err)
@@ -547,6 +553,7 @@
                     // console.log(data)
                   } else {
                     console.error(err)
+                    alert("Hủy yêu thích bài đăng thất bại.")
                   }
                 } catch (err) {
                   console.error(err)

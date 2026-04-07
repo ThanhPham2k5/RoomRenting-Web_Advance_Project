@@ -377,6 +377,7 @@
           }
         } else {
           console.error(data)
+          alert("Lỗi cập nhật thông tin cá nhân.")
         }
       } catch (err) {
         console.error(err)
@@ -602,6 +603,7 @@
                     notifyCache.news = null
                   } else {
                     console.error(data)
+                    alert("Lỗi thay đổi trạng thái thông báo.")
                   }
                 } catch (err) {
                   console.error(err)
@@ -785,6 +787,7 @@
                     notifyCache.transaction = null
                   } else {
                     console.error(data)
+                    alert("Lỗi cập nhật trạng thái thông báo.")
                   }
                 } catch (err) {
                   console.error(err)

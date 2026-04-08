@@ -1241,7 +1241,7 @@ switch ($page) {
                 // 1. Thông tin chung
                 document.getElementById('view-invoice-id').textContent = data.id;
                 document.getElementById('view-invoice-date').textContent = formatDate(data.createdAt);
-                document.getElementById('view-invoice-points').textContent = `+${data.points || 0} Điểm`;
+                document.getElementById('view-invoice-points').textContent = `-${data.points || 0} Điểm`;
 
                 // Xử lý Trạng thái (Status)
                 const statusEl = document.getElementById('view-invoice-status');

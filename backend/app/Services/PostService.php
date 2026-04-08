@@ -39,7 +39,8 @@ class PostService{
         'province',
         'description',
         'status',
-        'roomType' => 'room_type'
+        'roomType' => 'room_type',
+        'user.account.username'
     ];
 
     public function buildGetAllQuery(){

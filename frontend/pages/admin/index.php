@@ -278,45 +278,7 @@ switch ($page) {
             }
         });
 
-        // Nút bấm ở table
-        const dropdownBtns = document.querySelectorAll('.dropdown-container .top-btn');
-        dropdownBtns.forEach(btn => {
-            btn.addEventListener('click', function(event) {
-                event.stopPropagation();
-                const currentContainer = this.closest('.dropdown-container');
-                document.querySelectorAll('.dropdown-container.active').forEach(container => {
-                    if (container !== currentContainer) {
-                        container.classList.remove('active');
-                    }
-                });
-                currentContainer.classList.toggle('active');
-            });
-        });
-        document.addEventListener('click', function(event) {
-            if (event.target.closest('.dropdown-menu')) return;
-            document.querySelectorAll('.dropdown-container.active').forEach(container => {
-                container.classList.remove('active');
-            });
-        });
-
-        //Dropdown ngày
-        const startDateInput = document.getElementById('filter-start-date');
-        const endDateInput = document.getElementById('filter-end-date');
         
-        if(startDateInput){
-            startDateInput.addEventListener('change', function() {
-                const selectedStartDate = this.value; 
-                endDateInput.min = selectedStartDate; 
-            });
-        }
-        
-        if(endDateInput){
-            endDateInput.addEventListener('change', function() {
-                const selectedEndDate = this.value;
-                startDateInput.max = selectedEndDate;
-            });
-        }
-
         //Tat chi tiet
         const modal = document.getElementById('post-detail-modal');
         if(modal) {
@@ -387,33 +349,7 @@ switch ($page) {
             });
         }
 
-        //Loc theo ngay
-        const btnFilterDate = document.querySelector('.btn-filter-date');
-        if (btnFilterDate) {
-            btnFilterDate.addEventListener('click', function() {
-                const startDate = document.getElementById('filter-start-date').value;
-                const endDate = document.getElementById('filter-end-date').value;
-
-                const url = new URL(window.location.href);
-
-                if (startDate && endDate) {
-                    const dateRange = `${startDate},${endDate}`;
-                    url.searchParams.set('filter[createdAt]', dateRange);
-                } 
-                else if (startDate) {
-                    url.searchParams.set('filter[createdAt]', startDate);
-                } 
-                else if (endDate) {
-                    url.searchParams.set('filter[createdAt]', endDate);
-                } 
-                else {
-                    url.searchParams.delete('filter[createdAt]');
-                }
-                
-                url.searchParams.delete('p');
-                window.location.href = url.toString();
-            });
-        }
+        
 
         //Xoa anh (preview)
         document.querySelectorAll('.btn-delete-img').forEach(btn => {
@@ -1026,9 +962,11 @@ switch ($page) {
     }
     // Thêm tham số id vào hàm
     function handleView(id, targetModal) {
-        resetProfileInfoForm();
         const urlParams = new URLSearchParams(window.location.search);
         const currentPage = urlParams.get('page');
+        if(currentPage === "account"){
+            resetProfileInfoForm();
+        }
         const currentTable = urlParams.get('table');
         const config = apiConfigs[currentPage];
         

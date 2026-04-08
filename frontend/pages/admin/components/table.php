@@ -48,12 +48,13 @@ $currentTable = $_GET['table'] ?? '1';
                         $currentParams = $_GET;
                         unset($currentParams['p']);
                         $filterOptions = [];
+                        
                         if ($currentPage === 'bill') {
                             $filterKey = 'status';
                             $filterOptions = [
-                                'completed'    => 'Đã thanh toán',
-                                'failed'  => 'Chưa thanh toán',
-                                'pending' => 'Đang xử lý'
+                                'completed' => 'Đã thanh toán',
+                                'failed'    => 'Chưa thanh toán',
+                                'pending'   => 'Đang xử lý'
                             ];
                         } else {
                             $filterKey = 'trashed';
@@ -62,30 +63,55 @@ $currentTable = $_GET['table'] ?? '1';
                                 'only'    => 'Dừng hoạt động'
                             ];
                         }
+                        
                         $paramsAll = $currentParams;
                         unset($paramsAll['filter'][$filterKey]);
                         $linkAll = '?' . http_build_query($paramsAll);
+
+                        // ========================================================
+                        // LOGIC MỚI: TÌM XEM TRẠNG THÁI NÀO ĐANG ĐƯỢC CHỌN TRÊN URL
+                        // ========================================================
+                        $activeValue = $_GET['filter'][$filterKey] ?? ''; 
+                        $activeLabel = 'Tình trạng'; // Chữ mặc định nếu chưa chọn gì
+
+                        if ($activeValue !== '' && isset($filterOptions[$activeValue])) {
+                            $activeLabel = $filterOptions[$activeValue]; // Đổi chữ thành tên trạng thái
+                        }
                 ?>
                     <div class="dropdown-container">
-                        <button class="top-btn">
+                        <button class="top-btn" style="width: 200px">
                             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M10 15C10.2833 15 10.521 14.904 10.713 14.712C10.905 14.52 11.0007 14.2827 11 14V10C11 9.71667 10.904 9.47933 10.712 9.288C10.52 9.09667 10.2827 9.00067 10 9C9.71733 8.99933 9.48 9.09533 9.288 9.288C9.096 9.48067 9 9.718 9 10V14C9 14.2833 9.096 14.521 9.288 14.713C9.48 14.905 9.71733 15.0007 10 15ZM10 7C10.2833 7 10.521 6.904 10.713 6.712C10.905 6.52 11.0007 6.28267 11 6C10.9993 5.71733 10.9033 5.48 10.712 5.288C10.5207 5.096 10.2833 5 10 5C9.71667 5 9.47933 5.096 9.288 5.288C9.09667 5.48 9.00067 5.71733 9 6C8.99933 6.28267 9.09533 6.52033 9.288 6.713C9.48067 6.90567 9.718 7.00133 10 7ZM10 20C8.61667 20 7.31667 19.7373 6.1 19.212C4.88334 18.6867 3.825 17.9743 2.925 17.075C2.025 16.1757 1.31267 15.1173 0.788001 13.9C0.263335 12.6827 0.000667933 11.3827 1.26582e-06 10C-0.000665401 8.61733 0.262001 7.31733 0.788001 6.1C1.314 4.88267 2.02633 3.82433 2.925 2.925C3.82367 2.02567 4.882 1.31333 6.1 0.788C7.318 0.262667 8.618 0 10 0C11.382 0 12.682 0.262667 13.9 0.788C15.118 1.31333 16.1763 2.02567 17.075 2.925C17.9737 3.82433 18.6863 4.88267 19.213 6.1C19.7397 7.31733 20.002 8.61733 20 10C19.998 11.3827 19.7353 12.6827 19.212 13.9C18.6887 15.1173 17.9763 16.1757 17.075 17.075C16.1737 17.9743 15.1153 18.687 13.9 19.213C12.6847 19.739 11.3847 20.0013 10 20ZM10 18C12.2333 18 14.125 17.225 15.675 15.675C17.225 14.125 18 12.2333 18 10C18 7.76667 17.225 5.875 15.675 4.325C14.125 2.775 12.2333 2 10 2C7.76667 2 5.875 2.775 4.325 4.325C2.775 5.875 2 7.76667 2 10C2 12.2333 2.775 14.125 4.325 15.675C5.875 17.225 7.76667 18 10 18Z" fill="#1F2937"/>
                             </svg>
-                            <p>Tình trạng</p>
+                            
+                            <p style="<?php echo ($activeValue !== '') ? : ''; ?>">
+                                <?php echo $activeLabel; ?>
+                            </p>
+
                             <svg width="9" height="5" viewBox="0 0 9 5" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M8.45 0.850013L4.825 4.47501C4.74167 4.55835 4.65833 4.61668 4.575 4.65001C4.49167 4.68335 4.4 4.70001 4.3 4.70001C4.2 4.70001 4.10833 4.68335 4.025 4.65001C3.94167 4.61668 3.85833 4.55835 3.775 4.47501L0.15 0.850013C0.1 0.800013 0.0626668 0.745679 0.0380001 0.687013C0.0133334 0.628346 0.000666667 0.566012 0 0.500012C0 0.366679 0.046 0.250012 0.138 0.150012C0.23 0.0500121 0.350667 1.23978e-05 0.5 1.23978e-05H8.1C8.25 1.23978e-05 8.371 0.0500121 8.463 0.150012C8.555 0.250012 8.60067 0.366679 8.6 0.500012C8.6 0.533346 8.55 0.650013 8.45 0.850013Z" fill="currentColor"/>
                             </svg>
                         </button>
                         
                         <ul class="dropdown-menu">
-                            <li><a href="<?php echo $linkAll; ?>">Tất cả</a></li>
+                            <li>
+                                <a href="<?php echo $linkAll; ?>" class="<?php echo ($activeValue === '') ? 'active-filter' : ''; ?>">
+                                    Tất cả
+                                </a>
+                            </li>
+                            
                             <?php foreach ($filterOptions as $value => $label): 
                                 $params = $currentParams;
                                 $params['filter'][$filterKey] = $value;
                                 $link = '?' . http_build_query($params);
+                                
+                                // Đánh dấu class 'active-filter' cho mục đang chọn
+                                $isActive = ($activeValue === (string)$value);
                             ?>
                                 <li>
-                                    <a href="<?php echo $link; ?>"><?php echo $label; ?></a>
+                                    <a href="<?php echo $link; ?>" class="<?php echo $isActive ? 'active-filter' : ''; ?>">
+                                        <?php echo $label; ?>
+                                    </a>
                                 </li>
                             <?php endforeach; ?>
                         </ul>
@@ -112,3 +138,100 @@ $currentTable = $_GET['table'] ?? '1';
         </div>
     </div>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Nút bấm ở table (Mở / Đóng Dropdown)
+        const dropdownBtns = document.querySelectorAll('.dropdown-container .top-btn');
+        dropdownBtns.forEach(btn => {
+            btn.addEventListener('click', function(event) {
+                event.stopPropagation();
+                const currentContainer = this.closest('.dropdown-container');
+                document.querySelectorAll('.dropdown-container.active').forEach(container => {
+                    if (container !== currentContainer) {
+                        container.classList.remove('active');
+                    }
+                });
+                currentContainer.classList.toggle('active');
+            });
+        });
+        document.addEventListener('click', function(event) {
+            if (event.target.closest('.dropdown-menu')) return;
+            document.querySelectorAll('.dropdown-container.active').forEach(container => {
+                container.classList.remove('active');
+            });
+        });
+
+        // Dropdown ngày
+        const startDateInput = document.getElementById('filter-start-date');
+        const endDateInput = document.getElementById('filter-end-date');
+
+        // ==========================================================
+        // BỔ SUNG: PHỤC HỒI DỮ LIỆU TỪ URL KHI TRANG VỪA LOAD XONG
+        // ==========================================================
+        const urlParams = new URLSearchParams(window.location.search);
+        const createdAtParam = urlParams.get('filter[createdAt]');
+
+        if (createdAtParam && startDateInput && endDateInput) {
+            if (createdAtParam.includes(',')) {
+                const dates = createdAtParam.split(',');
+                // Kiểm tra xem có bị khuyết ngày bắt đầu không (VD: ,2026-04-08)
+                if (dates[0] === '') {
+                    endDateInput.value = dates[1];
+                } else {
+                    startDateInput.value = dates[0];
+                    endDateInput.value = dates[1] || '';
+                }
+            } else {
+                // Chỉ có 1 ngày bắt đầu
+                startDateInput.value = createdAtParam;
+            }
+
+            // Cập nhật lại giới hạn min/max sau khi phục hồi
+            if (startDateInput.value) endDateInput.min = startDateInput.value;
+            if (endDateInput.value) startDateInput.max = endDateInput.value;
+        }
+        // ==========================================================
+        
+        if(startDateInput){
+            startDateInput.addEventListener('change', function() {
+                const selectedStartDate = this.value; 
+                endDateInput.min = selectedStartDate; 
+            });
+        }
+        
+        if(endDateInput){
+            endDateInput.addEventListener('change', function() {
+                const selectedEndDate = this.value;
+                startDateInput.max = selectedEndDate;
+            });
+        }
+        
+        // Lọc theo ngày
+        const btnFilterDate = document.querySelector('.btn-filter-date');
+        if (btnFilterDate) {
+            btnFilterDate.addEventListener('click', function() {
+                const startDate = document.getElementById('filter-start-date').value;
+                const endDate = document.getElementById('filter-end-date').value;
+
+                const url = new URL(window.location.href);
+
+                if (startDate && endDate) {
+                    const dateRange = `${startDate},${endDate}`;
+                    url.searchParams.set('filter[createdAt]', dateRange);
+                } 
+                else if (startDate) {
+                    url.searchParams.set('filter[createdAt]', startDate);
+                } 
+                else if (endDate) {
+                    url.searchParams.set('filter[createdAt]', ',' + endDate);
+                } 
+                else {
+                    url.searchParams.delete('filter[createdAt]');
+                }
+                
+                url.searchParams.delete('p');
+                window.location.href = url.toString();
+            });
+        }
+    });
+</script>

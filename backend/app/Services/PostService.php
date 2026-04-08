@@ -76,6 +76,7 @@ class PostService{
             'deposit',
             AllowedSort::field('maxOccupants','max_occupants'),
             AllowedSort::field('createdAt', 'created_at'),
+            AllowedSort::field('updateAt', 'updated_at'),
         ]);
 
         return $query;

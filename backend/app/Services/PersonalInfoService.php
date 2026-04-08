@@ -49,6 +49,7 @@ class PersonalInfoService{
             'id',
             AllowedSort::field('dateOfBirth', 'date_of_birth'),
             AllowedSort::field('createdAt', 'created_at'),
+            AllowedSort::field('updateAt', 'updated_at'),
         ]);
 
         return $query;

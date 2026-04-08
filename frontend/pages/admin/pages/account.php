@@ -1,6 +1,10 @@
 <?php
     $apiRole = call_api("http://backend.test/api/roles?per_page=all");
     $roles= $apiRole['data'] ?? [];
+    $apiRole = call_api("http://backend.test/api/address/provinces");
+    $provinces= $apiRole['data'] ?? [];
+    $apiRole = call_api("http://backend.test/api/address/wards");
+    $wards= $apiRole['data'] ?? [];
     $paginationMeta = $paginationMeta ?? [];
     $currentTable = $_GET['table'] ?? "1";
     $accounts = $accounts ?? [];
@@ -194,6 +198,105 @@
                 </div>
             </div>
         </div>
+
+        <input type="hidden" id="account-id-to-edit" value="" data-locked="false">
+
+        <div class="action-toggle-wrapper" style="text-align: center; margin-top: 24px;">
+            <button type="button" id="btn-toggle-personal-info" class="btn-toggle-info" onclick="togglePersonalInfo()">
+                <span>Xem / Chỉnh sửa hồ sơ chi tiết</span>
+                <svg id="toggle-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+        </div>
+
+        <div id="personal-info-container" class="personal-info-hidden">
+            <div class="right-info" id="panel-info" style="display: flex; flex-direction: column;">
+                
+                <p class="section-title" style="font-size: 1.6rem; font-weight: bold; margin-bottom: 20px;">Hồ sơ cá nhân</p>
+                <input type="hidden" id="current-edit-user-id" name="user_id" value="">
+                
+                <div class="avatar-edit-section" style="display: flex; align-items: center; gap: 20px; margin-bottom: 24px;">
+                    <img src="" alt="Avatar" class="avatar-preview" id="avatarPreview" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 1px solid #CBD5E1;">
+                    <div class="avatar-action">
+                        <label class="btn-change-avatar" style="cursor: pointer; color: #2563EB; font-weight: 500; display: inline-block; margin-bottom: 4px;">
+                            Tải ảnh mới
+                            <input type="file" class="upload-avatar-input" accept="image/jpeg, image/png, image/jpg" hidden>
+                        </label>
+                        <p class="avatar-hint" style="font-size: 1.6rem; color: #64748B; margin: 0;">Định dạng JPEG, PNG. Tối đa 2MB.</p>
+                    </div>
+                </div>
+                
+                <div class="item" style="margin-bottom: 16px;">
+                    <p style="margin-bottom: 8px; font-weight: 500; color: #334155;">Họ và tên</p>
+                    <input type="text" name="name" style="width: 100%; padding: 10px; border: 1px solid #CBD5E1; border-radius: 6px;">
+                </div>
+
+                <div class="item" style="margin-bottom: 16px;">
+                    <p style="margin-bottom: 8px; font-weight: 500; color: #334155;">Số điện thoại</p>
+                    <input type="text" name="phone_number" style="width: 100%; padding: 10px; border: 1px solid #CBD5E1; border-radius: 6px;">
+                </div>
+
+                <div class="item" style="margin-bottom: 16px;">
+                    <p style="margin-bottom: 8px; font-weight: 500; color: #334155;">Email</p>
+                    <input type="email" name="email" readonly title="Email không thể thay đổi" style="width: 100%; padding: 10px; border: 1px solid #E2E8F0; border-radius: 6px; background-color: #F8FAFC; color: #94A3B8; cursor: not-allowed;">
+                </div>
+
+                <div class="item" style="margin-bottom: 24px;">
+                    <p style="margin-bottom: 8px; font-weight: 500; color: #334155;">Địa chỉ</p>
+                    <input type="text" name="house_number" placeholder="Số nhà, Tên đường" style="width: 100%; padding: 10px; border: 1px solid #CBD5E1; border-radius: 6px; margin-bottom: 10px;">
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <div class="input-group" style="flex: 1;">
+                            <select name="province" id="city-select" style="width: 100%; padding: 10px; border: 1px solid #CBD5E1; border-radius: 6px;">
+                                <option value="">-- Chọn Tỉnh/Thành phố --</option>
+                                <?php foreach ($provinces as $province): ?>
+                                    <option value="<?php echo htmlspecialchars($province['name'] ?? ''); ?>" data-name="<?php echo htmlspecialchars($province['name'] ?? ''); ?>">
+                                        <?php echo htmlspecialchars($province['name'] ?? ''); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <div class="input-group" style="flex: 1;">
+                            <select name="ward" id="ward-select" style="width: 100%; padding: 10px; border: 1px solid #CBD5E1; border-radius: 6px;">
+                                <option value="">-- Chọn Phường/Xã --</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <hr style="border: none; border-top: 1px solid #E2E8F0; margin-bottom: 24px;">
+
+                <p class="section-title" style="font-size: 1.6rem; font-weight: bold; margin-bottom: 16px; color: #1E293B;">Thông tin bảo mật</p>
+                
+                <div style="display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap;">
+                    <div class="input-group" style="flex: 1; min-width: 200px;">
+                        <p style="margin-bottom: 8px; font-weight: 500; color: #334155;">Căn cước công dân</p>
+                        <input type="text" name="pid" style="width: 100%; padding: 10px; border: 1px solid #CBD5E1; border-radius: 6px;">
+                    </div>
+                    
+                    <div class="input-group" style="flex: 1; min-width: 150px;">
+                        <p style="margin-bottom: 8px; font-weight: 500; color: #334155;">Giới tính</p>
+                        <select name="gender" style="width: 100%; padding: 10px; border: 1px solid #CBD5E1; border-radius: 6px;">
+                            <option value="">-- Chọn Giới tính --</option>
+                            <option value="Nam">Nam</option>
+                            <option value="Nữ">Nữ</option>
+                            <option value="Khác">Khác</option>
+                        </select>
+                    </div>
+                    
+                    <div class="item" style="flex: 1; min-width: 150px;">
+                        <p style="margin-bottom: 8px; font-weight: 500; color: #334155;">Ngày sinh</p>
+                        <input type="date" name="date_of_birth" value="<?php echo htmlspecialchars($info['dateOfBirth'] ?? ''); ?>" style="width: 100%; padding: 10px; border: 1px solid #CBD5E1; border-radius: 6px;">
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px; text-align: right;">
+                    <button type="button" class="btn-save" id="btn-save-profile" style="background-color: #F97316; color: white; border: none; padding: 12px 24px; font-size: 1.6rem; border-radius: 8px; font-weight: 500; cursor: pointer; transition: background-color 0.2s;">
+                        Lưu thay đổi
+                    </button>
+                </div>
+            </div>
+        </div>
     <?php 
         $formDetailData = ob_get_clean();
     ?>
@@ -288,5 +391,58 @@ function validateAccountMaster(form) {
     if (rolesErr) { Validator.showError(rolesInput, rolesErr); isValid = false; }
 
     return isValid;
+}
+// Hàm để dọn dẹp và đóng form chi tiết về trạng thái ban đầu
+function resetProfileInfoForm() {
+    const btnToggle = document.getElementById('btn-toggle-personal-info');
+    const infoContainer = document.getElementById('personal-info-container');
+
+    if (infoContainer && btnToggle) {
+        // 1. Ép form ẩn đi
+        infoContainer.style.display = 'none';
+        
+        // 2. Gỡ class active để mũi tên xoay về chỗ cũ
+        btnToggle.classList.remove('active');
+        
+        // 3. Đưa dòng chữ trên nút về mặc định
+        btnToggle.querySelector('span').innerText = 'Xem / Chỉnh sửa hồ sơ chi tiết';
+    }
+}
+// Hàm xử lý việc Ẩn/Hiện form hồ sơ cá nhân
+function togglePersonalInfo() {
+    const accid = document.getElementById('account-id-to-edit');
+    if(accid && accid.dataset.locked === "false"){
+        const btnToggleProfileInfo = document.getElementById('btn-toggle-personal-info');
+        const infoContainer = document.getElementById('personal-info-container');
+        
+        if (infoContainer && btnToggleProfileInfo) {
+            // Kiểm tra xem form đang ẩn hay hiện
+            const isHidden = window.getComputedStyle(infoContainer).display === 'none';
+
+            if (isHidden) {
+                // Đang ẩn thì MỞ FORM
+                infoContainer.style.display = 'block';
+                btnToggleProfileInfo.classList.add('active'); 
+                btnToggleProfileInfo.querySelector('span').innerText = 'Thu gọn hồ sơ chi tiết';
+                
+                // Cuộn màn hình xuống
+                setTimeout(() => {
+                    infoContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 100);
+            } else {
+                // Đang hiện thì ĐÓNG FORM
+                infoContainer.style.display = 'none';
+                btnToggleProfileInfo.classList.remove('active');
+                btnToggleProfileInfo.querySelector('span').innerText = 'Xem / Chỉnh sửa hồ sơ chi tiết';
+            }
+        }
+    }else{
+        showToast({
+            title: "Cảnh báo!",
+            message: "Không thể xem thông tin của tài khoản đã bị khóa.",
+            type: "warning",
+            duration: 4000
+        });
+    }
 }
 </script>

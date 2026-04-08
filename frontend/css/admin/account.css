@@ -45,3 +45,100 @@
     text-decoration: none;
     color: black;
 }
+/* ========================================================
+   1. TIÊU ĐỀ SECTION (Hồ sơ cá nhân, Thông tin bảo mật)
+   ======================================================== */
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1E293B; /* Xám đậm sành điệu */
+    margin-bottom: 24px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #E2E8F0;
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+/* Tạo thanh gạch ngang màu nhấn ở dưới tiêu đề */
+.section-title::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 60px;
+    height: 3px;
+    background-color: #3B82F6; /* Xanh dương rực rỡ */
+    border-radius: 4px;
+}
+
+/* ========================================================
+   2. NÚT TOGGLE (Xem / Chỉnh sửa hồ sơ chi tiết)
+   ======================================================== */
+.btn-toggle-info {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: #F8FAFC;
+    color: #475569;
+    border: 1px solid #CBD5E1;
+    padding: 12px 28px;
+    border-radius: 50px; /* Bo tròn hoàn toàn tạo cảm giác thân thiện */
+    font-size: 1.6rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Hiệu ứng gia tốc mượt */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.btn-toggle-info:hover {
+    background: #FFFFFF;
+    color: #2563EB;
+    border-color: #94A3B8;
+    box-shadow: 0 6px 12px rgba(37, 99, 235, 0.1); /* Bóng đổ màu xanh nhẹ khi di chuột */
+    transform: translateY(-2px); /* Nẩy nhẹ lên */
+}
+
+/* Trạng thái khi đang mở form */
+.btn-toggle-info.active {
+    background: #EFF6FF;
+    color: #1D4ED8;
+    border-color: #BFDBFE;
+}
+
+.btn-toggle-info svg {
+    transition: transform 0.4s ease;
+}
+
+.btn-toggle-info.active svg {
+    transform: rotate(180deg);
+}
+
+/* ========================================================
+   3. NÚT LƯU THAY ĐỔI
+   ======================================================== */
+.btn-save {
+    background: linear-gradient(135deg, #F97316, #EA580C); /* Gradient cam hiện đại */
+    color: white;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 6px -1px rgba(234, 88, 12, 0.3), 0 2px 4px -1px rgba(234, 88, 12, 0.15);
+}
+
+.btn-save:hover {
+    background: linear-gradient(135deg, #EA580C, #C2410C); /* Đổi màu gradient khi hover */
+    box-shadow: 0 10px 15px -3px rgba(234, 88, 12, 0.4); /* Bóng đổ lớn hơn */
+    transform: translateY(-2px); /* Bay nhẹ lên */
+}
+
+.btn-save:active {
+    transform: translateY(0); /* Nhấn xuống bám sát nền */
+    box-shadow: 0 2px 4px rgba(234, 88, 12, 0.3);
+}

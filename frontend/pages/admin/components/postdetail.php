@@ -129,6 +129,11 @@
                                 <label>Diện tích (m²)</label>
                                 <input type="number" name="area" value="" placeholder="Ví dụ: 25" min="1" step="0.1">
                             </div>
+
+                            <div class="input-group">
+                                <label>Số nhà</label>
+                                <input type="number" name="houseNumber" value="" placeholder="Ví dụ: 36">
+                            </div>
                             
                             <div class="input-group">
                                 <label>Tỉnh, Thành Phố</label>

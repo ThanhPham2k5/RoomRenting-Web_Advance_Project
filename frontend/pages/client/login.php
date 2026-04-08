@@ -216,7 +216,7 @@
             window.location.href = '<?php echo BASE_URL . "/pages/client/index.php" ?>'
           } else {
             console.log(data)
-            if(data.message === "Invalid credentials") {
+            if(data.message === "Tài khoản hoặc mật khẩu không đúng.") {
                 isValid = false;
 
                 username_input.focus()

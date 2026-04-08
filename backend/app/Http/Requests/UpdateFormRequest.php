@@ -22,8 +22,8 @@ class UpdateFormRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'price_max' => 'sometimes|nullable|numeric|min:0|gt:price_min',
-            'price_min' => 'sometimes|nullable|numeric|min:0|lt:price_max',
+            'price_max' => 'sometimes|nullable|numeric|min:0',
+            'price_min' => 'sometimes|nullable|numeric|min:0',
             'area' => 'sometimes|nullable|numeric|min:0',
             'ward' => 'sometimes|nullable|string|max:255',
             'province' => 'sometimes|nullable|string|max:255',

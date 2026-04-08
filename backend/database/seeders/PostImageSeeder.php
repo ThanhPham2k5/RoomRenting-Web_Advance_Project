@@ -49,7 +49,7 @@ class PostImageSeeder extends Seeder
     private function image($postId, $order)
     {
         // fake image content
-        $filename = "{$order}.jpg";
+        $filename = $order . '_' . time() . ".jpg";
 
         $path = "posts/{$postId}/images/{$filename}";
 

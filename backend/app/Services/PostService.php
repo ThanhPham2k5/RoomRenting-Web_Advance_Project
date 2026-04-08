@@ -27,7 +27,9 @@ class PostService{
         'comments.account',
         'payBills',
         'favorites.account',
-        'notifications'
+        'notifications',
+        'user.account',
+        'employee.account'
     ];
 
     private $allColFilter = [
@@ -124,7 +126,7 @@ class PostService{
                     Storage::disk('public')->delete($oldImage->image_post_url);
                 } 
 
-                $filename = $order . '.' . $file->getClientOriginalExtension();
+                $filename = $order . '_' . time() . '.' . $file->getClientOriginalExtension();
                 $path = $file->storeAs("posts/{$post->id}/images", $filename, "public");
                 
                 if($oldImage){

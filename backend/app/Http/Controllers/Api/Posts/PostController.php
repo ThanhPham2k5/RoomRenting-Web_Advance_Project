@@ -96,7 +96,7 @@ class PostController extends Controller
                     $order = $imageData['order'];
 
                     // Rename to order
-                    $filename = $order . '.' . $file->getClientOriginalExtension();
+                    $filename = $order . '_' . time() . '.' . $file->getClientOriginalExtension();
 
                     // Save file
                     $path = $file->storeAs(

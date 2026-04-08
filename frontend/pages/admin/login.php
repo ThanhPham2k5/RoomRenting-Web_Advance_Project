@@ -58,7 +58,7 @@
     const payload = {
         login: form.username.value,
         password: form.password.value,
-        target_endpoint: 'login'
+        target_endpoint: 'login/employee'
     };
 
     fetch('core/api_proxy.php', {

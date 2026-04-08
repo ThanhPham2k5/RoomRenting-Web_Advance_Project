@@ -374,6 +374,7 @@
 
     // image button
     var selectedFiles = []
+    var deletedOrders = []
 
     document.querySelector(".new-post-upload").addEventListener("click", (e) => {
       document.querySelector("#new-post-file-input").click()
@@ -413,6 +414,11 @@
     //  delete temp img
     document.querySelectorAll(".new-pic-del").forEach((btn, index) => {
       btn.addEventListener("click", (e) => {
+        const itemToBeDeleted = selectedFiles[index]
+        if(itemToBeDeleted && itemToBeDeleted.type === "url") {
+          deletedOrders.push(itemToBeDeleted.order)
+        }
+
         selectedFiles.splice(index, 1)
 
         for(let i = 0; i < 4; i++) {
@@ -456,7 +462,7 @@
           document.querySelector(".address-error").style.display = "none"
       }
 
-      const province_regex = /^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\s]{3,255}$/
+      const province_regex = /^[\p{L}\s]{3,255}$/u
       if(!province_regex.test(document.querySelector(".filter-province-lb-text").textContent.trim()) || document.querySelector(".filter-province-lb-text").textContent.trim() === "Chọn tỉnh thành") {
           if(isValid) {
               // document.querySelector(".profile-province-input").focus()
@@ -580,16 +586,23 @@
         formData.append("status", "pending")
         formData.append("authorized", 0)
 
-        // if(selectedFiles.length == null || selectedFiles.length <= 0) {
-        //   alert("Vui lòng chọn 1 ảnh bài đăng!")
-        //   return
-        // }
+        if(selectedFiles.length == null || selectedFiles.length <= 0) {
+          alert("Vui lòng chọn 1 ảnh bài đăng!")
+          isLoading = false
+          document.querySelector(".new-submit").disabled = false
+          document.querySelector(".new-submit").textContent = "Sửa bài"
+          return
+        }
 
         selectedFiles.forEach((item, index) => {
-          if(item.file === "file") {
+          if(item.type === "file") {
             formData.append("images[" + index + "]", item.file)
             formData.append("orders[" + index + "]", index + 1)
           }
+        })
+
+        deletedOrders.forEach((item, index) => {
+          formData.append("deleted_orders[" + index + "]", item)
         })
 
         if(document.querySelector(".filter-room-lb-text").textContent.trim() === "Phòng đơn")

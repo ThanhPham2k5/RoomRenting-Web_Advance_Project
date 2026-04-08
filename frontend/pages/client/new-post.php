@@ -45,24 +45,28 @@
           </button>
 
           <div class="new-pic-list">
+            <input type="file" name="new-post-file-input" id="new-post-file-input-1" accept=".jpg,.jpeg,.png" style="display: none;">
             <div class="new-pic-box pic-box-1">
               <img src='<?php echo BASE_URL . "/assets/img/post.png"?>' alt="pic-1.png" class="new-pic-1">
 
               <img src='<?php echo BASE_URL . "/assets/img/pic-del.png"?>' alt="pic-del.png" class="new-pic-del new-pic-del-1">
             </div>
 
+            <input type="file" name="new-post-file-input" id="new-post-file-input-2" accept=".jpg,.jpeg,.png" style="display: none;">
             <div class="new-pic-box pic-box-2">
               <img src='<?php echo BASE_URL . "/assets/img/post.png"?>' alt="pic-2.png" class="new-pic-2">
 
               <img src='<?php echo BASE_URL . "/assets/img/pic-del.png"?>' alt="pic-del.png" class="new-pic-del new-pic-del-2">
             </div>
 
+            <input type="file" name="new-post-file-input" id="new-post-file-input-3" accept=".jpg,.jpeg,.png" style="display: none;">
             <div class="new-pic-box pic-box-3">
               <img src='<?php echo BASE_URL . "/assets/img/post.png"?>' alt="pic-3.png" class="new-pic-3">
 
               <img src='<?php echo BASE_URL . "/assets/img/pic-del.png"?>' alt="pic-del.png" class="new-pic-del new-pic-del-3">
             </div>
 
+            <input type="file" name="new-post-file-input" id="new-post-file-input-4" accept=".jpg,.jpeg,.png" style="display: none;">
             <div class="new-pic-box pic-box-4">
               <img src='<?php echo BASE_URL . "/assets/img/post.png"?>' alt="pic-4.png" class="new-pic-4">
 
@@ -323,6 +327,22 @@
     // image button
     var selectedFiles = []
 
+    document.querySelector(".new-pic-1").addEventListener("click", (e) => {
+      document.querySelector("#new-post-file-input-1").click()
+    })
+
+    document.querySelector(".new-pic-2").addEventListener("click", (e) => {
+      document.querySelector("#new-post-file-input-2").click()
+    })
+
+    document.querySelector(".new-pic-3").addEventListener("click", (e) => {
+      document.querySelector("#new-post-file-input-3").click()
+    })
+
+    document.querySelector(".new-pic-4").addEventListener("click", (e) => {
+      document.querySelector("#new-post-file-input-4").click()
+    })
+
     document.querySelector(".new-post-upload").addEventListener("click", (e) => {
       document.querySelector("#new-post-file-input").click()
     })
@@ -335,6 +355,86 @@
         selectedFiles.push(file)
       })
 
+      e.target.value = ""
+
+      for(let i = 0; i < 4; i++) {
+          document.querySelector(".new-pic-" + (i + 1)).setAttribute("src", '<?= BASE_URL ?>/assets/img/post.png')
+      }
+
+      selectedFiles.forEach((file, i) => {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          document.querySelector(".new-pic-" + (i + 1)).setAttribute("src", e.target.result)
+        }
+        reader.readAsDataURL(file)
+      })
+    })
+
+    document.querySelector("#new-post-file-input-1").addEventListener("change", (e) => {
+      if(e.target.files[0]) {
+        selectedFiles[0] = e.target.files[0]
+      }
+      
+      e.target.value = ""
+
+      for(let i = 0; i < 4; i++) {
+          document.querySelector(".new-pic-" + (i + 1)).setAttribute("src", '<?= BASE_URL ?>/assets/img/post.png')
+      }
+
+      selectedFiles.forEach((file, i) => {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          document.querySelector(".new-pic-" + (i + 1)).setAttribute("src", e.target.result)
+        }
+        reader.readAsDataURL(file)
+      })
+    })
+
+    document.querySelector("#new-post-file-input-2").addEventListener("change", (e) => {
+      if(e.target.files[0]) {
+        selectedFiles[1] = e.target.files[0]
+      }
+      
+      e.target.value = ""
+
+      for(let i = 0; i < 4; i++) {
+          document.querySelector(".new-pic-" + (i + 1)).setAttribute("src", '<?= BASE_URL ?>/assets/img/post.png')
+      }
+
+      selectedFiles.forEach((file, i) => {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          document.querySelector(".new-pic-" + (i + 1)).setAttribute("src", e.target.result)
+        }
+        reader.readAsDataURL(file)
+      })
+    })
+
+    document.querySelector("#new-post-file-input-3").addEventListener("change", (e) => {
+      if(e.target.files[0]) {
+        selectedFiles[2] = e.target.files[0]
+      }
+      
+      e.target.value = ""
+
+      for(let i = 0; i < 4; i++) {
+          document.querySelector(".new-pic-" + (i + 1)).setAttribute("src", '<?= BASE_URL ?>/assets/img/post.png')
+      }
+
+      selectedFiles.forEach((file, i) => {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          document.querySelector(".new-pic-" + (i + 1)).setAttribute("src", e.target.result)
+        }
+        reader.readAsDataURL(file)
+      })
+    })
+
+    document.querySelector("#new-post-file-input-4").addEventListener("change", (e) => {
+      if(e.target.files[0]) {
+        selectedFiles[3] = e.target.files[0]
+      }
+      
       e.target.value = ""
 
       for(let i = 0; i < 4; i++) {

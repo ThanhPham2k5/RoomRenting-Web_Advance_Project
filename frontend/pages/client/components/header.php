@@ -456,7 +456,7 @@
                 "Accept": "application/json",
                 "Authorization": "Bearer " + token
               }
-            }),fetch("http://backend.test/api/notifications?include=account&filter[account.id]=" + account_id + "&filter[status]=read&filter[notificationType]=news&sort=-createdAt", {
+            }),fetch("http://backend.test/api/notifications?include=account&per_page=5&page=1&filter[account.id]=" + account_id + "&filter[status]=read&filter[notificationType]=news&sort=-createdAt", {
               method: "GET",
               headers: {
                 "Accept": "application/json",

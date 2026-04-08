@@ -876,7 +876,7 @@ switch ($page) {
                         newStatus === 'rejected' ? 'Từ chối bài' : 'Gỡ bài';
 
         const isConfirmed = await showConfirm(
-            "Cảnh báo xóa", 
+            "Xác nhận hành động", 
             `Bạn có chắc chắn muốn ${actionName} này không?`, 
             true 
         );
@@ -905,6 +905,7 @@ switch ($page) {
 
         // Tạo FormData ảo (không cần thẻ <form> thật)
         let formData = new FormData();
+        formData.append('status', newStatus);
         formData.append('status', newStatus);
         formData.append('_method', 'PUT');
         formData.append('reason', reasonText);
@@ -968,7 +969,7 @@ switch ($page) {
 
         const id = selectedRadio.value;
         const isConfirmed = await showConfirm(
-            "Cảnh báo xóa", 
+            "Xác nhận hành động", 
             "Bạn có chắc chắn muốn khôi phục dữ liệu này không?", 
             false 
         );
@@ -1020,6 +1021,7 @@ switch ($page) {
     }
     // Thêm tham số id vào hàm
     function handleView(id, targetModal) {
+        resetProfileInfoForm();
         const urlParams = new URLSearchParams(window.location.search);
         const currentPage = urlParams.get('page');
         const currentTable = urlParams.get('table');
@@ -1099,6 +1101,95 @@ switch ($page) {
                     });
                 } else {
                     rolesContainer.innerHTML = '<span class="info-value" style="font-style: italic; color: #999;">Không có quyền đặc biệt</span>';
+                }
+                //Form chi tiet
+                const formPersonalInfo = document.getElementById('panel-info');
+                const allFields = formPersonalInfo.querySelectorAll('input, select');
+                allFields.forEach(field => {
+                    Validator.clearError(field);
+                });
+                if (formPersonalInfo) {
+                    const saveBtn = document.getElementById('btn-save-profile');
+                    if (saveBtn) {
+                        saveBtn.setAttribute('onclick', `handleSaveSettings(event, ${data.id})`);
+                    }
+                    const accid = document.getElementById('account-id-to-edit');
+                    if (accid) {
+                        accid.value = data.id;
+                        if (data.deletedAt !== null) {
+                            accid.dataset.locked = "true";
+                        } else {
+                            accid.dataset.locked = "false";
+                        }
+                    }
+
+                    const pInfo = profileInfo?.personalInfo || {};
+                    
+                    // Điền Text Inputs
+                    formPersonalInfo.querySelector('input[name="name"]').value = pInfo.name || '';
+                    formPersonalInfo.querySelector('input[name="phone_number"]').value = pInfo.phoneNumber || '';
+                    formPersonalInfo.querySelector('input[name="email"]').value = pInfo.email || '';
+                    formPersonalInfo.querySelector('input[name="house_number"]').value = pInfo.houseNumber || '';
+                    formPersonalInfo.querySelector('input[name="pid"]').value = pInfo.pid || '';
+                    
+                    // Điền Ngày Sinh (Cắt lấy phần YYYY-MM-DD nếu chuỗi có chứa thời gian)
+                    const dobInput = formPersonalInfo.querySelector('input[name="date_of_birth"]');
+                    if (pInfo.dateOfBirth) {
+                        dobInput.value = pInfo.dateOfBirth.split('T')[0];
+                    } else {
+                        dobInput.value = '';
+                    }
+
+                    // Điền Select (Giới tính, Tỉnh thành)
+                    const genderSelect = formPersonalInfo.querySelector('select[name="gender"]');
+                    if (genderSelect) genderSelect.value = pInfo.gender || '';
+                    
+                    const provinceSelect = formPersonalInfo.querySelector('select[name="province"]');
+                    const wardSelect = formPersonalInfo.querySelector('select[name="ward"]');   
+
+                    if (provinceSelect && wardSelect) {
+                        const userProvince = pInfo.province ?? "";
+                        const userWard = pInfo.ward ?? "";
+
+                        if (userProvince) {
+                            provinceSelect.value = userProvince; 
+                            if (provinceSelect.value) {
+                                // Đảm bảo bạn đã khai báo hàm loadWards ở đâu đó trong dự án nhé
+                                if (typeof loadWards === 'function') {
+                                    // ĐÃ SỬA: Thêm biến wardSelect vào giữa
+                                    loadWards(userProvince, wardSelect, userWard); 
+                                }
+                            }
+                        }
+
+                        provinceSelect.addEventListener('change', function() {
+                            const selectedProvince = this.value; 
+                            if (selectedProvince && typeof loadWards === 'function') {
+                                // ĐÃ SỬA: Thêm biến wardSelect vào giữa
+                                loadWards(selectedProvince, wardSelect, null); 
+                            } else {
+                                wardSelect.innerHTML = '<option value="">-- Chọn Phường/Xã --</option>';
+                            }
+                        });
+                    }
+
+                    
+
+                    // Đổi Avatar nhỏ trong form
+                    const avatarPreview = document.getElementById('avatarPreview');
+                    if (avatarPreview) {
+                        // Nếu không có ảnh thì gắn đường dẫn ảnh mặc định của hệ thống
+                        avatarPreview.src = avatarUrl ? avatarUrl : '../../assets/admin/images/default-avatar.png'; 
+                    }
+                }
+
+                // ========================================================
+                // 2. MỞ MODAL LÊN MÀN HÌNH (Rất quan trọng)
+                // ========================================================
+                const modalElement = document.getElementById(targetModal);
+                if (modalElement) {
+                    // Tùy theo CSS của bạn, có thể là 'block' hoặc 'flex'
+                    modalElement.style.display = 'flex'; 
                 }
             }
             // ---> NẾU LÀ TRANG PERMISSION (Quyền hạn)
@@ -1399,13 +1490,14 @@ switch ($page) {
                 currentPostData = data;
                 document.getElementById('detail-id').textContent = "ID bài đăng: " + data.id;
                 document.getElementById('detail-title').textContent = data.title;
-                const locationParts = [data.ward, data.province];
+                const locationParts = [data.houseNumber, data.ward, data.province];
                 const locationString = locationParts.filter(Boolean).join(", ");
                 document.getElementById('detail-location').textContent = locationString;
                 document.getElementById('detail-price').textContent = data.price + " VNĐ/ tháng";
                 document.getElementById('detail-area').textContent = data.area + " m²";
                 document.getElementById('detail-deposit').textContent = "Số tiền cọc: " + data.deposit;
                 document.getElementById('room-type').textContent = "Kiểu phòng trọ: " + data.roomType;
+                document.getElementById('occupants-data').textContent = "Số lượng người tối đa: " + data.maxOccupants;
                 document.getElementById('occupants-data').textContent = "Số lượng người tối đa: " + data.maxOccupants;
                 document.getElementById('detail-description').textContent = data.description;
                 if (data.payBills) {
@@ -1478,8 +1570,8 @@ switch ($page) {
                     });
                 }
 
-                document.getElementById('detail-user-id').textContent = "Tài khoản đăng bài: " + (data.user.account.username || 'Trống');
-                document.getElementById('detail-employee-id').textContent = "Tài khoản nhân viên duyệt: " + (data.employee.account.username || 'Trống');
+                document.getElementById('detail-user-id').textContent = "Tài khoản đăng bài: " + (data.user?.account?.username || 'Trống');
+                document.getElementById('detail-employee-id').textContent = "Tài khoản nhân viên duyệt: " + (data.employee?.account?.username || 'Trống');
                 modal.style.display = 'flex';
             })
             .catch(error => {
@@ -1513,7 +1605,7 @@ switch ($page) {
         const form = document.getElementById('form-edit-post');
         if (!form) return;
 
-        const textFields = ['id', 'title', 'price', 'deposit', 'area', 'maxOccupants', 'description', "roomType"];
+        const textFields = ['id', 'title', 'price', 'deposit', 'area', 'maxOccupants', 'description', 'roomType', 'houseNumber'];
         textFields.forEach(field => {
             const input = form.querySelector(`[name="${field}"]`);
             if (input) {
@@ -2296,5 +2388,143 @@ switch ($page) {
         }
         openModal('modal-xem-ly-do-' + postId);
     }
+    // ==========================================
+    // 1. HÀM XỬ LÝ LƯU HỒ SƠ CÁ NHÂN
+    // ==========================================
+    function handleSaveSettings(event, id) {
+        event.preventDefault(); // Ngăn chặn form load lại trang
+        const formElement = event.target.closest('#panel-info');
+
+        if (!formElement) {
+            return;
+        }
+
+        // --- BƯỚC 1: VALIDATION (KIỂM TRA DỮ LIỆU) ---
+        const avatarInput = formElement.querySelector('input[type="file"].upload-avatar-input');
+        const nameInput = formElement.querySelector('input[name="name"]');
+        const phoneInput = formElement.querySelector('input[name="phone_number"]');
+        const addressInput = formElement.querySelector('input[name="house_number"]');
+        const provinceSelect = formElement.querySelector('select[name="province"]');
+        const wardSelect = formElement.querySelector('select[name="ward"]');
+        const pidInput = formElement.querySelector('input[name="pid"]');
+        const genderSelect = formElement.querySelector('select[name="gender"]');
+        const dobInput = formElement.querySelector('input[name="date_of_birth"]');
+
+        // Xóa lỗi cũ
+        [avatarInput, nameInput, phoneInput, addressInput, provinceSelect, wardSelect, pidInput, genderSelect, dobInput].forEach(input => {
+            if (input) Validator.clearError(input);
+        });
+
+        let isValid = true;
+
+        if (avatarInput && avatarInput.files.length > 0) {
+            const avatarErr = Validator.checkImage(avatarInput, false); 
+            if (avatarErr) { Validator.showError(avatarInput, avatarErr); isValid = false; }
+        }
+
+        const nameValue = nameInput ? nameInput.value.trim() : '';
+        const nameErr = Validator.isRequired(nameValue, 'Họ và tên không được để trống!') || Validator.checkLength(nameValue, 3, 255, 'Họ và tên');
+        if (nameErr) { Validator.showError(nameInput, nameErr); isValid = false; }
+
+        const phoneValue = phoneInput ? phoneInput.value.trim() : '';
+        const phoneErr = Validator.isRequired(phoneValue, 'Số điện thoại không được để trống!') || Validator.isPhone(phoneValue);
+        if (phoneErr) { Validator.showError(phoneInput, phoneErr); isValid = false; }
+
+        const addressValue = addressInput ? addressInput.value.trim() : '';
+        const addressErr = Validator.isRequired(addressValue, 'Địa chỉ không được để trống!') || Validator.checkLength(addressValue, 3, 255, 'Địa chỉ');
+        if (addressErr) { Validator.showError(addressInput, addressErr); isValid = false; }
+
+        const provinceErr = Validator.isRequired(provinceSelect?.value, 'Vui lòng chọn Tỉnh/Thành phố!');
+        if (provinceErr) { Validator.showError(provinceSelect, provinceErr); isValid = false; }
+
+        const wardErr = Validator.isRequired(wardSelect?.value, 'Vui lòng chọn Phường/Xã!');
+        if (wardErr) { Validator.showError(wardSelect, wardErr); isValid = false; }
+
+        const pidValue = pidInput ? pidInput.value.trim() : '';
+        const pidErr = Validator.isRequired(pidValue, 'Căn cước công dân không được để trống!') || Validator.isCCCD(pidValue);
+        if (pidErr) { Validator.showError(pidInput, pidErr); isValid = false; }
+
+        const genderErr = Validator.isRequired(genderSelect?.value, 'Vui lòng chọn Giới tính!');
+        if (genderErr) { Validator.showError(genderSelect, genderErr); isValid = false; }
+
+        const dobValue = dobInput ? dobInput.value.trim() : '';
+        const dobErr = Validator.isRequired(dobValue, 'Ngày sinh không được để trống!') || Validator.isDate(dobValue);
+        if (dobErr) { Validator.showError(dobInput, dobErr); isValid = false; }
+
+        // NẾU CÓ LỖI THÌ DỪNG LẠI NGAY, KHÔNG GỌI API
+        if (!isValid) return; 
+
+        let formData = new FormData(); 
+        const inputElements = formElement.querySelectorAll('input[name], select[name]');
+        
+        // 3. Lắp dữ liệu vào hộp
+        inputElements.forEach(input => {
+            formData.append(input.name, input.value);
+        });
+
+        if (avatarInput && avatarInput.files.length > 0) {
+            formData.append('profile_url', avatarInput.files[0]); 
+        }
+
+        formData.append('_method', 'PUT'); 
+        formData.append('target_endpoint', `personalInfos/${id}`);
+
+        fetch('core/api_proxy.php', {
+            method: 'POST',
+            headers: { "Accept": "application/json" },
+            body: formData
+        })
+        .then(async response => {
+            const result = await response.json();
+            if (!response.ok || result.errors || result.status === 'error') {
+                let errorMsg = result.message || "Có lỗi xảy ra!";
+                if (result.errors) {
+                    errorMsg += "\n" + Object.values(result.errors).map(e => e.join(", ")).join("\n");
+                }
+                throw new Error(errorMsg);
+            }
+            return result;
+        })
+        .then(result => {
+            showToast({
+                title: "Thành công!",
+                message: "Cập nhật thông tin thành công.",
+                type: "success",
+                duration: 2000
+            });
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
+        })
+        .catch(error => {
+            console.error("Lỗi cập nhật:", error);
+            showToast({
+                title: "Lỗi hệ thống",
+                message: "Không thể kết nối đến máy chủ.",
+                type: "error",
+                duration: 4000
+            });
+        });
+    }
+    // Bắt sự kiện thay đổi file trên toàn bộ trang web
+    document.addEventListener('change', function(event) {
+        // Nếu thẻ vừa bị thay đổi có chứa class 'upload-avatar-input'
+        if (event.target && event.target.classList.contains('upload-avatar-input')) {
+            const file = event.target.files[0];
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // Đi tìm cái thẻ <img class="avatar-preview"> nằm gần thẻ input đó nhất để đổi ảnh
+                    const wrapper = event.target.closest('.avatar-edit-section');
+                    if (wrapper) {
+                        const previewImg = wrapper.querySelector('.avatar-preview');
+                        if (previewImg) previewImg.src = e.target.result;
+                    }
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+    });
 </script>
 </html>

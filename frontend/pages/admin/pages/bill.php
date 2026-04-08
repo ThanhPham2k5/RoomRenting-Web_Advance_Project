@@ -4,7 +4,7 @@
     $currentTable = $_GET['table'] ?? "1";
     $invoiceDetailForm = "model-chi-tiet-hoa-don-thanh-toan";
     $rechargeDetailForm = "model-chi-tiet-hoa-don-nap-tien";
-    $titleData = ['titleContent' => "Hóa đơn", 'group' => false, 'insert' => false, 'edit' => false, 'delete' => false, 'handle' => true];
+    $titleData = ['titleContent' => "Hóa đơn", 'group' => false, 'insert' => false, 'edit' => false, 'delete' => false, 'handle' => false];
     $tableHeader = ['ID', 'ID tài khoản', 'ID bài đăng', 'Điểm', 'Thời gian', 'Tình trạng', 'Chi tiết'];
     $tableHeader1 = ['ID', 'ID tài khoản', 'Số tiền', 'Số điểm', 'Thời gian', 'Tình trạng', 'Chi tiết'];
     $type = ['type' => "1"];

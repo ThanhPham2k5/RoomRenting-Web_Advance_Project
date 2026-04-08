@@ -49,13 +49,15 @@
             <?php } ?>
         </div>
 
-        <form class="right-info" id="panel-info" style="display: flex; flex-direction: column;" onsubmit="handleSaveSettings(event)">
+        <form class="right-info" id="panel-info" style="display: flex; flex-direction: column;" onsubmit="handleSaveSettings(event, <?php echo $id ?>)">
             <p>Hồ sơ cá nhân</p>
             <div class="avatar-edit-section">
                 <img src="<?php echo htmlspecialchars($avatarUrl); ?>" alt="Avatar" class="avatar-preview" id="avatarPreview">
                 <div class="avatar-action">
-                    <label for="upload-avatar" class="btn-change-avatar">Tải ảnh mới</label>
-                    <input type="file" id="upload-avatar" accept="image/jpeg, image/png, image/jpg" hidden>
+                    <label class="btn-change-avatar" style="cursor: pointer; color: #2563EB; font-weight: 500; display: inline-block; margin-bottom: 4px;">
+                        Tải ảnh mới
+                        <input type="file" class="upload-avatar-input" accept="image/jpeg, image/png, image/jpg" hidden>
+                    </label>
                     <p class="avatar-hint">Định dạng JPEG, PNG. Dung lượng tối đa 2MB.</p>
                 </div>
             </div>
@@ -157,130 +159,6 @@
             document.getElementById('panel-account').style.display = 'flex';
         }
     }
-
-    // ==========================================
-    // 1. HÀM XỬ LÝ LƯU HỒ SƠ CÁ NHÂN
-    // ==========================================
-    function handleSaveSettings(event) {
-        event.preventDefault(); // Ngăn chặn form load lại trang
-        const formElement = event.target;
-
-        // --- BƯỚC 1: VALIDATION (KIỂM TRA DỮ LIỆU) ---
-        const avatarInput = formElement.querySelector('input[type="file"]#upload-avatar');
-        const nameInput = formElement.querySelector('input[name="name"]');
-        const phoneInput = formElement.querySelector('input[name="phone_number"]');
-        const addressInput = formElement.querySelector('input[name="house_number"]');
-        const provinceSelect = formElement.querySelector('select[name="province"]');
-        const wardSelect = formElement.querySelector('select[name="ward"]');
-        const pidInput = formElement.querySelector('input[name="pid"]');
-        const genderSelect = formElement.querySelector('select[name="gender"]');
-        const dobInput = formElement.querySelector('input[name="date_of_birth"]');
-
-        // Xóa lỗi cũ
-        [avatarInput, nameInput, phoneInput, addressInput, provinceSelect, wardSelect, pidInput, genderSelect, dobInput].forEach(input => {
-            if (input) Validator.clearError(input);
-        });
-
-        let isValid = true;
-
-        if (avatarInput && avatarInput.files.length > 0) {
-            const avatarErr = Validator.checkImage(avatarInput, false); 
-            if (avatarErr) { Validator.showError(avatarInput, avatarErr); isValid = false; }
-        }
-
-        const nameValue = nameInput ? nameInput.value.trim() : '';
-        const nameErr = Validator.isRequired(nameValue, 'Họ và tên không được để trống!') || Validator.checkLength(nameValue, 3, 255, 'Họ và tên');
-        if (nameErr) { Validator.showError(nameInput, nameErr); isValid = false; }
-
-        const phoneValue = phoneInput ? phoneInput.value.trim() : '';
-        const phoneErr = Validator.isRequired(phoneValue, 'Số điện thoại không được để trống!') || Validator.isPhone(phoneValue);
-        if (phoneErr) { Validator.showError(phoneInput, phoneErr); isValid = false; }
-
-        const addressValue = addressInput ? addressInput.value.trim() : '';
-        const addressErr = Validator.isRequired(addressValue, 'Địa chỉ không được để trống!') || Validator.checkLength(addressValue, 3, 255, 'Địa chỉ');
-        if (addressErr) { Validator.showError(addressInput, addressErr); isValid = false; }
-
-        const provinceErr = Validator.isRequired(provinceSelect?.value, 'Vui lòng chọn Tỉnh/Thành phố!');
-        if (provinceErr) { Validator.showError(provinceSelect, provinceErr); isValid = false; }
-
-        const wardErr = Validator.isRequired(wardSelect?.value, 'Vui lòng chọn Phường/Xã!');
-        if (wardErr) { Validator.showError(wardSelect, wardErr); isValid = false; }
-
-        const pidValue = pidInput ? pidInput.value.trim() : '';
-        const pidErr = Validator.isRequired(pidValue, 'Căn cước công dân không được để trống!') || Validator.isCCCD(pidValue);
-        if (pidErr) { Validator.showError(pidInput, pidErr); isValid = false; }
-
-        const genderErr = Validator.isRequired(genderSelect?.value, 'Vui lòng chọn Giới tính!');
-        if (genderErr) { Validator.showError(genderSelect, genderErr); isValid = false; }
-
-        const dobValue = dobInput ? dobInput.value.trim() : '';
-        const dobErr = Validator.isRequired(dobValue, 'Ngày sinh không được để trống!') || Validator.isDate(dobValue);
-        if (dobErr) { Validator.showError(dobInput, dobErr); isValid = false; }
-
-        // NẾU CÓ LỖI THÌ DỪNG LẠI NGAY, KHÔNG GỌI API
-        if (!isValid) return; 
-
-        // --- BƯỚC 2: GỌI API LƯU DỮ LIỆU ---
-        let formData = new FormData(formElement);
-
-        if (avatarInput && avatarInput.files.length > 0) {
-            formData.append('profile_url', avatarInput.files[0]); 
-        }
-
-        const adminId = <?php echo $id; ?>; 
-        formData.append('_method', 'PUT'); 
-        formData.append('target_endpoint', `personalInfos/${adminId}`);
-
-        fetch('core/api_proxy.php', {
-            method: 'POST',
-            headers: { "Accept": "application/json" },
-            body: formData
-        })
-        .then(async response => {
-            const result = await response.json();
-            if (!response.ok || result.errors || result.status === 'error') {
-                let errorMsg = result.message || "Có lỗi xảy ra!";
-                if (result.errors) {
-                    errorMsg += "\n" + Object.values(result.errors).map(e => e.join(", ")).join("\n");
-                }
-                throw new Error(errorMsg);
-            }
-            return result;
-        })
-        .then(result => {
-            showToast({
-                title: "Thành công!",
-                message: "Cập nhật thông tin thành công.",
-                type: "success",
-                duration: 2000
-            });
-            setTimeout(() => {
-                window.location.reload();
-            }, 2000);
-        })
-        .catch(error => {
-            console.error("Lỗi cập nhật:", error);
-            showToast({
-                title: "Lỗi hệ thống",
-                message: "Không thể kết nối đến máy chủ.",
-                type: "error",
-                duration: 4000
-            });
-        });
-    }
-
-    // Đổi Avatar Preview
-    document.getElementById('upload-avatar').addEventListener('change', function(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('avatarPreview').src = e.target.result;
-            }
-            reader.readAsDataURL(file);
-        }
-    });
-
     // ==========================================
     // 2. HÀM XỬ LÝ ĐỔI MẬT KHẨU
     // ==========================================
@@ -364,7 +242,6 @@
             });
         });
     }
-
     // ==========================================
     // 3. XỬ LÝ LOAD TỈNH THÀNH / PHƯỜNG XÃ
     // ==========================================

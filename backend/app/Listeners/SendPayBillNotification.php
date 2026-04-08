@@ -33,7 +33,7 @@ class SendPayBillNotification
         if ($payBill->status === 'failed') {
                 Notification::create([
                     'title' => 'Thanh toán chi phí duy trì bài đăng',
-                    'content' => 'Đã trừ: ' . $payBill->points . ' điểm. Vui lòng kiểm tra lại số điểm của bạn.',
+                    'content' => 'Không đủ điểm. Vui lòng kiểm tra lại số điểm của bạn.',
                     'notification_type' => 'transaction',
                     'status' => 'unread',
                     'account_id' => $payBill->account_id,

@@ -37,6 +37,7 @@ class PayRuleService{
             'id',
             'points',
             AllowedSort::field('createdAt', 'created_at'),
+            AllowedSort::field('updateAt', 'updated_at'),
         ]);
 
         return $query;

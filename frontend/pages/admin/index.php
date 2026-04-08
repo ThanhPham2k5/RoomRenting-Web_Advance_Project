@@ -34,7 +34,7 @@ if (isset($_GET['filter'])) {
 switch ($page) {
     case 'account':
         $apiRole = ($currentTable === '1') ? 'user' : 'employee';
-        $apiResult = call_api("http://backend.test/api/accounts?per_page=4&page={$pageNum}&filter[role]={$apiRole}" . $filterQuery);
+        $apiResult = call_api("http://backend.test/api/accounts?per_page=4&page={$pageNum}&filter[role]={$apiRole}&sort=-updateAt" . $filterQuery);
         $pageData['accounts'] = $apiResult['data'] ?? [];
         $pageData['paginationMeta'] = [
             'current_page' => $apiResult['meta']['current_page'] ?? 1,
@@ -44,12 +44,13 @@ switch ($page) {
         ];
         break;
     case 'comment':
-        $apiResult = call_api("http://backend.test/api/comments?per_page=4&page={$pageNum}&include=account" . $filterQuery);
+        $apiResult = call_api("http://backend.test/api/comments?per_page=4&page={$pageNum}&include=account&sort=-updateAt" . $filterQuery);
         $pageData['comments'] = $apiResult['data'] ?? [];
         $pageData['paginationMeta'] = [
             'current_page' => $apiResult['meta']['current_page'] ?? 1,
             'last_page'    => $apiResult['meta']['last_page'] ?? 1,
-            'base_url'     => "index.php?page=comment&table={$currentTable}" . $filterQuery 
+            'base_url'     => "index.php?page=comment&table={$currentTable}" . $filterQuery,
+            'query'        =>  $filterQuery
         ];
         break;
     case 'post':
@@ -61,12 +62,13 @@ switch ($page) {
             '5' => 'failed',
             default => 'completed'
         };
-        $apiResult = call_api("http://backend.test/api/posts?per_page=8&page={$pageNum}&include=postImages&filter[status]={$apiSt}" . $filterQuery);
+        $apiResult = call_api("http://backend.test/api/posts?per_page=8&page={$pageNum}&include=postImages&filter[status]={$apiSt}&sort=-updateAt" . $filterQuery);
         $pageData['posts'] = $apiResult['data'] ?? [];
         $pageData['paginationMeta'] = [
             'current_page' => $apiResult['meta']['current_page'] ?? 1,
             'last_page'    => $apiResult['meta']['last_page'] ?? 1,
-            'base_url'     => "index.php?page=post&table={$currentTable}" . $filterQuery
+            'base_url'     => "index.php?page=post&table={$currentTable}" . $filterQuery,
+            'query'        =>  $filterQuery
         ];
         break;
     case 'price':
@@ -75,12 +77,13 @@ switch ($page) {
             '2' => 'rechargeRules',
             default => 'payRules'
         };
-        $apiResult = call_api("http://backend.test/api/{$apiType}?per_page=4&page={$pageNum}" . $filterQuery);
+        $apiResult = call_api("http://backend.test/api/{$apiType}?per_page=4&page={$pageNum}&sort=-updateAt" . $filterQuery);
         $pageData['rules'] = $apiResult['data'] ?? [];
         $pageData['paginationMeta'] = [
             'current_page' => $apiResult['meta']['current_page'] ?? 1,
             'last_page'    => $apiResult['meta']['last_page'] ?? 1,
-            'base_url'     => "index.php?page=price&table={$currentTable}" . $filterQuery 
+            'base_url'     => "index.php?page=price&table={$currentTable}" . $filterQuery,
+            'query'        =>  $filterQuery
         ];
         break;
     case 'bill':
@@ -94,21 +97,23 @@ switch ($page) {
             '2' => 'account',
             default => 'account,post'
         };
-        $apiResult = call_api("http://backend.test/api/{$apiType}?per_page=4&page={$pageNum}&include={$apiInclude}&sort=-createdAt" . $filterQuery);
+        $apiResult = call_api("http://backend.test/api/{$apiType}?per_page=4&page={$pageNum}&include={$apiInclude}&sort=-updateAt" . $filterQuery);
         $pageData['bills'] = $apiResult['data'] ?? [];
         $pageData['paginationMeta'] = [
             'current_page' => $apiResult['meta']['current_page'] ?? 1,
             'last_page'    => $apiResult['meta']['last_page'] ?? 1,
-            'base_url'     => "index.php?page=bill&table={$currentTable}" . $filterQuery 
+            'base_url'     => "index.php?page=bill&table={$currentTable}" . $filterQuery,
+            'query'        =>  $filterQuery
         ];
         break;
     case 'permission':
-        $apiResult = call_api("http://backend.test/api/roles?per_page=4&page={$pageNum}" . $filterQuery);
+        $apiResult = call_api("http://backend.test/api/roles?per_page=4&page={$pageNum}&sort=-updateAt" . $filterQuery);
         $pageData['permissions'] = $apiResult['data'] ?? [];
         $pageData['paginationMeta'] = [
             'current_page' => $apiResult['meta']['current_page'] ?? 1,
             'last_page'    => $apiResult['meta']['last_page'] ?? 1,
-            'base_url'     => "index.php?page=permission&table={$currentTable}" . $filterQuery 
+            'base_url'     => "index.php?page=permission&table={$currentTable}" . $filterQuery,
+            'query'        =>  $filterQuery
         ];
         break;
     case 'setting':
@@ -878,7 +883,7 @@ switch ($page) {
         const isConfirmed = await showConfirm(
             "Xác nhận hành động", 
             `Bạn có chắc chắn muốn ${actionName} này không?`, 
-            true 
+            false 
         );
         if (!isConfirmed) {
             return;
@@ -905,7 +910,7 @@ switch ($page) {
 
         // Tạo FormData ảo (không cần thẻ <form> thật)
         let formData = new FormData();
-        formData.append('status', newStatus);
+        formData.append('employee_id', '<?php echo $adminId ?>');
         formData.append('status', newStatus);
         formData.append('_method', 'PUT');
         formData.append('reason', reasonText);

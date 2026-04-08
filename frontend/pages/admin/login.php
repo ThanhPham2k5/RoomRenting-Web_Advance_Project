@@ -68,7 +68,6 @@
     })
     .then(res => res.json())
     .then(data => {
-        console.log("Dữ liệu thực tế JS nhận được:", data);
         if (data.account) {
             showToast({
                 title: "Thành công!",
@@ -82,7 +81,7 @@
         } else {
             showToast({
                 title: "Thất bại!",
-                message: data.message,
+                message: "Tên tài khoản hoặc mật khẩu không chính xác.",
                 type: "error",
                 duration: 4000
             });

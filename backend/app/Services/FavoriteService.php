@@ -61,6 +61,7 @@ class FavoriteService{
             AllowedSort::custom('postPrice', new PostRelatedSort('price')),
             AllowedSort::field('createdAt', 'created_at'),
             'post.price',
+            AllowedSort::field('updateAt', 'updated_at'),
         ]);
 
         return $query;

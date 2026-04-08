@@ -35,6 +35,7 @@ class PermissionService{
         ->allowedSorts([
             'id',
             AllowedSort::field('createdAt', 'created_at'),
+            AllowedSort::field('updateAt', 'updated_at'),
         ]);
 
 

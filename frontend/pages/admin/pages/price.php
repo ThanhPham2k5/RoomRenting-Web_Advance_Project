@@ -1,6 +1,7 @@
 <?php 
     $rules = $rules ?? [];
     $paginationMeta = $paginationMeta ?? [];
+    $query = $paginationMeta['query'] ?? '';
     $currentTable = $_GET['table'] ?? "1";
     $priceInsertForm = "modal-them-gia-dang-bai";
     $priceEditForm = "modal-sua-gia-dang-bai";
@@ -58,8 +59,8 @@
         <?php renderComponent("searchbar",false,$type) ?>
         <div class="line"></div>
         <div class="tab-pane">
-            <a href="index.php?page=price&table=1" class="item <?php echo ($currentTable === '1') ? 'active' : ''; ?>">GIÁ ĐĂNG BÀI</a>
-            <a href="index.php?page=price&table=2" class="item <?php echo ($currentTable === '2') ? 'active' : ''; ?>">GIÁ TRỊ QUY ĐỔI ĐIỂM</a>
+            <a href="index.php?page=price&table=1<?php if(isset($query)) echo '&' . $query; ?>" class="item <?php echo ($currentTable === '1') ? 'active' : ''; ?>">GIÁ ĐĂNG BÀI</a>
+            <a href="index.php?page=price&table=2<?php if(isset($query)) echo '&' . $query; ?>" class="item <?php echo ($currentTable === '2') ? 'active' : ''; ?>">GIÁ TRỊ QUY ĐỔI ĐIỂM</a>
         </div>
     </div>
     <?php if($currentTable === '1'){

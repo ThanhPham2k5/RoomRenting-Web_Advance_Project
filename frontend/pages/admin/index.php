@@ -34,7 +34,7 @@ if (isset($_GET['filter'])) {
 switch ($page) {
     case 'account':
         $apiRole = ($currentTable === '1') ? 'user' : 'employee';
-        $apiResult = call_api("http://backend.test/api/accounts?per_page=4&page={$pageNum}&filter[role]={$apiRole}" . $filterQuery);
+        $apiResult = call_api("http://backend.test/api/accounts?per_page=4&page={$pageNum}&filter[role]={$apiRole}&sort=-updateAt" . $filterQuery);
         $pageData['accounts'] = $apiResult['data'] ?? [];
         $pageData['paginationMeta'] = [
             'current_page' => $apiResult['meta']['current_page'] ?? 1,
@@ -44,12 +44,13 @@ switch ($page) {
         ];
         break;
     case 'comment':
-        $apiResult = call_api("http://backend.test/api/comments?per_page=4&page={$pageNum}&include=account" . $filterQuery);
+        $apiResult = call_api("http://backend.test/api/comments?per_page=4&page={$pageNum}&include=account&sort=-updateAt" . $filterQuery);
         $pageData['comments'] = $apiResult['data'] ?? [];
         $pageData['paginationMeta'] = [
             'current_page' => $apiResult['meta']['current_page'] ?? 1,
             'last_page'    => $apiResult['meta']['last_page'] ?? 1,
-            'base_url'     => "index.php?page=comment&table={$currentTable}" . $filterQuery 
+            'base_url'     => "index.php?page=comment&table={$currentTable}" . $filterQuery,
+            'query'        =>  $filterQuery
         ];
         break;
     case 'post':
@@ -61,12 +62,13 @@ switch ($page) {
             '5' => 'failed',
             default => 'completed'
         };
-        $apiResult = call_api("http://backend.test/api/posts?per_page=8&page={$pageNum}&include=postImages&filter[status]={$apiSt}" . $filterQuery);
+        $apiResult = call_api("http://backend.test/api/posts?per_page=8&page={$pageNum}&include=postImages&filter[status]={$apiSt}&sort=-updateAt" . $filterQuery);
         $pageData['posts'] = $apiResult['data'] ?? [];
         $pageData['paginationMeta'] = [
             'current_page' => $apiResult['meta']['current_page'] ?? 1,
             'last_page'    => $apiResult['meta']['last_page'] ?? 1,
-            'base_url'     => "index.php?page=post&table={$currentTable}" . $filterQuery
+            'base_url'     => "index.php?page=post&table={$currentTable}" . $filterQuery,
+            'query'        =>  $filterQuery
         ];
         break;
     case 'price':
@@ -75,12 +77,13 @@ switch ($page) {
             '2' => 'rechargeRules',
             default => 'payRules'
         };
-        $apiResult = call_api("http://backend.test/api/{$apiType}?per_page=4&page={$pageNum}" . $filterQuery);
+        $apiResult = call_api("http://backend.test/api/{$apiType}?per_page=4&page={$pageNum}&sort=-updateAt" . $filterQuery);
         $pageData['rules'] = $apiResult['data'] ?? [];
         $pageData['paginationMeta'] = [
             'current_page' => $apiResult['meta']['current_page'] ?? 1,
             'last_page'    => $apiResult['meta']['last_page'] ?? 1,
-            'base_url'     => "index.php?page=price&table={$currentTable}" . $filterQuery 
+            'base_url'     => "index.php?page=price&table={$currentTable}" . $filterQuery,
+            'query'        =>  $filterQuery
         ];
         break;
     case 'bill':
@@ -94,21 +97,23 @@ switch ($page) {
             '2' => 'account',
             default => 'account,post'
         };
-        $apiResult = call_api("http://backend.test/api/{$apiType}?per_page=4&page={$pageNum}&include={$apiInclude}" . $filterQuery);
+        $apiResult = call_api("http://backend.test/api/{$apiType}?per_page=4&page={$pageNum}&include={$apiInclude}&sort=-updateAt" . $filterQuery);
         $pageData['bills'] = $apiResult['data'] ?? [];
         $pageData['paginationMeta'] = [
             'current_page' => $apiResult['meta']['current_page'] ?? 1,
             'last_page'    => $apiResult['meta']['last_page'] ?? 1,
-            'base_url'     => "index.php?page=bill&table={$currentTable}" . $filterQuery 
+            'base_url'     => "index.php?page=bill&table={$currentTable}" . $filterQuery,
+            'query'        =>  $filterQuery
         ];
         break;
     case 'permission':
-        $apiResult = call_api("http://backend.test/api/roles?per_page=4&page={$pageNum}" . $filterQuery);
+        $apiResult = call_api("http://backend.test/api/roles?per_page=4&page={$pageNum}&sort=-updateAt" . $filterQuery);
         $pageData['permissions'] = $apiResult['data'] ?? [];
         $pageData['paginationMeta'] = [
             'current_page' => $apiResult['meta']['current_page'] ?? 1,
             'last_page'    => $apiResult['meta']['last_page'] ?? 1,
-            'base_url'     => "index.php?page=permission&table={$currentTable}" . $filterQuery 
+            'base_url'     => "index.php?page=permission&table={$currentTable}" . $filterQuery,
+            'query'        =>  $filterQuery
         ];
         break;
     case 'setting':
@@ -273,45 +278,7 @@ switch ($page) {
             }
         });
 
-        // Nút bấm ở table
-        const dropdownBtns = document.querySelectorAll('.dropdown-container .top-btn');
-        dropdownBtns.forEach(btn => {
-            btn.addEventListener('click', function(event) {
-                event.stopPropagation();
-                const currentContainer = this.closest('.dropdown-container');
-                document.querySelectorAll('.dropdown-container.active').forEach(container => {
-                    if (container !== currentContainer) {
-                        container.classList.remove('active');
-                    }
-                });
-                currentContainer.classList.toggle('active');
-            });
-        });
-        document.addEventListener('click', function(event) {
-            if (event.target.closest('.dropdown-menu')) return;
-            document.querySelectorAll('.dropdown-container.active').forEach(container => {
-                container.classList.remove('active');
-            });
-        });
-
-        //Dropdown ngày
-        const startDateInput = document.getElementById('filter-start-date');
-        const endDateInput = document.getElementById('filter-end-date');
         
-        if(startDateInput){
-            startDateInput.addEventListener('change', function() {
-                const selectedStartDate = this.value; 
-                endDateInput.min = selectedStartDate; 
-            });
-        }
-        
-        if(endDateInput){
-            endDateInput.addEventListener('change', function() {
-                const selectedEndDate = this.value;
-                startDateInput.max = selectedEndDate;
-            });
-        }
-
         //Tat chi tiet
         const modal = document.getElementById('post-detail-modal');
         if(modal) {
@@ -382,33 +349,7 @@ switch ($page) {
             });
         }
 
-        //Loc theo ngay
-        const btnFilterDate = document.querySelector('.btn-filter-date');
-        if (btnFilterDate) {
-            btnFilterDate.addEventListener('click', function() {
-                const startDate = document.getElementById('filter-start-date').value;
-                const endDate = document.getElementById('filter-end-date').value;
-
-                const url = new URL(window.location.href);
-
-                if (startDate && endDate) {
-                    const dateRange = `${startDate},${endDate}`;
-                    url.searchParams.set('filter[createdAt]', dateRange);
-                } 
-                else if (startDate) {
-                    url.searchParams.set('filter[createdAt]', startDate);
-                } 
-                else if (endDate) {
-                    url.searchParams.set('filter[createdAt]', endDate);
-                } 
-                else {
-                    url.searchParams.delete('filter[createdAt]');
-                }
-                
-                url.searchParams.delete('p');
-                window.location.href = url.toString();
-            });
-        }
+        
 
         //Xoa anh (preview)
         document.querySelectorAll('.btn-delete-img').forEach(btn => {
@@ -878,7 +819,7 @@ switch ($page) {
         const isConfirmed = await showConfirm(
             "Xác nhận hành động", 
             `Bạn có chắc chắn muốn ${actionName} này không?`, 
-            true 
+            false 
         );
         if (!isConfirmed) {
             return;
@@ -905,7 +846,7 @@ switch ($page) {
 
         // Tạo FormData ảo (không cần thẻ <form> thật)
         let formData = new FormData();
-        formData.append('status', newStatus);
+        formData.append('employee_id', '<?php echo $adminId ?>');
         formData.append('status', newStatus);
         formData.append('_method', 'PUT');
         formData.append('reason', reasonText);
@@ -1021,9 +962,11 @@ switch ($page) {
     }
     // Thêm tham số id vào hàm
     function handleView(id, targetModal) {
-        resetProfileInfoForm();
         const urlParams = new URLSearchParams(window.location.search);
         const currentPage = urlParams.get('page');
+        if(currentPage === "account"){
+            resetProfileInfoForm();
+        }
         const currentTable = urlParams.get('table');
         const config = apiConfigs[currentPage];
         

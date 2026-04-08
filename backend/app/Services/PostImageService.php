@@ -29,6 +29,7 @@ class PostImageService{
             'id',
             'order',
             AllowedSort::field('createdAt', 'created_at'),
+            AllowedSort::field('updateAt', 'updated_at'),
         ]);
 
         return $query;

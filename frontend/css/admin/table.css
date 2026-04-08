@@ -224,3 +224,18 @@
 .table-component .dropdown-container .custom-date-menu .btn-filter-date:hover {
     background-color: #1D4ED8;
 }
+/* Làm nổi bật mục đang được chọn trong dropdown menu */
+.dropdown-menu a.active-filter {
+    color: #2563EB; /* Chữ màu xanh dương */
+    font-weight: 600; /* In đậm */
+    background-color: #EFF6FF; /* Nền xanh nhạt */
+}
+
+/* Tùy chọn: Chỉnh lại padding một chút để nền xanh bọc đều chữ nếu chưa có */
+.dropdown-menu a {
+    display: block;
+    padding: 8px 16px;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #374151;
+}

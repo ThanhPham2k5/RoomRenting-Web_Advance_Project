@@ -1,6 +1,7 @@
 <?php 
     $bills = $bills ?? [];
     $paginationMeta = $paginationMeta ?? [];
+    $query = $paginationMeta['query'] ?? '';
     $currentTable = $_GET['table'] ?? "1";
     $invoiceDetailForm = "model-chi-tiet-hoa-don-thanh-toan";
     $rechargeDetailForm = "model-chi-tiet-hoa-don-nap-tien";
@@ -27,11 +28,11 @@
             <td><?php echo date('d/m/Y', strtotime($bill['createdAt'])); ?></td>
             <td>
                 <?php if ($bill['status'] === 'completed'): ?>
-                    <span class="badge badge-success">Đang hoạt động</span>
+                    <span class="badge badge-success">Đã thanh toán</span>
                 <?php elseif ($bill['status'] === 'failed'): ?>
-                    <span class="badge badge-danger">Dừng hoạt động</span>
+                    <span class="badge badge-danger">Chưa thanh toán</span>
                 <?php else: ?>
-                    <span class="badge badge-warning">Đang chờ</span>
+                    <span class="badge badge-warning">Đang xử lý</span>
                 <?php endif; ?>
             </td>
             <td>
@@ -58,8 +59,8 @@
         <?php renderComponent("searchbar",false,$type) ?>
         <div class="line"></div>
         <div class="tab-pane">
-            <a href="index.php?page=bill&table=1" class="item <?php echo ($currentTable === '1') ? 'active' : ''; ?>">HÓA ĐƠN THANH TOÁN</a>
-            <a href="index.php?page=bill&table=2" class="item <?php echo ($currentTable === '2') ? 'active' : ''; ?>">HÓA ĐƠN NẠP TIỀN</a>
+            <a href="index.php?page=bill&table=1<?php if(isset($query)) echo '&' . $query; ?>" class="item <?php echo ($currentTable === '1') ? 'active' : ''; ?>">HÓA ĐƠN THANH TOÁN</a>
+            <a href="index.php?page=bill&table=2<?php if(isset($query)) echo '&' . $query; ?>" class="item <?php echo ($currentTable === '2') ? 'active' : ''; ?>">HÓA ĐƠN NẠP TIỀN</a>
         </div>
     </div>
     <?php if($currentTable === '1'){

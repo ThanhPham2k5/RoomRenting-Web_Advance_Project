@@ -339,6 +339,7 @@
         const data = await response.json()
         if(response.ok) { 
           if(data.data) {
+            // console.log(data.data)
             if(data.data.province)
               document.querySelector(".filter-province-lb-text").textContent = data.data.province
 
@@ -367,6 +368,10 @@
 
             if(data.data.area)
               document.querySelector(".filter-square-number").value = data.data.area
+
+            if(data.data.maxOccupants) {
+              document.querySelector(".filter-occupants-number").value = data.data.maxOccupants
+            }
           }
         } else {
           console.error(data)
@@ -464,10 +469,12 @@
         document.querySelector(".max-price-error").style.display = "flex"
       }
 
-      if((document.querySelector(".filter-square-number").value.trim() && numbRegex.test(document.querySelector(".filter-square-number").value.trim()) && document.querySelector(".filter-square-number").value.trim() > 0)
+      const squareRegex = /^\d+([.,]\d+)?$/
+      if((document.querySelector(".filter-square-number").value.trim() && squareRegex.test(document.querySelector(".filter-square-number").value.trim()) && document.querySelector(".filter-square-number").value.trim() > 0)
       || !document.querySelector(".filter-square-number").value.trim()) {
         document.querySelector(".square-error").style.display = "none"
-        if((document.querySelector(".filter-square-number").value.trim() && numbRegex.test(document.querySelector(".filter-square-number").value.trim()) && document.querySelector(".filter-square-number").value.trim() > 0)) isNull = false
+        if((document.querySelector(".filter-square-number").value.trim() && squareRegex.test(document.querySelector(".filter-square-number").value.trim()) && document.querySelector(".filter-square-number").value.trim() > 0)) 
+          isNull = false
       } else {
         if(isValid)
           document.querySelector(".filter-square-number").focus()
@@ -507,6 +514,9 @@
         else if(roomType == "Ký túc xá")
           roomType = "dorm" 
 
+        const areaValue = document.querySelector(".filter-square-number").value.trim().replace(",", ".")
+        const area = parseFloat(areaValue)
+
         try {
           const response = await fetch("http://backend.test/api/forms/byAccount/" + account_id, {
             method: "PUT",
@@ -519,10 +529,10 @@
               "province": province,
               "ward": ward,
               "room_type": roomType,
-              "area": document.querySelector(".filter-square-number").value.trim(),
+              "area": area,
               "price_min": document.querySelector(".filter-min-price").value.trim(),
               "price_max": document.querySelector(".filter-max-price").value.trim(),
-              "max_occupants": null
+              "max_occupants": document.querySelector(".filter-occupants-number").value.trim(),
             })
           })
 

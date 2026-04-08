@@ -450,8 +450,11 @@
                 filterCondition += "&filter[price][]=<=" + document.querySelector(".filter-max-price").value.trim()
             }
 
+            const squareRegex = /^\d+([.,]\d+)?$/
             if(document.querySelector(".filter-square-number").value.trim() && numbRegex.test(document.querySelector(".filter-square-number").value.trim()) && document.querySelector(".filter-square-number").value.trim() > 0) {
-                filterCondition += "&filter[area]=" + document.querySelector(".filter-square-number").value.trim()
+                const areaValue = document.querySelector(".filter-square-number").value.trim().replace(",", ".")
+                const area = parseFloat(areaValue)
+                filterCondition += "&filter[area]=" + area
             }
             
             if(document.querySelector(".filter-occupants-number").value.trim() && numbRegex.test(document.querySelector(".filter-occupants-number").value.trim()) && document.querySelector(".filter-occupants-number").value.trim() > 0) {

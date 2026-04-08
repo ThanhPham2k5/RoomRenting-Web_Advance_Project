@@ -45,7 +45,8 @@ class EmployeeSeeder extends Seeder
     private function profile($personalInfo)
     {   
         // fake image content
-        $path = "profiles/{$personalInfo->id}/avatar.jpg";
+        $timeStamp = time();
+        $path = "profiles/{$personalInfo->id}/avatar_{$timeStamp}.jpg";
 
         try{
             //get random profile

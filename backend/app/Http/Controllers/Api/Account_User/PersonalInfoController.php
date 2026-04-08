@@ -169,7 +169,7 @@ class PersonalInfoController extends Controller
             $image = $request->file('profile_url');
 
             // Rename to avatar
-            $filename = 'avatar.' . $image->getClientOriginalExtension();
+            $filename = 'avatar_' . time() . '.' . $image->getClientOriginalExtension();
 
             // Determine the account ID
             $accountId = $personalInfo->user ? $personalInfo->user->account_id : $personalInfo->employee->account_id;

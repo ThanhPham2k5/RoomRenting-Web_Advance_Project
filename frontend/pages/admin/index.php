@@ -605,6 +605,15 @@ switch ($page) {
         })
         .catch(error => {
             console.error("Lỗi xóa:", error);
+            if (error.message) {
+                showToast({
+                    title: "Cảnh báo!",
+                    message: error.message,
+                    type: "warning",
+                    duration: 4000
+                });
+                return;
+            }
             showToast({
                 title: "Lỗi hệ thống",
                 message: "Không thể kết nối đến máy chủ.",

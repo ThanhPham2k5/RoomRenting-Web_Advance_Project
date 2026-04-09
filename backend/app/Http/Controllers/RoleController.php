@@ -80,6 +80,10 @@ class RoleController extends Controller
 
     public function destroy(Role $role)
     {
+        if($role->name === 'admin')
+            return response()->json([
+                'message' => 'Không thể xóa vai trò này.'
+            ]);
         $result = $this->roleService->deleteRole($role);
 
         return response()->json($result);
@@ -101,6 +105,10 @@ class RoleController extends Controller
 
     public function revokePermissionsFromRole(Request $request, Role $role)
     {
+        if($role->name === 'admin')
+            return response()->json([
+                'message' => 'Không thể tước quyền khỏi vai trò này.'
+            ]);
         $request->validate([
             'permissions' => 'required|array',
             'permissions.*' => 'exists:permissions,name'

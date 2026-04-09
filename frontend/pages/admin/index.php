@@ -591,6 +591,13 @@ switch ($page) {
                     type: "warning",
                     duration: 2000
                 });
+            }else if (msg == "Không thể xóa vai trò này.") {
+                showToast({
+                    title: "Cảnh báo!",
+                    message: "Không thể xóa vai trò này.",
+                    type: "warning",
+                    duration: 2000
+                });
             }else{
                 showToast({
                     title: "Thành công!",
@@ -605,15 +612,6 @@ switch ($page) {
         })
         .catch(error => {
             console.error("Lỗi xóa:", error);
-            if (error.message) {
-                showToast({
-                    title: "Cảnh báo!",
-                    message: error.message,
-                    type: "warning",
-                    duration: 4000
-                });
-                return;
-            }
             showToast({
                 title: "Lỗi hệ thống",
                 message: "Không thể kết nối đến máy chủ.",

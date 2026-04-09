@@ -158,9 +158,9 @@
                                 <label>Kiểu phòng</label>
                                 <select name="roomType">
                                     <option value="">-- Chọn kiểu phòng --</option>
-                                    <option value="room">Phòng trọ khép kín</option>
-                                    <option value="apartment">Chung cư mini</option>
-                                    <option value="dorm">Ở ghép</option>
+                                    <option value="room">Phòng đơn</option>
+                                    <option value="apartment">Căn hộ</option>
+                                    <option value="dorm">Ký túc xá</option>
                                 </select>
                             </div>
                             

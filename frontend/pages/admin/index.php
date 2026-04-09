@@ -1788,9 +1788,9 @@ switch ($page) {
 
             // 2. Từ điển dịch tên loại phòng từ Backend sang Frontend
             const roomTypeMap = {
-                'room': 'Trọ khép kín',
-                'apartment': 'Chung cư mini',
-                'dorm': 'Ở ghép'
+                'room': 'Phòng đơn',
+                'apartment': 'Căn hộ',
+                'dorm': 'Ký túc xá'
             };
 
             let chartLabels = [];

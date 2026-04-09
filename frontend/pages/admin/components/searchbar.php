@@ -62,7 +62,7 @@
                             </div>
                             <div class="filter-group">
                                 <label>Diện tích</label>
-                                <input type="number" name="area" class="filter-input" placeholder="Nhập diện tích">
+                                <input type="number" name="area" class="filter-input" placeholder="Nhập diện tích" step="any">
                             </div>
                             <div class="filter-group">
                                 <label>Loại phòng</label>

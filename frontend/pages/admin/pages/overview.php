@@ -15,7 +15,7 @@
             <div class="data">
                 <div class="title">
                     <p class="content">Thống kê bài đăng theo tháng</p>
-                    <input type="number" id="yearInput" placeholder="Nhập năm..." value="<?php echo date('Y'); ?>" min="2000" max="2100">
+                    <input type="number" id="yearInput" placeholder="Nhập năm..." value="<?php echo date('Y'); ?>">
                 </div>
                 <div class="chart">
                     <canvas id="chart1"></canvas> 
@@ -61,9 +61,9 @@
                 <div class="title">
                     <p class="content">Thống kê doanh thu</p>
                     <div class="revenue-filters">
-                        <input class="chart4input" type="number" id="revYearSelect" value="<?php echo date('Y'); ?>" placeholder="Năm..." min="2000" max="2100">
+                        <input class="chart4input" type="number" id="revYearSelect" value="<?php echo date('Y'); ?>" placeholder="Năm...">
                         <span style="color: #94A3B8; font-weight: 500;">so với</span>
-                        <input class="chart4input" type="number" id="revCompareSelect" value="<?php echo date('Y') - 1; ?>" placeholder="Năm (Tùy chọn)" min="2000" max="2100">
+                        <input class="chart4input" type="number" id="revCompareSelect" value="<?php echo date('Y') - 1; ?>" placeholder="Năm (Tùy chọn)">
                     </div>
                 </div>
                 

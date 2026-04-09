@@ -14,9 +14,12 @@ if (isset($accountData['message']) && $accountData['message'] === "Unauthenticat
     exit;
 }
 $userPermissions = [];
+$userRealRole = "";
 if (isset($accountData['data']['roles'][0]['permissions'])) {
     $userPermissions = $accountData['data']['roles'][0]['permissions'];
+    $userRealRole = $accountData['data']['username'];
 }
+
 $_SESSION['user_permissions'] = $userPermissions;
 $_SESSION['user_avatar'] = $accountData['data']['employee']['personalInfo']['profileUrl'] ?? "";
 $pageData = [];
@@ -1587,30 +1590,46 @@ switch ($page) {
                 return;
             }
 
+            // Đã xóa .filter() ở đây để hiển thị toàn bộ danh sách
             tbody.innerHTML = accounts.map(account => {
-                // Lấy trực tiếp mảng roles (nếu API không trả về thì gán mảng rỗng)
-                let currentRole = account.role ?? 'N/A'
+                let currentRole = account.role ?? 'N/A';
 
-                const currentRoles = [];
-                if (account.roles && Array.isArray(data.roles)) {
-                    currentRoles = data.roles.map(r => r.name);
+                // SỬA LỖI NHỎ CỦA BẠN: Dùng 'let' thay vì 'const' vì mảng này có thể bị gán lại
+                // Và sửa 'data.roles' thành 'account.roles' cho đúng logic
+                let currentRoles = [];
+                if (account.roles && Array.isArray(account.roles)) {
+                    currentRoles = account.roles.map(r => r.name);
                 }
 
-                // Mã hóa mảng để truyền an toàn qua tham số onclick
                 let encodedRoles = encodeURIComponent(JSON.stringify(currentRoles));
+
+                // ==========================================
+                // LOGIC MỚI: KIỂM TRA ĐỂ ẨN/HIỆN NÚT TƯỚC QUYỀN
+                // ==========================================
+                let actionButtonHtml = ''; 
+                
+                // Nếu là admin hoặc chính mình -> Không in nút (hiển thị dấu gạch ngang cho đẹp)
+                if (account.username === '<?php echo $userRealRole ?>' || account.username === 'admin') {
+                    actionButtonHtml = '<span style="color: #9CA3AF; font-style: italic;">Không thể tước</span>';
+                } 
+                // Nếu là người bình thường -> In ra nút Tước quyền
+                else {
+                    actionButtonHtml = `
+                        <button class="table-btn red" type="button"
+                            onclick="revokeRoleFromAccount(event, ${account.id}, '${roleName}', '${encodedRoles}', '${targetModel}', ${roleId})">
+                            Tước quyền
+                        </button>
+                    `;
+                }
 
                 return `
                     <tr>
                         <td>${account.id}</td>
                         <td style="font-weight: 500;">${account.username || account.name || 'N/A'}</td>
-                        
                         <td>${currentRole}</td>
                         
                         <td class="text-center">
-                            <button class="table-btn red" type="button" 
-                                onclick="revokeRoleFromAccount(event, ${account.id}, '${roleName}', '${encodedRoles}', '${targetModel}', ${roleId})">
-                                Tước quyền
-                            </button>
+                            ${actionButtonHtml}
                         </td>
                     </tr>
                 `;

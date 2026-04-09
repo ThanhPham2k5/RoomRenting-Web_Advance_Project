@@ -227,22 +227,22 @@
                 
                 <div class="item" style="margin-bottom: 16px;">
                     <p style="margin-bottom: 8px; font-weight: 500; color: #334155;">Họ và tên</p>
-                    <input type="text" name="name" style="width: 100%; padding: 10px; border: 1px solid #CBD5E1; border-radius: 6px;">
+                    <input type="text" name="name" style="width: 100%; padding: 10px; border: 1px solid #CBD5E1; border-radius: 6px; border: 1px solid #CBD5E1; background-color: #FAFAFA; font-size: 1.5rem; color: #1E293B;">
                 </div>
 
                 <div class="item" style="margin-bottom: 16px;">
                     <p style="margin-bottom: 8px; font-weight: 500; color: #334155;">Số điện thoại</p>
-                    <input type="text" name="phone_number" style="width: 100%; padding: 10px; border: 1px solid #CBD5E1; border-radius: 6px;">
+                    <input type="text" name="phone_number" style="width: 100%; padding: 10px; border: 1px solid #CBD5E1; border-radius: 6px; border: 1px solid #CBD5E1; background-color: #FAFAFA; font-size: 1.5rem; color: #1E293B;">
                 </div>
 
                 <div class="item" style="margin-bottom: 16px;">
                     <p style="margin-bottom: 8px; font-weight: 500; color: #334155;">Email</p>
-                    <input type="email" name="email" readonly title="Email không thể thay đổi" style="width: 100%; padding: 10px; border: 1px solid #E2E8F0; border-radius: 6px; background-color: #F8FAFC; color: #94A3B8; cursor: not-allowed;">
+                    <input type="email" name="email" style="width: 100%; padding: 10px; border: 1px solid #E2E8F0; border-radius: 6px; border: 1px solid #CBD5E1; background-color: #FAFAFA; font-size: 1.5rem; color: #1E293B;">
                 </div>
 
                 <div class="item" style="margin-bottom: 24px;">
                     <p style="margin-bottom: 8px; font-weight: 500; color: #334155;">Địa chỉ</p>
-                    <input type="text" name="house_number" placeholder="Số nhà, Tên đường" style="width: 100%; padding: 10px; border: 1px solid #CBD5E1; border-radius: 6px; margin-bottom: 10px;">
+                    <input type="text" name="house_number" placeholder="Số nhà, Tên đường" style="width: 100%; padding: 10px; border-radius: 6px; margin-bottom: 10px; border: 1px solid #CBD5E1; background-color: #FAFAFA; font-size: 1.5rem; color: #1E293B;">
                     
                     <div style="display: flex; gap: 10px;">
                         <div class="input-group" style="flex: 1;">
@@ -286,7 +286,7 @@
                     
                     <div class="item" style="flex: 1; min-width: 150px;">
                         <p style="margin-bottom: 8px; font-weight: 500; color: #334155;">Ngày sinh</p>
-                        <input type="date" name="date_of_birth" value="<?php echo htmlspecialchars($info['dateOfBirth'] ?? ''); ?>" style="width: 100%; padding: 10px; border: 1px solid #CBD5E1; border-radius: 6px;">
+                        <input type="date" name="date_of_birth" value="<?php echo htmlspecialchars($info['dateOfBirth'] ?? ''); ?>" style="width: 100%; padding: 10px; border: 1px solid #CBD5E1; border-radius: 6px; border: 1px solid #CBD5E1; background-color: #FAFAFA; font-size: 1.5rem; color: #1E293B;">
                     </div>
                 </div>
 

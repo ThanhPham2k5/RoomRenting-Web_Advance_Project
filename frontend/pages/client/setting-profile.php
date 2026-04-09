@@ -590,7 +590,7 @@
         if(!password_regex.test(document.querySelector(".profile-cur-pass-input").value.trim())) {
             isValid = false
             document.querySelector(".profile-cur-pass-input").focus()
-            document.querySelector(".cur-pass-error").textContent = "Mật khẩu phải có từ 8 - 255 kí tự (bao gồm !@#$%^&*)."
+            document.querySelector(".cur-pass-error").textContent = "Mật khẩu phải có từ 8 - 255 kí tự."
             document.querySelector(".cur-pass-error").style.display = "flex"
         } else {
             document.querySelector(".cur-pass-error").style.display = "none"
@@ -601,7 +601,7 @@
                 document.querySelector(".profile-new-pass-input").focus()
             }
             isValid = false
-            document.querySelector(".new-pass-error").textContent = "Mật khẩu mới phải có từ 8 - 255 kí tự (bao gồm !@#$%^&*)."
+            document.querySelector(".new-pass-error").textContent = "Mật khẩu mới phải có từ 8 - 255 kí tự."
             document.querySelector(".new-pass-error").style.display = "flex"
         } else {
             document.querySelector(".new-pass-error").style.display = "none"

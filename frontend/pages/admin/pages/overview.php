@@ -81,7 +81,6 @@
 </div>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-    // Vẽ biểu đồ và load dữ liệu
     loadDashboardSummary();
     const yearInput = document.getElementById('yearInput');
     if (yearInput) {
@@ -91,7 +90,6 @@ document.addEventListener("DOMContentLoaded", function() {
         // 2. Lắng nghe sự kiện khi người dùng thay đổi số năm
         yearInput.addEventListener('change', function() {
             const selectedYear = this.value;
-            // Chỉ vẽ lại nếu năm hợp lệ (có 4 chữ số)
             if (selectedYear && selectedYear.length === 4) {
                 renderMonthlyPostChart(selectedYear);
             }
@@ -100,13 +98,9 @@ document.addEventListener("DOMContentLoaded", function() {
     renderRoomChart();
     const provinceSelect = document.getElementById('provinceChartSelect');
     if (provinceSelect) {
-        
-        // 1. Load lần đầu (Tham số sẽ là '' -> Render ra Tỉnh/Thành)
         renderRegionChart(provinceSelect.value);
-
-        // 2. Bắt sự kiện chuyển đổi
         provinceSelect.addEventListener('change', function() {
-            renderRegionChart(this.value); // Rẽ nhánh Tỉnh hoặc Phường tùy value
+            renderRegionChart(this.value);
         });
         
     }
@@ -131,7 +125,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     type: "error",
                     duration: 4000
                 });
-                revCompareSelect.value = ""; // Reset ô so sánh
+                revCompareSelect.value = "";
                 renderRevenueChart(year, "");
                 return;
             }
@@ -141,11 +135,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 renderRevenueChart(year, compareYear);
             }
         };
-
-        // Vẽ lần đầu tiên
         updateRevenueChart();
-
-        // Dùng sự kiện 'input' để bắt theo thời gian thực (vừa gõ xong số thứ 4 là chạy ngay)
         revYearSelect.addEventListener('input', updateRevenueChart);
         revCompareSelect.addEventListener('input', updateRevenueChart);
     }
@@ -154,28 +144,18 @@ async function loadDashboardSummary() {
     try {
         const response = await fetch('../admin/core/api_proxy.php?target_endpoint=statistic/summary');
         const data = await response.json();
-
-        // 1. Đổ dữ liệu User
         document.getElementById('kpi-users-total').textContent = data.users.total.toLocaleString();
         updateTrendElement('kpi-users-trend', data.users.trend);
-
-        // 2. Đổ dữ liệu Post
         document.getElementById('kpi-posts-total').textContent = data.active_posts.total.toLocaleString();
         updateTrendElement('kpi-posts-trend', data.active_posts.trend);
-
-        // 3. Đổ dữ liệu Doanh thu (Dùng lại hàm formatVND ở trên)
         document.getElementById('kpi-revenue-total').textContent = formatVND(data.revenue.total);
         updateTrendElement('kpi-revenue-trend', data.revenue.trend);
-
-        // 4. Đổ dữ liệu Tin chờ duyệt
         document.getElementById('kpi-pending-total').textContent = data.pending_posts.total;
         
     } catch (error) {
         console.error("Lỗi load summary:", error);
     }
 }
-
-// Hàm phụ trợ để đổi màu text và đổi Icon (lên/xuống) dựa vào số %
 function updateTrendElement(elementId, trendValue) {
     const el = document.getElementById(elementId);
     if (!el) return;

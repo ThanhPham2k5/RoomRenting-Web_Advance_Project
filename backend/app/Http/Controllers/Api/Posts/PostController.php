@@ -180,7 +180,8 @@ class PostController extends Controller
 
             }
 
-            if($validated['status'] === 'completed' && $post['next_payment_date'] === null){
+            // Thêm ?? null và bọc ngoặc đơn lại
+            if (($validated['status'] ?? null) === 'completed' && $post['next_payment_date'] === null) {
                 $validated['next_payment_date'] = now()->addMonth();
             }
 

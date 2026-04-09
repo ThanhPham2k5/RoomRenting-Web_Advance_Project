@@ -4,17 +4,12 @@
     $apiRole = call_api("http://backend.test/api/address/wards");
     $wards= $apiRole['data'] ?? [];
     $titleData = ['titleContent' => "Cài đặt", 'group' => false, 'insert' => false, 'edit' => false, 'delete' => false, 'handle' => false];
-    
-    // Đảm bảo $info tồn tại (đã lấy từ $pageData trước đó)
     $info = $info ?? [];
     $id = $id ?? "";
-    // Avatar
     $displayName = $info['name'] ?? 'Admin';
     $avatarUrl = !empty($info['profileUrl'])
         ? $info['profileUrl'] 
         : "https://ui-avatars.com/api/?name=" . urlencode($displayName) . "&background=EEF2FF&color=2563EB";
-        
-    // Lấy trước dữ liệu để xét điều kiện 'selected' cho thẻ <option>
     $currentGender = $info['gender'] ?? '';
     $currentProvince = $info['province'] ?? '';
     $currentWard = $info['ward'] ?? '';
@@ -72,7 +67,7 @@
             </div>
             <div class="item">
                 <p>Email</p>
-                <input type="email" name="email" value="<?php echo htmlspecialchars($info['email'] ?? ''); ?>" readonly title="Email không thể thay đổi">
+                <input type="email" name="email" value="<?php echo htmlspecialchars($info['email'] ?? ''); ?>" title="Email không thể thay đổi">
             </div>
         
             <div class="item">
@@ -159,9 +154,6 @@
             document.getElementById('panel-account').style.display = 'flex';
         }
     }
-    // ==========================================
-    // 2. HÀM XỬ LÝ ĐỔI MẬT KHẨU
-    // ==========================================
     function handleSavePassword(event) {
         event.preventDefault(); 
         const formElement = event.target;
@@ -242,9 +234,6 @@
             });
         });
     }
-    // ==========================================
-    // 3. XỬ LÝ LOAD TỈNH THÀNH / PHƯỜNG XÃ
-    // ==========================================
     document.addEventListener('DOMContentLoaded', function() {
         const citySelect = document.getElementById('city-select');
         const wardSelect = document.getElementById('ward-select');
@@ -256,9 +245,7 @@
             if (userProvince) {
                 citySelect.value = userProvince; 
                 if (citySelect.value) {
-                    // Đảm bảo bạn đã khai báo hàm loadWards ở đâu đó trong dự án nhé
                     if (typeof loadWards === 'function') {
-                        // ĐÃ SỬA: Thêm biến wardSelect vào giữa
                         loadWards(userProvince, wardSelect, userWard); 
                     }
                 }
@@ -267,7 +254,6 @@
             citySelect.addEventListener('change', function() {
                 const selectedProvince = this.value; 
                 if (selectedProvince && typeof loadWards === 'function') {
-                    // ĐÃ SỬA: Thêm biến wardSelect vào giữa
                     loadWards(selectedProvince, wardSelect, null); 
                 } else {
                     wardSelect.innerHTML = '<option value="">-- Chọn Phường/Xã --</option>';

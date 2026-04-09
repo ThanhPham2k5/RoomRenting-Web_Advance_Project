@@ -227,22 +227,22 @@
                 
                 <div class="item" style="margin-bottom: 16px;">
                     <p style="margin-bottom: 8px; font-weight: 500; color: #334155;">Họ và tên</p>
-                    <input type="text" name="name" style="width: 100%; padding: 10px; border: 1px solid #CBD5E1; border-radius: 6px;">
+                    <input type="text" name="name" style="width: 100%; padding: 10px; border: 1px solid #CBD5E1; border-radius: 6px; border: 1px solid #CBD5E1; background-color: #FAFAFA; font-size: 1.5rem; color: #1E293B;">
                 </div>
 
                 <div class="item" style="margin-bottom: 16px;">
                     <p style="margin-bottom: 8px; font-weight: 500; color: #334155;">Số điện thoại</p>
-                    <input type="text" name="phone_number" style="width: 100%; padding: 10px; border: 1px solid #CBD5E1; border-radius: 6px;">
+                    <input type="text" name="phone_number" style="width: 100%; padding: 10px; border: 1px solid #CBD5E1; border-radius: 6px; border: 1px solid #CBD5E1; background-color: #FAFAFA; font-size: 1.5rem; color: #1E293B;">
                 </div>
 
                 <div class="item" style="margin-bottom: 16px;">
                     <p style="margin-bottom: 8px; font-weight: 500; color: #334155;">Email</p>
-                    <input type="email" name="email" readonly title="Email không thể thay đổi" style="width: 100%; padding: 10px; border: 1px solid #E2E8F0; border-radius: 6px; background-color: #F8FAFC; color: #94A3B8; cursor: not-allowed;">
+                    <input type="email" name="email" style="width: 100%; padding: 10px; border: 1px solid #E2E8F0; border-radius: 6px; border: 1px solid #CBD5E1; background-color: #FAFAFA; font-size: 1.5rem; color: #1E293B;">
                 </div>
 
                 <div class="item" style="margin-bottom: 24px;">
                     <p style="margin-bottom: 8px; font-weight: 500; color: #334155;">Địa chỉ</p>
-                    <input type="text" name="house_number" placeholder="Số nhà, Tên đường" style="width: 100%; padding: 10px; border: 1px solid #CBD5E1; border-radius: 6px; margin-bottom: 10px;">
+                    <input type="text" name="house_number" placeholder="Số nhà, Tên đường" style="width: 100%; padding: 10px; border-radius: 6px; margin-bottom: 10px; border: 1px solid #CBD5E1; background-color: #FAFAFA; font-size: 1.5rem; color: #1E293B;">
                     
                     <div style="display: flex; gap: 10px;">
                         <div class="input-group" style="flex: 1;">
@@ -286,7 +286,7 @@
                     
                     <div class="item" style="flex: 1; min-width: 150px;">
                         <p style="margin-bottom: 8px; font-weight: 500; color: #334155;">Ngày sinh</p>
-                        <input type="date" name="date_of_birth" value="<?php echo htmlspecialchars($info['dateOfBirth'] ?? ''); ?>" style="width: 100%; padding: 10px; border: 1px solid #CBD5E1; border-radius: 6px;">
+                        <input type="date" name="date_of_birth" value="<?php echo htmlspecialchars($info['dateOfBirth'] ?? ''); ?>" style="width: 100%; padding: 10px; border: 1px solid #CBD5E1; border-radius: 6px; border: 1px solid #CBD5E1; background-color: #FAFAFA; font-size: 1.5rem; color: #1E293B;">
                     </div>
                 </div>
 
@@ -305,8 +305,6 @@
     <?php renderComponent("form",false,['title' => 'Chi tiết tài khoản', 'idModal' => $accountDetailForm, 'formData' => $formDetailData, 'save' => false]) ?>
 </div>
 <script>
-// Hàm chuyên kiểm tra form Tài khoản
-// Hàm Master kiểm tra cho CẢ Thêm và Sửa tài khoản
 function validateAccountMaster(form) {
     // 1. Tự động nhận diện đang Thêm hay Sửa dựa vào input action
     const action = form.querySelector('input[name="action"]')?.value;
@@ -382,7 +380,7 @@ function validateAccountMaster(form) {
     }
 
     // --- CHECK CHỨC VỤ & QUYỀN ---
-    if (roleInput && !roleInput.disabled) { // Nếu form sửa disable ô role thì không cần check
+    if (roleInput && !roleInput.disabled) {
         const roleErr = Validator.isRequired(roleInput.value, 'Vui lòng chọn chức vụ!');
         if (roleErr) { Validator.showError(roleInput, roleErr); isValid = false; }
     }
@@ -392,23 +390,16 @@ function validateAccountMaster(form) {
 
     return isValid;
 }
-// Hàm để dọn dẹp và đóng form chi tiết về trạng thái ban đầu
 function resetProfileInfoForm() {
     const btnToggle = document.getElementById('btn-toggle-personal-info');
     const infoContainer = document.getElementById('personal-info-container');
 
     if (infoContainer && btnToggle) {
-        // 1. Ép form ẩn đi
         infoContainer.style.display = 'none';
-        
-        // 2. Gỡ class active để mũi tên xoay về chỗ cũ
         btnToggle.classList.remove('active');
-        
-        // 3. Đưa dòng chữ trên nút về mặc định
         btnToggle.querySelector('span').innerText = 'Xem / Chỉnh sửa hồ sơ chi tiết';
     }
 }
-// Hàm xử lý việc Ẩn/Hiện form hồ sơ cá nhân
 function togglePersonalInfo() {
     const accid = document.getElementById('account-id-to-edit');
     if(accid && accid.dataset.locked === "false"){
@@ -416,21 +407,16 @@ function togglePersonalInfo() {
         const infoContainer = document.getElementById('personal-info-container');
         
         if (infoContainer && btnToggleProfileInfo) {
-            // Kiểm tra xem form đang ẩn hay hiện
             const isHidden = window.getComputedStyle(infoContainer).display === 'none';
 
             if (isHidden) {
-                // Đang ẩn thì MỞ FORM
                 infoContainer.style.display = 'block';
                 btnToggleProfileInfo.classList.add('active'); 
                 btnToggleProfileInfo.querySelector('span').innerText = 'Thu gọn hồ sơ chi tiết';
-                
-                // Cuộn màn hình xuống
                 setTimeout(() => {
                     infoContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 }, 100);
             } else {
-                // Đang hiện thì ĐÓNG FORM
                 infoContainer.style.display = 'none';
                 btnToggleProfileInfo.classList.remove('active');
                 btnToggleProfileInfo.querySelector('span').innerText = 'Xem / Chỉnh sửa hồ sơ chi tiết';

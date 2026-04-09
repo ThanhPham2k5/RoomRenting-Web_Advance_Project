@@ -20,7 +20,8 @@ class PayBillService{
     ];
 
     private $allColFilter = [
-        'status'
+        'status',
+        'account'
     ];
 
     public function buildGetAllQuery(){

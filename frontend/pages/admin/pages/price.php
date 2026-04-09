@@ -202,18 +202,14 @@
 </div>
 <script>
 function validatePricingMaster(form) {
-    // 1. Lấy các ô input (Nếu form nào không có ô đó, biến sẽ là null)
     const pointsInput = form.querySelector('input[name="points"]');
     const moneyInput = form.querySelector('input[name="money"]');
-
-    // 2. Xóa thông báo lỗi cũ
     [pointsInput, moneyInput].forEach(input => {
         if (input) Validator.clearError(input);
     });
 
     let isValid = true;
 
-    // --- KIỂM TRA SỐ ĐIỂM (Bắt buộc ở cả 2 form) ---
     if (pointsInput) {
         const pointsValue = pointsInput.value.trim();
         const pointsErr = Validator.isRequired(pointsValue, 'Số điểm không được để trống!');
@@ -224,7 +220,6 @@ function validatePricingMaster(form) {
         }
     }
 
-    // --- KIỂM TRA SỐ TIỀN (Chỉ bắt buộc ở form Quy đổi điểm) ---
     if (moneyInput) {
         const moneyValue = moneyInput.value.trim();
         const moneyErr = Validator.isRequired(moneyValue, 'Số tiền không được để trống!');

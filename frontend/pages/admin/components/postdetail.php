@@ -117,17 +117,17 @@
                             
                             <div class="input-group">
                                 <label>Giá thuê (VNĐ/tháng)</label>
-                                <input type="number" name="price" value="" placeholder="Ví dụ: 3000000" min="0">
+                                <input type="number" name="price" value="" placeholder="Ví dụ: 3000000">
                             </div>
                             
                             <div class="input-group">
                                 <label>Tiền đặt cọc (VNĐ)</label>
-                                <input type="number" name="deposit" value="" placeholder="Ví dụ: 1000000" min="0">
+                                <input type="number" name="deposit" value="" placeholder="Ví dụ: 1000000">
                             </div>
                             
                             <div class="input-group">
                                 <label>Diện tích (m²)</label>
-                                <input type="number" name="area" value="" placeholder="Ví dụ: 25" min="1" step="0.1">
+                                <input type="number" name="area" value="" placeholder="Ví dụ: 25" step="any">
                             </div>
 
                             <div class="input-group">

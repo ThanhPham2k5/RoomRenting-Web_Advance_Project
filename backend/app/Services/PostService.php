@@ -228,7 +228,7 @@ class PostService{
         $payRule = PayRule::firstOrFail();
         $points = $payRule->points;
 
-        if ($user->points > $points) {
+        if ($user->points >= $points) {
             $user->decrement('points', $points);
                 $paybill = PayBill::create([
                     'account_id' => $user->account->id,

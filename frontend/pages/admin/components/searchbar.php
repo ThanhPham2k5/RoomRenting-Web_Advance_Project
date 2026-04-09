@@ -68,9 +68,9 @@
                                 <label>Loại phòng</label>
                                 <select name="room_type" class="filter-input">
                                     <option value="">Chọn loại phòng</option>
-                                    <option value="room">Trọ khép kín</option>
-                                    <option value="apartment">Chung cư mini</option>
-                                    <option value="dorm">Ở ghép</option>
+                                    <option value="room">Phòng đơn</option>
+                                    <option value="apartment">Căn hộ</option>
+                                    <option value="dorm">Ký túc xá</option>
                                 </select>
                             </div>
                             <div class="filter-group">

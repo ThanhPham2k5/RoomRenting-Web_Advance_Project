@@ -108,7 +108,7 @@ class AccountController extends Controller
      */
     public function destroy(Account $account)
     {
-        if($account->hasRole('admin'))
+        if($account->username === 'admin')
             return response()->json([
                 'message' => 'Cannot delete this account'
             ]);
@@ -142,6 +142,10 @@ class AccountController extends Controller
 
     public function revokeRoles(Request $request, Account $account)
     {
+        if($account->username === 'admin')
+            return response()->json([
+                'message' => 'Cannot revoke roles from this account'
+            ]);
         $request->validate([
             'roles' => 'required|array',
             'roles.*' => 'exists:roles,name'
@@ -156,6 +160,10 @@ class AccountController extends Controller
 
     public function syncRoles(Request $request, Account $account)
     {
+        if($account->username === 'admin')
+            return response()->json([
+                'message' => 'Cannot sync roles for this account'
+            ]);
         $request->validate([
             'roles' => 'required|array',
             'roles.*' => 'exists:roles,name'
@@ -184,6 +192,10 @@ class AccountController extends Controller
 
     public function revokePermissions(Request $request, Account $account)
     {
+        if($account->username === 'admin')
+            return response()->json([
+                'message' => 'Cannot revoke permissions from this account'
+            ]);
         $request->validate([
             'permissions' => 'required|array',
             'permissions.*' => 'exists:permissions,name'

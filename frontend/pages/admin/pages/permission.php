@@ -413,7 +413,6 @@ function validatePermissionMaster(form) {
     let isValid = true;
 
     // --- KIỂM TRA TÊN QUYỀN ---
-    // Yêu cầu: Không được rỗng, độ dài tối đa 255 kí tự
     if (nameInput) {
         const nameValue = nameInput.value.trim();
         const nameEmptyErr = Validator.isRequired(nameValue, 'Tên quyền không được để trống!');
@@ -431,7 +430,6 @@ function validatePermissionMaster(form) {
     }
 
     // --- KIỂM TRA MÔ TẢ ---
-    // Yêu cầu: Không được rỗng, độ dài tối đa 255 kí tự
     if (descInput) {
         const descValue = descInput.value.trim();
         const descEmptyErr = Validator.isRequired(descValue, 'Mô tả không được để trống!');
@@ -449,10 +447,8 @@ function validatePermissionMaster(form) {
     }
 
     // --- KIỂM TRA TÙY CHỌN CHỨC NĂNG (QUYỀN) ---
-    // Yêu cầu: Không được rỗng (phải chọn ít nhất 1 checkbox)
     if (permissionCheckboxes.length > 0) {
         let isAnyChecked = false;
-        // Duyệt qua NodeList để xem có checkbox nào đang được checked không
         for (let i = 0; i < permissionCheckboxes.length; i++) {
             if (permissionCheckboxes[i].checked) {
                 isAnyChecked = true;
@@ -461,7 +457,6 @@ function validatePermissionMaster(form) {
         }
 
         if (!isAnyChecked) {
-            // Nếu không có checkbox nào được chọn, hiển thị lỗi ở container bọc ngoài
             if (accordionContainer) {
                  Validator.showError(accordionContainer, 'Vui lòng chọn ít nhất một chức năng!');
             }
@@ -472,19 +467,11 @@ function validatePermissionMaster(form) {
     return isValid;
 }
 document.addEventListener('DOMContentLoaded', function() {
-    // Dùng Event Delegation: Lắng nghe sự kiện change trên toàn bộ body
-    // Cách này giúp code chạy mượt kể cả khi Form Thêm của bạn được sinh ra sau bằng AJAX
     document.body.addEventListener('change', function(e) {
         
-        // Kiểm tra xem thẻ vừa click có đúng là checkbox quyền không
         if (e.target && e.target.name === 'permissions[]') {
             const checkbox = e.target;
-            
-            // TÌM PHẠM VI FORM: Tìm cái khung (form hoặc modal) đang chứa checkbox này
-            // Bạn có thể đổi 'form' thành '.modal' hoặc '.accordion-item' tùy cấu trúc HTML
-            const formContainer = checkbox.closest('form') || document; 
-
-            // Hàm setCheck mới: Chỉ tìm bên trong phạm vi formContainer
+            const formContainer = checkbox.closest('form') || document;
             const setCheck = (valName, state) => {
                 const cb = formContainer.querySelector(`input[value="${valName}"]`);
                 if (cb) cb.checked = state;

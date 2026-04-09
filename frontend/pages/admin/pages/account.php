@@ -305,8 +305,6 @@
     <?php renderComponent("form",false,['title' => 'Chi tiết tài khoản', 'idModal' => $accountDetailForm, 'formData' => $formDetailData, 'save' => false]) ?>
 </div>
 <script>
-// Hàm chuyên kiểm tra form Tài khoản
-// Hàm Master kiểm tra cho CẢ Thêm và Sửa tài khoản
 function validateAccountMaster(form) {
     // 1. Tự động nhận diện đang Thêm hay Sửa dựa vào input action
     const action = form.querySelector('input[name="action"]')?.value;
@@ -382,7 +380,7 @@ function validateAccountMaster(form) {
     }
 
     // --- CHECK CHỨC VỤ & QUYỀN ---
-    if (roleInput && !roleInput.disabled) { // Nếu form sửa disable ô role thì không cần check
+    if (roleInput && !roleInput.disabled) {
         const roleErr = Validator.isRequired(roleInput.value, 'Vui lòng chọn chức vụ!');
         if (roleErr) { Validator.showError(roleInput, roleErr); isValid = false; }
     }
@@ -392,23 +390,16 @@ function validateAccountMaster(form) {
 
     return isValid;
 }
-// Hàm để dọn dẹp và đóng form chi tiết về trạng thái ban đầu
 function resetProfileInfoForm() {
     const btnToggle = document.getElementById('btn-toggle-personal-info');
     const infoContainer = document.getElementById('personal-info-container');
 
     if (infoContainer && btnToggle) {
-        // 1. Ép form ẩn đi
         infoContainer.style.display = 'none';
-        
-        // 2. Gỡ class active để mũi tên xoay về chỗ cũ
         btnToggle.classList.remove('active');
-        
-        // 3. Đưa dòng chữ trên nút về mặc định
         btnToggle.querySelector('span').innerText = 'Xem / Chỉnh sửa hồ sơ chi tiết';
     }
 }
-// Hàm xử lý việc Ẩn/Hiện form hồ sơ cá nhân
 function togglePersonalInfo() {
     const accid = document.getElementById('account-id-to-edit');
     if(accid && accid.dataset.locked === "false"){
@@ -416,21 +407,16 @@ function togglePersonalInfo() {
         const infoContainer = document.getElementById('personal-info-container');
         
         if (infoContainer && btnToggleProfileInfo) {
-            // Kiểm tra xem form đang ẩn hay hiện
             const isHidden = window.getComputedStyle(infoContainer).display === 'none';
 
             if (isHidden) {
-                // Đang ẩn thì MỞ FORM
                 infoContainer.style.display = 'block';
                 btnToggleProfileInfo.classList.add('active'); 
                 btnToggleProfileInfo.querySelector('span').innerText = 'Thu gọn hồ sơ chi tiết';
-                
-                // Cuộn màn hình xuống
                 setTimeout(() => {
                     infoContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 }, 100);
             } else {
-                // Đang hiện thì ĐÓNG FORM
                 infoContainer.style.display = 'none';
                 btnToggleProfileInfo.classList.remove('active');
                 btnToggleProfileInfo.querySelector('span').innerText = 'Xem / Chỉnh sửa hồ sơ chi tiết';
